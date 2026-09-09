@@ -19,6 +19,13 @@ dfx_runtime.txt
 build/*.log
 build/*.backup.log
 
+# Hardware export artifacts (regenerated: XSA zip + extracted ps7_init)
+build/export/
+
+# Bare-metal build outputs
+sw/**/*.elf
+sw/**/*.bin
+
 # XSim-generated state
 sim/results/xsim.dir/
 sim/results/*.jou

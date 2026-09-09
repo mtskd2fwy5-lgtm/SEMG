@@ -1,7 +1,7 @@
 {
   "design": {
     "design_info": {
-      "boundary_crc": "0xE56B0969ED79B6D2",
+      "boundary_crc": "0xE56B096974317D22",
       "device": "xc7z020clg400-2",
       "gen_directory": "../../../../hand_motion_reconstruction.gen/sources_1/bd/design_1",
       "name": "design_1",
@@ -346,7 +346,7 @@
             "value": "111.111115"
           },
           "PCW_ACT_UART_PERIPHERAL_FREQMHZ": {
-            "value": "10.000000"
+            "value": "100.000000"
           },
           "PCW_ACT_WDT_PERIPHERAL_FREQMHZ": {
             "value": "111.111115"
@@ -366,6 +366,9 @@
           "PCW_DDR_RAM_HIGHADDR": {
             "value": "0x1FFFFFFF"
           },
+          "PCW_EN_UART1": {
+            "value": "1"
+          },
           "PCW_FPGA0_PERIPHERAL_FREQMHZ": {
             "value": "100"
           },
@@ -375,8 +378,50 @@
           "PCW_IRQ_F2P_INTR": {
             "value": "1"
           },
+          "PCW_MIO_48_IOTYPE": {
+            "value": "LVCMOS 1.8V"
+          },
+          "PCW_MIO_48_PULLUP": {
+            "value": "enabled"
+          },
+          "PCW_MIO_48_SLEW": {
+            "value": "slow"
+          },
+          "PCW_MIO_49_IOTYPE": {
+            "value": "LVCMOS 1.8V"
+          },
+          "PCW_MIO_49_PULLUP": {
+            "value": "enabled"
+          },
+          "PCW_MIO_49_SLEW": {
+            "value": "slow"
+          },
+          "PCW_MIO_TREE_PERIPHERALS": {
+            "value": [
+              "unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#UART",
+              "1#UART 1#unassigned#unassigned#unassigned#unassigned"
+            ]
+          },
+          "PCW_MIO_TREE_SIGNALS": {
+            "value": "unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#tx#rx#unassigned#unassigned#unassigned#unassigned"
+          },
           "PCW_PRESET_BANK1_VOLTAGE": {
             "value": "LVCMOS 1.8V"
+          },
+          "PCW_UART1_GRP_FULL_ENABLE": {
+            "value": "0"
+          },
+          "PCW_UART1_PERIPHERAL_ENABLE": {
+            "value": "1"
+          },
+          "PCW_UART1_UART1_IO": {
+            "value": "MIO 48 .. 49"
+          },
+          "PCW_UART_PERIPHERAL_FREQMHZ": {
+            "value": "100"
+          },
+          "PCW_UART_PERIPHERAL_VALID": {
+            "value": "1"
           },
           "PCW_UIPARAM_ACT_DDR_FREQ_MHZ": {
             "value": "533.333374"
