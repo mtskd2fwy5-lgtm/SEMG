@@ -1,5 +1,5 @@
 # Query effective PS7 configuration values (including defaults).
-set root "D:/FPGA/Hand Motion Reconstruction System Using sEMG"
+set root [file normalize [file join [file dirname [info script]] ..]]
 open_project "$root/build/vivado/hand_motion_reconstruction.xpr"
 open_bd_design "$root/build/vivado/hand_motion_reconstruction.srcs/sources_1/bd/design_1/design_1.bd"
 
