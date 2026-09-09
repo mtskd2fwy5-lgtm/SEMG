@@ -22,8 +22,11 @@ module axis_async_fifo #(
     reg [DATA_WIDTH-1:0] mem [0:DEPTH-1];
     reg [ADDR_WIDTH:0] s_bin, s_gray;
     reg [ADDR_WIDTH:0] m_bin, m_gray;
-    reg [ADDR_WIDTH:0] m_gray_sync1, m_gray_sync2;
-    reg [ADDR_WIDTH:0] s_gray_sync1, s_gray_sync2;
+    // Gray-pointer double synchronizers across the two clock domains.
+    // ASYNC_REG keeps the two stages placed together and excluded from
+    // shift-register inference, as required for safe CDC.
+    (* ASYNC_REG = "TRUE" *) reg [ADDR_WIDTH:0] m_gray_sync1, m_gray_sync2;
+    (* ASYNC_REG = "TRUE" *) reg [ADDR_WIDTH:0] s_gray_sync1, s_gray_sync2;
     reg s_full, m_empty;
 
     wire s_fire = s_valid && s_ready;
