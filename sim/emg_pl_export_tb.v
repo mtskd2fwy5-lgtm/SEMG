@@ -1,0 +1,168 @@
+`timescale 1ns/1ps
+
+// Full-chain integration test for emg_pl_export: ADS1299 SPI controller
+// (with a behavioral ADC model), eight-channel feature bank, packet
+// formatting and the AXI-Stream output. Reads export_stim.txt (one frame
+// per line, eight space-separated signed decimals) and writes
+// export_out.csv (type,channel,id,sequence,payload). tools/emg_reference.py
+// verifies every raw and feature word bit-exact.
+//
+// Timing mirrors the board: pl_clk = 25 MHz, SCLK = 1.25 MHz, axis_clk
+// = 50 MHz, one DRDY pulse per 6000 pl_clk cycles (faster than the real
+// 1 kSPS cadence but far slower than any pipeline hazard).
+module emg_pl_export_tb;
+    reg pl_clk = 1'b0;
+    reg axis_clk = 1'b0;
+    reg pl_rst_n = 1'b0;
+    reg axis_rst_n = 1'b0;
+    reg adc_drdy_n = 1'b1;
+    reg adc_dout = 1'b0;
+    wire adc_sclk, adc_din, adc_cs_n, adc_reset_n, adc_start, adc_pwdn_n;
+    wire status_led;
+    wire [63:0] m_axis_tdata;
+    wire m_axis_tvalid, m_axis_tlast;
+    wire raw_overflow, feature_overflow, result_overflow;
+
+    reg [215:0] frame_bits;
+    reg [8:0] driven_bit;
+    reg read_active = 1'b0;
+
+    integer stim_fd, out_fd, code;
+    integer v0, v1, v2, v3, v4, v5, v6, v7;
+    integer frames, axi_words, feature_words, raw_words, errors, wait_count;
+
+    always #20 pl_clk = ~pl_clk;    // 25 MHz
+    always #10 axis_clk = ~axis_clk; // 50 MHz
+
+    emg_pl_export dut (
+        .pl_clk(pl_clk), .pl_rst_n(pl_rst_n),
+        .axis_clk(axis_clk), .axis_rst_n(axis_rst_n),
+        .adc_drdy_n(adc_drdy_n), .adc_dout(adc_dout),
+        .adc_sclk(adc_sclk), .adc_din(adc_din), .adc_cs_n(adc_cs_n),
+        .adc_reset_n(adc_reset_n), .adc_start(adc_start),
+        .adc_pwdn_n(adc_pwdn_n), .status_led(status_led),
+        .m_axis_tdata(m_axis_tdata), .m_axis_tvalid(m_axis_tvalid),
+        .m_axis_tready(1'b1), .m_axis_tlast(m_axis_tlast),
+        .raw_overflow(raw_overflow), .feature_overflow(feature_overflow),
+        .result_overflow(result_overflow)
+    );
+
+    // Behavioral ADS1299 data path: present frame MSB on DRDY fall,
+    // advance on each falling SCLK edge while CS is low.
+    always @(negedge adc_drdy_n) begin
+        read_active = 1'b1;
+        driven_bit = 9'd0;
+        adc_dout = frame_bits[215];
+    end
+
+    always @(negedge adc_sclk) begin
+        if (read_active && !adc_cs_n) begin
+            if (driven_bit < 9'd215) begin
+                driven_bit = driven_bit + 1'b1;
+                adc_dout = frame_bits[215-driven_bit];
+            end
+        end
+    end
+
+    // AXI consumer: always ready, log every accepted word.
+    always @(posedge axis_clk) begin
+        if (m_axis_tvalid) begin
+            axi_words = axi_words + 1;
+            if (m_axis_tdata[63:60] == 4'h1) raw_words = raw_words + 1;
+            else if (m_axis_tdata[63:60] == 4'h2) feature_words = feature_words + 1;
+            else errors = errors + 1;
+            $fdisplay(out_fd, "%0d,%0d,%0d,%0d,%0d",
+                      m_axis_tdata[63:60], m_axis_tdata[59:56],
+                      m_axis_tdata[55:52], m_axis_tdata[47:32],
+                      m_axis_tdata[31:0]);
+        end
+    end
+
+    task send_frame;
+        begin
+            @(negedge pl_clk);
+            adc_drdy_n = 1'b0;
+            repeat (12) @(posedge pl_clk);
+            adc_drdy_n = 1'b1;
+            // Frame read starts (LED off) and completes (LED on).
+            wait_count = 0;
+            while (status_led !== 1'b0 && wait_count < 100000) begin
+                @(posedge pl_clk);
+                wait_count = wait_count + 1;
+            end
+            if (wait_count >= 100000) begin
+                errors = errors + 1;
+                $display("timeout waiting for frame read start");
+            end
+            wait_count = 0;
+            while (status_led !== 1'b1 && wait_count < 100000) begin
+                @(posedge pl_clk);
+                wait_count = wait_count + 1;
+            end
+            if (wait_count >= 100000) begin
+                errors = errors + 1;
+                $display("timeout waiting for frame read end");
+            end
+            read_active = 1'b0;
+            @(posedge pl_clk);
+        end
+    endtask
+
+    initial begin
+        stim_fd = $fopen("export_stim.txt", "r");
+        if (stim_fd == 0) begin
+            $display("EMG export TB FAILED: cannot open export_stim.txt");
+            $finish;
+        end
+        out_fd = $fopen("export_out.csv", "w");
+        $fdisplay(out_fd, "type,channel,id,sequence,payload");
+        frames = 0;
+        axi_words = 0;
+        raw_words = 0;
+        feature_words = 0;
+        errors = 0;
+        frame_bits = {24'hC00000, 192'd0};
+
+        repeat (10) @(posedge pl_clk);
+        pl_rst_n = 1'b1;
+        axis_rst_n = 1'b1;
+
+        // Wait for the controller to finish reset, register configuration
+        // and START (status LED on, adc_start asserted).
+        wait_count = 0;
+        while (status_led !== 1'b1 && wait_count < 500000) begin
+            @(posedge pl_clk);
+            wait_count = wait_count + 1;
+        end
+        if (status_led !== 1'b1) begin
+            $display("EMG export TB FAILED: controller never became ready");
+            $finish;
+        end
+        repeat (100) @(posedge pl_clk);
+
+        forever begin
+            code = $fscanf(stim_fd, "%d %d %d %d %d %d %d %d",
+                           v0, v1, v2, v3, v4, v5, v6, v7);
+            if (code != 8) begin
+                // Drain: let the feature serializer flush remaining words.
+                repeat (20000) @(posedge pl_clk);
+                $fclose(stim_fd);
+                $fclose(out_fd);
+                if (errors == 0 && !raw_overflow && !feature_overflow
+                    && !result_overflow)
+                    $display("EMG export TB PASSED: frames=%0d raw=%0d feature=%0d",
+                             frames, raw_words, feature_words);
+                else
+                    $display("EMG export TB FAILED: frames=%0d raw=%0d feature=%0d errors=%0d overflow=%b%b%b",
+                             frames, raw_words, feature_words, errors,
+                             raw_overflow, feature_overflow, result_overflow);
+                $finish;
+            end
+            // Frame order on the ADS1299 data stream: status, ch0..ch7.
+            frame_bits = {24'hC00000, v0[23:0], v1[23:0], v2[23:0], v3[23:0],
+                          v4[23:0], v5[23:0], v6[23:0], v7[23:0]};
+            send_frame;
+            frames = frames + 1;
+        end
+    end
+endmodule

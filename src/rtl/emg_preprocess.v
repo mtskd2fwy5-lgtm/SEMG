@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+
 // Integer EMG preprocessing block.
 // Input samples are signed ADC codes after conversion to a centered value.
 // The block removes slow baseline drift, rectifies the result, and accumulates

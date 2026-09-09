@@ -19,8 +19,16 @@ sim/results/xelab.*
 sim/results/dfx_runtime.txt
 sim/results/*.pb
 
+# Generated stimulus and sim output (regenerate via tools/emg_reference.py)
+sim/results/*_stim.txt
+sim/results/*_out.csv
+
 # Local Vivado user configuration
 .vivado_*/
+
+# Python byte-compiled cache
+__pycache__/
+*.pyc
 
 # Scratch space
 tmp/
