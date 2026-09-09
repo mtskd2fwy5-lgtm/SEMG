@@ -1,0 +1,31 @@
+# Vivado-generated project state (regenerable via build/create_project.tcl)
+build/vivado/
+
+# Top-level Vivado session artifacts
+.Xil/
+vivado*.jou
+vivado*.log
+vivado*.backup.*
+dfx_runtime.txt
+
+# XSim-generated state
+sim/results/xsim.dir/
+sim/results/*.jou
+sim/results/*.log
+sim/results/*.wdb
+sim/results/*.backup.*
+sim/results/xvlog.*
+sim/results/xelab.*
+sim/results/dfx_runtime.txt
+sim/results/*.pb
+
+# Local Vivado user configuration
+.vivado_*/
+
+# Scratch space
+tmp/
+
+# Local datasets and generated metrics
+data/raw/*.csv
+data/processed/*.csv
+data/metrics/*.json
