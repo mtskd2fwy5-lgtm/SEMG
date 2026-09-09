@@ -1,17 +1,14 @@
-# Enable PS UART1 on MIO 48/49 in the design_1 block design.
+# Enable PS UART0 on MIO 14/15 in the design_1 block design.
 #
 # Usage: vivado -mode batch -source build/enable_ps_uart.tcl
 #
 # The PS7 preset in the existing BD has no UART routed to MIO pins
-# (PCW_UART1_PERIPHERAL_ENABLE=0), so nothing can be printed from the PS.
-# This script flips the PS7 configuration to UART1 on MIO 48/49
-# (the usual USB-to-UART bridge position on Zynq-7000 carrier boards,
-# 115200-8N1) and regenerates the BD outputs so the next check_design
-# run picks up the change.
-#
-# NOTE: verify MIO 48/49 against the actual carrier-board schematic; if
-# the board wires the UART elsewhere (e.g. UART0 on MIO 14/15), change
-# the CONFIG values below accordingly.
+# (PCW_UART0_PERIPHERAL_ENABLE=0), so nothing can be printed from the PS.
+# This script flips the PS7 configuration to UART0 on MIO 14/15
+# (carrier-board USB-to-UART bridge position, 115200-8N1) and
+# regenerates the BD outputs so the next check_design run picks up the
+# change. UART1 (MIO 48/49) is explicitly disabled in case an earlier
+# build enabled it.
 
 set project_root [file normalize [file join [file dirname [info script]] ..]]
 set project_file [file join $project_root build vivado hand_motion_reconstruction.xpr]
@@ -31,8 +28,9 @@ if {[llength $ps7] != 1} {
 }
 
 set_property -dict [list \
-    CONFIG.PCW_UART1_PERIPHERAL_ENABLE {1} \
-    CONFIG.PCW_UART1_UART1_IO {MIO 48 .. 49} \
+    CONFIG.PCW_UART0_PERIPHERAL_ENABLE {1} \
+    CONFIG.PCW_UART0_UART0_IO {MIO 14 .. 15} \
+    CONFIG.PCW_UART1_PERIPHERAL_ENABLE {0} \
 ] $ps7
 
 validate_bd_design
@@ -41,7 +39,7 @@ save_bd_design
 # Report the UART reference clock the PS7 wizard computed, so the
 # software baud divisor can be double-checked.
 set act [get_property CONFIG.PCW_ACT_UART_PERIPHERAL_FREQMHZ $ps7]
-puts "ENABLE-PS-UART UART1 on MIO 48/49 enabled, ref clock = $act MHz"
+puts "ENABLE-PS-UART UART0 on MIO 14/15 enabled, ref clock = $act MHz"
 
 generate_target all [get_files design_1.bd]
 close_project

@@ -32,4 +32,4 @@ ps7_init
 ps7_post_config
 dow $elffile
 con
-puts "RUN RUNNING - serial terminal 115200-8N1 (UART1, MIO 48/49)"
+puts "RUN RUNNING - serial terminal 115200-8N1 (UART0, MIO 14/15)"

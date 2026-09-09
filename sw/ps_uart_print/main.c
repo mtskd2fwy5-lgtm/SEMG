@@ -2,7 +2,7 @@
  * PS-side UART printout of the PL EMG data stream (bare metal, Zynq-7000).
  *
  * Hardware assumptions (from design_1 BD / PS7 config):
- *   - UART1 routed to MIO 48/49, ref clock 100 MHz (PCW_ACT_UART
+ *   - UART0 routed to MIO 14/15, ref clock 100 MHz (PCW_ACT_UART
  *     value after build/enable_ps_uart.tcl), 115200-8N1.
  *   - AXI DMA 0 (S2MM only, direct register mode, no scatter-gather)
  *     at GP0 base 0x40400000, fed by emg_pl_export's 64-bit AXI-Stream.
@@ -34,15 +34,15 @@ typedef unsigned int  u32;
 typedef int           i32;
 typedef unsigned short u16;
 
-/* ---- UART1 (Cadence UARTPS) ------------------------------------------ */
+/* ---- UART0 (Cadence UARTPS) ------------------------------------------ */
 
-#define UART1_BASE      0xE0001000u
-#define UART_CR         (*(volatile u32 *)(UART1_BASE + 0x00))
-#define UART_MR         (*(volatile u32 *)(UART1_BASE + 0x04))
-#define UART_BAUDGEN    (*(volatile u32 *)(UART1_BASE + 0x18))
-#define UART_SR         (*(volatile u32 *)(UART1_BASE + 0x2C))
-#define UART_BAUDDIV    (*(volatile u32 *)(UART1_BASE + 0x34))
-#define UART_FIFO       (*(volatile u32 *)(UART1_BASE + 0x38))
+#define UART0_BASE      0xE0000000u
+#define UART_CR         (*(volatile u32 *)(UART0_BASE + 0x00))
+#define UART_MR         (*(volatile u32 *)(UART0_BASE + 0x04))
+#define UART_BAUDGEN    (*(volatile u32 *)(UART0_BASE + 0x18))
+#define UART_SR         (*(volatile u32 *)(UART0_BASE + 0x2C))
+#define UART_BAUDDIV    (*(volatile u32 *)(UART0_BASE + 0x34))
+#define UART_FIFO       (*(volatile u32 *)(UART0_BASE + 0x38))
 
 #define UART_REF_CLK_HZ 100000000u   /* PCW_ACT_UART_PERIPHERAL_FREQMHZ */
 #define UART_BAUDRATE   115200u
@@ -313,7 +313,7 @@ int main(void)
 
     uart_init();
     uart_puts("\n=== sEMG hand-motion PL stream monitor ===\n");
-    uart_puts("UART1 115200-8N1, AXI DMA @ 0x40400000 (S2MM polling)\n");
+    uart_puts("UART0 115200-8N1, AXI DMA @ 0x40400000 (S2MM polling)\n");
     uart_puts("packet: type/ch/id/seq/payload; 1=raw 2=feature 3=result\n");
     uart_puts("expected: ~8000 raw/s, ~800 feature/s\n\n");
 

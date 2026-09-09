@@ -366,8 +366,14 @@
           "PCW_DDR_RAM_HIGHADDR": {
             "value": "0x1FFFFFFF"
           },
-          "PCW_EN_UART1": {
+          "PCW_EN_EMIO_UART0": {
+            "value": "0"
+          },
+          "PCW_EN_UART0": {
             "value": "1"
+          },
+          "PCW_EN_UART1": {
+            "value": "0"
           },
           "PCW_FPGA0_PERIPHERAL_FREQMHZ": {
             "value": "100"
@@ -378,44 +384,47 @@
           "PCW_IRQ_F2P_INTR": {
             "value": "1"
           },
-          "PCW_MIO_48_IOTYPE": {
-            "value": "LVCMOS 1.8V"
+          "PCW_MIO_14_IOTYPE": {
+            "value": "LVCMOS 3.3V"
           },
-          "PCW_MIO_48_PULLUP": {
+          "PCW_MIO_14_PULLUP": {
             "value": "enabled"
           },
-          "PCW_MIO_48_SLEW": {
+          "PCW_MIO_14_SLEW": {
             "value": "slow"
           },
-          "PCW_MIO_49_IOTYPE": {
-            "value": "LVCMOS 1.8V"
+          "PCW_MIO_15_IOTYPE": {
+            "value": "LVCMOS 3.3V"
           },
-          "PCW_MIO_49_PULLUP": {
+          "PCW_MIO_15_PULLUP": {
             "value": "enabled"
           },
-          "PCW_MIO_49_SLEW": {
+          "PCW_MIO_15_SLEW": {
             "value": "slow"
           },
           "PCW_MIO_TREE_PERIPHERALS": {
             "value": [
-              "unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#UART",
-              "1#UART 1#unassigned#unassigned#unassigned#unassigned"
+              "unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#UART 0#UART",
+              "0#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned"
             ]
           },
           "PCW_MIO_TREE_SIGNALS": {
-            "value": "unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#tx#rx#unassigned#unassigned#unassigned#unassigned"
+            "value": "unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#rx#tx#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned#unassigned"
           },
           "PCW_PRESET_BANK1_VOLTAGE": {
             "value": "LVCMOS 1.8V"
           },
-          "PCW_UART1_GRP_FULL_ENABLE": {
+          "PCW_UART0_GRP_FULL_ENABLE": {
             "value": "0"
           },
-          "PCW_UART1_PERIPHERAL_ENABLE": {
+          "PCW_UART0_PERIPHERAL_ENABLE": {
             "value": "1"
           },
-          "PCW_UART1_UART1_IO": {
-            "value": "MIO 48 .. 49"
+          "PCW_UART0_UART0_IO": {
+            "value": "MIO 14 .. 15"
+          },
+          "PCW_UART1_PERIPHERAL_ENABLE": {
+            "value": "0"
           },
           "PCW_UART_PERIPHERAL_FREQMHZ": {
             "value": "100"
