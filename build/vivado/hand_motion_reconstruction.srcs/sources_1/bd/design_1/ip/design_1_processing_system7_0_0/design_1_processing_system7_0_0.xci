@@ -10,8 +10,8 @@
       "component_parameters": {
         "PCW_DDR_RAM_BASEADDR": [ { "value": "0x00100000", "value_src": "user", "resolve_type": "user", "format": "bitString", "usage": "all" } ],
         "PCW_DDR_RAM_HIGHADDR": [ { "value": "0x3FFFFFFF", "value_src": "user", "resolve_type": "user", "format": "bitString", "usage": "all" } ],
-        "PCW_UART0_BASEADDR": [ { "value": "0xE0000000", "value_src": "user", "resolve_type": "user", "format": "bitString", "usage": "all" } ],
-        "PCW_UART0_HIGHADDR": [ { "value": "0xE0000FFF", "value_src": "user", "resolve_type": "user", "format": "bitString", "usage": "all" } ],
+        "PCW_UART0_BASEADDR": [ { "value": "0xE0000000", "resolve_type": "user", "format": "bitString", "usage": "all" } ],
+        "PCW_UART0_HIGHADDR": [ { "value": "0xE0000FFF", "resolve_type": "user", "format": "bitString", "usage": "all" } ],
         "PCW_UART1_BASEADDR": [ { "value": "0xE0001000", "resolve_type": "user", "format": "bitString", "enabled": false, "usage": "all" } ],
         "PCW_UART1_HIGHADDR": [ { "value": "0xE0001FFF", "resolve_type": "user", "format": "bitString", "enabled": false, "usage": "all" } ],
         "PCW_I2C0_BASEADDR": [ { "value": "0xE0004000", "resolve_type": "user", "format": "bitString", "enabled": false, "usage": "all" } ],
@@ -321,11 +321,11 @@
         "PCW_S_AXI_HP0_ID_WIDTH": [ { "value": "6", "value_src": "user", "resolve_type": "user", "format": "long", "usage": "all" } ],
         "PCW_S_AXI_HP0_DATA_WIDTH": [ { "value": "64", "value_src": "user", "resolve_type": "user", "format": "long", "usage": "all" } ],
         "PCW_S_AXI_HP1_ID_WIDTH": [ { "value": "6", "resolve_type": "user", "format": "long", "enabled": false, "usage": "all" } ],
-        "PCW_S_AXI_HP1_DATA_WIDTH": [ { "value": "64", "resolve_type": "user", "format": "long", "enabled": false, "usage": "all" } ],
+        "PCW_S_AXI_HP1_DATA_WIDTH": [ { "value": "64", "resolve_type": "user", "format": "long", "usage": "all" } ],
         "PCW_S_AXI_HP2_ID_WIDTH": [ { "value": "6", "resolve_type": "user", "format": "long", "enabled": false, "usage": "all" } ],
-        "PCW_S_AXI_HP2_DATA_WIDTH": [ { "value": "64", "resolve_type": "user", "format": "long", "enabled": false, "usage": "all" } ],
+        "PCW_S_AXI_HP2_DATA_WIDTH": [ { "value": "64", "resolve_type": "user", "format": "long", "usage": "all" } ],
         "PCW_S_AXI_HP3_ID_WIDTH": [ { "value": "6", "resolve_type": "user", "format": "long", "enabled": false, "usage": "all" } ],
-        "PCW_S_AXI_HP3_DATA_WIDTH": [ { "value": "64", "resolve_type": "user", "format": "long", "enabled": false, "usage": "all" } ],
+        "PCW_S_AXI_HP3_DATA_WIDTH": [ { "value": "64", "resolve_type": "user", "format": "long", "usage": "all" } ],
         "PCW_NUM_F2P_INTR_INPUTS": [ { "value": "1", "value_src": "propagated", "value_permission": "bd", "resolve_type": "user", "format": "long", "usage": "all" } ],
         "PCW_EN_DDR": [ { "value": "1", "value_src": "user", "resolve_type": "user", "format": "long", "usage": "all" } ],
         "PCW_EN_SMC": [ { "value": "0", "value_src": "user", "resolve_type": "user", "format": "long", "usage": "all" } ],
@@ -386,7 +386,7 @@
         "PCW_P2F_SDIO0_INTR": [ { "value": "0", "resolve_type": "user", "format": "long", "enabled": false, "usage": "all" } ],
         "PCW_P2F_I2C0_INTR": [ { "value": "0", "resolve_type": "user", "format": "long", "enabled": false, "usage": "all" } ],
         "PCW_P2F_SPI0_INTR": [ { "value": "0", "resolve_type": "user", "format": "long", "enabled": false, "usage": "all" } ],
-        "PCW_P2F_UART0_INTR": [ { "value": "0", "value_src": "user", "resolve_type": "user", "format": "long", "usage": "all" } ],
+        "PCW_P2F_UART0_INTR": [ { "value": "0", "resolve_type": "user", "format": "long", "usage": "all" } ],
         "PCW_P2F_CAN0_INTR": [ { "value": "0", "resolve_type": "user", "format": "long", "enabled": false, "usage": "all" } ],
         "PCW_P2F_USB1_INTR": [ { "value": "0", "resolve_type": "user", "format": "long", "enabled": false, "usage": "all" } ],
         "PCW_P2F_ENET1_INTR": [ { "value": "0", "resolve_type": "user", "format": "long", "enabled": false, "usage": "all" } ],
@@ -1439,5 +1439,5 @@
       }
     }
   },
-  "checksum": "bafe6dea"
+  "checksum": "fa45a91f"
 }

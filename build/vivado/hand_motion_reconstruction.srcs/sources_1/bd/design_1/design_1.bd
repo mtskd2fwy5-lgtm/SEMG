@@ -930,9 +930,6 @@
           "PCW_P2F_QSPI_INTR": {
             "value": "0"
           },
-          "PCW_P2F_UART0_INTR": {
-            "value": "0"
-          },
           "PCW_PACKAGE_DDR_BOARD_DELAY0": {
             "value": "0.089"
           },
@@ -1125,17 +1122,11 @@
           "PCW_TTC1_PERIPHERAL_ENABLE": {
             "value": "0"
           },
-          "PCW_UART0_BASEADDR": {
-            "value": "0xE0000000"
-          },
           "PCW_UART0_BAUD_RATE": {
             "value": "115200"
           },
           "PCW_UART0_GRP_FULL_ENABLE": {
             "value": "0"
-          },
-          "PCW_UART0_HIGHADDR": {
-            "value": "0xE0000FFF"
           },
           "PCW_UART0_PERIPHERAL_ENABLE": {
             "value": "1"

@@ -22,6 +22,9 @@ build/*.backup.log
 # Hardware export artifacts (regenerated: XSA zip + extracted ps7_init)
 build/export/
 
+# Vitis unified IDE workspace (regenerable; app sources and scripts live in sw/)
+build/vitis_ws/
+
 # Bare-metal build outputs
 sw/**/*.elf
 sw/**/*.bin

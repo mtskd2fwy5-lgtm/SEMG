@@ -29,6 +29,7 @@
  * Build: see build.bat (Vivado's arm-none-eabi GCC, freestanding).
  * Run:   see run_xsct.tcl.
  */
+#include <string.h>
 
 typedef unsigned int  u32;
 typedef int           i32;
@@ -36,32 +37,35 @@ typedef unsigned short u16;
 
 /* ---- UART0 (Cadence UARTPS) ------------------------------------------ */
 
-#define UART0_BASE      0xE0000000u
-#define UART_CR         (*(volatile u32 *)(UART0_BASE + 0x00))
-#define UART_MR         (*(volatile u32 *)(UART0_BASE + 0x04))
-#define UART_BAUDGEN    (*(volatile u32 *)(UART0_BASE + 0x18))
-#define UART_SR         (*(volatile u32 *)(UART0_BASE + 0x2C))
-#define UART_BAUDDIV    (*(volatile u32 *)(UART0_BASE + 0x34))
-#define UART_FIFO       (*(volatile u32 *)(UART0_BASE + 0x38))
+#define UART_BASE       0xE0000000u
+#define UART_CR         (*(volatile u32 *)(UART_BASE + 0x00))
+#define UART_MR         (*(volatile u32 *)(UART_BASE + 0x04))
+#define UART_BAUDGEN    (*(volatile u32 *)(UART_BASE + 0x18))
+#define UART_SR         (*(volatile u32 *)(UART_BASE + 0x2C))
+#define UART_FIFO       (*(volatile u32 *)(UART_BASE + 0x30))  /* TX/RX FIFO, 0x30 not 0x38 */
+#define UART_BAUDDIV    (*(volatile u32 *)(UART_BASE + 0x34))
 
 #define UART_REF_CLK_HZ 100000000u   /* PCW_ACT_UART_PERIPHERAL_FREQMHZ */
-#define UART_BAUDRATE   115200u
 
-#define UART_CR_TXRST   0x00000020u
-#define UART_CR_RXRST   0x00000040u
+/* Cadence UARTPS register bit fields (fsbl_uartps.h / xuartps_hw.h) */
+#define UART_CR_TXDIS   0x00000020u
 #define UART_CR_TXEN    0x00000010u
+#define UART_CR_RXDIS   0x00000008u
 #define UART_CR_RXEN    0x00000004u
-#define UART_CR_TXDIS   0x00000008u
-#define UART_CR_RXDIS   0x00000002u
-#define UART_SR_TXFULL  0x00000004u
+#define UART_CR_TXRST   0x00000002u
+#define UART_CR_RXRST   0x00000001u
+#define UART_MR_8N1     0x00000020u  /* charlen8(0) | parity_none(0x20) | stop1(0) */
+#define UART_SR_TXFULL  0x00000010u
+#define UART_SR_TXEMPTY 0x00000008u
 
 static void uart_init(void)
 {
     UART_CR = UART_CR_TXDIS | UART_CR_RXDIS;
     UART_CR = UART_CR_TXRST | UART_CR_RXRST;
-    UART_MR = 0x26;                  /* 8 data bits, no parity, 1 stop */
-    UART_BAUDGEN = 54;               /* CD = 100 MHz/(115200*16) = 54.25 */
-    UART_BAUDDIV = 16;               /* BD = 0.25*64 = 16 -> 115207 bps  */
+    UART_MR = UART_MR_8N1;           /* 8 data bits, no parity, 1 stop */
+    /* baud = clk / (BAUDGEN * (BAUDDIV+1)); 100e6/(62*14) = 115207 bps */
+    UART_BAUDGEN = 62;
+    UART_BAUDDIV = 13;
     UART_CR = UART_CR_TXEN | UART_CR_RXEN;
 }
 
@@ -287,7 +291,7 @@ static void parse_buffer(volatile u32 *buf)
 
 /* ---- Minimal runtime bits (freestanding, no libc) ---------------------- */
 
-void *memcpy(void *dst, const void *src, u32 n)
+/*void *memcpy(void *dst, const void *src, u32 n)
 {
     unsigned char *d = dst;
     const unsigned char *s = src;
@@ -295,14 +299,16 @@ void *memcpy(void *dst, const void *src, u32 n)
         *d++ = *s++;
     return dst;
 }
+*/
 
-void *memset(void *dst, int v, u32 n)
+/*void *memset(void *dst, int v, u32 n)
 {
     unsigned char *d = dst;
     while (n--)
         *d++ = (unsigned char)v;
     return dst;
 }
+*/
 
 /* ---- Main -------------------------------------------------------------- */
 
@@ -313,7 +319,7 @@ int main(void)
 
     uart_init();
     uart_puts("\n=== sEMG hand-motion PL stream monitor ===\n");
-    uart_puts("UART0 115200-8N1, AXI DMA @ 0x40400000 (S2MM polling)\n");
+    uart_puts("UART0(MIO14/15) 115200-8N1, AXI DMA @ 0x40400000 (S2MM polling)\n");
     uart_puts("packet: type/ch/id/seq/payload; 1=raw 2=feature 3=result\n");
     uart_puts("expected: ~8000 raw/s, ~800 feature/s\n\n");
 
