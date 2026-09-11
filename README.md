@@ -1,4 +1,4 @@
-﻿# Hand Motion Reconstruction System Using sEMG
+# Hand Motion Reconstruction System Using sEMG
 
 ## 1. 项目目标
 
@@ -131,24 +131,32 @@ build/scripts/run_ads1299_sim.bat
 <project_name>/
 ├── README.md
 ├── src/
-│   ├── rtl/                 # RTL设计源码
-│   ├── hls/                 # HLS加速模块
-│   └── ps/                  # Zynq PS侧软件
+│   ├── rtl/                 # RTL设计源码（采集/预处理/特征/导出/顶层）
+│   ├── bd/                  # BD辅助源码（预留）
+│   ├── hls/                 # HLS加速模块（预留）
+│   └── ps/                  # PS侧库代码（预留）
+├── sw/
+│   └── ps_uart_print/       # PS侧裸机应用（UART数据通路验证）
 ├── sim/                     # 仿真文件与结果
 │   └── results/
-├── build/                   # Vivado工程与构建脚本
-│   └── scripts/
-├── board/                   # 板级工程、约束与上板脚本
+├── build/                   # Vivado工程与构建/导出/调试脚本
+│   ├── scripts/
+│   └── debug/
+├── board/                   # 板级约束与上板脚本
 │   ├── constraints/
 │   └── scripts/
-├── data/                    # 采集数据、处理数据与指标
-│   ├── raw/
+├── data/                    # 数据集、模型与指标
+│   ├── raw/                 # NinaPro DB5（脚本再生成，不入库）
+│   ├── models/              # 训练产物（baseline MLP）
 │   ├── processed/
 │   └── metrics/
+├── tools/                   # PC端工具链（数据下载/转换/训练/参考模型/可视化）
 ├── skill/                   # 可复用技能包
 └── report/                  # 设计报告与图表
     └── figures/
 ```
+
+与竞赛指南（3.3.5.4 推荐目录结构）的对照：整体采用推荐结构，额外增加 `tools/`（PC 端数据集与训练工具，对应指南中"测试数据与参考结果"的生产工具）和 `sw/`（PS 侧应用工程，承担指南结构中 `src/ps` 的角色）；`src/hls`、`src/ps`、`src/bd` 为预留占位。仓库内所有目录与文件名均为纯英文，符合指南对命名的要求。
 
 当前工程骨架已经按上述结构落盘。入口脚本为 `build/create_project.tcl`，目标器件为 `xc7z020clg400-2`。使用 Vivado 批处理创建工程：
 

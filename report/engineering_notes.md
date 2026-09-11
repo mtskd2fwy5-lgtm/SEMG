@@ -124,6 +124,52 @@ cd sim\results 后运行 tools\emg_reference.py 的 compare-*（详见 emg_refer
 - PS 侧裸机监控程序：`sw\ps_uart_print`（build.bat 编译，run.ps1 经 XSCT 烧录运行）。
 - 未接 ADS1299 时 PS 打印 `[DMA] no PL data yet` 属正常。
 
+## 网络环境坑（2026-09-11，数据集下载）
+
+- 本地 DNS 对 `zenodo.org` 返回 **0.0.0.0**（污染；hosts 文件是干净的，污染在
+  本地 DNS 服务器/路由器侧）。Zenodo 本体（CERN 网段 188.184.x/188.185.x/137.138.x）
+  直连可达，只是 DNS 被拦。
+- 解法（已固化在 `tools/download_dataset.py`）：系统 DNS 先试，若返回
+  0.0.0.0/127.x 自动降级 **DoH**（阿里 dns.alidns.com → 腾讯 doh.pub，JSON API）
+  拿真实 IP，再用 **IP 直连 + 正确 TLS SNI/Host** 请求，证书照常校验，重定向逐跳
+  重新解析。
+- `ninapro.hevs.ch` 官网本身可直连，且提供 zip 直链
+  （`https://ninapro.hevs.ch/files/DB5_Preproc/s{n}.zip`），可作 Zenodo 的备用源。
+- DB5 zip 解压后**内含嵌套 `s{n}/` 目录**，下载脚本已做 flatten；实际文件名是
+  `S{n}_E{e}_A1.mat`。
+- **DB5 `restimulus` 编号是 exercise 内局部编号**（E1: 1-12、E2: 1-17、E3: 1-23），
+  不是全局 1-52。全局编号 = 局部 + 偏移（E1 +0 / E2 +12 / E3 +29）。52 个动作
+  列表与 DB1 完全相同（含 rest 共 53 类，Pizzolato 2017 确认）。baseline 五类
+  映射：rest=0；E2 局部 5/6/13/14 = 全局 17 open_hand（abduction of all fingers，
+  列表中最接近张手的静态构型）/ 18 fist / 25 wrist_flex / 26 wrist_extend。
+  mat 内的 `exercise` 标量字段与文件名可能不一致，以文件名 S{n}_E{e} 为准。
+
+## Baseline 模型训练（2026-09-11）
+
+- `tools/train_baseline.py`：五类分类 baseline 跑通。特征与 PL 链路整数定义严格一致
+  （MAV/WL/Energy/ZC/SSC，window 40 / hop 10 @ 200 Hz = 200 ms/50 ms，zc/ssc 阈值 0，
+  仅保留单标签窗口）。评估用 **leave-one-subject-out**（数据契约要求 subject-wise）。
+- 结果（LoSo）：S1 94.0% / S2 91.5% / **S3 49.2%**，pooled acc 78.5%、f1_macro 0.475。
+  主要混淆：rest 误判为腕部动作、wrist_flex↔wrist_extend 互混；fist 最稳。
+  S3 掉队是跨被试域差的典型现象 → 改进优先级：被试级校准 > PL bandpass 对齐 > 1D-CNN。
+- **通道拓扑消融（2026-09-11）**：DB5 是双 Myo 环带（都在前臂同一区域——环 1 近肘
+  等间距、环 2 靠手侧倾斜 22.5° 填隙，Zenodo 官方文档确认；**不是**前臂+上臂两块
+  肌群）。三种 8 通道取法 LoSo pooled 对比：
+  | 取法 | S1 / S2 / S3 | pooled acc / f1 |
+  |---|---|---|
+  | 近端环全 8 电极（列 1-8） | 94.0 / 91.5 / 49.2 | 78.5% / 0.475 |
+  | 双环均匀隔位（E1,3,5,7 + E9,11,13,15） | 93.0 / 82.7 / 54.1 | 76.5% / 0.413 |
+  | **双环肌肉功能选位**（E03,05,06,08 + E09,10,14,15） | 93.7 / 92.9 / **67.4** | **84.9% / 0.512** |
+  选位依据：16 电极 × 5 类 RMS 对比度矩阵（数据驱动肌肉映射）——握拳/屈腕强在屈肌
+  侧 E03/E05/E06/E08 + E13/E14/E15（远端 E14 fist 对比度 16.8x 全场最高，远端环
+  rest 噪底更低所以 SNR 更高），张手/伸腕强在 E02/E03 + E09/E10（伸肌侧）。S3 从
+  49.2% 升到 67.4%，跨被试泛化大头来自"每类都有 >=2 个强专用通道"。
+  切换通道组合只改 `tools/prepare_dataset.py` 的 `CH` 一行 + 重跑转换/训练。
+- 产物：`data/models/baseline_mlp.joblib`（StandardScaler+MLP 64-32，全量拟合）、
+  `data/metrics/baseline.json`（配置 + 各折 + pooled 指标 + 混淆矩阵）。
+- 依赖坑：scikit-learn 装到用户 site-packages 需在沙箱外跑 pip
+  （写 `Roaming\Python\Python311` 被沙箱拦；numpy/scipy 当时走的用户目录侥幸通过）。
+
 ## 待办 / 扩展方向
 
 - PL 端轻量神经网络推理引擎（40 维特征 → 动作类别 + 置信度）

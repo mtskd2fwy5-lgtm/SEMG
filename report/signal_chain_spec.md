@@ -27,3 +27,37 @@ This block is independent of the ADC brand and can be compared against a Python/
 3. A completed window must assert `feature_valid` for exactly one clock.
 4. The accumulator must not overflow for the selected ADC range and window length.
 5. RTL output must match the fixed-point reference within the stated rounding tolerance.
+
+## ADS1299 八通道布极规划（2026-09-11 定稿）
+
+真实 ADS1299 前端的电极-通道映射按目标肌肉逐通道规划（区别于 DB5 训练数据的
+Myo 环带均匀布极）：
+
+| 通道 | 目标肌肉 | 前臂位置 | 功能 | 备注 |
+|---|---|---|---|---|
+| CH1 | 指浅屈肌 FDS | 掌侧浅层近中段 | 四指屈曲（握拳主力） | 与 FCR/PL 相邻，有串扰 |
+| CH2 | 指总伸肌 ED | 背侧浅层近中段 | 四指伸展（张手主力） | 伸肌群中心位置 |
+| CH3 | 桡侧腕屈肌 FCR | 掌侧桡侧浅层 | 腕屈 | 表层信号好 |
+| CH4 | 尺侧腕屈肌 FCU | 掌侧尺侧浅层 | 腕屈、握持辅助 | 表层信号好 |
+| CH5 | 桡侧腕伸肌 ECR | 背侧桡侧浅层 | 腕伸 | 肱桡肌相邻 |
+| CH6 | 尺侧腕伸肌 ECU | 背侧尺侧浅层 | 腕伸、尺偏 | 表层信号好 |
+| CH7 | 拇长展肌 APL | 背侧桡侧近端 | 拇指外展 | 原 APB 为手内在肌（鱼际处），前臂表面电极采不到；APL 功能最接近且浅层可采 |
+| CH8 | 拇长伸肌 EPL / 示指伸肌 EIP | 背侧远端尺侧（Lister 结节附近 / 深层） | 拇指/示指独立动作 | 预留扩展通道；位置深、信号偏弱 |
+
+布极原则与已知约束：
+
+1. **表面电极记录的是叠加信号**：前臂浅层肌群紧密相邻，每对差分电极采集的是
+   目标肌肉为主、邻肌混入的混合信号。表中「目标肌肉」是定位依据，不代表单肌肉
+   纯净记录。
+2. **差分对沿肌腹纵向布置**（间距 2~3 cm），参考电极置于腕横纹/肘部骨性部位；
+   ADS1299 内置右腿驱动与 BIAS 导联做共模抑制。
+3. **五类 baseline 的通道覆盖**：握拳=CH1；张手=CH2；屈腕=CH3+CH4；
+   伸腕=CH5+CH6；放松=全体静息。CH7/CH8 为拇指与手部精细动作预留（Phase 4
+   连续重建扩展用）。
+4. **与训练数据的域差（重要）**：本规划是真实硬件布极；当前 baseline 模型训练自
+   NinaPro DB5 的双 Myo 环带（近端 E03/05/06/08 + 远端 E09/10/14/15，见
+   engineering_notes 通道拓扑消融）。两者电极位置不是一一对应，sEMG 对电极位移
+   高度敏感——**换到真实布极后必须重新采集小型数据集重训/校准**，属 Phase 4
+   个体化校准的正常流程，不是模型缺陷。
+5. 肌肉-动作对应关系与 DB5 数据驱动的激活分析一致（屈肌侧管握拳/屈腕、伸肌侧管
+   张手/伸腕），交叉验证了本表的解剖学选位。

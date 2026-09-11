@@ -56,5 +56,9 @@ tmp/
 
 # Local datasets and generated metrics
 data/raw/*.csv
+data/raw/
 data/processed/*.csv
 data/metrics/*.json
+
+# Reference PDFs stay out of the repo (guide requires ASCII-only filenames)
+*.pdf
