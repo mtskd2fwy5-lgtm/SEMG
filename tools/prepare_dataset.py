@@ -38,6 +38,16 @@ Usage:
 Output layout:
   data/raw/ninapro_db5/s{n}/S{n}_E{e}_baseline.csv   (contract rows)
   data/raw/ninapro_db5/s{n}/S{n}_E{e}_baseline.json  (sidecar)
+
+With --continuous an additional gap-free stream is written for regression
+training (every sample incl. rest intervals, raw glove columns appended):
+
+  data/raw/ninapro_db5/s{n}/S{n}_E{e}_full.csv
+    header: timestamp_us, channel_0..7, glove_0..21, restimulus, subject, exercise
+
+restimulus is the LOCAL exercise code (0 = rest); the glove columns keep
+the raw Cyberglove II values so finger-DOF mapping stays a downstream
+decision. Baseline CSVs are left untouched.
 """
 
 import argparse
@@ -121,12 +131,50 @@ def convert_mat(mat_path, all_movements):
     return lines, kept, total, freq, subj, exercise
 
 
+FULL_HEADER = (["timestamp_us"] + ["channel_%d" % c for c in range(8)] +
+               ["glove_%d" % g for g in range(22)] +
+               ["restimulus", "subject", "exercise"])
+
+
+def convert_mat_full(mat_path):
+    """Continuous stream for regression: every sample + raw glove columns."""
+    m = loadmat(mat_path)
+    CH = [2, 4, 5, 7, 8, 9, 13, 14]           # same contract channel map
+    emg = m["emg"][:, CH].astype(np.int32)
+    gkey = "glove" if "glove" in m else "cyberglove"
+    glove = m[gkey].astype(np.int32)          # (N, 22) raw Cyberglove II
+    if glove.shape[1] != 22:
+        raise RuntimeError("expected 22 glove columns, got %d in %s"
+                           % (glove.shape[1], mat_path))
+    restim = m["restimulus"].ravel().astype(np.int32)
+    freq = int(np.ravel(m["frequency"])[0]) if "frequency" in m else 200
+    name = os.path.basename(mat_path)
+    subj, exercise = (int(v) for v in
+                      re.match(r"S(\d+)_E(\d+)_", name).groups())
+    tick_us = 1_000_000 // freq
+
+    lines = []
+    stamp = 0
+    for i in range(len(restim)):
+        lines.append("%d,%s,%s,%d,s%d,e%d" % (
+            stamp,
+            ",".join("%d" % v for v in emg[i]),
+            ",".join("%d" % v for v in glove[i]),
+            int(restim[i]), subj, exercise))
+        stamp += tick_us
+    return lines, len(restim), freq, subj, exercise
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--subjects", type=int, nargs="+", default=None,
                     help="subject numbers to convert (default: all found)")
     ap.add_argument("--all-movements", action="store_true",
                     help="keep non-baseline movements as mvNN rows")
+    ap.add_argument("--continuous", action="store_true",
+                    help="write gap-free S{n}_E{e}_full.csv streams (all "
+                         "samples incl. rest, raw glove columns) instead of "
+                         "the baseline contract CSVs")
     args = ap.parse_args()
 
     pattern = os.path.join(RAW_DIR, "s*", "S*_E*_A1.mat")
@@ -141,6 +189,16 @@ def main():
 
     for mat_path in mat_files:
         base = os.path.splitext(mat_path)[0]
+        if args.continuous:
+            csv_path = base + "_full.csv"
+            lines, kept, freq, subj, exercise = convert_mat_full(mat_path)
+            with open(csv_path, "w", newline="\n") as fh:
+                fh.write(",".join(FULL_HEADER) + "\n")
+                fh.write("\n".join(lines))
+                fh.write("\n")
+            print("s%d e%d: %d continuous rows -> %s"
+                  % (subj, exercise, kept, os.path.relpath(csv_path, ROOT)))
+            continue
         csv_path = base + "_baseline.csv"
         json_path = base + "_baseline.json"
         lines, kept, total, freq, subj, exercise = convert_mat(mat_path,
