@@ -27,6 +27,20 @@ open_project $project_file
 set_property IS_ENABLED false [get_files hz_zynq_ads1299.xdc]
 set_property IS_ENABLED true  [get_files hz_zynq_ads1299_bd.xdc]
 
+# Re-validate the BD before launching runs: when a module_ref module's
+# internals change (e.g. emg_pl_export gaining the NN instance), the module
+# definition cached in the XCI goes stale and launch_runs dies with
+# [filemgmt 56-587] "Nothing was found ... to match the name emg_pl_export".
+# validate_bd_design re-binds the reference (same as build/fix_bd_refs.tcl).
+set bd_file [get_files -quiet -of [get_filesets sources_1] design_1.bd]
+if {[llength $bd_file] > 0} {
+    open_bd_design [lindex $bd_file 0]
+    validate_bd_design -force
+    save_bd_design
+    generate_target all [get_files design_1.bd]
+    close_bd_design [current_bd_design]
+}
+
 # Reset every run (top synth/impl plus out-of-context IP synth runs) so
 # leftovers from a killed parent process cannot wedge the launch.
 foreach run [get_runs] {

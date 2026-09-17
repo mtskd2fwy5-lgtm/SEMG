@@ -217,8 +217,50 @@ static const char *const feat_names[5] = {
 static u32 raw_cnt, feat_cnt, res_cnt, other_cnt;
 static u32 raw_latest[8];
 static u32 feat_mav[8];                /* latest MAV per channel */
+static u32 feat_vals[5][8];            /* [feature id][channel] of current window */
+static u32 feat_win_cnt;               /* packets accumulated for current window */
+static u32 res_logits[5];              /* INT32 logits of the current window */
+static u32 res_cls;                    /* argmax class of the current window */
+static u32 res_rows;                   /* result rows printed */
 static u32 parsed_total;
 static u32 next_report;
+
+/* Emit one CSV line per feature window in the training feature order
+ * (tools/train_baseline.py make_windows): MAV ch0..7, WL ch0..7,
+ * Energy ch0..7, ZC ch0..7, SSC ch0..7 -> exactly the 40 model inputs.
+ * ~460 bytes per 50 ms window fits a 115200-baud line (~80% util). */
+static void print_feature_row(void)
+{
+    u32 id, ch;
+    uart_putc('F');
+    for (id = 0; id < 5; id++) {
+        for (ch = 0; ch < 8; ch++) {
+            uart_putc(',');
+            print_dec(feat_vals[id][ch]);
+        }
+    }
+    uart_puts("\r\n");
+}
+
+/* One line per inference window: 'R s=<seq> c=<class>', plus the raw
+ * INT32 logits every 4th window.  The PL INT8 MLP emits six result
+ * packets per window (ids 0..4 = logits, 5 = argmax class), all carrying
+ * the sequence of the window-start feature packet.  Amortised ~28
+ * bytes/window next to the ~460-byte F-rows stays within the 115200-baud
+ * budget (~85% line utilisation). */
+static void print_result_row(u32 seq)
+{
+    uart_putc('R');
+    uprintf(" s=%u c=%u", seq, res_cls, 0, 0);
+    if ((res_rows & 3u) == 0u) {
+        uart_puts(" | L");
+        uprintf(" %d %d", res_logits[0], res_logits[1], 0, 0);
+        uprintf(" %d %d", res_logits[2], res_logits[3], 0, 0);
+        uprintf(" %d", res_logits[4], 0, 0, 0);
+    }
+    uart_puts("\r\n");
+    res_rows++;
+}
 
 static void parse_packet(u32 payload, u32 hdr)
 {
@@ -236,13 +278,24 @@ static void parse_packet(u32 payload, u32 hdr)
         raw_cnt++;
         break;
     case 2:                            /* window feature */
-        if (ch < 8) {
+        if (ch < 8 && id < 5) {
+            feat_vals[id][ch] = payload;
             if (id == 0)
-                feat_mav[ch] = payload;   /* MAV = id 0 */
+                feat_mav[ch] = payload;   /* keep MAV for STAT line */
+            if (++feat_win_cnt == 40u) {  /* one full window: 8 ch x 5 feats */
+                feat_win_cnt = 0;
+                print_feature_row();
+            }
         }
         feat_cnt++;
         break;
-    case 3:                            /* classifier result (future NN) */
+    case 3:                            /* PL INT8 MLP result */
+        if (id < 5u)
+            res_logits[id] = payload;
+        else if (id == 5u) {
+            res_cls = payload;
+            print_result_row(seq);
+        }
         res_cnt++;
         break;
     default:
@@ -321,7 +374,11 @@ int main(void)
     uart_puts("\n=== sEMG hand-motion PL stream monitor ===\n");
     uart_puts("UART0(MIO14/15) 115200-8N1, AXI DMA @ 0x40400000 (S2MM polling)\n");
     uart_puts("packet: type/ch/id/seq/payload; 1=raw 2=feature 3=result\n");
-    uart_puts("expected: ~8000 raw/s, ~800 feature/s\n\n");
+    uart_puts("F-rows: one CSV line per 200ms window = 40 model inputs\n");
+    uart_puts("  (MAV*8, WL*8, Energy*8, ZC*8, SSC*8; feed to tools/realtime_inference.py)\n");
+    uart_puts("R-rows: one per window from the PL INT8 MLP: 'R s=<seq> c=<class>'\n");
+    uart_puts("  (+ raw INT32 logits every 4th window; compare vs PC-side reference)\n");
+    uart_puts("expected: ~8000 raw/s, ~800 feature/s -> 20 F-rows/s + 20 R-rows/s\n\n");
 
     dma_init();
     dma_arm((u32)dma_buf[active], BUF_BYTES);

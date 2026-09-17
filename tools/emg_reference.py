@@ -314,9 +314,10 @@ def compare_export():
 
     raw_rows = [r for r in rows if r[0] == 1]
     feat_rows = [r for r in rows if r[0] == 2]
-    other = [r for r in rows if r[0] not in (1, 2)]
+    other = [r for r in rows if r[0] not in (1, 2, 3)]
     if other:
         fail("compare-export", f"unexpected packet types: {other[:3]}")
+    # type-3 result words are verified by tools/check_pl_nn_sim.py
 
     if len(raw_rows) != len(frames) * 8:
         fail("compare-export",

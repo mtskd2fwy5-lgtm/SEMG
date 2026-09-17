@@ -29,7 +29,8 @@ module emg_pl_export_tb;
 
     integer stim_fd, out_fd, code;
     integer v0, v1, v2, v3, v4, v5, v6, v7;
-    integer frames, axi_words, feature_words, raw_words, errors, wait_count;
+    integer frames, axi_words, feature_words, raw_words, result_words;
+    integer errors, wait_count;
 
     always #20 pl_clk = ~pl_clk;    // 25 MHz
     always #10 axis_clk = ~axis_clk; // 50 MHz
@@ -64,12 +65,15 @@ module emg_pl_export_tb;
         end
     end
 
-    // AXI consumer: always ready, log every accepted word.
+    // AXI consumer: always ready, log every accepted word.  Result words
+    // (type 3) are verified bit-exact by tools/check_pl_nn_sim.py against
+    // the Python INT8 model fed with this very stream's feature words.
     always @(posedge axis_clk) begin
         if (m_axis_tvalid) begin
             axi_words = axi_words + 1;
             if (m_axis_tdata[63:60] == 4'h1) raw_words = raw_words + 1;
             else if (m_axis_tdata[63:60] == 4'h2) feature_words = feature_words + 1;
+            else if (m_axis_tdata[63:60] == 4'h3) result_words = result_words + 1;
             else errors = errors + 1;
             $fdisplay(out_fd, "%0d,%0d,%0d,%0d,%0d",
                       m_axis_tdata[63:60], m_axis_tdata[59:56],
@@ -120,6 +124,7 @@ module emg_pl_export_tb;
         axi_words = 0;
         raw_words = 0;
         feature_words = 0;
+        result_words = 0;
         errors = 0;
         frame_bits = {24'hC00000, 192'd0};
 
@@ -150,12 +155,13 @@ module emg_pl_export_tb;
                 $fclose(out_fd);
                 if (errors == 0 && !raw_overflow && !feature_overflow
                     && !result_overflow)
-                    $display("EMG export TB PASSED: frames=%0d raw=%0d feature=%0d",
-                             frames, raw_words, feature_words);
+                    $display("EMG export TB PASSED: frames=%0d raw=%0d feature=%0d result=%0d",
+                             frames, raw_words, feature_words, result_words);
                 else
-                    $display("EMG export TB FAILED: frames=%0d raw=%0d feature=%0d errors=%0d overflow=%b%b%b",
-                             frames, raw_words, feature_words, errors,
-                             raw_overflow, feature_overflow, result_overflow);
+                    $display("EMG export TB FAILED: frames=%0d raw=%0d feature=%0d result=%0d errors=%0d overflow=%b%b%b",
+                             frames, raw_words, feature_words, result_words,
+                             errors, raw_overflow, feature_overflow,
+                             result_overflow);
                 $finish;
             end
             // Frame order on the ADS1299 data stream: status, ch0..ch7.
