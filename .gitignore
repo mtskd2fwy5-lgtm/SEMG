@@ -30,19 +30,19 @@ sw/**/*.elf
 sw/**/*.bin
 
 # XSim-generated state
-sim/results/xsim.dir/
-sim/results/*.jou
-sim/results/*.log
-sim/results/*.wdb
-sim/results/*.backup.*
-sim/results/xvlog.*
-sim/results/xelab.*
-sim/results/dfx_runtime.txt
-sim/results/*.pb
+sim/results*/xsim.dir/
+sim/results*/*.jou
+sim/results*/*.log
+sim/results*/*.wdb
+sim/results*/*.backup.*
+sim/results*/xvlog.*
+sim/results*/xelab.*
+sim/results*/dfx_runtime.txt
+sim/results*/*.pb
 
 # Generated stimulus and sim output (regenerate via tools/emg_reference.py)
-sim/results/*_stim.txt
-sim/results/*_out.csv
+sim/results*/*_stim.txt
+sim/results*/*_out.csv
 
 # Local Vivado user configuration
 .vivado_*/
