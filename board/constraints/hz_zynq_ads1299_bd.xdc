@@ -13,15 +13,26 @@ create_generated_clock -name ads1299_sclk \
     -divide_by 20 \
     [get_ports {adc_sclk_0}]
 
-# ADS1299 interface on the selected B34 expansion signals.
-set_property -dict {PACKAGE_PIN P18 IOSTANDARD LVCMOS33 DRIVE 8 SLEW SLOW} [get_ports {adc_sclk_0}]    ;# B34_L23N
-set_property -dict {PACKAGE_PIN N17 IOSTANDARD LVCMOS33 DRIVE 8 SLEW SLOW} [get_ports {adc_din_0}]     ;# B34_L23P
-set_property -dict {PACKAGE_PIN V20 IOSTANDARD LVCMOS33 DRIVE 8 SLEW SLOW} [get_ports {adc_cs_n_0}]    ;# B34_L16P
-set_property -dict {PACKAGE_PIN W20 IOSTANDARD LVCMOS33 DRIVE 8 SLEW SLOW} [get_ports {adc_reset_n_0}] ;# B34_L16N
-set_property -dict {PACKAGE_PIN R16 IOSTANDARD LVCMOS33 DRIVE 8 SLEW SLOW} [get_ports {adc_start_0}]   ;# B34_L19P
-set_property -dict {PACKAGE_PIN R17 IOSTANDARD LVCMOS33 DRIVE 8 SLEW SLOW} [get_ports {adc_pwdn_n_0}]  ;# B34_L19N
-set_property -dict {PACKAGE_PIN W18 IOSTANDARD LVCMOS33} [get_ports {adc_dout_0}]                      ;# B34_L22P
-set_property -dict {PACKAGE_PIN W19 IOSTANDARD LVCMOS33} [get_ports {adc_drdy_n_0}]                    ;# B34_L22N
+# ADS1299 interface on bank 13, MOVED off J3/LCD_B[7:0] (2026-09-21).
+# Why: bank 34 is shared with the carrier's RGB LCD bus, so the planned
+# onboard virtual-hand display (VDMA + VTC driving LCD_B) would fight the
+# ADC SPI.  The eight signals now sit on eight CONTIGUOUS J4 (2x20) pins
+# 17..24.  Verified against HZ-ZYNQ_MV01-20250910 schematic: bank 13 nets
+# appear ONLY on passive headers (J4 + the ZYNQ-DIP sockets); no LCD,
+# HDMI or USB0 device drives them (USB0 UTMI lives on the PS MIO bank).
+# BANK13 is 3.3 V by default per the core-board doc "B13 B34 B35 changed
+# to 1.8V operation guide" (only re-soldering L23 -> L24 changes it).
+# Ball numbers verified against the Vivado package file xc7z020_clg400.pkg
+# (the vendor pin-description xlsx has shifted rows and its B13 ball
+# column is WRONG - do not use it for ball mapping).
+set_property -dict {PACKAGE_PIN Y9  IOSTANDARD LVCMOS33} [get_ports {adc_drdy_n_0}]                    ;# B13_L14P (SRCC), J4-17
+set_property -dict {PACKAGE_PIN Y8  IOSTANDARD LVCMOS33} [get_ports {adc_dout_0}]                      ;# B13_L14N (SRCC), J4-18
+set_property -dict {PACKAGE_PIN W10 IOSTANDARD LVCMOS33 DRIVE 8 SLEW SLOW} [get_ports {adc_sclk_0}]    ;# B13_L16P, J4-19
+set_property -dict {PACKAGE_PIN W9  IOSTANDARD LVCMOS33 DRIVE 8 SLEW SLOW} [get_ports {adc_din_0}]     ;# B13_L16N, J4-20
+set_property -dict {PACKAGE_PIN V11 IOSTANDARD LVCMOS33 DRIVE 8 SLEW SLOW} [get_ports {adc_cs_n_0}]    ;# B13_L21P (DQS), J4-21
+set_property -dict {PACKAGE_PIN V10 IOSTANDARD LVCMOS33 DRIVE 8 SLEW SLOW} [get_ports {adc_start_0}]   ;# B13_L21N (DQS), J4-22
+set_property -dict {PACKAGE_PIN Y13 IOSTANDARD LVCMOS33 DRIVE 8 SLEW SLOW} [get_ports {adc_reset_n_0}] ;# B13_L20N, J4-23
+set_property -dict {PACKAGE_PIN Y12 IOSTANDARD LVCMOS33 DRIVE 8 SLEW SLOW} [get_ports {adc_pwdn_n_0}]  ;# B13_L20P, J4-24
 
 # PL_KEY1 is the active-low acquisition reset input.
 set_property -dict {PACKAGE_PIN K16 IOSTANDARD LVCMOS33} [get_ports {pl_rst_n_0}]                      ;# B35_L24P
