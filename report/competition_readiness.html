@@ -1,0 +1,221 @@
+<html style="margin:0;padding:0;">
+<title>sEMG-HMRS FPGA创新设计大赛 备战诊断看板</title>
+<div style="width:100%;box-sizing:border-box;font-family:'Segoe UI','Microsoft YaHei',Arial,sans-serif;color:#1f2933;background:#f5f7f8;padding:28px 30px;">
+
+  <!-- Header -->
+  <div style="border-bottom:3px solid #0f766e;padding-bottom:16px;margin-bottom:20px;">
+    <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;">
+      <span style="background:#0f766e;color:#fff;font-size:13px;font-weight:600;padding:4px 10px;border-radius:4px;">第九届(2026) 全国大学生嵌入式芯片与系统设计竞赛 · FPGA创新设计赛道</span>
+      <span style="background:#ecfdf5;color:#065f46;border:1px solid #10b981;font-size:13px;font-weight:600;padding:3px 10px;border-radius:4px;">AMD 自主选题 · 初级组</span>
+      <span style="background:#f0fdf4;color:#166534;border:1px solid #86efac;font-size:13px;padding:3px 10px;border-radius:4px;">XC7Z020 Zynq-7000 · Vivado 2025.2</span>
+    </div>
+    <h1 style="font-size:26px;margin:12px 0 6px;">sEMG 手部运动重建与康复训练系统 — 参赛就绪度诊断</h1>
+    <div style="font-size:14px;color:#52606d;">整理日期 2026-09-20 ｜ 证据来源：工程 README、report/、综合实现报告、data/metrics 与官方 AMD 选题指南 3.3 节</div>
+  </div>
+
+  <!-- Urgent banner -->
+  <div style="background:#fef2f2;border:1px solid #fca5a5;border-left:6px solid #dc2626;border-radius:6px;padding:14px 18px;margin-bottom:24px;display:flex;flex-wrap:wrap;gap:18px;align-items:center;">
+    <div style="font-size:15px;font-weight:700;color:#991b1b;">⏗ 最紧急：报名 9/22 24:00 截止，仅剩 2 天</div>
+    <div style="font-size:14px;color:#7f1d1d;">官网 www.fpgachina.cn（入口亦见 www.socchina.net）｜ 每队 ≤3 人 + ≤2 指导老师，可单人、可无指导老师；组别按全队最高学历判定（本科 1–3 年级 → 初级组）。</div>
+  </div>
+
+  <!-- Metric cards -->
+  <div style="font-size:18px;font-weight:700;margin:8px 0 12px;">一、已落地的硬指标（综合实现 + 仿真 + 训练，证据真实）</div>
+  <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:28px;">
+    <div style="flex:1 1 150px;background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:12px 14px;">
+      <div style="font-size:12px;color:#64748b;">时序收敛 @25MHz</div>
+      <div style="font-size:22px;font-weight:700;color:#0f766e;">WNS +3.45ns</div>
+      <div style="font-size:12px;color:#64748b;">WHS +0.03ns ｜ 无违例</div>
+    </div>
+    <div style="flex:1 1 150px;background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:12px 14px;">
+      <div style="font-size:12px;color:#64748b;">LUT / FF / DSP / BRAM</div>
+      <div style="font-size:22px;font-weight:700;color:#0f766e;">30 / 20 / 39 / 16%</div>
+      <div style="font-size:12px;color:#64748b;">16013 ｜ 21033 ｜ 85 ｜ 22.5 片</div>
+    </div>
+    <div style="flex:1 1 150px;background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:12px 14px;">
+      <div style="font-size:12px;color:#64748b;">INT8 推理时延</div>
+      <div style="font-size:22px;font-weight:700;color:#0f766e;">56 µs/窗</div>
+      <div style="font-size:12px;color:#64748b;">16-MAC 时分阵列 ｜ 占空 &lt;0.2%</div>
+    </div>
+    <div style="flex:1 1 150px;background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:12px 14px;">
+      <div style="font-size:12px;color:#64748b;">跨被试 LoSo 准确率</div>
+      <div style="font-size:22px;font-weight:700;color:#0f766e;">84.9%</div>
+      <div style="font-size:12px;color:#64748b;">S1 93.7 / S2 92.9 / S3 67.4</div>
+    </div>
+    <div style="flex:1 1 150px;background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:12px 14px;">
+      <div style="font-size:12px;color:#64748b;">INT8 vs 浮点一致率</div>
+      <div style="font-size:22px;font-weight:700;color:#0f766e;">99.1%</div>
+      <div style="font-size:12px;color:#64748b;">量化几乎不掉点</div>
+    </div>
+    <div style="flex:1 1 150px;background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:12px 14px;">
+      <div style="font-size:12px;color:#64748b;">位精确回归</div>
+      <div style="font-size:22px;font-weight:700;color:#0f766e;">4 级全绿</div>
+      <div style="font-size:12px;color:#64748b;">带通/特征/bank/全链路</div>
+    </div>
+  </div>
+
+  <!-- Scoring -->
+  <div style="font-size:18px;font-weight:700;margin:8px 0 4px;">二、对照评分权重的就绪度（满分=权重；色条为现状，描边刻度为提交目标）</div>
+  <div style="font-size:12.5px;color:#64748b;margin-bottom:12px;">说明：以下达成度为依据工程材料的<b>人工预估，非官方分数</b>，用于定位提分空间。</div>
+  <div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:16px 18px;margin-bottom:10px;">
+
+    <div style="margin-bottom:13px;">
+      <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:4px;"><span><b>创新性与应用价值</b>（权重 30）｜跨学科 sEMG×康复，正命中“从 FPGA 之外找题”</span><span><b style="color:#b45309;">~23</b> / 目标 26 / 30</span></div>
+      <div style="position:relative;height:14px;background:#eef2f4;border-radius:7px;"><div style="position:absolute;left:0;top:0;height:14px;width:76.7%;background:#f59e0b;border-radius:7px;"></div><div style="position:absolute;top:-3px;left:86.7%;height:20px;width:2px;background:#0f766e;"></div></div>
+      <div style="font-size:12.5px;color:#78716c;margin-top:3px;">差距：3 个创新点（PL 确定性信号链 / 片上完整闭环 / 自写 FFT+时分 INT8 引擎）尚未在报告中显式提炼。</div>
+    </div>
+
+    <div style="margin-bottom:13px;">
+      <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:4px;"><span><b>性能与资源优化效果</b>（权重 20）｜有真实资源/时序，但缺“优化前后对比”</span><span><b style="color:#b45309;">~11</b> / 目标 16 / 20</span></div>
+      <div style="position:relative;height:14px;background:#eef2f4;border-radius:7px;"><div style="position:absolute;left:0;top:0;height:14px;width:55%;background:#f59e0b;border-radius:7px;"></div><div style="position:absolute;top:-3px;left:80%;height:20px;width:2px;background:#0f766e;"></div></div>
+      <div style="font-size:12.5px;color:#78716c;margin-top:3px;">差距（主战场）：无系统指标表；缺 PL 硬件 vs PS 软件、浮点 vs INT8、自写 FFT vs Xilinx IP 的同条件对比；无功耗、端到端延迟分位数。</div>
+    </div>
+
+    <div style="margin-bottom:13px;">
+      <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:4px;"><span><b>功能正确性与设计完整性</b>（权重 20）｜仿真位精确、raw/特征/NN 已板测</span><span><b style="color:#b45309;">~13</b> / 目标 17 / 20</span></div>
+      <div style="position:relative;height:14px;background:#eef2f4;border-radius:7px;"><div style="position:absolute;left:0;top:0;height:14px;width:65%;background:#f59e0b;border-radius:7px;"></div><div style="position:absolute;top:-3px;left:85%;height:20px;width:2px;background:#0f766e;"></div></div>
+      <div style="font-size:12.5px;color:#b91c1c;margin-top:3px;">差距（最高风险）：疲劳链路板测进行中；<b>尚无真实人体肌电输入</b>，指南要求“在板上跑通并提供实测输出”，决赛为实物演示；虚拟手仍在 PC 端。</div>
+    </div>
+
+    <div style="margin-bottom:13px;">
+      <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:4px;"><span><b>大模型协作与技能包</b>（权重 15）｜全程 AI 协作，素材现成但未沉淀</span><span><b style="color:#b45309;">~5</b> / 目标 12 / 15</span></div>
+      <div style="position:relative;height:14px;background:#eef2f4;border-radius:7px;"><div style="position:absolute;left:0;top:0;height:14px;width:33%;background:#f59e0b;border-radius:7px;"></div><div style="position:absolute;top:-3px;left:80%;height:20px;width:2px;background:#0f766e;"></div></div>
+      <div style="font-size:12.5px;color:#78716c;margin-top:3px;">差距：skill/ 仍是草稿；协作记录散落会话；engineering_notes 的 UART/JTAG/Vivado 踩坑是绝佳素材，待按“适用范围/用法/失效条件”重构。</div>
+    </div>
+
+    <div>
+      <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:4px;"><span><b>文档质量与可复现性</b>（权重 15）｜README/笔记/脚本优秀，正式报告与开源缺失</span><span><b style="color:#b45309;">~9</b> / 目标 13 / 15</span></div>
+      <div style="position:relative;height:14px;background:#eef2f4;border-radius:7px;"><div style="position:absolute;left:0;top:0;height:14px;width:60%;background:#f59e0b;border-radius:7px;"></div><div style="position:absolute;top:-3px;left:86.7%;height:20px;width:2px;background:#0f766e;"></div></div>
+      <div style="font-size:12.5px;color:#78716c;margin-top:3px;">差距：正式设计报告未开始；无 LICENSE、无远程开源仓库；干净 clone 复现未验证；备份日志/临时文件需清理。</div>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding-top:12px;border-top:1px dashed #cbd5e1;font-size:15px;">
+      <span><b>合计预估</b></span>
+      <span><b style="color:#b45309;font-size:20px;">~61 / 100</b>　<span style="color:#0f766e;font-size:15px;">补齐后预期 ~84 / 100</span></span>
+    </div>
+  </div>
+  <div style="font-size:12px;color:#94a3b8;margin-bottom:28px;">图例：琥珀条=当前预估达成；青绿竖线=11/4 提交目标。</div>
+
+  <!-- Pipeline -->
+  <div style="font-size:18px;font-weight:700;margin:8px 0 4px;">三、信号链与各环节验证状态</div>
+  <div style="font-size:12.5px;color:#64748b;margin-bottom:12px;">
+    <span style="display:inline-block;width:11px;height:11px;background:#16a34a;border-radius:2px;margin-right:4px;"></span>已上板实测
+    <span style="display:inline-block;width:11px;height:11px;background:#0f766e;border-radius:2px;margin:0 4px 0 16px;"></span>PL 实现 + 仿真位精确（板测进行中）
+    <span style="display:inline-block;width:11px;height:11px;background:#94a3b8;border-radius:2px;margin:0 4px 0 16px;"></span>缺口 / 待做
+  </div>
+  <div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:18px 16px;margin-bottom:28px;">
+    <div style="font-size:12px;font-weight:700;color:#b91c1c;letter-spacing:1px;margin-bottom:8px;">真实输入（最大缺口）</div>
+    <div style="display:flex;flex-wrap:wrap;align-items:stretch;gap:0;">
+      <div style="flex:1 1 120px;min-width:120px;border:2px dashed #94a3b8;border-radius:6px;padding:8px;text-align:center;background:#f8fafc;"><div style="font-size:13px;font-weight:600;">人体 sEMG / 电极</div><div style="font-size:11.5px;color:#64748b;margin-top:3px;">无现成 EMG 前端</div></div>
+      <div style="align-self:center;font-size:20px;color:#94a3b8;padding:0 6px;">→</div>
+      <div style="flex:1 1 120px;min-width:120px;border:1px solid #16a34a;background:#f0fdf4;border-radius:6px;padding:8px;text-align:center;"><div style="font-size:13px;font-weight:600;">ADS1299 SPI 采集</div><div style="font-size:11.5px;color:#15803d;margin-top:3px;">8ch×4kSPS · 板测通</div></div>
+      <div style="align-self:center;font-size:20px;color:#94a3b8;padding:0 6px;">→</div>
+      <div style="flex:1 1 120px;min-width:120px;border:1px solid #16a34a;background:#f0fdf4;border-radius:6px;padding:8px;text-align:center;"><div style="font-size:13px;font-weight:600;">PL 预处理</div><div style="font-size:11.5px;color:#15803d;margin-top:3px;">去直流/带通/整流/包络</div></div>
+      <div style="align-self:center;font-size:20px;color:#94a3b8;padding:0 6px;">→</div>
+      <div style="flex:1 1 120px;min-width:120px;border:1px solid #16a34a;background:#f0fdf4;border-radius:6px;padding:8px;text-align:center;"><div style="font-size:13px;font-weight:600;">窗口特征</div><div style="font-size:11.5px;color:#15803d;margin-top:3px;">MAV/WL/E/ZC/SSC</div></div>
+    </div>
+    <div style="display:flex;justify-content:center;font-size:20px;color:#94a3b8;margin:6px 0;">↓ 并行</div>
+    <div style="display:flex;flex-wrap:wrap;align-items:stretch;justify-content:center;gap:0;margin-bottom:6px;">
+      <div style="flex:1 1 200px;max-width:300px;border:1px solid #16a34a;background:#f0fdf4;border-radius:6px;padding:8px;text-align:center;"><div style="font-size:13px;font-weight:600;">INT8 MLP 推理</div><div style="font-size:11.5px;color:#15803d;margin-top:3px;">56µs/窗 · 5 类 · 板测通</div></div>
+      <div style="flex:1 1 200px;max-width:300px;border:1px solid #0f766e;background:#f0fdfa;border-radius:6px;padding:8px;text-align:center;margin-left:14px;"><div style="font-size:13px;font-weight:600;">2048-FFT 疲劳(MDF)</div><div style="font-size:11.5px;color:#0f766e;margin-top:3px;">自写 RTL · 仿真位精确 · 板测中</div></div>
+    </div>
+    <div style="display:flex;justify-content:center;font-size:20px;color:#94a3b8;margin:6px 0;">↓</div>
+    <div style="display:flex;flex-wrap:wrap;align-items:stretch;gap:0;">
+      <div style="flex:1 1 130px;min-width:130px;border:1px solid #16a34a;background:#f0fdf4;border-radius:6px;padding:8px;text-align:center;"><div style="font-size:13px;font-weight:600;">异步FIFO + AXIS 合流</div><div style="font-size:11.5px;color:#15803d;margin-top:3px;">64bit 包 · 跨时钟域</div></div>
+      <div style="align-self:center;font-size:20px;color:#94a3b8;padding:0 6px;">→</div>
+      <div style="flex:1 1 110px;min-width:110px;border:1px solid #16a34a;background:#f0fdf4;border-radius:6px;padding:8px;text-align:center;"><div style="font-size:13px;font-weight:600;">AXI DMA</div><div style="font-size:11.5px;color:#15803d;margin-top:3px;">S2MM→DDR</div></div>
+      <div style="align-self:center;font-size:20px;color:#94a3b8;padding:0 6px;">→</div>
+      <div style="flex:1 1 150px;min-width:150px;border:1px solid #16a34a;background:#f0fdf4;border-radius:6px;padding:8px;text-align:center;"><div style="font-size:13px;font-weight:600;">PS 裸机</div><div style="font-size:11.5px;color:#15803d;margin-top:3px;">静息校准/rest门控/双模式</div></div>
+      <div style="align-self:center;font-size:20px;color:#94a3b8;padding:0 6px;">→</div>
+      <div style="flex:1 1 140px;min-width:140px;border:1px solid #0f766e;background:#f0fdfa;border-radius:6px;padding:8px;text-align:center;"><div style="font-size:13px;font-weight:600;">PC 虚拟手(pygame)</div><div style="font-size:11.5px;color:#0f766e;margin-top:3px;">插值+疲劳变色；板载屏待做</div></div>
+    </div>
+    <div style="font-size:12px;color:#64748b;margin-top:12px;line-height:1.6;">兜底方案：在真实电极就绪前，应做一条<b>“板上数据回放”</b>链路（NinaPro 经 PS 回灌 DMA 或测试端注入），保证决赛演示不被人体信号质量绑架；函数源/固定电压注入用于采集稳定性证据。</div>
+  </div>
+
+  <!-- Timeline -->
+  <div style="font-size:18px;font-weight:700;margin:8px 0 12px;">四、倒排时间线（今天 9/20）</div>
+  <div style="position:relative;background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:22px 18px 16px;margin-bottom:28px;">
+    <div style="position:relative;height:6px;background:#e2e8f0;border-radius:3px;margin:34px 10px 0;">
+      <div style="position:absolute;left:0;top:0;height:6px;width:4%;background:#dc2626;border-radius:3px;"></div>
+      <div style="position:absolute;left:4%;top:-7px;width:2px;height:20px;background:#dc2626;"></div>
+      <div style="position:absolute;left:4%;top:-30px;transform:translateX(-50%);font-size:12.5px;font-weight:700;color:#dc2626;white-space:nowrap;">今天 9/20</div>
+      <div style="position:absolute;left:4%;top:14px;transform:translateX(-50%);font-size:11.5px;color:#dc2626;white-space:nowrap;">起点</div>
+
+      <div style="position:absolute;left:8%;top:-7px;width:2px;height:20px;background:#dc2626;"></div>
+      <div style="position:absolute;left:8%;top:-30px;transform:translateX(-50%);font-size:12.5px;font-weight:700;color:#dc2626;white-space:nowrap;">9/22 报名截止</div>
+      <div style="position:absolute;left:8%;top:14px;transform:translateX(-50%);font-size:11.5px;color:#7f1d1d;white-space:nowrap;">仅剩 2 天</div>
+
+      <div style="position:absolute;left:42%;top:-7px;width:2px;height:20px;background:#0f766e;"></div>
+      <div style="position:absolute;left:42%;top:-30px;transform:translateX(-50%);font-size:12.5px;font-weight:700;color:#0f766e;white-space:nowrap;">10 月中</div>
+      <div style="position:absolute;left:42%;top:14px;transform:translateX(-50%);font-size:11.5px;color:#475569;white-space:nowrap;width:150px;text-align:center;">真实信号 + 性能/资源对比表</div>
+
+      <div style="position:absolute;left:72%;top:-7px;width:2px;height:20px;background:#0f766e;"></div>
+      <div style="position:absolute;left:72%;top:-30px;transform:translateX(-50%);font-size:12.5px;font-weight:700;color:#0f766e;white-space:nowrap;">10 月底</div>
+      <div style="position:absolute;left:72%;top:14px;transform:translateX(-50%);font-size:11.5px;color:#475569;white-space:nowrap;width:160px;text-align:center;">报告初稿 · skill · 开源</div>
+
+      <div style="position:absolute;left:90%;top:-7px;width:2px;height:20px;background:#b45309;"></div>
+      <div style="position:absolute;left:90%;top:-30px;transform:translateX(-50%);font-size:12.5px;font-weight:700;color:#b45309;white-space:nowrap;">11/4 18:00 提交</div>
+      <div style="position:absolute;left:90%;top:14px;transform:translateX(-50%);font-size:11.5px;color:#92400e;white-space:nowrap;">还 45 天</div>
+
+      <div style="position:absolute;left:99%;top:-7px;width:2px;height:20px;background:#475569;"></div>
+      <div style="position:absolute;left:99%;top:-30px;transform:translateX(-100%);font-size:12.5px;font-weight:700;color:#475569;white-space:nowrap;">11/20–22 决赛</div>
+      <div style="position:absolute;left:99%;top:14px;transform:translateX(-90%);font-size:11.5px;color:#475569;white-space:nowrap;">考核+质询+实物演示</div>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div style="font-size:18px;font-weight:700;margin:8px 0 12px;">五、行动清单（按优先级）</div>
+  <div style="display:flex;flex-wrap:wrap;gap:14px;margin-bottom:26px;">
+    <div style="flex:1 1 300px;background:#fff;border-top:4px solid #dc2626;border-radius:6px;padding:14px 16px;box-shadow:0 1px 2px rgba(0,0,0,.05);">
+      <div style="font-weight:700;color:#991b1b;margin-bottom:8px;">P0 ｜ 本周（保命）</div>
+      <ol style="margin:0;padding-left:18px;font-size:13.5px;line-height:1.7;">
+        <li>9/22 前完成官网报名，核对组别/队员学历/指导老师。</li>
+        <li>疲劳链路板测收尾（bit/XSA 就绪，COM3 验证 T 行）。</li>
+        <li><b>攻坚真实肌电输入</b>：ADS1299 载板直连核心板 B2B + 一次性电极贴前臂，采 5 类动作；同步做板上回放兜底。</li>
+      </ol>
+    </div>
+    <div style="flex:1 1 300px;background:#fff;border-top:4px solid #b45309;border-radius:6px;padding:14px 16px;box-shadow:0 1px 2px rgba(0,0,0,.05);">
+      <div style="font-weight:700;color:#92400e;margin-bottom:8px;">P1 ｜ 10 月上中（40 分主战场）</div>
+      <ol style="margin:0;padding-left:18px;font-size:13.5px;line-height:1.7;">
+        <li>建 metrics/ 指标表：端到端延迟 P50/P95、吞吐、资源、WNS、功耗、连续运行稳定性、Accuracy/F1。</li>
+        <li>做<b>优化前后对比表</b>：PL 硬件特征 vs PS 软件、浮点 vs INT8、自写 FFT vs Xilinx IP、通道选位 78.5%→84.9%。</li>
+        <li>5 类动作上板实测，留存截图/串口日志/视频，联动虚拟手。</li>
+      </ol>
+    </div>
+    <div style="flex:1 1 300px;background:#fff;border-top:4px solid #0f766e;border-radius:6px;padding:14px 16px;box-shadow:0 1px 2px rgba(0,0,0,.05);">
+      <div style="font-weight:700;color:#0f766e;margin-bottom:8px;">P2 ｜ 10 月下（30 分 + 合规）</div>
+      <ol style="margin:0;padding-left:18px;font-size:13.5px;line-height:1.7;">
+        <li>skill/ 按四类重构（提示词工作流/案例模板/校验脚本/踩坑清单），每项写适用范围·用法·失效条件；通用 PYNQ skill 可加分。</li>
+        <li>整理大模型协作记录（提示词+回答+自我纠错轨迹）。</li>
+        <li>正式报告按指南 3.3.5.3 七要素撰写。</li>
+        <li>加 LICENSE(MIT)、推 GitHub/Gitee、干净 clone 复现；清理备份/临时文件。</li>
+      </ol>
+    </div>
+    <div style="flex:1 1 300px;background:#fff;border-top:4px solid #475569;border-radius:6px;padding:14px 16px;box-shadow:0 1px 2px rgba(0,0,0,.05);">
+      <div style="font-weight:700;color:#334155;margin-bottom:8px;">P3 ｜ 11 月（决赛）</div>
+      <ol style="margin:0;padding-left:18px;font-size:13.5px;line-height:1.7;">
+        <li>录演示视频、备稳定实物 demo（含回放预案）。</li>
+        <li>一页英文海报（AMD 模板，A4 彩打，不含队伍信息）。</li>
+        <li>备战现场基础能力考核：能讲清 ADS1299 状态机、AXIS 异步 FIFO 跨时钟域、时序约束、SPI/AXI 协议。</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- Strategy & cautions -->
+  <div style="font-size:18px;font-weight:700;margin:8px 0 12px;">六、策略提示与需要修正的细节</div>
+  <div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:16px 18px;font-size:13.8px;line-height:1.85;">
+    <div><b style="color:#0f766e;">主线要压在初级组得分点：</b>逻辑设计、状态机、时序约束、接口协议。报告把 ADS1299 的 SDATAC/WREG/RDATAC 状态机、AXIS 跨时钟域、clock_groups 约束、SPI/AXI-DMA 协议作为技术主线；PS 裸机定位为“配置与传输引擎”，不抢戏。</div>
+    <div style="margin-top:8px;"><b style="color:#0f766e;">三个可写死的创新点：</b>① 采集→滤波→特征→INT8 推理→疲劳→重建反馈的<b>单芯片确定性闭环</b>，且全链路与 Python 金模型逐位可验证；② 低成本 8 通道 sEMG 边缘方案，推理占空 &lt;0.2%、资源余量充足；③ 自写 2048 点 radix-2 FFT（规避 Xilinx IP 授权/可移植）+ 16-MAC 时分复用 INT8 引擎。</div>
+    <div style="margin-top:8px;"><b style="color:#b45309;">避免失分：</b></div>
+    <ul style="margin:4px 0;padding-left:22px;">
+      <li>44 类双头 CNN（acc 61.6%、R² 全为 NaN）是失败/探索路线，<b>不要放进主成果</b>，最多在“失败分析/未来工作”一句带过，否则现场易被质询。</li>
+      <li><code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;">src/rtl/hand_motion_top.v</code> 是孤立旧顶层，实际综合走 Block Design(emg_pl_export)；建议删除或在注释/README 标明，避免复现混淆。</li>
+      <li>指标口径需对齐：README 主张 LoSo 84.9%，而 data/metrics/baseline.json 写 pooled 84.04%（S3 65.1%），int8_validation 为 67.4%；提交前统一为最终功能选位模型口径并归档。</li>
+      <li>PYNQ 是“推荐/加分”非必选。裸机链路已验证，<b>不建议 10 月重构架构</b>；若进度富余，只加一层薄 PYNQ（同一 Overlay + Python 读 DMA/虚拟手）冲通用 skill 加分。</li>
+      <li>虚拟手在 PC 端不违规（推理已在板内，满足“板上跑通”）；板载屏是锦上添花，优先级低于真实信号与指标表。</li>
+    </ul>
+  </div>
+
+  <div style="margin-top:22px;padding-top:12px;border-top:1px solid #e2e8f0;font-size:12px;color:#94a3b8;">本看板为工程就绪度诊断，分数项为基于现有证据的人工预估；所有硬指标均可在 build/vivado/.../impl_1 报告、sim/results、data/metrics 中复核。</div>
+</div>
+</html>
