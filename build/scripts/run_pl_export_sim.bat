@@ -23,6 +23,7 @@ call "%VIVADO_ROOT%\bin\xvlog.bat" -work work ^
     "%PROJECT_ROOT%\src\rtl\emg_window_features.v" ^
     "%PROJECT_ROOT%\src\rtl\emg_feature_bank.v" ^
     "%PROJECT_ROOT%\src\rtl\emg_nn_infer.v" ^
+    "%PROJECT_ROOT%\src\rtl\emg_fatigue.v" ^
     "%PROJECT_ROOT%\src\rtl\axis_async_fifo.v" ^
     "%PROJECT_ROOT%\src\rtl\axis_packet_mux.v" ^
     "%PROJECT_ROOT%\src\rtl\emg_data_path.v" ^

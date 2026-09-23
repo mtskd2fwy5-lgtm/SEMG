@@ -2,15 +2,15 @@
 """Generate emg_fatigue simulation assets and a bit-exact golden model.
 
 Outputs (data/models/fatigue/):
-  twiddle512.mem            256 x 32-bit Q15 twiddles {cos[31:16], sin[15:0]}
+  twiddle2048.mem          1024 x 32-bit Q15 twiddles {cos[31:16], sin[15:0]}
   tb_fatigue_samples.mem    24-bit samples, ch0..ch7 interleaved per frame
   tb_fatigue_exp_id.mem     expected result ids (one hex digit per word)
   tb_fatigue_exp_data.mem   expected result data words (8 hex digits)
   tb_fatigue_expected.json  human-readable golden values per window
 
 The golden model mirrors tools/../src/rtl/emg_fatigue.v exactly (1st-order
-HP, bit-reversed load, 9-stage radix-2 DIT with per-stage 1/2 scaling and
-Q15 twiddles, 257-bin power/MDF, 16-entry least-squares slope).  A numpy
+HP, bit-reversed load, 11-stage radix-2 DIT with per-stage 1/2 scaling and
+Q15 twiddles, 1025-bin power/MDF, 16-entry least-squares slope).  A numpy
 cross-check validates the FFT indexing against rfft on the first flat
 window.
 """
@@ -24,11 +24,12 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT_DIR = os.path.join(ROOT, "data", "models", "fatigue")
 
 # ---- RTL parameter mirror ----
-N = 512
-ALPHA = 58150            # HP_ALPHA_Q16
+N = 2048
+ALPHA = 63570            # HP_ALPHA_Q16 (~20 Hz @ 4 kSPS)
 INPUT_SHIFT = 8
 T_MILD, T_FATIGUE, T_REST = -100, -300, -600
-FS = 1000.0              # sample rate used for the synthetic stimulus
+FS = 4000.0              # sample rate used for the synthetic stimulus
+STAGES = 11              # log2(N)
 
 
 def sat(v, lo, hi):
@@ -44,9 +45,9 @@ def sat16(v):
 
 
 def gen_twiddles():
-    """exp(-2j*pi*w/N) as {cos Q15, sin Q15} 32-bit words, w = 0..255."""
+    """exp(-2j*pi*w/N) as {cos Q15, sin Q15} 32-bit words, w = 0..N/2-1."""
     words, tw = [], []
-    for w in range(256):
+    for w in range(N // 2):
         c = int(round(np.cos(2 * np.pi * w / N) * 32767))
         s = int(round(np.sin(2 * np.pi * w / N) * 32767))
         c = sat(c, -32768, 32767)
@@ -56,24 +57,24 @@ def gen_twiddles():
     return words, tw
 
 
-def bitrev9(v):
-    return int(format(v, "09b")[::-1], 2)
+def bitrev11(v):
+    return int(format(v, "011b")[::-1], 2)
 
 
 def fft_fixed(buf, tw):
-    """512-pt radix-2 DIT, bit-reversed input, 1/2 scaling per stage."""
+    """N-pt radix-2 DIT, bit-reversed input, 1/2 scaling per stage."""
     re = [0] * N
     im = [0] * N
     for i in range(N):
-        re[bitrev9(i)] = buf[i]
-        im[bitrev9(i)] = 0
-    for s in range(9):
+        re[bitrev11(i)] = buf[i]
+        im[bitrev11(i)] = 0
+    for s in range(STAGES):
         half = 1 << s
         for k in range(0, N, 2 * half):
             for j in range(half):
                 a = k + j
                 b = a + half
-                c, sn = tw[j << (8 - s)]
+                c, sn = tw[j << (STAGES - 1 - s)]
                 ar, ai = re[a], im[a]
                 br, bi = re[b], im[b]
                 t_re = sat18((br * c + bi * sn) >> 15)
@@ -90,10 +91,10 @@ def fft_fixed(buf, tw):
 def mdf_of(re, im):
     """Two-pass MDF, first bin where cum >= total>>1 (RTL semantics)."""
     total = 0
-    for k in range(257):
+    for k in range(N // 2 + 1):
         total += re[k] * re[k] + im[k] * im[k]
     cum, mdf = 0, 0
-    for k in range(257):
+    for k in range(N // 2 + 1):
         cum += re[k] * re[k] + im[k] * im[k]
         if cum >= (total >> 1):
             mdf = k
@@ -104,7 +105,7 @@ def mdf_of(re, im):
 def main():
     os.makedirs(OUT_DIR, exist_ok=True)
     words, tw = gen_twiddles()
-    with open(os.path.join(OUT_DIR, "twiddle512.mem"), "w") as fh:
+    with open(os.path.join(OUT_DIR, "twiddle2048.mem"), "w") as fh:
         for w in words:
             fh.write("%08x\n" % w)
 
@@ -164,7 +165,7 @@ def main():
         for ch in range(8):
             re, im = fft_fixed(filt[ch][0:N], tw)
             mdf_ch, tot_ch = mdf_of(re, im)
-            for k in range(257):
+            for k in range(N // 2 + 1):
                 fre.write("%d\n" % re[k])
                 fim.write("%d\n" % im[k])
             ft.write("%d\n" % tot_ch)
@@ -219,7 +220,7 @@ def main():
                 x = sat(x, -(1 << 23), (1 << 23) - 1)
                 fh.write("%06x\n" % (x & 0xFFFFFF))
 
-    print("wrote twiddle512.mem, tb_fatigue_samples.mem (%d frames), "
+    print("wrote twiddle2048.mem, tb_fatigue_samples.mem (%d frames), "
           "%d expected words -> %s"
           % (n_samp, len(exp_words), OUT_DIR))
     return 0

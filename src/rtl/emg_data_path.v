@@ -35,7 +35,7 @@ module emg_data_path #(
     output wire                  m_axis_tlast
 );
     // 64-bit packet format (see report/pl_ps_data_path.md):
-    //   63:60  packet type: 1 raw, 2 feature, 3 result
+    //   63:60  packet type: 1 raw, 2 feature, 3 result (NN), 4 fatigue
     //   59:56  channel (raw sample channel / feature source channel)
     //   55:52  feature or result id (0 for raw)
     //   51:48  reserved
@@ -45,8 +45,10 @@ module emg_data_path #(
                              raw_sequence, 8'h00, raw_data};
     wire [63:0] feature_word = {4'h2, {1'b0, feature_channel}, feature_id, 4'h0,
                                  feature_sequence, feature_data};
-    wire [63:0] result_word = {4'h3, 4'h0, result_id, 4'h0,
-                                result_sequence, result_data};
+    // Result lane carries NN results (ids 0..5, type 3) and fatigue
+    // results (ids 8/9, type 4); type is derived from the id range.
+    wire [63:0] result_word = {(result_id[3] ? 4'h4 : 4'h3), 4'h0, result_id,
+                                4'h0, result_sequence, result_data};
 
     wire raw_rd_valid, feature_rd_valid, result_rd_valid;
     wire raw_rd_ready, feature_rd_ready, result_rd_ready;

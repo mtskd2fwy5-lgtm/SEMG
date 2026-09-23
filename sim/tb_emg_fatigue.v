@@ -4,20 +4,20 @@
 // (tools/gen_fatigue_mem.py).
 //
 // Golden vectors (data/models/fatigue/):
-//   tb_fatigue_samples.mem  14336 frames x 8 ch, 24-bit samples (hex)
+//   tb_fatigue_samples.mem  57344 frames x 8 ch, 24-bit samples (hex)
 //   tb_fatigue_exp_id.mem   56 expected result ids (8,9 per window)
 //   tb_fatigue_exp_data.mem 56 expected result data words
 //
 // The stream is driven ch0..ch7 interleaved (ADS1299 frame order), 8
 // back-to-back samples + 1 gap cycle per frame.  A new window only starts
 // filling after the previous window has been fully processed: real
-// hardware has 512 ms per window vs ~1.5 ms processing, the paced TB
+// hardware has 512 ms per window vs ~2 ms processing, the paced TB
 // models that margin explicitly.  out_ready toggles (3 of 4 cycles) to
 // exercise the output handshake hold.
 
 module tb_emg_fatigue;
 
-    localparam integer NFRAMES = 14336;   // 28 windows x 512 frames
+    localparam integer NFRAMES = 57344;   // 28 windows x 2048 frames
     localparam integer NWORDS  = 56;      // 28 windows x 2 result words
     localparam [3:0]  P_IDLE  = 4'd0;
 
@@ -93,7 +93,7 @@ module tb_emg_fatigue;
         for (fi = 0; fi < NFRAMES; fi = fi + 1) begin
             // window boundary: the previous window must be fully
             // processed before the next one starts filling
-            if (fi[8:0] == 9'd0) begin
+            if (fi[10:0] == 11'd0) begin
                 wait (dut.state == P_IDLE);
                 @(posedge clk);
             end
@@ -119,7 +119,8 @@ module tb_emg_fatigue;
     end
 
     initial begin
-        #100000000;   // 100 ms sim time safety limit
+        #400000000;   // 400 ms sim time limit: 28 windows x 8 ch x ~7.3 ms
+                      // FFT (2048-pt, 11 stages) exceeds the old 100 ms cap
         $display("TIMEOUT: words=%0d errors=%0d", words, errors);
         $finish;
     end

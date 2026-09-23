@@ -25,7 +25,7 @@ The three producer inputs run in `pl_clk`; the merged AXI-Stream runs in `axis_c
 ## 64-bit packet format
 
 ```text
-63:60  packet type: 1 raw, 2 feature, 3 result
+63:60  packet type: 1 raw, 2 feature, 3 result (NN), 4 fatigue
 59:56  reserved
 55:52  channel or feature/result id
 51:48  reserved
@@ -34,6 +34,12 @@ The three producer inputs run in `pl_clk`; the merged AXI-Stream runs in `axis_c
 ```
 
 Raw payload uses the low 24 bits as a signed ADS1299 sample. Feature and result payloads use a 32-bit fixed-point value. All producers must keep sequence numbers so the PS can detect dropped or reordered packets.
+
+Result-lane packets share one FIFO and one AXI lane: type 3 carries the
+INT8 MLP words (ids 0..4 logits, 5 argmax class); type 4 carries the
+fatigue monitor words (id 8: `[num2[15:0] | mdf_mean[15:0]]`, id 9:
+`[level[1:0] | full | energy[22:0]]`). The type is derived in
+`emg_data_path.v` from `result_id[3]` (ids 8/9 -> type 4).
 
 ## AXI DMA connection
 

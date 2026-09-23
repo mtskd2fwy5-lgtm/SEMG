@@ -8,14 +8,20 @@
 // argmax class) on the result lane.
 module emg_pl_export #(
     // Filter and window parameters forwarded to the feature bank.
-    parameter signed [17:0] HP_B0 = 18'sd59967,
-    parameter signed [17:0] HP_B1 = -18'sd119934,
-    parameter signed [17:0] HP_B2 = 18'sd59967,
-    parameter signed [17:0] HP_A1 = -18'sd119462,
-    parameter signed [17:0] HP_A2 = 18'sd54864,
-    parameter signed [15:0] LP_ALPHA = 16'sd24206,
-    parameter integer WINDOW_SAMPLES = 200,
-    parameter integer HOP_SAMPLES = 50,
+    parameter signed [17:0] HP_B0 = 18'sd64096,
+    parameter signed [17:0] HP_B1 = -18'sd128192,
+    parameter signed [17:0] HP_B2 = 18'sd64096,
+    parameter signed [17:0] HP_A1 = -18'sd128161,
+    parameter signed [17:0] HP_A2 = 18'sd62688,
+    parameter signed [15:0] LP_ALPHA = 16'sd9392,
+    // Input decimation gate.  The ADC streams at 4 kSPS and the whole
+    // processing chain (feature bank, fatigue monitor) runs on the native
+    // rate, so the default DECIM_RATIO = 1 passes every frame.  The gate
+    // stays in place for experiments: only every DECIM_RATIO-th 8-channel
+    // frame is accepted, the raw export lane always keeps the full rate.
+    parameter integer DECIM_RATIO = 1,
+    parameter integer WINDOW_SAMPLES = 400,   // 100 ms window at 4 kSPS
+    parameter integer HOP_SAMPLES = 100,      // 25 ms hop, 75% overlap
     parameter integer RMS_INPUT_SHIFT = 12
 ) (
     input  wire                  pl_clk,
@@ -71,6 +77,27 @@ module emg_pl_export #(
             raw_sequence <= raw_sequence + 1'b1;
     end
 
+    // ------------------------------------------------------------------
+    // Input decimation gate.  sample_valid beats arrive one per channel,
+    // eight per frame; the counter advances on the ch7 beat (the frame
+    // boundary in the beat stream), so the gate passes exactly the eight
+    // beats of one frame out of every DECIM_RATIO frames - never a
+    // partial frame - and holds at DECIM_RATIO=1 (the default native-
+    // rate configuration).
+    // ------------------------------------------------------------------
+    localparam integer DECIM_CNT_W = (DECIM_RATIO <= 2) ? 1 : $clog2(DECIM_RATIO);
+    localparam [DECIM_CNT_W-1:0] DECIM_LAST = DECIM_RATIO - 1;
+    reg [DECIM_CNT_W-1:0] decim_frame_cnt;
+    wire gate_sample_valid = sample_valid && (decim_frame_cnt == {DECIM_CNT_W{1'b0}});
+
+    always @(posedge pl_clk) begin
+        if (!pl_rst_n)
+            decim_frame_cnt <= {DECIM_CNT_W{1'b0}};
+        else if (sample_valid && (sample_channel == 3'd7))
+            decim_frame_cnt <= (decim_frame_cnt == DECIM_LAST)
+                             ? {DECIM_CNT_W{1'b0}} : decim_frame_cnt + 1'b1;
+    end
+
     emg_feature_bank #(
         .HP_B0(HP_B0), .HP_B1(HP_B1), .HP_B2(HP_B2),
         .HP_A1(HP_A1), .HP_A2(HP_A2), .LP_ALPHA(LP_ALPHA),
@@ -79,7 +106,7 @@ module emg_pl_export #(
         .RMS_INPUT_SHIFT(RMS_INPUT_SHIFT)
     ) u_feature_bank (
         .clk(pl_clk), .rst_n(pl_rst_n),
-        .sample_valid(sample_valid), .sample_channel(sample_channel),
+        .sample_valid(gate_sample_valid), .sample_channel(sample_channel),
         .sample_data(sample_data),
         .feature_ready(feature_ready), .feature_valid(feature_valid),
         .feature_id(feature_id), .feature_channel(feature_channel),
@@ -168,8 +195,9 @@ module emg_pl_export #(
     );
 
     // ------------------------------------------------------------------
-    // Fatigue monitor: spectral MDF tracking on the same sample stream,
-    // two result words (id 8/9) every 512 ms window.
+    // Fatigue monitor: spectral MDF tracking on the same 4 kSPS sample
+    // stream, two result words (id 8/9) every 512 ms window (2048
+    // samples).
     // ------------------------------------------------------------------
     wire        fat_out_valid;
     wire        fat_out_ready;
@@ -180,7 +208,7 @@ module emg_pl_export #(
 
     emg_fatigue u_emg_fatigue (
         .clk(pl_clk), .rst_n(pl_rst_n),
-        .sample_valid(sample_valid), .sample_channel(sample_channel),
+        .sample_valid(gate_sample_valid), .sample_channel(sample_channel),
         .sample_data(sample_data),
         .out_valid(fat_out_valid), .out_ready(fat_out_ready),
         .out_id(fat_out_id), .out_data(fat_out_data),

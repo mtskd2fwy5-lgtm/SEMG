@@ -19,14 +19,14 @@ module emg_feature_bank #(
     parameter integer CHANNEL_BITS = 3,
     parameter integer SAMPLE_WIDTH = 24,
     // Filter / window parameters forwarded to the per-channel chains.
-    parameter signed [17:0] HP_B0 = 18'sd59967,
-    parameter signed [17:0] HP_B1 = -18'sd119934,
-    parameter signed [17:0] HP_B2 = 18'sd59967,
-    parameter signed [17:0] HP_A1 = -18'sd119462,
-    parameter signed [17:0] HP_A2 = 18'sd54864,
-    parameter signed [15:0] LP_ALPHA = 16'sd24206,
-    parameter integer WINDOW_SAMPLES = 200,
-    parameter integer HOP_SAMPLES = 50,
+    parameter signed [17:0] HP_B0 = 18'sd64096,
+    parameter signed [17:0] HP_B1 = -18'sd128192,
+    parameter signed [17:0] HP_B2 = 18'sd64096,
+    parameter signed [17:0] HP_A1 = -18'sd128161,
+    parameter signed [17:0] HP_A2 = 18'sd62688,
+    parameter signed [15:0] LP_ALPHA = 16'sd9392,
+    parameter integer WINDOW_SAMPLES = 400,   // 100 ms window at 4 kSPS
+    parameter integer HOP_SAMPLES = 100,      // 25 ms hop, 75% overlap
     parameter integer RMS_INPUT_SHIFT = 12,
     parameter signed [SAMPLE_WIDTH-1:0] ZC_THRESHOLD = 0,
     parameter signed [SAMPLE_WIDTH-1:0] SSC_THRESHOLD = 0
@@ -127,8 +127,8 @@ module emg_feature_bank #(
 
     // Window capture, pending management and the serializer share one
     // clocked process so pending bits have a single driver. On a
-    // same-cycle collision (impossible at 1 kSPS timing) the capture
-    // below wins over the serializer clear above it.
+    // same-cycle collision (impossible at the 4 kSPS sample pacing) the
+    // capture below wins over the serializer clear above it.
     always @(posedge clk) begin
         if (!rst_n) begin
             pending <= {CHANNELS{1'b0}};

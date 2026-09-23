@@ -21,6 +21,13 @@ Outputs:
 Usage:
   python tools/train_baseline.py
   python tools/train_baseline.py --hidden 64 32 --seed 0 --no-balance
+  python tools/train_baseline.py --resample 20 --win-samples 400 \
+         --hop-samples 100
+         # NinaPro 200 Hz upsampled to the PL's native 4 kSPS rate so the
+         # feature magnitudes match the RTL 400/100 windows (100 ms/25 ms)
+  python tools/train_baseline.py --data-dir data/raw/board --fs 4000 \
+         --win-samples 400 --hop-samples 100
+         # own 4 kSPS board raw data at the native feature pace
 """
 
 import argparse
@@ -128,24 +135,58 @@ def main():
     ap.add_argument("--sessions", type=int, nargs="+", default=[2],
                     help="exercise sessions to use (default: 2 = the only "
                          "session containing all baseline movements)")
+    ap.add_argument("--data-dir", default=None,
+                    help="dataset root with s*/ subdirs (default: NinaPro "
+                         "%s)" % os.path.relpath(RAW_DIR, ROOT))
+    ap.add_argument("--fs", type=int, default=200,
+                    help="sample rate of the input CSVs in Hz (default 200)")
+    ap.add_argument("--win-samples", type=int, default=0,
+                    help="window length in samples (default: 200 ms worth)")
+    ap.add_argument("--hop-samples", type=int, default=0,
+                    help="hop length in samples (default: 50 ms worth)")
+    ap.add_argument("--decim", type=int, default=1,
+                    help="decimate loaded samples by this factor before "
+                         "windowing")
+    ap.add_argument("--resample", type=int, default=1,
+                    help="repeat every sample this many times before "
+                         "windowing (e.g. 20: NinaPro 200 Hz upsampled to "
+                         "the PL's native 4 kSPS feature pace)")
     ap.add_argument("--hidden", type=int, nargs="+", default=[64, 32])
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--no-balance", action="store_true",
                     help="keep the full rest majority in training")
     args = ap.parse_args()
 
-    subjects = sorted({os.path.basename(p)[:2] for p in
-                       glob.glob(os.path.join(RAW_DIR, "s*", "S*_E*_A1_baseline.csv"))})
+    global FS, WINDOW, HOP
+    FS = args.fs
+    WINDOW = args.win_samples or WINDOW_MS * FS // 1000
+    HOP = args.hop_samples or HOP_MS * FS // 1000
+    eff_fs = FS * args.resample // args.decim   # rate the windowed stream represents
+    data_dir = args.data_dir or RAW_DIR
+
+    paths = sorted(glob.glob(os.path.join(data_dir, "s*",
+                                          "*_E*_A1_baseline.csv")))
+    # subject key from the s*/ directory name (filename prefixes collide,
+    # e.g. S30 vs S3 in a mixed dataset)
+    subjects = sorted({os.path.basename(os.path.dirname(p)) for p in paths})
     if len(subjects) < 2:
-        print("need at least 2 converted subjects under %s" % RAW_DIR)
+        print("need at least 2 converted subjects under %s" % data_dir)
         return 1
 
     data = {}
     for subj in subjects:
         xs, ys = [], []
         for e in args.sessions:
-            path = os.path.join(RAW_DIR, subj, "%s_E%d_A1_baseline.csv" % (subj, e))
+            path = os.path.join(data_dir, subj,
+                                "%s_E%d_A1_baseline.csv" % (subj.upper(), e))
             x, y = load_session_csv(path)
+            if args.decim > 1:
+                x, y = x[::args.decim], y[::args.decim]
+            if args.resample > 1:
+                # sample-and-hold upsample: window sums scale by the same
+                # factor as the RTL feature sums at the higher rate
+                x = np.repeat(x, args.resample, axis=0)
+                y = np.repeat(y, args.resample, axis=0)
             f, wy = make_windows(x, y)
             xs.append(f)
             ys.append(wy)
@@ -198,7 +239,10 @@ def main():
     metrics = {
         "dataset": DATASET,
         "config": {
-            "fs_hz": FS, "window_ms": WINDOW_MS, "hop_ms": HOP_MS,
+            "fs_hz": FS, "decim": args.decim, "resample": args.resample,
+            "effective_fs_hz": eff_fs,
+            "window_samples": WINDOW, "hop_samples": HOP,
+            "window_ms": WINDOW * 1000 // eff_fs, "hop_ms": HOP * 1000 // eff_fs,
             "features": ["mav_sum", "wl_sum", "energy_sum", "zc_count", "ssc_count"],
             "zc_th": ZC_TH, "ssc_th": SSC_TH,
             "model": "StandardScaler + MLP(%s)" % ",".join(map(str, args.hidden)),

@@ -2,8 +2,9 @@
 
 // Sliding-window EMG feature extractor for one filtered channel.
 //
-// Computes over WINDOW_SAMPLES with HOP_SAMPLES stride (200/50 samples =
-// 200 ms window / 50 ms hop at 1 kSPS):
+// Computes over WINDOW_SAMPLES with HOP_SAMPLES stride (400/100 samples =
+// 100 ms window / 25 ms hop at the native 4 kSPS ADC stream rate, 75%
+// overlap):
 //   MAV    sum of |x[i]|                                  (feature id 0)
 //   WL     sum of |x[i] - x[i-1]|                         (feature id 1)
 //   ENERGY sum of (x[i] >>> RMS_INPUT_SHIFT)^2             (feature id 2)
@@ -25,8 +26,8 @@
 // Bit-exact against tools/emg_reference.py.
 module emg_window_features #(
     parameter integer SAMPLE_WIDTH = 24,
-    parameter integer WINDOW_SAMPLES = 200,
-    parameter integer HOP_SAMPLES = 50,
+    parameter integer WINDOW_SAMPLES = 400,
+    parameter integer HOP_SAMPLES = 100,
     parameter integer RMS_INPUT_SHIFT = 12,
     parameter signed [SAMPLE_WIDTH-1:0] ZC_THRESHOLD = 0,
     parameter signed [SAMPLE_WIDTH-1:0] SSC_THRESHOLD = 0

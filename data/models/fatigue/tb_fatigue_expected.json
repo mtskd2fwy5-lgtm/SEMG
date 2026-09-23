@@ -233,11 +233,11 @@
  },
  {
   "id": 9,
-  "data": 1610612745,
+  "data": 1610612744,
   "win": 15,
   "level": 1,
   "full": true,
-  "energy": 9
+  "energy": 8
  },
  {
   "id": 8,
@@ -248,11 +248,11 @@
  },
  {
   "id": 9,
-  "data": 1610612745,
+  "data": 1610612744,
   "win": 16,
   "level": 1,
   "full": true,
-  "energy": 9
+  "energy": 8
  },
  {
   "id": 8,
@@ -263,11 +263,11 @@
  },
  {
   "id": 9,
-  "data": 1610612745,
+  "data": 1610612744,
   "win": 17,
   "level": 1,
   "full": true,
-  "energy": 9
+  "energy": 8
  },
  {
   "id": 8,
@@ -278,11 +278,11 @@
  },
  {
   "id": 9,
-  "data": 1610612745,
+  "data": 1610612744,
   "win": 18,
   "level": 1,
   "full": true,
-  "energy": 9
+  "energy": 8
  },
  {
   "id": 8,
@@ -293,11 +293,11 @@
  },
  {
   "id": 9,
-  "data": 1610612745,
+  "data": 1610612744,
   "win": 19,
   "level": 1,
   "full": true,
-  "energy": 9
+  "energy": 8
  },
  {
   "id": 8,
@@ -308,11 +308,11 @@
  },
  {
   "id": 9,
-  "data": 2684354569,
+  "data": 2684354568,
   "win": 20,
   "level": 2,
   "full": true,
-  "energy": 9
+  "energy": 8
  },
  {
   "id": 8,
@@ -323,11 +323,11 @@
  },
  {
   "id": 9,
-  "data": 2684354569,
+  "data": 2684354568,
   "win": 21,
   "level": 2,
   "full": true,
-  "energy": 9
+  "energy": 8
  },
  {
   "id": 8,
@@ -338,11 +338,11 @@
  },
  {
   "id": 9,
-  "data": 2684354569,
+  "data": 2684354568,
   "win": 22,
   "level": 2,
   "full": true,
-  "energy": 9
+  "energy": 8
  },
  {
   "id": 8,
@@ -353,11 +353,11 @@
  },
  {
   "id": 9,
-  "data": 2684354569,
+  "data": 2684354568,
   "win": 23,
   "level": 2,
   "full": true,
-  "energy": 9
+  "energy": 8
  },
  {
   "id": 8,
@@ -368,11 +368,11 @@
  },
  {
   "id": 9,
-  "data": 2684354569,
+  "data": 2684354568,
   "win": 24,
   "level": 2,
   "full": true,
-  "energy": 9
+  "energy": 8
  },
  {
   "id": 8,
@@ -383,11 +383,11 @@
  },
  {
   "id": 9,
-  "data": 2684354569,
+  "data": 2684354568,
   "win": 25,
   "level": 2,
   "full": true,
-  "energy": 9
+  "energy": 8
  },
  {
   "id": 8,
@@ -398,11 +398,11 @@
  },
  {
   "id": 9,
-  "data": 2684354569,
+  "data": 2684354568,
   "win": 26,
   "level": 2,
   "full": true,
-  "energy": 9
+  "energy": 8
  },
  {
   "id": 8,
@@ -413,10 +413,10 @@
  },
  {
   "id": 9,
-  "data": 2684354569,
+  "data": 2684354568,
   "win": 27,
   "level": 2,
   "full": true,
-  "energy": 9
+  "energy": 8
  }
 ]

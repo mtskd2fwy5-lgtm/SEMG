@@ -2121,10 +2121,10 @@
           "axi_dma_0/m_axi_s2mm_aclk",
           "smartconnect_0/aclk",
           "smartconnect_1/aclk",
-          "emg_pl_export_0/axis_clk",
           "processing_system7_0/S_AXI_HP0_ACLK",
           "proc_sys_reset_0/slowest_sync_clk",
-          "processing_system7_0/M_AXI_GP0_ACLK"
+          "processing_system7_0/M_AXI_GP0_ACLK",
+          "emg_pl_export_0/axis_clk"
         ]
       },
       "processing_system7_0_FCLK_RESET0_N": {

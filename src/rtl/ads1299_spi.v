@@ -3,7 +3,7 @@
 // ADS1299 SPI controller for continuous multi-channel acquisition.
 //
 // Default configuration:
-//   CONFIG1 = 0x94 : high-resolution, 1 kSPS
+//   CONFIG1 = 0x94 : high-resolution, 4 kSPS
 //   CONFIG2 = 0xD0 : test source disabled
 //   CONFIG3 = 0xEC : internal reference and bias circuitry enabled
 //   CHnSET  = 0x60 : normal input, PGA gain 24, channel powered on
@@ -19,7 +19,7 @@ module ads1299_spi #(
     parameter integer RESET_CYCLES = 100_000,
     parameter integer POST_RESET_CYCLES = 100_000,
     parameter integer COMMAND_GAP_CYCLES = 250,
-    parameter [7:0] CONFIG1_VALUE = 8'h94,
+    parameter [7:0] CONFIG1_VALUE = 8'h94,  /* 0x90 base | DR=100 = 4 kSPS */
     parameter [7:0] CONFIG2_VALUE = 8'hD0,
     parameter [7:0] CONFIG3_VALUE = 8'hEC,
     parameter [7:0] LOFF_VALUE = 8'h00,

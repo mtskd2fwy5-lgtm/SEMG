@@ -115,7 +115,6 @@ module emg_nn_infer #(
     reg [17:0] rq_m;
     reg [5:0]  rq_n;
     reg signed [63:0] rq_prod, rq_res;
-    reg [2:0]  amax;
     reg [2:0]  out_cnt;
 
     reg signed [7:0]  xq [0:N_IN-1];
@@ -153,15 +152,20 @@ module emg_nn_infer #(
         endcase
     end
 
-    // numpy-argmax semantics: strict >, ties keep the lowest index
+    // numpy-argmax semantics: strict >, ties keep the lowest index.
+    // Purely combinational (single driver): the old `amax` reg was also
+    // reset in the clocked block, creating a multi-driven net that synthesis
+    // resolved to the constant 0 (Synth 8-6859/8-6858) - wrong verdicts.
+    // After reset logits are all zero, so argmax is 0 anyway; no reset needed.
     reg signed [31:0] am_best;
+    reg [2:0]  amax_c;
     always @(*) begin
         am_best = logits[0];
-        amax    = 3'd0;
-        if (logits[1] > am_best) begin am_best = logits[1]; amax = 3'd1; end
-        if (logits[2] > am_best) begin am_best = logits[2]; amax = 3'd2; end
-        if (logits[3] > am_best) begin am_best = logits[3]; amax = 3'd3; end
-        if (logits[4] > am_best) begin am_best = logits[4]; amax = 3'd4; end
+        amax_c  = 3'd0;
+        if (logits[1] > am_best) begin am_best = logits[1]; amax_c = 3'd1; end
+        if (logits[2] > am_best) begin am_best = logits[2]; amax_c = 3'd2; end
+        if (logits[3] > am_best) begin am_best = logits[3]; amax_c = 3'd3; end
+        if (logits[4] > am_best) begin am_best = logits[4]; amax_c = 3'd4; end
     end
 
     // ------------------------------------------------------------------
@@ -199,7 +203,6 @@ module emg_nn_infer #(
             out_id        <= 3'd0;
             out_data      <= 32'd0;
             out_cnt       <= 3'd0;
-            amax          <= 3'd0;
             bram_addr     <= 11'd0;
             for (i = 0; i < N_IN;  i = i + 1) xq[i] <= 8'sd0;
             for (i = 0; i < N_H1;  i = i + 1) h1[i] <= 8'sd0;
@@ -375,7 +378,7 @@ module emg_nn_infer #(
                         out_cnt <= out_cnt + 3'd1;
                         out_id  <= out_cnt + 3'd1;
                         if (out_cnt == 3'd4)
-                            out_data <= {29'd0, amax};
+                            out_data <= {29'd0, amax_c};
                         else
                             out_data <= logits[out_cnt + 3'd1];
                     end

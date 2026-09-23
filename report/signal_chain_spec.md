@@ -6,8 +6,13 @@
 - Baseline estimator: first-order IIR, `b[n+1] = b[n] + (x[n]-b[n]) / 2^N`.
 - Rectification: absolute value after baseline subtraction.
 - Window feature: sum of rectified samples over `WINDOW_SAMPLES`.
-- Default window: 200 samples, corresponding to 200 ms at 1 kSPS.
-- Default hop: one completed window initially; a later version can add a 50-sample hop buffer.
+- ADC rate: 4 kSPS (ADS1299 CONFIG1 = 0x94); the entire smart-processing
+  chain (bandpass, feature windows, fatigue FFT) runs natively at 4 kSPS
+  (`DECIM_RATIO = 1` in emg_pl_export; the gate stays for experiments).
+- Default window: 400 samples, corresponding to 100 ms at 4 kSPS (75% overlap).
+- Default hop: 100 samples = 25 ms window update.
+- Fatigue monitor: 2048-point FFT over the same 4 kSPS stream (512 ms
+  window), 1025 bins, MDF history with 16-point least-squares slope.
 
 ## Clock and CDC constraints
 

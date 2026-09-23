@@ -1,33 +1,37 @@
 `timescale 1ns/1ps
 
-// Per-channel EMG bandpass filter for a 1 kSPS ADS1299 stream.
+// Per-channel EMG bandpass filter for the native 4 kSPS ADS1299 stream.
 //
 // Stage 1: 2nd-order Butterworth high-pass, target fc = 20 Hz, Q16
 //          fixed-point coefficients, Direct Form I. The fed-back states
 //          are the quantized SAMPLE_WIDTH-bit outputs, not the wide
-//          accumulator. HP_B1 is forced to -(HP_B0+HP_B2) so the DC gain
-//          is exactly zero.
-// Stage 2: 1st-order low-pass, target fc ~ 450 Hz, Q15 coefficient.
+//          accumulator. HP_B1 = -(HP_B0+HP_B2) so the DC gain is exactly
+//          zero.
+// Stage 2: 1st-order low-pass, pole matched to fc = 215 Hz, Q15
+//          coefficient.
 //
-// Coefficient derivation (ideal reals before Q16/Q15 rounding):
-//   HP: b0 = 0.91499083, b1 = -1.83004479, b2 = 0.91499083,
-//       a1 = -1.82289655, a2 = 0.83719396   (RBJ cookbook, Q = 1/sqrt(2))
-//   LP: alpha = 0.73875
-// The quantized high-pass poles sit near 14 Hz; this is acceptable for
-// EMG feature extraction (everything below ~20 Hz is motion artifact).
+// Coefficient derivation (ideal reals before Q16/Q15 rounding), RBJ
+// cookbook Butterworth Q = 1/sqrt(2) at fs = 4 kSPS:
+//   HP: w0 = 2*pi*20/4000, alpha = sin(w0)/sqrt(2) = 0.0222129
+//       b0 = b2 = 0.978030, b1 = -1.956061 (= -2*b0),
+//       a1 = -1.955587, a2 = 0.956542
+//   LP: alpha = 0.286606 (= 1 - exp(-2*pi*215/4000))
+// The response matches the original 1 kSPS design (fc = 20 Hz corner,
+// same pole time constants); below ~15 Hz the quantization noise floor
+// limits the attenuation to about -12 dB at 10 Hz.
 //
 // The RTL is bit-exact against the fixed-point reference model in
 // tools/emg_reference.py. Any change here must be mirrored there.
 module emg_bandpass #(
     parameter integer SAMPLE_WIDTH = 24,
-    // 2nd-order Butterworth high-pass, fc = 20 Hz @ 1 kSPS, Q16.
-    parameter signed [17:0] HP_B0 = 18'sd59967,
-    parameter signed [17:0] HP_B1 = -18'sd119934,
-    parameter signed [17:0] HP_B2 = 18'sd59967,
-    parameter signed [17:0] HP_A1 = -18'sd119462,
-    parameter signed [17:0] HP_A2 = 18'sd54864,
-    // 1st-order low-pass, fc ~ 450 Hz @ 1 kSPS, Q15.
-    parameter signed [15:0] LP_ALPHA = 16'sd24206
+    // 2nd-order Butterworth high-pass, fc = 20 Hz @ 4 kSPS, Q16.
+    parameter signed [17:0] HP_B0 = 18'sd64096,
+    parameter signed [17:0] HP_B1 = -18'sd128192,
+    parameter signed [17:0] HP_B2 = 18'sd64096,
+    parameter signed [17:0] HP_A1 = -18'sd128161,
+    parameter signed [17:0] HP_A2 = 18'sd62688,
+    // 1st-order low-pass, fc = 215 Hz @ 4 kSPS, Q15.
+    parameter signed [15:0] LP_ALPHA = 16'sd9392
 ) (
     input  wire                           clk,
     input  wire                           rst_n,

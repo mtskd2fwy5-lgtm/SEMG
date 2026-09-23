@@ -4,6 +4,9 @@
 Bit-exact mirror of src/rtl/emg_bandpass.v, src/rtl/emg_window_features.v
 and src/rtl/emg_feature_bank.v using pure integer math. Any RTL change to
 the filter, window or feature arithmetic must be mirrored here.
+compare-export additionally mirrors the input decimation gate of
+src/rtl/emg_pl_export.v (EXPORT_DECIM=1 at the native 4 kSPS rate; the
+raw export lane is never decimated).
 
 Subcommands:
   gen                write all stimulus files into sim/results
@@ -26,9 +29,17 @@ SIM_DIR = os.path.join(ROOT, "sim", "results")
 # ---------------------------------------------------------------------------
 
 SAMPLE_WIDTH = 24
-HP_B0, HP_B1, HP_B2 = 59967, -119934, 59967
-HP_A1, HP_A2 = -119462, 54864
-LP_ALPHA = 24206
+# 2nd-order Butterworth HP fc=20 Hz @ 4 kSPS (Q16, >> 16) +
+# 1st-order LP fc=215 Hz @ 4 kSPS (Q15, >> 15).  Keep in sync with
+# tools/redesign_filters_4k.py.
+HP_B0, HP_B1, HP_B2 = 64096, -128192, 64096
+HP_A1, HP_A2 = -128161, 62688
+LP_ALPHA = 9392
+
+# emg_pl_export.v input decimation: the feature bank and fatigue monitor
+# see every EXPORT_DECIM-th 8-channel frame; the raw lane sees all frames.
+# 1 = native 4 kSPS processing rate.
+EXPORT_DECIM = 1
 
 
 def sat24(v):
@@ -103,7 +114,7 @@ def window_features(samples, window, hop, shift, zc_th, ssc_th):
 class BankModel:
     """Eight-channel bandpass + window feature reference."""
 
-    def __init__(self, channels=8, window=200, hop=50, shift=12,
+    def __init__(self, channels=8, window=400, hop=100, shift=12,
                  zc_th=0, ssc_th=0):
         self.channels = channels
         self.window = window
@@ -135,14 +146,14 @@ def lcg(state):
 def gen_bandpass_stim(path, n_extra=500):
     rows = []
     rows.extend([50000] * 300)                     # DC block
-    for t in range(600):                           # 10 Hz (stopband)
-        rows.append(round(30000 * math.sin(2 * math.pi * 10 * t / 1000)))
-    for t in range(600):                           # 80 Hz + DC offset
-        rows.append(round(20000 * math.sin(2 * math.pi * 80 * t / 1000)) - 20000)
-    for t in range(600):                           # 150 Hz (passband)
-        rows.append(round(15000 * math.sin(2 * math.pi * 150 * t / 1000)))
-    for t in range(400):                           # 400 Hz (LP rolloff)
-        rows.append(round(10000 * math.sin(2 * math.pi * 400 * t / 1000)))
+    for t in range(2400):                          # 10 Hz (stopband)
+        rows.append(round(30000 * math.sin(2 * math.pi * 10 * t / 4000)))
+    for t in range(2400):                          # 80 Hz + DC offset
+        rows.append(round(20000 * math.sin(2 * math.pi * 80 * t / 4000)) - 20000)
+    for t in range(2400):                          # 150 Hz (passband)
+        rows.append(round(15000 * math.sin(2 * math.pi * 150 * t / 4000)))
+    for t in range(1600):                          # 400 Hz (LP rolloff)
+        rows.append(round(10000 * math.sin(2 * math.pi * 400 * t / 4000)))
     state = 12345
     for _ in range(n_extra):                       # noise
         state = lcg(state)
@@ -186,7 +197,7 @@ def gen_emg_frames(n_frames):
     return frames
 
 
-def gen_bank_stim(path, n_frames=310):
+def gen_bank_stim(path, n_frames=1240):
     frames = gen_emg_frames(n_frames)
     with open(path, "w") as f:
         for frame in frames:
@@ -194,7 +205,9 @@ def gen_bank_stim(path, n_frames=310):
     return len(frames)
 
 
-def gen_export_stim(path, n_frames=260):
+def gen_export_stim(path, n_frames=800):
+    # >= 400 frames so the native-rate stream yields several complete
+    # 400/100 windows for the feature and NN checkers.
     frames = gen_emg_frames(n_frames)
     with open(path, "w") as f:
         for frame in frames:
@@ -308,16 +321,19 @@ def compare_export():
               for line in open(stim_path) if line.strip()]
     rows = read_csv_rows(os.path.join(SIM_DIR, "export_out.csv"), 5)
     bank = BankModel()
-    for frame in frames:
-        bank.feed_frame(frame)
+    for i, frame in enumerate(frames):
+        if i % EXPORT_DECIM == 0:      # emg_pl_export input gate (1 = off)
+            bank.feed_frame(frame)
     wins = bank.windows()
 
     raw_rows = [r for r in rows if r[0] == 1]
     feat_rows = [r for r in rows if r[0] == 2]
-    other = [r for r in rows if r[0] not in (1, 2, 3)]
+    other = [r for r in rows if r[0] not in (1, 2, 3, 4)]
     if other:
         fail("compare-export", f"unexpected packet types: {other[:3]}")
     # type-3 result words are verified by tools/check_pl_nn_sim.py
+    # type-4 fatigue words need a >=16384-sample run; covered by the
+    # fatigue unit sim and the board test
 
     if len(raw_rows) != len(frames) * 8:
         fail("compare-export",
