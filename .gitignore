@@ -28,6 +28,12 @@ build/*.jou
 # Hardware export artifacts (regenerated: XSA zip + extracted ps7_init)
 build/export/
 
+# Boot image binary (regenerate via bootgen with build/boot/boot_image.bif)
+build/boot/BOOT.bin
+
+# Extracted datasheet text (debug scratch, from the TI PDF)
+build/debug/ads1299_datasheet.txt
+
 # Vitis unified IDE workspace (regenerable; app sources and scripts live in sw/)
 build/vitis_ws/
 

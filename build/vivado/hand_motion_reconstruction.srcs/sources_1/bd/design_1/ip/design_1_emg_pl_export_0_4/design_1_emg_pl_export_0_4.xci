@@ -1,11 +1,11 @@
 {
   "schema": "xilinx.com:schema:json_instance:1.0",
   "ip_inst": {
-    "xci_name": "design_1_emg_pl_export_0_0",
+    "xci_name": "design_1_emg_pl_export_0_4",
     "cell_name": "emg_pl_export_0",
     "component_reference": "xilinx.com:module_ref:emg_pl_export:1.0",
     "ip_revision": "1",
-    "gen_directory": "../../../../../../hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_emg_pl_export_0_0",
+    "gen_directory": "../../../../../../hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_emg_pl_export_0_4",
     "parameters": {
       "component_parameters": {
         "HP_B0": [ { "value": "64096", "resolve_type": "user", "usage": "all" } ],
@@ -18,7 +18,7 @@
         "WINDOW_SAMPLES": [ { "value": "400", "resolve_type": "user", "format": "long", "usage": "all" } ],
         "HOP_SAMPLES": [ { "value": "100", "resolve_type": "user", "format": "long", "usage": "all" } ],
         "RMS_INPUT_SHIFT": [ { "value": "12", "resolve_type": "user", "format": "long", "usage": "all" } ],
-        "Component_Name": [ { "value": "design_1_emg_pl_export_0_0", "resolve_type": "user", "usage": "all" } ]
+        "Component_Name": [ { "value": "design_1_emg_pl_export_0_4", "resolve_type": "user", "usage": "all" } ]
       },
       "model_parameters": {
         "HP_B0": [ { "value": "64096", "resolve_type": "generated", "usage": "all" } ],
@@ -49,7 +49,7 @@
         "IPCONTEXT": [ { "value": "IP_Integrator" } ],
         "IPREVISION": [ { "value": "1" } ],
         "MANAGED": [ { "value": "TRUE" } ],
-        "OUTPUTDIR": [ { "value": "../../../../../../hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_emg_pl_export_0_0" } ],
+        "OUTPUTDIR": [ { "value": "../../../../../../hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_emg_pl_export_0_4" } ],
         "SELECTEDSIMMODEL": [ { "value": "" } ],
         "SHAREDDIR": [ { "value": "../../ipshared" } ],
         "SWVERSION": [ { "value": "2025.2" } ],
@@ -64,6 +64,7 @@
         "axis_rst_n": [ { "direction": "in" } ],
         "adc_drdy_n": [ { "direction": "in" } ],
         "adc_dout": [ { "direction": "in" } ],
+        "reconfig_n": [ { "direction": "in" } ],
         "adc_sclk": [ { "direction": "out" } ],
         "adc_din": [ { "direction": "out" } ],
         "adc_cs_n": [ { "direction": "out" } ],
@@ -169,5 +170,5 @@
       }
     }
   },
-  "checksum": "5fea6004"
+  "checksum": "85ee2858"
 }

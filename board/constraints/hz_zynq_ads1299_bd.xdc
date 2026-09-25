@@ -38,6 +38,13 @@ set_property -dict {PACKAGE_PIN Y12 IOSTANDARD LVCMOS33 DRIVE 8 SLEW SLOW} [get_
 set_property -dict {PACKAGE_PIN K16 IOSTANDARD LVCMOS33} [get_ports {pl_rst_n_0}]                      ;# B35_L24P
 set_property PULLUP TRUE [get_ports {pl_rst_n_0}]
 
+# PL_KEY0 is the active-low ADS1299 reconfig button (press = replay the
+# SDATAC/WREG/RDATAC/START command sequence).  Board has a 4K7 pull-up and
+# 1000pF to GND on the net; ball L14 verified against xc7z020_clg400.pkg
+# (B35_L22P; K16/H15 cross-check).
+set_property -dict {PACKAGE_PIN L14 IOSTANDARD LVCMOS33} [get_ports {reconfig_n_0}]                    ;# B35_L22P
+set_property PULLUP TRUE [get_ports {reconfig_n_0}]
+
 # PL_LED0 indicates that ADS1299 initialization has completed.
 set_property -dict {PACKAGE_PIN H15 IOSTANDARD LVCMOS33 DRIVE 8 SLEW SLOW} [get_ports {status_led_0}]  ;# B35_L19P
 
@@ -46,6 +53,7 @@ set_property -dict {PACKAGE_PIN H15 IOSTANDARD LVCMOS33 DRIVE 8 SLEW SLOW} [get_
 # status LED has no timing requirement.
 set_false_path -from [get_ports {adc_drdy_n_0}]
 set_false_path -from [get_ports {pl_rst_n_0}]
+set_false_path -from [get_ports {reconfig_n_0}]
 set_false_path -to   [get_ports {status_led_0}]
 
 # ADS1299 source-synchronous SPI timing. SCLK runs at 1.25 MHz (400 ns

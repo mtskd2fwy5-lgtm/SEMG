@@ -30,6 +30,7 @@ module emg_pl_export #(
     input  wire                  axis_rst_n,
     input  wire                  adc_drdy_n,
     input  wire                  adc_dout,
+    input  wire                  reconfig_n,
     output wire                  adc_sclk,
     output wire                  adc_din,
     output wire                  adc_cs_n,
@@ -62,6 +63,7 @@ module emg_pl_export #(
 
     ads1299_spi u_ads1299_spi (
         .clk(pl_clk), .rst_n(pl_rst_n), .start(1'b1),
+        .reconfig_n(reconfig_n),
         .adc_drdy_n(adc_drdy_n), .adc_dout(adc_dout),
         .adc_sclk(adc_sclk), .adc_din(adc_din), .adc_cs_n(adc_cs_n),
         .adc_reset_n(adc_reset_n), .adc_start(adc_start),

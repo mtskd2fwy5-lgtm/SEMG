@@ -184,8 +184,8 @@ static void uprintf(const char *fmt, u32 a, u32 b, u32 c, u32 d)
 #define AXIDMA_BASE     0x40400000u
 #define S2MM_DMACR      (*(volatile u32 *)(AXIDMA_BASE + 0x30))
 #define S2MM_DMASR      (*(volatile u32 *)(AXIDMA_BASE + 0x34))
-#define S2MM_DA         (*(volatile u32 *)(AXIDMA_BASE + 0x38))
-#define S2MM_LENGTH     (*(volatile u32 *)(AXIDMA_BASE + 0x48))
+#define S2MM_DA         (*(volatile u32 *)(AXIDMA_BASE + 0x48))
+#define S2MM_LENGTH     (*(volatile u32 *)(AXIDMA_BASE + 0x58))
 
 #define DMACR_RUN       0x00000001u
 #define DMACR_RESET     0x00000004u

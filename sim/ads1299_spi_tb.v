@@ -22,7 +22,7 @@ module ads1299_spi_tb;
     always #5 clk = ~clk;
 
     ads1299_spi dut (
-        .clk(clk), .rst_n(rst_n), .start(start), .adc_drdy_n(adc_drdy_n),
+        .clk(clk), .rst_n(rst_n), .start(start), .reconfig_n(1'b1), .adc_drdy_n(adc_drdy_n),
         .adc_dout(adc_dout), .adc_sclk(adc_sclk), .adc_din(adc_din),
         .adc_cs_n(adc_cs_n), .adc_reset_n(adc_reset_n),
         .adc_start(adc_start), .adc_pwdn_n(adc_pwdn_n),

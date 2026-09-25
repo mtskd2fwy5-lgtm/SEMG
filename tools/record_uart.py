@@ -20,6 +20,13 @@ Interactive commands (type + Enter in this console):
   0     stop labelling (frames marked "none", dropped from the CSV)
   q     quit and write the CSV
 
+With --plot the recorder opens a pygame rolling-waveform window (8
+channel strips + a colour-coded label band, 3 s window) and the same
+commands become keyboard keys in that window: 1..5 label, 0 unlabeled,
+q save & quit, m back to monitor & quit without writing.  Closing the
+window saves (treated like q).  The serial reader and the CSV writer
+are identical in both modes.
+
 Each labelled run is trimmed by --trim seconds on both ends (transition
 margin).  Usage:
 
@@ -76,6 +83,139 @@ def reader(ser, frames, state):
             state["count"] += 1
 
 
+def plot_loop(ser, frames, state, fs):
+    """pygame rolling waveform (--plot): 8 channel strips + label band.
+
+    Display-only path: the reader thread and the CSV writer are shared
+    with console mode.  Per channel the raw int24 stream carries a large
+    electrode DC offset, so each strip shows (value - slow EMA) instead
+    of the absolute code, auto-scaled with a slow decay.
+    """
+    import pygame
+    from collections import deque
+
+    pygame.init()
+    W, H = 960, 620
+    screen = pygame.display.set_mode((W, H))
+    pygame.display.set_caption("sEMG recorder (record mode)")
+    clock = pygame.time.Clock()
+    # pygame.font.SysFont crashes on 2.6.1/Windows (registry enum bug):
+    # load the font file directly.
+    try:
+        font = pygame.font.Font(r"C:\Windows\Fonts\msyh.ttc", 13)
+    except Exception:
+        font = pygame.font.Font(None, 16)
+
+    BG = (18, 20, 22)
+    GRID = (46, 50, 54)
+    TXT = (225, 228, 226)
+    DIM = (112, 120, 116)
+    CH_COL = [(96, 170, 255), (255, 170, 80), (120, 220, 140), (255, 120, 120),
+              (190, 140, 255), (90, 210, 210), (240, 220, 110), (255, 140, 200)]
+    LAB_COL = {"rest": (108, 116, 112), "open_hand": (66, 128, 238),
+               "fist": (226, 88, 60), "wrist_flex": (235, 178, 46),
+               "wrist_extend": (92, 198, 122)}
+
+    D = max(1, fs // 100)                  # ~100 display samples/s
+    n_bins = max(60, int(3.0 * fs / D))    # ~3 s rolling window
+    bins = deque(maxlen=n_bins)            # (label, min[8], max[8])
+    consumed = 0
+    cur_bin = -1
+    b_min, b_max = [0] * 8, [0] * 8
+    b_label = "none"
+    scale = [1.0] * 8
+    dc = None                              # per-channel slow EMA baseline
+
+    STATUS_H, BAND_H = 30, 20
+    strip_h = (H - STATUS_H - BAND_H) // 8
+
+    running = True
+    while running:
+        for ev in pygame.event.get():
+            if ev.type == pygame.QUIT:
+                running = False                       # window X = save
+            elif ev.type == pygame.KEYDOWN:
+                if pygame.K_1 <= ev.key <= pygame.K_1 + len(LABELS) - 1:
+                    state["label"] = LABELS[ev.key - pygame.K_1]
+                    print("  label -> %s" % state["label"])
+                elif ev.key == pygame.K_0:
+                    state["label"] = "none"
+                    print("  label -> none")
+                elif ev.key in (pygame.K_q, pygame.K_ESCAPE):
+                    running = False
+                elif ev.key == pygame.K_m:
+                    ser.write(b"r")
+                    print("  -> sent 'r': board switched to monitor mode")
+                    state["aborted"] = True           # no CSV on 'm'
+                    running = False
+
+        # decimate new frames into display bins (min/max per channel)
+        n = len(frames)
+        for fr in frames[consumed:n]:
+            if dc is None:
+                dc = list(fr[1])
+            b = consumed // D
+            if b != cur_bin:
+                if cur_bin >= 0:
+                    bins.append((b_label, tuple(b_min), tuple(b_max)))
+                cur_bin = b
+                b_min = [1 << 62] * 8
+                b_max = [-(1 << 62)] * 8
+            vals = fr[1]
+            for c in range(8):
+                v = vals[c]
+                dc[c] += (v - dc[c]) >> 12            # tau ~ 1 s at 4 kSPS
+                w = v - dc[c]
+                if w < b_min[c]:
+                    b_min[c] = w
+                if w > b_max[c]:
+                    b_max[c] = w
+            b_label = fr[2]
+            consumed += 1
+
+        # per-channel auto scale, slow decay so quiet spans stay readable
+        for _, mins, maxs in bins:
+            for c in range(8):
+                m = max(-mins[c], maxs[c])
+                if m > scale[c]:
+                    scale[c] = m
+        for c in range(8):
+            scale[c] = max(scale[c] * 0.98, 1.0)
+
+        step = W / float(n_bins - 1) if n_bins > 1 else float(W)
+        screen.fill(BG)
+        for c in range(8):
+            y0 = STATUS_H + c * strip_h
+            cy = y0 + strip_h // 2
+            half = strip_h // 2 - 2
+            pygame.draw.line(screen, GRID, (0, cy), (W, cy))
+            col = CH_COL[c]
+            for i, (_, mins, maxs) in enumerate(bins):
+                off1 = int(maxs[c] / scale[c] * half)
+                off2 = int(mins[c] / scale[c] * half)
+                y1 = cy - max(-half, min(half, off1))
+                y2 = cy - max(-half, min(half, off2))
+                if y1 == y2:
+                    y2 += 1
+                pygame.draw.line(screen, col, (int(i * step), y1),
+                                 (int(i * step), y2))
+            screen.blit(font.render("ch%d" % c, True, DIM), (4, y0 + 2))
+        for i, (lab, _, _) in enumerate(bins):
+            col = LAB_COL.get(lab)
+            if col:
+                pygame.draw.rect(screen, col,
+                                 (int(i * step), H - BAND_H,
+                                  int(step) + 1, BAND_H))
+        screen.blit(font.render(
+            "[%ds | %s | drop %d]   1-5 label  0 none  q save  m monitor" %
+            (state["count"] // fs, state["label"], state["dropped"]),
+            True, TXT), (6, 7))
+        pygame.display.flip()
+        clock.tick(30)
+    state["quit"] = True
+    pygame.quit()
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--port", default="COM3")
@@ -94,6 +234,9 @@ def main():
     ap.add_argument("--enter", action="store_true",
                     help="board is in monitor mode: send 'r' at 115200 to "
                          "switch it into record mode, then reopen at --baud")
+    ap.add_argument("--plot", action="store_true",
+                    help="pygame rolling-waveform window with in-window "
+                         "labelling (keys 1..5/0/q/m) instead of console input")
     args = ap.parse_args()
 
     subj = args.subject.lower()
@@ -125,30 +268,44 @@ def main():
     print("commands: m = back to monitor & quit | 1..5 = %s |" %
           "/".join("%d=%s" % (i + 1, l) for i, l in enumerate(LABELS)))
     print("          0 = unlabeled | q = quit & write")
+    use_plot = args.plot
+    if use_plot:
+        try:
+            import pygame  # noqa: F401  (display lib check)
+        except ImportError:
+            print("pygame not installed: pip install pygame - console mode")
+            use_plot = False
     try:
-        while True:
-            cmd = input("[%ds | %s] > " % (
-                state["count"] // args.fs, state["label"])).strip().lower()
-            if cmd == "q":
-                state["quit"] = True
-                break
-            if cmd == "m":
-                state["quit"] = True
-                ser.write(b"r")        # board toggles back to monitor mode
-                print("  -> sent 'r': board switched to monitor mode (115200)")
-                break
-            if cmd == "0":
-                state["label"] = "none"
-            elif cmd.isdigit() and 1 <= int(cmd) <= len(LABELS):
-                state["label"] = LABELS[int(cmd) - 1]
-            elif cmd == "":
-                continue
-            else:
-                print("  ? (m, 1..5, 0, q)")
+        if use_plot:
+            plot_loop(ser, frames, state, args.fs)
+        else:
+            while True:
+                cmd = input("[%ds | %s] > " % (
+                    state["count"] // args.fs, state["label"])).strip().lower()
+                if cmd == "q":
+                    state["quit"] = True
+                    break
+                if cmd == "m":
+                    state["quit"] = True
+                    state["aborted"] = True
+                    ser.write(b"r")    # board toggles back to monitor mode
+                    print("  -> sent 'r': board switched to monitor mode (115200)")
+                    break
+                if cmd == "0":
+                    state["label"] = "none"
+                elif cmd.isdigit() and 1 <= int(cmd) <= len(LABELS):
+                    state["label"] = LABELS[int(cmd) - 1]
+                elif cmd == "":
+                    continue
+                else:
+                    print("  ? (m, 1..5, 0, q)")
     finally:
         th.join(timeout=2)
         ser.close()
 
+    if state.get("aborted"):
+        print("aborted by user - nothing written")
+        return 1
     n = len(frames)
     if n == 0:
         print("no frames captured - nothing written")

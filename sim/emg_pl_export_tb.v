@@ -38,6 +38,7 @@ module emg_pl_export_tb;
     emg_pl_export dut (
         .pl_clk(pl_clk), .pl_rst_n(pl_rst_n),
         .axis_clk(axis_clk), .axis_rst_n(axis_rst_n),
+        .reconfig_n(1'b1),
         .adc_drdy_n(adc_drdy_n), .adc_dout(adc_dout),
         .adc_sclk(adc_sclk), .adc_din(adc_din), .adc_cs_n(adc_cs_n),
         .adc_reset_n(adc_reset_n), .adc_start(adc_start),
@@ -48,19 +49,19 @@ module emg_pl_export_tb;
         .result_overflow(result_overflow)
     );
 
-    // Behavioral ADS1299 data path: present frame MSB on DRDY fall,
-    // advance on each falling SCLK edge while CS is low.
+    // Behavioral ADS1299 data path: DOUT updates after rising SCLK edges;
+    // the controller samples it on the following falling edge.
     always @(negedge adc_drdy_n) begin
         read_active = 1'b1;
         driven_bit = 9'd0;
-        adc_dout = frame_bits[215];
+        adc_dout = 1'b0;
     end
 
-    always @(negedge adc_sclk) begin
+    always @(posedge adc_sclk) begin
         if (read_active && !adc_cs_n) begin
-            if (driven_bit < 9'd215) begin
-                driven_bit = driven_bit + 1'b1;
+            if (driven_bit < 9'd216) begin
                 adc_dout = frame_bits[215-driven_bit];
+                driven_bit = driven_bit + 1'b1;
             end
         end
     end
