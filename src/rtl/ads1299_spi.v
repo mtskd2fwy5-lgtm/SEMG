@@ -14,9 +14,12 @@
 // different gain or data rate without changing the controller structure.
 //
 // Reconfiguration button (reconfig_n, active low, board PL_KEY0 with 4K7
-// pull-up): a debounced press replays the full SDATAC/WREG/RDATAC/START
-// command sequence from ST_WAIT_DRDY and drops adc_start while it runs, so
-// DRDY pauses for the burst duration and resumes afterwards.  Board-level
+// pull-up): a debounced press replays the entire power-up sequence from the
+// hard reset (RESET pulse -> SDATAC -> WREG -> RDATAC -> START).  The RESET
+// pulse is the reliable way to stop conversions latched by the 0x08 START
+// command (dropping the START pin alone leaves them running) and restores
+// register defaults before the WREG burst, mirroring the STM32 reference
+// driver that sends SDATAC + STOP before every reconfiguration.  Board-level
 // debug aid: lets a scope trigger repeatedly on the DIN bursts and shows a
 // DRDY period change (4 ms -> 250 us) the moment the commands actually get
 // through to the chip.
@@ -26,8 +29,8 @@ module ads1299_spi #(
     parameter integer CHANNELS = 8,
     parameter integer DATA_BITS = 24,
     parameter integer CHANNEL_BITS = (CHANNELS <= 1) ? 1 : $clog2(CHANNELS),
-    parameter integer RESET_CYCLES = 100_000,
-    parameter integer POST_RESET_CYCLES = 100_000,
+    parameter integer RESET_CYCLES = 250_000,       /* 10 ms reset low, same as STM32 ref */
+    parameter integer POST_RESET_CYCLES = 3_500_000, /* 140 ms: chip needs 2^18 tCLK (~128 ms) after reset before accepting commands */
     parameter integer COMMAND_GAP_CYCLES = 250,
     parameter integer BTN_DEBOUNCE_CYCLES = 500_000,  /* 20 ms @ 25 MHz */
     parameter [7:0] CONFIG1_VALUE = 8'h92,  /* reserved bits=1,10; DR=010 (4 kSPS), CLK_EN=0 */
@@ -63,6 +66,14 @@ module ads1299_spi #(
 
     localparam integer HALF_SCLK_CYCLES = (CLK_FREQ_HZ / (2 * SCLK_FREQ_HZ) < 1) ?
                                           1 : CLK_FREQ_HZ / (2 * SCLK_FREQ_HZ);
+    // Command/register-write lane runs at a quarter of the data-read SCLK
+    // rate (312.5 kHz by default).  The STM32 reference driver configures
+    // registers at low speed and only raises SPI speed for the data path;
+    // single-byte commands worked at 1.25 MHz here but the 14-byte WREG
+    // burst silently failed, so commands now get extra timing margin.  The
+    // data-read lane keeps the full rate: a 4 kSPS frame (216 bits) must
+    // finish inside the 250 us DRDY period.
+    localparam integer HALF_SCLK_CMD_CYCLES = HALF_SCLK_CYCLES * 4;
     localparam integer FRAME_BITS = 24 + DATA_BITS * CHANNELS;
     localparam integer CONFIG_REG_COUNT = 4 + CHANNELS;
     localparam integer CONFIG_LAST_BYTE = 1 + CONFIG_REG_COUNT;
@@ -231,7 +242,7 @@ module ads1299_spi #(
                 end
 
                 ST_SDATAC_BITS: begin
-                    if (sclk_count == HALF_SCLK_CYCLES-1) begin
+                    if (sclk_count == HALF_SCLK_CMD_CYCLES-1) begin
                         sclk_count <= 32'd0;
                         if (!adc_sclk) begin
                             adc_sclk <= 1'b1;
@@ -285,7 +296,7 @@ module ads1299_spi #(
                 end
 
                 ST_CONFIG_BITS: begin
-                    if (sclk_count == HALF_SCLK_CYCLES-1) begin
+                    if (sclk_count == HALF_SCLK_CMD_CYCLES-1) begin
                         sclk_count <= 32'd0;
                         if (!adc_sclk) begin
                             adc_sclk <= 1'b1;
@@ -340,7 +351,7 @@ module ads1299_spi #(
                 end
 
                 ST_RDATAC_BITS: begin
-                    if (sclk_count == HALF_SCLK_CYCLES-1) begin
+                    if (sclk_count == HALF_SCLK_CMD_CYCLES-1) begin
                         sclk_count <= 32'd0;
                         if (!adc_sclk) begin
                             adc_sclk <= 1'b1;
@@ -387,7 +398,7 @@ module ads1299_spi #(
                 end
 
                 ST_START_BITS: begin
-                    if (sclk_count == HALF_SCLK_CYCLES-1) begin
+                    if (sclk_count == HALF_SCLK_CMD_CYCLES-1) begin
                         sclk_count <= 32'd0;
                         if (!adc_sclk) begin
                             adc_sclk <= 1'b1;
@@ -432,13 +443,17 @@ module ads1299_spi #(
                     adc_cs_n <= 1'b1;
                     adc_sclk <= 1'b0;
                     if (reconfig_pend) begin
-                        // Button-press replay of the whole command sequence.
-                        // Dropping adc_start pauses conversions, so DRDY
-                        // freezes for the burst and resumes on ST_START_GAP.
+                        // Button-press replay from hard reset.  The 0x08
+                        // START command latches internally, so dropping the
+                        // START pin alone cannot stop conversions; the RESET
+                        // pulse can, and it also restores register defaults
+                        // before the WREG burst (STM32 reference achieves the
+                        // same via SDATAC + STOP before reconfiguring).
                         reconfig_pend <= 1'b0;
                         busy <= 1'b1;
                         adc_start <= 1'b0;
-                        state <= ST_SDATAC_START;
+                        state <= ST_RESET_HOLD;
+                        delay_count <= RESET_CYCLES;
                     end else if (drdy_falling) begin
                         busy <= 1'b1;
                         adc_cs_n <= 1'b0;

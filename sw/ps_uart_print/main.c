@@ -47,6 +47,7 @@
 typedef unsigned int  u32;
 typedef int           i32;
 typedef unsigned short u16;
+typedef unsigned char u8;
 
 /* ---- UART0 (Cadence UARTPS) ------------------------------------------ */
 
@@ -226,6 +227,103 @@ static u32 dma_wait(void)
                 uart_puts("[DMA] no PL data yet - check ADS1299/DRDY\n");
         }
     }
+}
+
+/* ---- RGB LCD display path (vh-3) ---------------------------------------- *
+ * DDR -> axi_vdma_0 (MM2S only, RGB888, 3 frame stores) -> v_axi4s_vid_out_0
+ * -> LCD pins.  v_tc_0 free-runs 1024x600 @ 50 MHz from the GEN_* timing
+ * parameters baked into the IP, so no VTC setup is needed at runtime.
+ *
+ * Register map (address report of build/scripts/add_lcd_vdma.tcl):
+ *   axi_vdma_0 0x43000000, v_tc_0 0x43C00000 (untouched),
+ *   backlight GPIO 0x41200000 (axi_gpio_0 all-outputs: bit 0 = lcd_bl).
+ *
+ * Framebuffers: 3 x 1024*600*3 B = 5.3 MB at 0x18000000 - inside the
+ * S_AXI_HP0 DDR window (0x0..0x1FFFFFFF), above the app (0x10000000)
+ * and the EMG ping-pong buffers (0x11000000), well inside the 1 GB DDR.
+ * DDR bytes per pixel are B,G,R (VDMA 24-bit little-endian stream,
+ * tdata[23:16]=R - see board/constraints/hz_zynq_lcd.xdc), so byte 0 of
+ * each pixel is B.  3072 B/line keeps the 64-bit AXI reads aligned.
+ *
+ * MM2S direct register mode: reset -> HSIZE/STRIDE/start addresses ->
+ * VSIZE (arms the channel) -> RS=1; the channel then circulates the 3
+ * frame stores continuously.  No caches are enabled, so the CPU stores
+ * above are already visible to the VDMA - no flush needed. */
+
+#define VDMA_BASE       0x43000000u
+#define VDMA_DMACR      (*(volatile u32 *)(VDMA_BASE + 0x00))
+#define VDMA_DMASR      (*(volatile u32 *)(VDMA_BASE + 0x04))
+#define VDMA_FRMSTORE   (*(volatile u32 *)(VDMA_BASE + 0x18))
+#define VDMA_PARKPTR    (*(volatile u32 *)(VDMA_BASE + 0x28))
+#define VDMA_VSIZE      (*(volatile u32 *)(VDMA_BASE + 0x50))
+#define VDMA_HSIZE      (*(volatile u32 *)(VDMA_BASE + 0x54))
+#define VDMA_STRIDE     (*(volatile u32 *)(VDMA_BASE + 0x58))
+#define VDMA_START(n)   (*(volatile u32 *)(VDMA_BASE + 0x5C + 4u * (n)))
+
+#define GPIO_BL         (*(volatile u32 *)0x41200000u)
+
+#define LCD_W           1024
+#define LCD_H           600
+#define FB_BPL          (LCD_W * 3)             /* 3072 bytes per line */
+#define FB_WPL          (FB_BPL / 4)            /* 768 words per line */
+#define FB_BYTES        (FB_BPL * LCD_H)        /* 0x1C2000 */
+#define FB_BASE         0x18000000u
+
+#define VDMA_DMACR_RESET  0x00000004u
+#define VDMA_DMACR_RS     0x00000001u
+#define VDMA_DMASR_HALTED 0x00000001u
+
+/* Fill one framebuffer with 8 vertical RGB888 color bars: line 0 is
+ * built once, then word-copied to the other 599 lines.  All 3 frame
+ * stores get identical content, so the circular VDMA readout can never
+ * tear the static pattern.  ~1.4M u32 stores, a one-off boot cost. */
+static void lcd_fill_bars(volatile u32 *fb)
+{
+    static const u8 bars[8][3] = {              /* R, G, B */
+        {255, 255, 255}, {255, 255, 0}, {0, 255, 255}, {0, 255, 0},
+        {255, 0, 255},   {255, 0, 0},   {0, 0, 255},   {0, 0, 0}
+    };
+    u32 line[FB_WPL];
+    u8 *lp = (u8 *)line;
+    u32 x, y, w;
+
+    for (x = 0; x < LCD_W; x++) {
+        const u8 *c = bars[x >> 7];             /* 128 px per bar */
+        *lp++ = c[2];                           /* B at lowest address */
+        *lp++ = c[1];                           /* G */
+        *lp++ = c[0];                           /* R */
+    }
+    for (y = 0; y < LCD_H; y++)
+        for (w = 0; w < FB_WPL; w++)
+            fb[y * FB_WPL + w] = line[w];
+}
+
+static void lcd_init(void)
+{
+    u32 spins = 0;
+
+    lcd_fill_bars((volatile u32 *)FB_BASE);
+    lcd_fill_bars((volatile u32 *)(FB_BASE + FB_BYTES));
+    lcd_fill_bars((volatile u32 *)(FB_BASE + 2u * FB_BYTES));
+    GPIO_BL = 1;                                /* backlight on */
+
+    VDMA_DMACR = VDMA_DMACR_RESET;              /* soft-reset MM2S */
+    while (!(VDMA_DMASR & VDMA_DMASR_HALTED))
+        if (++spins > 1000000u)
+            break;                              /* never halted: say so */
+    VDMA_HSIZE    = FB_BPL;
+    VDMA_STRIDE   = FB_BPL;                     /* packed frames */
+    VDMA_START(0) = FB_BASE;
+    VDMA_START(1) = FB_BASE + FB_BYTES;
+    VDMA_START(2) = FB_BASE + 2u * FB_BYTES;
+    VDMA_PARKPTR  = 0;
+    VDMA_VSIZE    = LCD_H;                      /* arms the channel */
+    VDMA_DMACR    = VDMA_DMACR_RS;              /* run: 3-frame circular */
+
+    for (spins = 0; spins < 1000u; spins++)     /* let RS propagate */
+        ;
+    uprintf("[LCD] vdma fstores=%u dmasr=%x\n",
+            VDMA_FRMSTORE & 0xFFu, VDMA_DMASR, 0, 0);
 }
 
 /* ---- Packet parsing ---------------------------------------------------- */
@@ -646,6 +744,7 @@ int main(void)
     uart_puts("expected: ~32000 raw/s, ~1600 feature/s (40 windows/s)\n");
     uart_puts("  -> 20 F-rows/s (every 2nd window) + 40 R-rows/s\n\n");
 
+    lcd_init();               /* color bars + VDMA MM2S + backlight (vh-3) */
     cal_start();
     dma_init();
     dma_arm((u32)(uintptr_t)dma_buf[0], BUF_BYTES);
