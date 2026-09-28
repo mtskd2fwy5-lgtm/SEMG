@@ -350,11 +350,25 @@ static u32 feat_win_cnt;               /* packets accumulated for current window
 static u32 res_logits[5];              /* INT32 logits of the current window */
 static u32 res_cls;                    /* argmax class of the current window */
 static u32 res_rows;                   /* result rows printed */
+static u32 pose_rows;                  /* versioned PoseFrame rows printed */
+static u32 last_pose_cls = 0xFFFFFFFFu;
 static u32 feat_rows;                  /* feature windows seen (print gate) */
 static u32 fat_num2, fat_mdf;          /* id 8: window counter, mean MDF bin */
 static u32 fat_level, fat_full, fat_energy;   /* id 9 fields */
 static u32 parsed_total;
 static u32 next_report;
+
+/* PoseAdapter v2: stable 22-DOF renderer contract. */
+static const i32 pose_table[5][22] = {
+    {0,0,18,-10,20,12,14,-4,18,10,16,4,18,10,18,11,22,14,32,-38,28,20},
+    {0,0,4,-14,5,3,2,-5,4,2,3,4,5,3,5,13,8,5,20,-45,8,4},
+    {0,0,84,-4,88,60,86,-1,90,62,88,2,92,64,90,5,94,66,30,-35,76,56},
+    {28,0,20,-8,28,18,18,-3,26,16,20,4,26,18,22,9,30,20,34,-30,34,24},
+    {-28,0,8,-12,10,6,7,-4,8,4,8,4,10,5,10,8,12,6,24,-40,14,8}
+};
+#define POSE_SCHEMA_V2 2u
+#define POSE_VALID_MASK 0x3FFFFFu
+#define POSE_MODEL_CLASSES 5u
 
 /* Emit one CSV line per feature window in the training feature order
  * (tools/train_baseline.py make_windows): MAV ch0..7, WL ch0..7,
@@ -475,6 +489,34 @@ static u32 logit_conf(void)
     return ((u32)top * 100u) / (sum + 1u);
 }
 
+static void print_pose_value(const char *name, i32 value)
+{
+    uprintf(" %s=%d", (u32)(uintptr_t)name, (u32)value, 0, 0);
+}
+
+/* Versioned pose output. R remains the compatibility line for old hosts. */
+static void print_pose_frame(u32 seq, u32 cls, u32 conf, u32 gated)
+{
+    u32 i;
+    if (cls >= POSE_MODEL_CLASSES || gated || conf < 30u)
+        cls = 0u;
+    uart_putc('P');
+    uprintf(" v=1 s=%u schema=%u gid=%u q=%u",
+            seq, POSE_SCHEMA_V2, cls, conf);
+    uprintf(" mask=0x%x phase=0", POSE_VALID_MASK, 0, 0, 0);
+    for (i = 0; i < 22u; i++) {
+        static const char *const names[22] = {
+            "wf", "wd", "i_mcp", "i_abd", "i_pip", "i_dip",
+            "m_mcp", "m_abd", "m_pip", "m_dip", "r_mcp", "r_abd",
+            "r_pip", "r_dip", "l_mcp", "l_abd", "l_pip", "l_dip",
+            "t_cmc", "t_abd", "t_mcp", "t_ip"
+        };
+        print_pose_value(names[i], pose_table[cls][i]);
+    }
+    uart_puts("\r\n");
+    pose_rows++;
+}
+
 /* One line per inference window: 'R s=<seq> c=<class> p=<conf>[ g=1]',
  * plus the raw INT32 logits every 4th window.  The PL INT8 MLP emits six
  * result packets per window (ids 0..4 = logits, 5 = argmax class), all
@@ -502,6 +544,12 @@ static void print_result_row(u32 seq)
         uprintf(" %d", res_logits[4], 0, 0, 0);
     }
     uart_puts("\r\n");
+    /* Current classifier poses are static per gesture, so emit P only when
+     * the gesture changes. A continuous adapter can emit one every window. */
+    if (res_cls != last_pose_cls) {
+        print_pose_frame(seq, res_cls, logit_conf(), gated);
+        last_pose_cls = res_cls;
+    }
     res_rows++;
 }
 
@@ -738,6 +786,8 @@ int main(void)
     uart_puts("R-rows: one per window from the PL INT8 MLP:\n");
     uart_puts("  'R s=<seq> c=<class> p=<conf>[ g=1]' (+ logits every 4th window)\n");
     uart_puts("  (p = indicative confidence; g=1 = MAV gate re-classified to rest)\n");
+    uart_puts("P-rows: versioned PoseFrame v=1 schema=2 (22 pose values)\n");
+    uart_puts("  (P is emitted on gesture changes; old R/T rows remain compatible)\n");
     uart_puts("T-rows: one per 512ms fatigue window: 'T s=.. lv=.. mdf=.. n2=..'\n");
     uart_puts("  (lv: 0=NORM 1=MILD 2=FATIG from the 16-point MDF-slope regression)\n");
     uart_puts("rest calibration: ~2.4 s after boot, [CAL] lines report baselines/thr\n");

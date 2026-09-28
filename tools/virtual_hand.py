@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""PC-side virtual hand driven by the board's UART text rows (pygame).
+"""PC-side low-poly 3D hand driven by the board's UART text rows (pygame).
 
 Reads the monitor stream of sw/ps_uart_print (115200-8N1) and animates a
-2-D hand according to the PL INT8 MLP decisions:
+3-D low-poly hand according to the PL INT8 MLP decisions:
 
   R s=<seq> c=<class> p=<conf>[ g=1]   -> pose + confidence
       c: 0=rest 1=open 2=fist 3=wrist flex 4=wrist extend
@@ -12,14 +12,16 @@ Reads the monitor stream of sw/ps_uart_print (115200-8N1) and animates a
       lv=1 tints the wrist band yellow, lv=2 red.
   [CAL] ...                            -> shows the calibration status
 
-Every 15 animation parameters (wrist angle, per-finger spread/MCP/PIP,
-thumb angle) are linearly interpolated over ~350 ms, so the hand glides
+The canonical 22-DOF hand pose (with legacy 15-parameter input support) is
+linearly interpolated over ~350 ms, so the hand glides
 between poses instead of snapping.  If no R row arrives for 1.5 s the
 hand relaxes back to rest.
 
 Usage:
   python tools/virtual_hand.py --port COM3
   python tools/virtual_hand.py --demo      (no board needed, cycles poses)
+
+Preview controls: left-drag to orbit, right-drag to pan, wheel to zoom, R to reset.
 
 Requires: pygame (pip install pygame), pyserial for live mode.
 """
@@ -42,19 +44,34 @@ CLS_EN = ["rest", "open", "fist", "wrist flex", "wrist extend"]
 FAT_CN = ["正常", "轻度疲劳", "疲劳"]
 FAT_EN = ["NORM", "MILD", "FATIG"]
 
+# PoseFrame v1 is the stable renderer contract.  Model class ids are only a
+# fallback; new models should be adapted to this vector before rendering.
+POSE_FIELDS = ("w", "s0", "s1", "s2", "s3", "m0", "m1", "m2", "m3",
+               "p0", "p1", "p2", "p3", "ta", "ti")
+POSE_SCHEMA_V1 = 1
+POSE_FIELDS_V2 = (
+    "wf", "wd",
+    "i_mcp", "i_abd", "i_pip", "i_dip",
+    "m_mcp", "m_abd", "m_pip", "m_dip",
+    "r_mcp", "r_abd", "r_pip", "r_dip",
+    "l_mcp", "l_abd", "l_pip", "l_dip",
+    "t_cmc", "t_abd", "t_mcp", "t_ip",
+)
+POSE_SCHEMA_V2 = 2
+
 # ---- Pose parameter tables ---------------------------------------------------
-# Vector layout (15 floats):
+# Legacy PoseFrame v1 vector layout (15 floats):
 #   [0]      wrist rotation (deg, + = flexed/clockwise on screen)
 #   [1:5]    finger spread (deg, index..pinky; - = lean left)
-#   [5:9]    MCP bend   (deg, 0 = straight up, ~90 = folded over palm)
-#   [9:13]   PIP bend   (deg, added on top of MCP)
+#   [5:9]    MCP flex   (deg, bends out of the palm plane along world y)
+#   [9:13]   PIP flex   (deg, added to the palm-normal bend)
 #   [13]     thumb absolute direction from vertical (deg, - = out to left)
 #   [14]     thumb PIP bend (deg)
 POSES = {
     #        wrist  spread            MCP              PIP               thumb
     "rest":  [0,     -7, -3, 3, 7,     7, 6, 6, 8,      12, 10, 11, 15,   -35, 15],
     "open":  [0,     -18, -7, 7, 18,   2, 2, 2, 3,      4, 3, 3, 6,       -58, 6],
-    "fist":  [0,     -2, -1, 1, 2,     88, 90, 90, 92,  95, 100, 100, 105, 118, 48],
+    "fist":  [0,     -4, -2, 2, 5,     74, 76, 79, 82, 78, 75, 72, 68, 36, 78],
     "flex":  [34,    -6, -3, 3, 6,     16, 14, 14, 18,  20, 17, 18, 24,   -30, 22],
     "ext":   [-34,   -7, -3, 3, 7,     6, 5, 5, 7,      10, 9, 9, 13,     -35, 15],
 }
@@ -62,23 +79,89 @@ POSES = {
 # class index -> pose key (c: 0=rest 1=open 2=fist 3=wrist flex 4=extend)
 POSE_NAMES = ["rest", "open", "fist", "flex", "ext"]
 
-# Geometry (unrotated local frame; origin = wrist pivot at bottom center)
-PALM = (-72, -152, 72, -8)                 # left, top, right, bottom
-FINGER_X = [-52, -19, 13, 46]              # MCP x offsets from palm center
-FINGER_L1 = [40, 46, 43, 34]               # proximal segment lengths
-FINGER_L2 = [36, 40, 38, 28]               # distal segment lengths
-FINGER_SIGN = [1, 1, -1, -1]               # curl direction toward palm center
-THUMB_AT = (-66, -118)                     # attachment point
-THUMB_L1, THUMB_L2 = 44, 34
+# Canonical 22-DOF hand skeleton used internally by the renderer. Values are
+# degrees: wrist flex/deviation, four long-finger MCP abduction/flexion and
+# PIP/DIP flexion, then thumb CMC flex/abduction plus MCP/IP flexion.
+POSES_V2 = {
+    "rest": [0, 0, 18, -10, 20, 12, 14, -4, 18, 10,
+              16, 4, 18, 10, 18, 11, 22, 14, 32, -38, 28, 20],
+    "open": [0, 0, 4, -14, 5, 3, 2, -5, 4, 2,
+             3, 4, 5, 3, 5, 13, 8, 5, 20, -45, 8, 4],
+    "fist": [0, 0, 84, -4, 88, 60, 86, -1, 90, 62,
+              88, 2, 92, 64, 90, 5, 94, 66, 30, -35, 76, 56],
+    "flex": [28, 0, 20, -8, 28, 18, 18, -3, 26, 16,
+             20, 4, 26, 18, 22, 9, 30, 20, 34, -30, 34, 24],
+    "ext": [-28, 0, 8, -12, 10, 6, 7, -4, 8, 4,
+            8, 4, 10, 5, 10, 8, 12, 6, 24, -40, 14, 8],
+}
+
+# The mesh template is stored as (x, arm-to-fingertip, palm-normal), then mapped
+# to the display world as (x, palm-normal=y, arm-to-fingertip=z).
+# Palm body is about 100 units long and 132 units wide; the four proximal
+# finger diameters together are about 115 units, so the proportions stay close
+# to an adult hand instead of a wide short block.
+PALM_W, PALM_H, PALM_D = 132.0, 100.0, 30.0
+PALM_OUTLINE = [
+    (-36, 0), (-48, 8), (-56, 28), (-62, 56), (-66, 82), (-63, 96),
+    (-55, 101), (-45, 96), (-36, 92), (-26, 96), (-17, 100),
+    (-8, 95), (0, 91), (8, 95), (17, 100), (26, 96), (36, 92),
+    (45, 96), (55, 101), (63, 96), (66, 82), (62, 56), (56, 28),
+    (48, 8), (36, 0),
+]
+FINGER_X = [-43.0, -14.0, 15.0, 43.0]
+FINGER_BASE_Y = [94.0, 100.0, 98.0, 90.0]
+# Root end caps sit inside the palm; proximal radii produce a 29-31 unit width,
+# matching the 30 unit palm thickness.
+FINGER_BASE_DEPTH = [-8.0, -8.0, -8.0, -8.0]
+FINGER_L1 = [43.0, 48.0, 45.0, 37.0]       # proximal phalanx
+FINGER_L2 = [31.0, 34.0, 32.0, 26.0]       # middle phalanx
+FINGER_L3 = [22.0, 25.0, 23.0, 19.0]       # distal phalanx
+FINGER_RADII = [(14.8, 12.0, 9.6), (15.5, 12.6, 10.0),
+                (14.4, 11.8, 9.5), (12.7, 10.2, 8.2)]
+FINGER_DIP_RATIO = 0.42
+THUMB_AT = (-51.0, 30.0, -4.0)
+THUMB_L1, THUMB_L2 = 42.0, 32.0
 SMOOTH_S = 0.35                            # pose interpolation time (s)
 STALE_S = 1.5                              # no R row -> relax to rest
+
+VIEW_DEFAULT = {"yaw": 0.0, "pitch": 34.0, "zoom": 1.0,
+                "pan_x": 0.0, "pan_y": 0.0}
+VIEW = dict(VIEW_DEFAULT)
+
+
+def handle_view_event(ev, drag):
+    """Update the desktop preview camera; drag stores the active mouse mode."""
+    if ev.type == pygame.KEYDOWN and ev.key == pygame.K_r:
+        VIEW.update(VIEW_DEFAULT)
+        return
+    if ev.type == pygame.MOUSEBUTTONDOWN and ev.button in (1, 3):
+        drag["button"] = ev.button
+        drag["pos"] = ev.pos
+    elif ev.type == pygame.MOUSEBUTTONUP and ev.button in (1, 3):
+        if ev.button == drag["button"]:
+            drag["button"] = 0
+            drag["pos"] = None
+    elif ev.type == pygame.MOUSEMOTION and drag["button"] and drag["pos"]:
+        dx = ev.pos[0] - drag["pos"][0]
+        dy = ev.pos[1] - drag["pos"][1]
+        if drag["button"] == 1:
+            VIEW["yaw"] = (VIEW["yaw"] + dx * 0.55) % 360.0
+            VIEW["pitch"] = max(-75.0, min(75.0,
+                                           VIEW["pitch"] + dy * 0.45))
+        else:
+            VIEW["pan_x"] += dx
+            VIEW["pan_y"] += dy
+        drag["pos"] = ev.pos
+    elif ev.type == pygame.MOUSEWHEEL:
+        VIEW["zoom"] = max(0.55, min(2.4,
+                                     VIEW["zoom"] * (1.12 ** ev.y)))
+    elif ev.type == pygame.MOUSEBUTTONDOWN and ev.button in (4, 5):
+        step = 1.12 if ev.button == 4 else (1.0 / 1.12)
+        VIEW["zoom"] = max(0.55, min(2.4, VIEW["zoom"] * step))
 
 COL = {
     "bg": (22, 27, 36),
     "skin": (217, 160, 102),
-    "skin_mid": (198, 139, 86),            # fingers, reads against the palm
-    "skin_dark": (122, 82, 48),
-    "joint": (181, 127, 69),
     "arm": (58, 67, 86),
     "band": (74, 85, 104),
     "band_mild": (224, 195, 65),
@@ -86,6 +169,7 @@ COL = {
     "text": (235, 240, 248),
     "muted": (140, 150, 165),
     "gate": (120, 200, 120),
+    "crease": (163, 112, 75),
 }
 
 
@@ -93,32 +177,109 @@ def lerp(a, b, k):
     return a + (b - a) * k
 
 
+def _clamp(value, low, high):
+    return max(low, min(high, float(value)))
+
+
+def sanitize_pose22(values):
+    """Apply anatomical joint limits and mild tendon coupling."""
+    if len(values) != 22:
+        return None
+    v = [float(x) for x in values]
+    v[0] = _clamp(v[0], -45, 45)       # wrist flex/ext
+    v[1] = _clamp(v[1], -25, 25)       # radial/ulnar deviation
+    for base in (2, 6, 10, 14):
+        v[base] = _clamp(v[base], 0, 95)       # MCP flex (fist table uses 92)
+        v[base + 1] = _clamp(v[base + 1], -25, 25)  # MCP abduction
+        v[base + 2] = _clamp(v[base + 2], 0, 125)   # PIP flex
+        v[base + 3] = _clamp(v[base + 3], 0, 85)    # DIP flex
+    v[18] = _clamp(v[18], 0, 70)       # thumb CMC flex
+    v[19] = _clamp(v[19], -55, 35)     # thumb CMC abduction/opposition
+    v[20] = _clamp(v[20], 0, 80)       # thumb MCP flex (fist table uses 76)
+    v[21] = _clamp(v[21], 0, 90)       # thumb IP flex
+    return v
+
+
+def legacy_to_pose22(values):
+    """Adapt the existing 15-value protocol into the 22-DOF skeleton."""
+    if len(values) != 15:
+        return None
+    out = [float(values[0]), 0.0]
+    for i in range(4):
+        mcp = float(values[5 + i])
+        pip = float(values[9 + i])
+        out.extend((mcp, float(values[1 + i]), pip, pip * 0.62))
+    out.extend((35.0, float(values[13]), 24.0, float(values[14])))
+    return sanitize_pose22(out)
+
+
 class HandState:
     """Interpolates between pose vectors and holds the parsed UART state."""
 
     def __init__(self):
-        self.cur = list(POSES["rest"])
-        self.frm = list(POSES["rest"])
-        self.to = list(POSES["rest"])
+        self.cur = list(POSES_V2["rest"])
+        self.frm = list(POSES_V2["rest"])
+        self.to = list(POSES_V2["rest"])
         self.t0 = 0.0
         self.cls = 0
         self.conf = 0
         self.fat = 0
         self.gated = False
+        self.has_pose_frame = False
+        self.pose_schema = 0
+        self.pose_mask = 0
+        self.pose_phase = 0
         self.cal_state = "wait"            # wait / running / ready
         self.last_r = 0.0
 
     def set_pose(self, name, now):
-        target = POSES[name]
+        target = POSES_V2[name]
         if target == self.to:
             return
         self.frm = list(self.cur)
         self.to = list(target)
         self.t0 = now
 
+    def set_pose_vector(self, values, now, schema=POSE_SCHEMA_V1,
+                        mask=(1 << 15) - 1, phase=0):
+        target = legacy_to_pose22(values) if schema == POSE_SCHEMA_V1 \
+            else sanitize_pose22(values)
+        if target is None:
+            return False
+        if len(target) != len(self.cur):
+            return False
+        if target == self.to:
+            self.has_pose_frame = True
+            self.pose_schema = schema
+            self.pose_mask = mask
+            self.pose_phase = phase
+            return False
+        self.frm = list(self.cur)
+        self.to = target
+        self.t0 = now
+        self.has_pose_frame = True
+        self.pose_schema = schema
+        self.pose_mask = mask
+        self.pose_phase = phase
+        return True
+
     def step(self, now):
         k = min(1.0, (now - self.t0) / SMOOTH_S)
         self.cur = [lerp(f, t, k) for f, t in zip(self.frm, self.to)]
+
+    def nearest_pose_class(self):
+        """Return the label whose canonical pose is closest to the rendered pose."""
+        best_i, best_d = 0, float("inf")
+        # Wrist and joint angles carry the action meaning; spread contributes
+        # less so a transition is not mislabeled by a small finger splay.
+        weights = [1.4, 0.9] + [1.0, 0.7, 1.0, 0.8] * 4 \
+                  + [0.9, 0.8, 1.0, 0.9]
+        for i, name in enumerate(POSE_NAMES):
+            d = sum(weight * (value - target) ** 2
+                    for value, target, weight in zip(self.cur, POSES_V2[name], weights))
+            if d < best_d:
+                best_i, best_d = i, d
+        return best_i
 
 
 def handle_line(line, st, now, conf_min, log):
@@ -132,8 +293,11 @@ def handle_line(line, st, now, conf_min, log):
         else:
             st.cal_state = "running"
         return True
+    if line.startswith("P "):
+        return handle_pose_line(line, st, now, conf_min, log)
     if not line.startswith("R "):
         return False                        # F/T handled below, banner ignored
+    had_pose_frame = st.has_pose_frame
     try:
         f = {}
         for tok in line.split()[1:]:
@@ -145,6 +309,7 @@ def handle_line(line, st, now, conf_min, log):
         g = f.get("g", "0") == "1"
     except ValueError:
         return False
+    c = max(0, min(c, len(POSE_NAMES) - 1))
     st.cls, st.conf, st.gated = c, p, g
     st.last_r = now
     changed = False
@@ -161,7 +326,52 @@ def handle_line(line, st, now, conf_min, log):
         names = CLS_CN if log["cn"] else CLS_EN
         print("[%08.2f] pose -> %s (p=%d%s)" % (now, names[c], p,
                                                 ", gated" if g else ""))
-    st.set_pose(POSE_NAMES[min(c, 4)], now)
+    # Once a P frame has arrived, R is metadata only.  During a class change,
+    # use the legacy pose for the short interval before its P frame arrives.
+    if not had_pose_frame:
+        st.set_pose(POSE_NAMES[c], now)
+    if g or p < conf_min:
+        st.set_pose("rest", now)
+    return changed
+
+
+def handle_pose_line(line, st, now, conf_min, log):
+    """Parse PoseFrame v1 while retaining R-row fallback compatibility."""
+    try:
+        fields = {}
+        for tok in line.split()[1:]:
+            if "=" in tok:
+                key, value = tok.split("=", 1)
+                fields[key] = value
+        version = int(fields.get("v", "0"))
+        schema = int(fields.get("schema", "0"))
+        if version != 1 or schema not in (POSE_SCHEMA_V1, POSE_SCHEMA_V2):
+            return False
+        gid = max(0, min(int(fields.get("gid", "0")), len(POSE_NAMES) - 1))
+        conf = int(fields.get("q", fields.get("p", "0")))
+        mask_text = fields.get("mask", "0")
+        mask = int(mask_text, 0) if mask_text.lower().startswith("0x") else int(mask_text, 16)
+        phase = int(fields.get("phase", "0"))
+        value_fields = POSE_FIELDS if schema == POSE_SCHEMA_V1 else POSE_FIELDS_V2
+        values = [float(fields[name]) for name in value_fields]
+        seq = int(fields.get("s", "0"))
+    except (KeyError, TypeError, ValueError):
+        return False
+
+    st.cls, st.conf, st.gated = gid, conf, False
+    st.last_r = now
+    changed = gid != log["cls"]
+    log["cls"] = gid
+    if changed:
+        names = CLS_CN if log["cn"] else CLS_EN
+        print("[%08.2f] pose frame -> %s (q=%d schema=%d seq=%d)" %
+              (now, names[gid], conf, schema, seq))
+    if conf < conf_min:
+        values = list(POSES_V2["rest"] if schema == POSE_SCHEMA_V2
+                      else POSES["rest"])
+        gid = 0
+    st.set_pose_vector(values, now, schema=schema, mask=mask, phase=phase)
+    st.cls = gid
     return changed
 
 
@@ -184,81 +394,405 @@ def handle_fatigue(line, st, now, log):
     return False
 
 
-def rot(points, pivot, deg):
+def _vadd(a, b):
+    return a[0] + b[0], a[1] + b[1], a[2] + b[2]
+
+
+def _vsub(a, b):
+    return a[0] - b[0], a[1] - b[1], a[2] - b[2]
+
+
+def _vmul(a, k):
+    return a[0] * k, a[1] * k, a[2] * k
+
+
+def _dot(a, b):
+    return a[0] * b[0] + a[1] * b[1] + a[2] * b[2]
+
+
+def _cross(a, b):
+    return (a[1] * b[2] - a[2] * b[1],
+            a[2] * b[0] - a[0] * b[2],
+            a[0] * b[1] - a[1] * b[0])
+
+
+def _unit(a):
     import math
-    rad = math.radians(deg)
-    cs, sn = math.cos(rad), math.sin(rad)
-    px, py = pivot
-    out = []
-    for x, y in points:
-        dx, dy = x, y                       # pivot == local origin, no offset
-        out.append((px + dx * cs - dy * sn, py + dx * sn + dy * cs))
-    return out
+    n = math.sqrt(_dot(a, a)) or 1.0
+    return _vmul(a, 1.0 / n)
 
 
-def seg(screen, p0, p1, width, fill, outline):
-    pygame.draw.line(screen, outline, p0, p1, width + 6)
-    pygame.draw.line(screen, fill, p0, p1, width)
-    for p in (p0, p1):
-        pygame.draw.circle(screen, fill, p, width // 2)
+def _model_to_world(p):
+    """Map template (x, arm-axis, normal) to world (x, normal=y, arm=z)."""
+    return p[0], p[2], p[1]
+
+
+def _rotate_x(p, angle):
+    import math
+    c, s = math.cos(angle), math.sin(angle)
+    return p[0], p[1] * c - p[2] * s, p[1] * s + p[2] * c
+
+
+def _rotate_z(p, angle):
+    import math
+    c, s = math.cos(angle), math.sin(angle)
+    return p[0] * c - p[1] * s, p[0] * s + p[1] * c, p[2]
+
+
+def _mesh_palm(color):
+    """Extrude an arched palm silhouette with a narrower wrist heel."""
+    center = (0.0, 74.0)
+    outer_f = [(x, y, -2.0) for x, y in PALM_OUTLINE]
+    outer_b = [(x, y, -PALM_D / 2) for x, y in PALM_OUTLINE]
+    inner_f = [(center[0] + (x - center[0]) * 0.91,
+                center[1] + (y - center[1]) * 0.91, PALM_D / 2)
+               for x, y in PALM_OUTLINE]
+    inner_b = [(center[0] + (x - center[0]) * 0.91,
+                center[1] + (y - center[1]) * 0.91, -PALM_D / 2)
+               for x, y in PALM_OUTLINE]
+    # Keep the front plane controlled; the thickness and camera angle provide
+    # the 3-D cue without an artificial bump in the upper palm.
+    center_f = (center[0], center[1], PALM_D / 2)
+    center_b = (center[0], center[1], -PALM_D / 2)
+    faces = []
+    n = len(PALM_OUTLINE)
+    for i in range(n):
+        j = (i + 1) % n
+        faces.append(([outer_f[i], outer_f[j], outer_b[j], outer_b[i]], color))
+        faces.append(([outer_f[i], outer_f[j], inner_f[j], inner_f[i]],
+                      color))
+        faces.append(([outer_b[j], outer_b[i], inner_b[i], inner_b[j]], color))
+        faces.append(([inner_f[i], inner_f[j], center_f], color))
+        faces.append(([inner_b[j], inner_b[i], center_b], color))
+    return faces
+
+
+def _mesh_capsule(a, b, r0, r1, color, sides=14):
+    """Tapered phalanx with a soft center bulge and recessed ends."""
+    import math
+    axis = _unit(_vsub(b, a))
+    ref = (0.0, 0.0, 1.0) if abs(axis[2]) < 0.85 else (0.0, 1.0, 0.0)
+    u = _unit(_cross(axis, ref))
+    v = _cross(axis, u)
+    profile = ((0.04, 0.80), (0.22, 1.00), (0.78, 1.00), (0.96, 0.80))
+    rings = []
+    for t, fullness in profile:
+        c = _vadd(a, _vmul(_vsub(b, a), t))
+        radius = lerp(r0, r1, t) * fullness
+        ring = []
+        for i in range(sides):
+            ang = 2.0 * math.pi * i / sides
+            off = _vadd(_vmul(u, math.cos(ang)), _vmul(v, math.sin(ang)))
+            ring.append(_vadd(c, _vmul(off, radius)))
+        rings.append(ring)
+    faces = []
+    for ring_i in range(len(rings) - 1):
+        for i in range(sides):
+            j = (i + 1) % sides
+            faces.append(([rings[ring_i][i], rings[ring_i][j],
+                           rings[ring_i + 1][j], rings[ring_i + 1][i]], color))
+    for i in range(sides):
+        j = (i + 1) % sides
+        faces.append(([a, rings[0][j], rings[0][i]], color))
+        faces.append(([b, rings[-1][i], rings[-1][j]], color))
+    return faces
+
+
+def _mesh_articulated_digit(points, radii, color, sides=16,
+                            root_bury=1.15, root_scale=1.0):
+    """Sweep one continuous skin surface through MCP, PIP and DIP joints."""
+    import math
+    directions = [_unit(_vsub(points[i + 1], points[i]))
+                  for i in range(len(points) - 1)]
+    stations = []
+    for i, point in enumerate(points):
+        if i == 0:
+            tangent = directions[0]
+            stations.append((_vadd(point, _vmul(tangent, -radii[i] * root_bury)),
+                              radii[i] * 0.22 * root_scale, tangent))
+            stations.append((_vadd(point, _vmul(tangent, -radii[i] * 0.62)),
+                              radii[i] * 0.72 * root_scale, tangent))
+            stations.append((point,
+                            radii[i] * (root_scale if root_scale != 1.0 else 1.0),
+                            tangent))
+        elif i == len(points) - 1:
+            tangent = directions[-1]
+            stations.append((_vadd(point, _vmul(tangent, -radii[i] * 0.42),),
+                              radii[i] * 0.92, tangent))
+            stations.append((_vadd(point, _vmul(tangent, radii[i] * 0.22),),
+                              radii[i] * 0.58, tangent))
+        else:
+            incoming, outgoing = directions[i - 1], directions[i]
+            tangent = _unit(_vadd(incoming, outgoing))
+            if tangent == (0.0, 0.0, 0.0):
+                tangent = outgoing
+            radius = radii[i] * 1.025
+            stations.append((_vadd(point, _vmul(incoming, -radius * 0.30)),
+                              radius * 0.98, incoming))
+            stations.append((point, radius, tangent))
+            stations.append((_vadd(point, _vmul(outgoing, radius * 0.30)),
+                              radius * 0.98, outgoing))
+
+    rings = []
+    for center, radius, tangent in stations:
+        tangent = _unit(tangent)
+        ref = (0.0, 0.0, 1.0) if abs(tangent[2]) < 0.85 else (0.0, 1.0, 0.0)
+        u = _unit(_cross(tangent, ref))
+        v = _cross(tangent, u)
+        ring = []
+        for i in range(sides):
+            ang = 2.0 * math.pi * i / sides
+            off = _vadd(_vmul(u, math.cos(ang)), _vmul(v, math.sin(ang)))
+            ring.append(_vadd(center, _vmul(off, radius)))
+        rings.append(ring)
+
+    faces = []
+    for r in range(len(rings) - 1):
+        for i in range(sides):
+            j = (i + 1) % sides
+            faces.append(([rings[r][i], rings[r][j],
+                           rings[r + 1][j], rings[r + 1][i]], color))
+
+    tip = _vadd(points[-1], _vmul(directions[-1], radii[-1] * 0.52))
+    for i in range(sides):
+        j = (i + 1) % sides
+        faces.append(([rings[-1][i], rings[-1][j], tip], color))
+    return faces
+
+
+def _mesh_sphere(c, radius, color, rings=4, sides=8):
+    import math
+    faces = []
+    rings_v = []
+    for r in range(1, rings):
+        phi = math.pi * r / rings
+        ring = []
+        for i in range(sides):
+            a = 2.0 * math.pi * i / sides
+            ring.append((c[0] + radius * math.sin(phi) * math.cos(a),
+                         c[1] + radius * math.cos(phi),
+                         c[2] + radius * math.sin(phi) * math.sin(a)))
+        rings_v.append(ring)
+    top = (c[0], c[1] + radius, c[2])
+    bottom = (c[0], c[1] - radius, c[2])
+    for i in range(sides):
+        j = (i + 1) % sides
+        faces.append(([top, rings_v[0][i], rings_v[0][j]], color))
+        for r in range(len(rings_v) - 1):
+            faces.append(([rings_v[r][i], rings_v[r + 1][i],
+                           rings_v[r + 1][j], rings_v[r][j]], color))
+        faces.append(([rings_v[-1][i], bottom, rings_v[-1][j]], color))
+    return faces
+
+
+def _mesh_ellipsoid(center, radii, color):
+    unit_mesh = _mesh_sphere(center, 1.0, color, rings=5, sides=12)
+    return [([(center[0] + (p[0] - center[0]) * radii[0],
+               center[1] + (p[1] - center[1]) * radii[1],
+               center[2] + (p[2] - center[2]) * radii[2])
+              for p in verts], base)
+            for verts, base in unit_mesh]
+
+
+def _shade(color, intensity):
+    intensity = max(0.68, min(1.12, intensity))
+    return tuple(max(0, min(255, int(c * intensity))) for c in color)
+
+
+def _project(p, pivot, scale):
+    # Positive world y points toward the camera; world z runs along the arm.
+    focal = 520.0
+    q = focal / max(240.0, focal - p[1])
+    return (int(round(pivot[0] + p[0] * scale * q)),
+            int(round(pivot[1] - p[2] * scale * q)))
+
+
+def _render_faces(screen, faces, pivot, scale, transform):
+    light = _unit((-0.42, 0.72, 0.58))
+    draw = []
+    for verts, base in faces:
+        tv = [transform(v) for v in verts]
+        if len(tv) >= 3:
+            normal = _unit(_cross(_vsub(tv[1], tv[0]), _vsub(tv[2], tv[0])))
+            intensity = 0.76 + 0.30 * abs(_dot(normal, light))
+        else:
+            intensity = 0.85
+        poly = [_project(v, pivot, scale) for v in tv]
+        color = _shade(base, intensity)
+        for i in range(1, len(poly) - 1):
+            tri = [poly[0], poly[i], poly[i + 1]]
+            tri_depth = (tv[0][1] + tv[i][1] + tv[i + 1][1]) / 3.0
+            draw.append((tri_depth, tri, color))
+    draw.sort(key=lambda item: item[0])
+    for _, tri, color in draw:
+        pygame.draw.polygon(screen, color, tri)
+
+
+def _draw_opaque_base(screen, pivot, scale, hand_transform,
+                      camera_transform):
+    """Fill palm/forearm silhouettes before 3D faces close small mesh gaps."""
+    palm = [_project(hand_transform((x, y, -1.0)), pivot, scale)
+            for x, y in PALM_OUTLINE]
+    pygame.draw.polygon(screen, COL["skin"], palm)
+    forearm = [_project(camera_transform(p), pivot, scale) for p in (
+        (-35.0, -174.0, -1.0), (35.0, -174.0, -1.0),
+        (35.0, -3.0, -1.0), (-35.0, -3.0, -1.0))]
+    pygame.draw.polygon(screen, COL["arm"], forearm)
+
+
+def _draw_joint_crease(screen, center, direction, radius, pivot, scale,
+                       transform):
+    length = (direction[0] * direction[0] +
+              direction[1] * direction[1]) ** 0.5 or 1.0
+    nx, ny = -direction[1] / length, direction[0] / length
+    half = radius * 0.68
+    pts3 = [
+        (center[0] - nx * half, center[1] - ny * half,
+         center[2] + radius * 0.35),
+        (center[0], center[1], center[2] + radius * 0.92),
+        (center[0] + nx * half, center[1] + ny * half,
+         center[2] + radius * 0.35),
+    ]
+    pts = [_project(transform(p), pivot, scale) for p in pts3]
+    pygame.draw.lines(screen, _shade(COL["crease"], 0.88), False, pts,
+                      max(1, round(scale * 0.9)))
 
 
 def draw_hand(screen, st):
     import math
     w, h = screen.get_size()
-    pivot = (w // 2, h - 130)
+    pivot = (w * 0.50 + VIEW["pan_x"], h * 0.84 + VIEW["pan_y"])
+    scale = min(w / 480.0, h / 640.0) * 1.24 * VIEW["zoom"]
     cur = st.cur
-    wrist = cur[0]
+    wrist = math.radians(cur[0])
+    # Wrist flex rotates the hand about x; the forearm stays on the z axis.
+    # The display convention is opposite to the classifier's positive angle,
+    # so negate it here while keeping c=3 flex and c=4 extend unchanged.
+    wrist_pitch = -wrist * 0.72
+    wrist_dev = math.radians(cur[1]) * 0.65
+    camera_pitch = math.radians(VIEW["pitch"])
+    camera_yaw = math.radians(VIEW["yaw"])
 
-    # forearm + fatigue band (fixed, below the rotating hand)
-    pygame.draw.line(screen, COL["arm"], (pivot[0], pivot[1] + 118),
-                     (pivot[0], pivot[1] - 6), 52)
+    def hand_transform(p):
+        world = _model_to_world(p)
+        world = _rotate_x(world, wrist_pitch)
+        world = _rotate_z(world, wrist_dev)
+        world = _rotate_z(world, camera_yaw)
+        return _rotate_x(world, camera_pitch)
+
+    def camera_transform(p):
+        world = _model_to_world(p)
+        world = _rotate_z(world, camera_yaw)
+        return _rotate_x(world, camera_pitch)
+
+    # Ground shadow and forearm are drawn first, then the hand meshes are depth
+    # sorted.  The shadow is deliberately small so the hand stays the focus.
+    px, py = int(pivot[0]), int(pivot[1])
+    pygame.draw.ellipse(screen, (9, 12, 18),
+                        (px - int(105 * scale), py + int(128 * scale),
+                         int(210 * scale), int(35 * scale)))
+    arm = _mesh_capsule((0, -174, -1), (0, -4, -1), 31, 35, COL["arm"])
+    arm_mesh = arm
     band = COL["band"]
     if st.fat == 1:
         band = COL["band_mild"]
     elif st.fat == 2:
         band = COL["band_fatig"]
-    pygame.draw.rect(screen, band, (pivot[0] - 30, pivot[1] + 8, 60, 34),
-                     border_radius=10)
+    band_mesh = _mesh_capsule((0, -43, 0), (0, -5, 0), 34, 35, band)
 
-    # palm (rotated polygon)
-    pl, pt, pr, pb = PALM
-    corners = [(pl, pt), (pr, pt), (pr, pb), (pl, pb)]
-    palm = rot(corners, pivot, wrist)
-    pygame.draw.polygon(screen, COL["skin_dark"], palm)
-    pygame.draw.polygon(screen, COL["skin"],
-                        [(p[0], p[1] - 2) for p in palm])
+    palm_mesh = _mesh_palm(COL["skin"])
+    thenar_mesh = _mesh_ellipsoid((-31.0, 48.0, 13.5),
+                                  (25.0, 34.0, 2.3), COL["skin"])
+    digit_mesh = []
+    web_mesh = []
+    joints = []
 
-    def direction(angle_deg):
-        rad = math.radians(angle_deg)
-        return math.sin(rad), -math.cos(rad)
+    def direction(angle_deg, depth_deg=0.0):
+        a = math.radians(angle_deg)
+        b = math.radians(depth_deg)
+        cb = math.cos(b)
+        return math.sin(a) * cb, math.cos(a) * cb, math.sin(b)
 
-    # fingers: two segments per finger, angles from vertical
+    def thumb_direction(plane_deg, flex_deg):
+        """Thumb direction: plane angle controls opposition, flex lifts in y."""
+        plane = math.radians(plane_deg)
+        flex = math.radians(_clamp(flex_deg, -10, 88))
+        return (math.sin(plane) * math.cos(flex),
+                math.cos(flex) * math.cos(plane),
+                math.sin(flex))
+
+    # MCP abduction stays in the palm xz plane. MCP/PIP/DIP flex are cumulative
+    # angles toward the palm normal, with a mild DIP/PIP tendon coupling.
     for i in range(4):
-        a1 = cur[1 + i] + FINGER_SIGN[i] * cur[5 + i]
-        a2 = a1 + FINGER_SIGN[i] * cur[9 + i]
-        base = (FINGER_X[i], pt + 6)
-        d1 = direction(a1)
-        d2 = direction(a2)
-        j1 = (base[0] + d1[0] * FINGER_L1[i], base[1] + d1[1] * FINGER_L1[i])
-        j2 = (j1[0] + d2[0] * FINGER_L2[i], j1[1] + d2[1] * FINGER_L2[i])
-        pts = rot([base, j1, j2], pivot, wrist)
-        seg(screen, pts[0], pts[1], 24, COL["skin_mid"], COL["skin_dark"])
-        seg(screen, pts[1], pts[2], 19, COL["skin_mid"], COL["skin_dark"])
-        pygame.draw.circle(screen, COL["joint"], pts[1], 5)
+        off = 2 + i * 4
+        mcp, spread = cur[off], cur[off + 1]
+        pip, dip = cur[off + 2], cur[off + 3]
+        base = (FINGER_X[i], FINGER_BASE_Y[i], FINGER_BASE_DEPTH[i])
+        flex1 = _clamp(mcp, 0, 90)
+        flex2 = min(170.0, flex1 + _clamp(pip, 0, 125))
+        dip_eff = _clamp(0.55 * pip + 0.45 * dip, 0, 78)
+        flex3 = min(178.0, flex2 + dip_eff)
+        d1 = direction(spread, flex1)
+        d2 = direction(spread, flex2)
+        d3 = direction(spread, flex3)
+        j1 = _vadd(base, _vmul(d1, FINGER_L1[i]))
+        j2 = _vadd(j1, _vmul(d2, FINGER_L2[i]))
+        tip = _vadd(j2, _vmul(d3, FINGER_L3[i]))
+        r0, r1, r2 = FINGER_RADII[i]
+        digit_mesh += _mesh_articulated_digit(
+            [base, j1, j2, tip], [r0, r1, r2, r2 * 0.82], COL["skin"])
+        joints.append((j1, r1 * 0.78, d1))
+        joints.append((j2, r2 * 0.76, d2))
 
-    # thumb
-    ta1 = cur[13]
-    ta2 = ta1 + cur[14]
-    at = THUMB_AT
-    d1 = direction(ta1)
-    d2 = direction(ta2)
-    tj1 = (at[0] + d1[0] * THUMB_L1, at[1] + d1[1] * THUMB_L1)
-    tj2 = (tj1[0] + d2[0] * THUMB_L2, tj1[1] + d2[1] * THUMB_L2)
-    pts = rot([at, tj1, tj2], pivot, wrist)
-    seg(screen, pts[0], pts[1], 26, COL["skin_mid"], COL["skin_dark"])
-    seg(screen, pts[1], pts[2], 21, COL["skin_mid"], COL["skin_dark"])
-    pygame.draw.circle(screen, COL["joint"], pts[1], 5)
+    for i in range(3):
+        left_x = FINGER_X[i] + FINGER_RADII[i][0] * 0.78
+        right_x = FINGER_X[i + 1] - FINGER_RADII[i + 1][0] * 0.78
+        left_y = FINGER_BASE_Y[i] - 3.0
+        right_y = FINGER_BASE_Y[i + 1] - 3.0
+        valley = ((left_x + right_x) * 0.5,
+                  min(left_y, right_y) - 24.0, 15.5)
+        web_mesh.append(([(left_x, left_y, 15.5),
+                          (right_x, right_y, 15.5), valley],
+                         COL["skin"]))
+
+    # Thumb has one buried CMC base and two visible hinge joints (MCP/IP).
+    # Its plane angle rotates toward the palm center as opposition increases.
+    t_cmc, t_abd, t_mcp, t_ip = cur[18:22]
+    opposition = _clamp((t_mcp + t_ip) / 140.0, 0.0, 1.0)
+    plane1 = t_abd
+    plane2 = t_abd + (90.0 - t_abd) * opposition
+    plane3 = plane2 + (105.0 - plane2) * _clamp(t_ip / 80.0, 0.0, 1.0)
+    # Thumb flexion is a normal-direction bend. Keep each phalanx below a
+    # right-angle turn so the distal segment continues across the palm.
+    d1 = thumb_direction(plane1, min(38.0, t_cmc * 0.45))
+    d2 = thumb_direction(plane2, min(58.0, t_cmc * 0.25 + t_mcp * 0.55))
+    d3 = thumb_direction(plane3, min(68.0,
+                                      t_cmc * 0.15 + t_mcp * 0.30 +
+                                      t_ip * 0.25))
+    # CMC center lies inside the palm thickness; root_bury hides its base.
+    t0 = (THUMB_AT[0], THUMB_AT[1], -4.0)
+    t1 = _vadd(t0, _vmul(d1, THUMB_L1))
+    t2 = _vadd(t1, _vmul(d2, THUMB_L2))
+    t3 = _vadd(t2, _vmul(d3, 24.0))
+    digit_mesh += _mesh_articulated_digit(
+        [t0, t1, t2, t3], [16.5, 13.5, 10.0, 8.2], COL["skin"],
+        root_bury=0.4, root_scale=0.25)
+    joints.append((t1, 11.8, d1))
+    joints.append((t2, 9.2, d2))
+
+    arm_and_band = arm_mesh + band_mesh
+    _draw_opaque_base(screen, pivot, scale, hand_transform, camera_transform)
+    _render_faces(screen, arm_and_band, pivot, scale, camera_transform)
+    edge_on = abs(math.sin(camera_yaw)) > 0.72
+    hand_mesh = palm_mesh + thenar_mesh + web_mesh
+    # One depth-sorted pass decides occlusion for every posture. A finger face
+    # closer to the camera covers the palm; a root buried behind the palm is
+    # covered by it. No gesture-specific masking is needed.
+    _render_faces(screen, hand_mesh + digit_mesh, pivot, scale, hand_transform)
+    if not edge_on:
+        for center, radius, direction_v in joints:
+            _draw_joint_crease(screen, center, direction_v, radius, pivot, scale,
+                               hand_transform)
 
 
 def draw_status(screen, st, fonts):
@@ -323,8 +857,9 @@ def main():
     st = HandState()
     log = {"cls": -1, "fat": -1, "gated": False, "cn": has_cn}
     buf = b""
-    demo_seq = ["rest", "open", "fist", "wrist_flex", "wrist_ext"]
+    demo_seq = ["rest", "open", "fist", "flex", "ext"]
     demo_i, demo_t = 0, time.time()
+    drag = {"button": 0, "pos": None}
     print("virtual hand: %s" % ("demo mode" if args.demo
                                 else "%s @ %d" % (args.port, args.baud)))
 
@@ -332,15 +867,17 @@ def main():
     while running:
         now = time.time()
         for ev in pygame.event.get():
-            if ev.type == pygame.QUIT or (ev.type == pygame.KEYDOWN
-                                          and ev.key == pygame.K_ESCAPE):
+            if ev.type == pygame.QUIT:
                 running = False
+            elif ev.type == pygame.KEYDOWN and ev.key == pygame.K_ESCAPE:
+                running = False
+            else:
+                handle_view_event(ev, drag)
 
         if args.demo:
             if now - demo_t > 1.8:
                 demo_t = now
                 demo_i = (demo_i + 1) % len(demo_seq)
-            st.cls = demo_i
             st.conf = 87
             st.set_pose(demo_seq[demo_i], now)
         else:
@@ -360,12 +897,17 @@ def main():
                 print("[%08.2f] no R rows, relaxing" % now)
 
         st.step(now)
+        if args.demo:
+            # Keep the status label synchronized with the pose actually on
+            # screen while the 350 ms interpolation is in progress.
+            st.cls = st.nearest_pose_class()
         screen.fill(COL["bg"])
         draw_hand(screen, st)
         draw_status(screen, st, (big, small, has_cn))
         fat_en = FAT_EN[st.fat]
-        pygame.display.set_caption("sEMG virtual hand | %s %d%% | fatigue %s"
-                                   % (CLS_EN[st.cls], st.conf, fat_en))
+        pygame.display.set_caption(
+            "sEMG virtual hand | %s %d%% | fatigue %s | drag: orbit, right-drag: pan, wheel: zoom, R: reset"
+            % (CLS_EN[st.cls], st.conf, fat_en))
         pygame.display.flip()
         clock.tick(60)
 
