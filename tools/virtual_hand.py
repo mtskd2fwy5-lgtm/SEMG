@@ -8,12 +8,12 @@ Reads the monitor stream of sw/ps_uart_print (115200-8N1) and animates a
       c: 0=rest 1=open 2=fist 3=wrist flex 4=wrist extend
       p: indicative confidence 0..100; below --conf the hand falls back
          to rest.  g=1 means the PS rest-gate re-classified the window.
-  T s=.. lv=<0..2> ..                  -> fatigue state (NORM/MILD/FATIG)
-      lv=1 tints the wrist band yellow, lv=2 red.
+  T s=.. lv=<0..3> ..                  -> fatigue state (NORM/MILD/FATIG/LEVEL3)
+      lv=1 tints the wrist band yellow, lv>=2 red.
   [CAL] ...                            -> shows the calibration status
 
 The canonical 22-DOF hand pose (with legacy 15-parameter input support) is
-linearly interpolated over ~350 ms, so the hand glides
+linearly interpolated over the shared 220 ms transition time, so the hand glides
 between poses instead of snapping.  If no R row arrives for 1.5 s the
 hand relaxes back to rest.
 
@@ -37,27 +37,23 @@ except ImportError:
     print("pygame not installed: pip install pygame")
     sys.exit(1)
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from pose_contract import (POSE_CONFIRM_WINDOWS, POSE_FIELDS_V2, POSE_MIN_CONF,
+                           POSE_NAMES, POSE_SCHEMA_V2, POSE_SMOOTH_MS,
+                           POSE_STALE_MS, POSES_V2, sanitize_pose22)
+
 # ---- Class / fatigue labels -------------------------------------------------
 
 CLS_CN = ["放松", "张手", "握拳", "屈腕", "伸腕"]
 CLS_EN = ["rest", "open", "fist", "wrist flex", "wrist extend"]
-FAT_CN = ["正常", "轻度疲劳", "疲劳"]
-FAT_EN = ["NORM", "MILD", "FATIG"]
+FAT_CN = ["正常", "轻度疲劳", "疲劳", "等级3"]
+FAT_EN = ["NORM", "MILD", "FATIG", "LEVEL3"]
 
 # PoseFrame v1 is the stable renderer contract.  Model class ids are only a
 # fallback; new models should be adapted to this vector before rendering.
 POSE_FIELDS = ("w", "s0", "s1", "s2", "s3", "m0", "m1", "m2", "m3",
                "p0", "p1", "p2", "p3", "ta", "ti")
 POSE_SCHEMA_V1 = 1
-POSE_FIELDS_V2 = (
-    "wf", "wd",
-    "i_mcp", "i_abd", "i_pip", "i_dip",
-    "m_mcp", "m_abd", "m_pip", "m_dip",
-    "r_mcp", "r_abd", "r_pip", "r_dip",
-    "l_mcp", "l_abd", "l_pip", "l_dip",
-    "t_cmc", "t_abd", "t_mcp", "t_ip",
-)
-POSE_SCHEMA_V2 = 2
 
 # ---- Pose parameter tables ---------------------------------------------------
 # Legacy PoseFrame v1 vector layout (15 floats):
@@ -74,25 +70,6 @@ POSES = {
     "fist":  [0,     -4, -2, 2, 5,     74, 76, 79, 82, 78, 75, 72, 68, 36, 78],
     "flex":  [34,    -6, -3, 3, 6,     16, 14, 14, 18,  20, 17, 18, 24,   -30, 22],
     "ext":   [-34,   -7, -3, 3, 7,     6, 5, 5, 7,      10, 9, 9, 13,     -35, 15],
-}
-
-# class index -> pose key (c: 0=rest 1=open 2=fist 3=wrist flex 4=extend)
-POSE_NAMES = ["rest", "open", "fist", "flex", "ext"]
-
-# Canonical 22-DOF hand skeleton used internally by the renderer. Values are
-# degrees: wrist flex/deviation, four long-finger MCP abduction/flexion and
-# PIP/DIP flexion, then thumb CMC flex/abduction plus MCP/IP flexion.
-POSES_V2 = {
-    "rest": [0, 0, 18, -10, 20, 12, 14, -4, 18, 10,
-              16, 4, 18, 10, 18, 11, 22, 14, 32, -38, 28, 20],
-    "open": [0, 0, 4, -14, 5, 3, 2, -5, 4, 2,
-             3, 4, 5, 3, 5, 13, 8, 5, 20, -45, 8, 4],
-    "fist": [0, 0, 84, -4, 88, 60, 86, -1, 90, 62,
-              88, 2, 92, 64, 90, 5, 94, 66, 30, -35, 76, 56],
-    "flex": [28, 0, 20, -8, 28, 18, 18, -3, 26, 16,
-             20, 4, 26, 18, 22, 9, 30, 20, 34, -30, 34, 24],
-    "ext": [-28, 0, 8, -12, 10, 6, 7, -4, 8, 4,
-            8, 4, 10, 5, 10, 8, 12, 6, 24, -40, 14, 8],
 }
 
 # The mesh template is stored as (x, arm-to-fingertip, palm-normal), then mapped
@@ -119,10 +96,12 @@ FINGER_L3 = [22.0, 25.0, 23.0, 19.0]       # distal phalanx
 FINGER_RADII = [(14.8, 12.0, 9.6), (15.5, 12.6, 10.0),
                 (14.4, 11.8, 9.5), (12.7, 10.2, 8.2)]
 FINGER_DIP_RATIO = 0.42
-THUMB_AT = (-51.0, 30.0, -4.0)
-THUMB_L1, THUMB_L2 = 42.0, 32.0
-SMOOTH_S = 0.35                            # pose interpolation time (s)
-STALE_S = 1.5                              # no R row -> relax to rest
+THUMB_AT = (-46.0, 26.0, -4.0)
+# Metacarpal stays buried inside the palm volume; only the proximal and
+# distal phalanges emerge past the thenar edge (two visible segments).
+THUMB_META, THUMB_L1, THUMB_L2 = 26.0, 32.0, 24.0
+SMOOTH_S = POSE_SMOOTH_MS / 1000.0         # portable pose transition time
+STALE_S = POSE_STALE_MS / 1000.0           # no R row -> relax to rest
 
 VIEW_DEFAULT = {"yaw": 0.0, "pitch": 34.0, "zoom": 1.0,
                 "pan_x": 0.0, "pan_y": 0.0}
@@ -181,25 +160,6 @@ def _clamp(value, low, high):
     return max(low, min(high, float(value)))
 
 
-def sanitize_pose22(values):
-    """Apply anatomical joint limits and mild tendon coupling."""
-    if len(values) != 22:
-        return None
-    v = [float(x) for x in values]
-    v[0] = _clamp(v[0], -45, 45)       # wrist flex/ext
-    v[1] = _clamp(v[1], -25, 25)       # radial/ulnar deviation
-    for base in (2, 6, 10, 14):
-        v[base] = _clamp(v[base], 0, 95)       # MCP flex (fist table uses 92)
-        v[base + 1] = _clamp(v[base + 1], -25, 25)  # MCP abduction
-        v[base + 2] = _clamp(v[base + 2], 0, 125)   # PIP flex
-        v[base + 3] = _clamp(v[base + 3], 0, 85)    # DIP flex
-    v[18] = _clamp(v[18], 0, 70)       # thumb CMC flex
-    v[19] = _clamp(v[19], -55, 35)     # thumb CMC abduction/opposition
-    v[20] = _clamp(v[20], 0, 80)       # thumb MCP flex (fist table uses 76)
-    v[21] = _clamp(v[21], 0, 90)       # thumb IP flex
-    return v
-
-
 def legacy_to_pose22(values):
     """Adapt the existing 15-value protocol into the 22-DOF skeleton."""
     if len(values) != 15:
@@ -222,6 +182,8 @@ class HandState:
         self.to = list(POSES_V2["rest"])
         self.t0 = 0.0
         self.cls = 0
+        self.class_candidate = 0
+        self.class_candidate_hits = 0
         self.conf = 0
         self.fat = 0
         self.gated = False
@@ -239,6 +201,27 @@ class HandState:
         self.frm = list(self.cur)
         self.to = list(target)
         self.t0 = now
+
+    def observe_class(self, cls, now, immediate=False):
+        """Debounce legacy R-only streams before changing the rendered pose."""
+        if cls == self.cls:
+            self.class_candidate = cls
+            self.class_candidate_hits = 0
+            return False
+        if immediate:
+            self.class_candidate = cls
+            self.class_candidate_hits = POSE_CONFIRM_WINDOWS
+        elif cls == self.class_candidate:
+            self.class_candidate_hits += 1
+        else:
+            self.class_candidate = cls
+            self.class_candidate_hits = 1
+        if self.class_candidate_hits < POSE_CONFIRM_WINDOWS:
+            return False
+        self.cls = cls
+        self.class_candidate_hits = 0
+        self.set_pose(POSE_NAMES[cls], now)
+        return True
 
     def set_pose_vector(self, values, now, schema=POSE_SCHEMA_V1,
                         mask=(1 << 15) - 1, phase=0):
@@ -264,8 +247,9 @@ class HandState:
         return True
 
     def step(self, now):
-        k = min(1.0, (now - self.t0) / SMOOTH_S)
-        self.cur = [lerp(f, t, k) for f, t in zip(self.frm, self.to)]
+        k = min(1.0, max(0.0, (now - self.t0) / SMOOTH_S))
+        eased = k * k * (3.0 - 2.0 * k)
+        self.cur = [lerp(f, t, eased) for f, t in zip(self.frm, self.to)]
 
     def nearest_pose_class(self):
         """Return the label whose canonical pose is closest to the rendered pose."""
@@ -309,30 +293,29 @@ def handle_line(line, st, now, conf_min, log):
         g = f.get("g", "0") == "1"
     except ValueError:
         return False
-    c = max(0, min(c, len(POSE_NAMES) - 1))
-    st.cls, st.conf, st.gated = c, p, g
+    raw_c = max(0, min(c, len(POSE_NAMES) - 1))
+    effective_c = 0 if g or p < conf_min else raw_c
+    st.conf, st.gated = p, g
     st.last_r = now
-    changed = False
     if g and log["gated"] is not True:
-        print("[%08.2f] rest-gate caught a misfire (was c=%d)" % (now, c))
+        print("[%08.2f] rest-gate caught a misfire (was c=%d)" %
+              (now, raw_c))
         log["gated"] = True
     elif not g:
         log["gated"] = False
-    if g or p < conf_min:
-        c = 0                               # low confidence / gated -> rest
-    if c != log["cls"]:
-        log["cls"] = c
-        changed = True
-        names = CLS_CN if log["cn"] else CLS_EN
-        print("[%08.2f] pose -> %s (p=%d%s)" % (now, names[c], p,
-                                                ", gated" if g else ""))
-    # Once a P frame has arrived, R is metadata only.  During a class change,
-    # use the legacy pose for the short interval before its P frame arrives.
+    accepted = False
     if not had_pose_frame:
-        st.set_pose(POSE_NAMES[c], now)
-    if g or p < conf_min:
-        st.set_pose("rest", now)
-    return changed
+        # Mirror the PS-side two-window confirmation for legacy R-only
+        # streams. P frames are authoritative and bypass this fallback.
+        accepted = st.observe_class(
+            effective_c, now, immediate=(g or p < conf_min))
+    if accepted:
+        log["cls"] = st.cls
+        names = CLS_CN if log["cn"] else CLS_EN
+        print("[%08.2f] pose -> %s (p=%d%s)" %
+              (now, names[st.cls], p,
+                                                ", gated" if g else ""))
+    return accepted
 
 
 def handle_pose_line(line, st, now, conf_min, log):
@@ -358,7 +341,11 @@ def handle_pose_line(line, st, now, conf_min, log):
     except (KeyError, TypeError, ValueError):
         return False
 
-    st.cls, st.conf, st.gated = gid, conf, False
+    if conf < conf_min:
+        values = list(POSES_V2["rest"] if schema == POSE_SCHEMA_V2
+                      else POSES["rest"])
+        gid = 0
+    st.conf, st.gated = conf, False
     st.last_r = now
     changed = gid != log["cls"]
     log["cls"] = gid
@@ -366,12 +353,10 @@ def handle_pose_line(line, st, now, conf_min, log):
         names = CLS_CN if log["cn"] else CLS_EN
         print("[%08.2f] pose frame -> %s (q=%d schema=%d seq=%d)" %
               (now, names[gid], conf, schema, seq))
-    if conf < conf_min:
-        values = list(POSES_V2["rest"] if schema == POSE_SCHEMA_V2
-                      else POSES["rest"])
-        gid = 0
     st.set_pose_vector(values, now, schema=schema, mask=mask, phase=phase)
     st.cls = gid
+    st.class_candidate = gid
+    st.class_candidate_hits = 0
     return changed
 
 
@@ -385,11 +370,12 @@ def handle_fatigue(line, st, now, log):
             return False
     except ValueError:
         return False
-    st.fat = min(lv, 2)
-    if lv != log["fat"]:
-        log["fat"] = lv
+    level = max(0, min(lv, 3))
+    st.fat = level
+    if level != log["fat"]:
+        log["fat"] = level
         names = FAT_CN if log["cn"] else FAT_EN
-        print("[%08.2f] fatigue -> %s" % (now, names[min(lv, 2)]))
+        print("[%08.2f] fatigue -> %s" % (now, names[level]))
         return True
     return False
 
@@ -668,7 +654,7 @@ def draw_hand(screen, st):
     # Wrist flex rotates the hand about x; the forearm stays on the z axis.
     # The display convention is opposite to the classifier's positive angle,
     # so negate it here while keeping c=3 flex and c=4 extend unchanged.
-    wrist_pitch = -wrist * 0.72
+    wrist_pitch = -wrist
     wrist_dev = math.radians(cur[1]) * 0.65
     camera_pitch = math.radians(VIEW["pitch"])
     camera_yaw = math.radians(VIEW["yaw"])
@@ -696,7 +682,7 @@ def draw_hand(screen, st):
     band = COL["band"]
     if st.fat == 1:
         band = COL["band_mild"]
-    elif st.fat == 2:
+    elif st.fat >= 2:
         band = COL["band_fatig"]
     band_mesh = _mesh_capsule((0, -43, 0), (0, -5, 0), 34, 35, band)
 
@@ -729,9 +715,11 @@ def draw_hand(screen, st):
         pip, dip = cur[off + 2], cur[off + 3]
         base = (FINGER_X[i], FINGER_BASE_Y[i], FINGER_BASE_DEPTH[i])
         flex1 = _clamp(mcp, 0, 90)
-        flex2 = min(170.0, flex1 + _clamp(pip, 0, 125))
-        dip_eff = _clamp(0.55 * pip + 0.45 * dip, 0, 78)
-        flex3 = min(178.0, flex2 + dip_eff)
+        flex2 = min(210.0, flex1 + _clamp(pip, 0, 125))
+        dip_eff = _clamp(0.55 * pip + 0.45 * dip, 0, 88)
+        # A full fist rolls ~250 degrees cumulative (MCP+PIP+DIP), tips
+        # pressed back against the palm base - do not cap below that.
+        flex3 = min(265.0, flex2 + dip_eff)
         d1 = direction(spread, flex1)
         d2 = direction(spread, flex2)
         d3 = direction(spread, flex3)
@@ -762,32 +750,47 @@ def draw_hand(screen, st):
     plane1 = t_abd
     plane2 = t_abd + (90.0 - t_abd) * opposition
     plane3 = plane2 + (105.0 - plane2) * _clamp(t_ip / 80.0, 0.0, 1.0)
-    # Thumb flexion is a normal-direction bend. Keep each phalanx below a
-    # right-angle turn so the distal segment continues across the palm.
-    d1 = thumb_direction(plane1, min(38.0, t_cmc * 0.45))
-    d2 = thumb_direction(plane2, min(58.0, t_cmc * 0.25 + t_mcp * 0.55))
-    d3 = thumb_direction(plane3, min(68.0,
-                                      t_cmc * 0.15 + t_mcp * 0.30 +
-                                      t_ip * 0.25))
-    # CMC center lies inside the palm thickness; root_bury hides its base.
-    t0 = (THUMB_AT[0], THUMB_AT[1], -4.0)
-    t1 = _vadd(t0, _vmul(d1, THUMB_L1))
-    t2 = _vadd(t1, _vmul(d2, THUMB_L2))
-    t3 = _vadd(t2, _vmul(d3, 24.0))
+    # Thumb flexion is a normal-direction bend. The caps and coefficients let
+    # a clenched fist (t_cmc=70, t_mcp/t_ip high) lift the whole chain clear
+    # in front of the palm face (chain tip reaches ~n=61 vs palm front n=15),
+    # so the thumb wraps over the folded fingers instead of diving through
+    # them. Rest/open values stay low and keep the thumb beside the palm.
+    d1 = thumb_direction(plane1, min(42.0, t_cmc * 0.60))
+    d2 = thumb_direction(plane2, min(75.0, t_cmc * 0.40 + t_mcp * 0.60))
+    d3 = thumb_direction(plane3, min(80.0,
+                                      t_cmc * 0.25 + t_mcp * 0.40 +
+                                      t_ip * 0.35))
+    # Thumb: CMC base buried deep inside the palm, short metacarpal segment
+    # hidden within the palm thickness, so only the proximal + distal
+    # phalanges are visible beyond the thenar edge (two segments, one MCP
+    # knuckle crease plus the IP crease).
+    t0 = (THUMB_AT[0], THUMB_AT[1], -6.0)
+    t1 = _vadd(t0, _vmul(d1, THUMB_META))
+    t2 = _vadd(t1, _vmul(d2, THUMB_L1))
+    t3 = _vadd(t2, _vmul(d3, THUMB_L2))
     digit_mesh += _mesh_articulated_digit(
-        [t0, t1, t2, t3], [16.5, 13.5, 10.0, 8.2], COL["skin"],
-        root_bury=0.4, root_scale=0.25)
-    joints.append((t1, 11.8, d1))
-    joints.append((t2, 9.2, d2))
+        [t0, t1, t2, t3], [14.5, 13.0, 10.0, 8.2], COL["skin"],
+        root_bury=1.0, root_scale=0.8)
+    # Thenar webbing: a skin patch from the palm's left edge onto the
+    # metacarpal, so the thumb root grows out of the hand instead of looking
+    # glued on.  It follows the thumb in every pose.
+    meta_mid = _vmul(_vadd(t0, t1), 0.5)
+    web_mesh.append(([(-48.0, 14.0, 13.0), (-56.0, 48.0, 13.5),
+                      (t1[0], t1[1], t1[2] + 5.0),
+                      (meta_mid[0], meta_mid[1], meta_mid[2] + 5.0)],
+                     COL["skin"]))
+    joints.append((t1, 10.5, d1))
+    joints.append((t2, 8.8, d2))
 
     arm_and_band = arm_mesh + band_mesh
     _draw_opaque_base(screen, pivot, scale, hand_transform, camera_transform)
     _render_faces(screen, arm_and_band, pivot, scale, camera_transform)
     edge_on = abs(math.sin(camera_yaw)) > 0.72
     hand_mesh = palm_mesh + thenar_mesh + web_mesh
-    # One depth-sorted pass decides occlusion for every posture. A finger face
-    # closer to the camera covers the palm; a root buried behind the palm is
-    # covered by it. No gesture-specific masking is needed.
+    # One depth-sorted pass decides occlusion for every posture. The thumb
+    # flex caps keep its chain in front of the palm face whenever it sweeps
+    # across the fist, so per-triangle ordering never shows it intersecting
+    # the folded fingers.
     _render_faces(screen, hand_mesh + digit_mesh, pivot, scale, hand_transform)
     if not edge_on:
         for center, radius, direction_v in joints:
@@ -809,7 +812,7 @@ def draw_status(screen, st, fonts):
     color = COL["muted"]
     if st.fat == 1:
         color = COL["band_mild"]
-    elif st.fat == 2:
+    elif st.fat >= 2:
         color = COL["band_fatig"]
     screen.blit(small.render(line2, True, color), (18, 52))
 
@@ -834,7 +837,7 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--port", default="COM3", help="serial port (default COM3)")
     ap.add_argument("--baud", type=int, default=115200)
-    ap.add_argument("--conf", type=int, default=30,
+    ap.add_argument("--conf", type=int, default=POSE_MIN_CONF,
                     help="confidence below this falls back to rest (0..100)")
     ap.add_argument("--demo", action="store_true",
                     help="no board: cycle poses automatically")
@@ -890,10 +893,12 @@ def main():
                     handle_fatigue(line, st, now, log)
                 else:
                     handle_line(line, st, now, args.conf, log)
-            if st.last_r and now - st.last_r > STALE_S \
-                    and st.cls != 0:
-                st.cls = 0
-                st.set_pose("rest", now)
+            if st.last_r and now - st.last_r > STALE_S:
+                st.class_candidate = 0
+                st.class_candidate_hits = 0
+                if st.cls != 0:
+                    st.cls = 0
+                    st.set_pose("rest", now)
                 print("[%08.2f] no R rows, relaxing" % now)
 
         st.step(now)
