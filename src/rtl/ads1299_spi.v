@@ -36,13 +36,12 @@ module ads1299_spi #(
     parameter [7:0] CONFIG1_VALUE = 8'h92,  /* reserved bits=1,10; DR=010 (4 kSPS), CLK_EN=0 */
     // 0xD5 enables the internal calibration signal; CAL_FREQ=01 selects
     // fCLK/2^20. Use 0xC0 (INT_CAL=0) to disable it for real EMG.
-    parameter [7:0] CONFIG2_VALUE = 8'hD5,
+    parameter [7:0] CONFIG2_VALUE = 8'hC0,
     parameter [7:0] CONFIG3_VALUE = 8'hEC,
     parameter [7:0] LOFF_VALUE = 8'h00,
-    // 0x65 = PD=0, GAIN=110 (24x), MUX=101 (internal test signal).
-    // MUX=110 (0x66) selects BIAS_DRP, not the calibration signal.
-    // Use 0x60 (MUX=000, normal electrode input) for real EMG.
-    parameter [7:0] CHANNEL_VALUE = 8'h65
+    // 0x60 = PD=0, GAIN=110 (24x), MUX=000 (normal electrode input).
+    // 0x65 (MUX=101) selects the internal test signal for board bring-up.
+    parameter [7:0] CHANNEL_VALUE = 8'h60
 ) (
     input  wire                         clk,
     input  wire                         rst_n,

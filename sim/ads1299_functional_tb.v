@@ -43,10 +43,10 @@ module ads1299_functional_tb;
                         0: expected_command_byte = 8'h41;  /* WREG @ CONFIG1 (addr 01h): op 010r rrrr */
                         1: expected_command_byte = 8'h0B;
                         2: expected_command_byte = 8'h92;  /* CONFIG1: DR=010 = 4 kSPS */
-                        3: expected_command_byte = 8'hD5;  /* INT_TEST bring-up */
+                        3: expected_command_byte = 8'hC0;  /* INT_CAL off, real EMG */
                         4: expected_command_byte = 8'hEC;
                         5: expected_command_byte = 8'h00;
-                        default: expected_command_byte = 8'h65;  /* MUX=101 internal test signal */
+                        default: expected_command_byte = 8'h60;  /* MUX=000 normal electrode input */
                     endcase
                 end
                 2: expected_command_byte = 8'h10;
