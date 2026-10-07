@@ -41,8 +41,8 @@ build/vitis_ws/
 sw/**/*.elf
 sw/**/*.bin
 
-# XSim-generated state
-sim/results*/xsim.dir/
+# XSim-generated state (entire tree is regenerable via build/scripts/run_*.bat)
+sim/results*/
 sim/results*/*.jou
 sim/results*/*.log
 sim/results*/*.wdb

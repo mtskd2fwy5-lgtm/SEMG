@@ -1,7 +1,7 @@
 `timescale 1ns/1ps
 
 // Packet-aware round-robin mux. Each input is one complete packet word in
-// the current data contract, so TLAST is asserted for every accepted word.
+// the current data contract; TLAST marks the end of one DMA batch.
 module axis_packet_mux #(
     parameter integer DATA_WIDTH = 64,
     parameter integer PACKET_WORDS = 256

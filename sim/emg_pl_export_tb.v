@@ -49,6 +49,11 @@ module emg_pl_export_tb;
         .result_overflow(result_overflow)
     );
 
+    // Keep the integration test short while preserving the RTL state
+    // sequence. The board value is 140 ms; this test only needs to verify
+    // reset/configuration ordering before feeding the behavioral ADC.
+    defparam dut.u_ads1299_spi.POST_RESET_CYCLES = 3_500;
+
     // Behavioral ADS1299 data path: DOUT updates after rising SCLK edges;
     // the controller samples it on the following falling edge.
     always @(negedge adc_drdy_n) begin

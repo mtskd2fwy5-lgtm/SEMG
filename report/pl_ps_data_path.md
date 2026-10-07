@@ -13,6 +13,7 @@ result producer
     -> AXI DMA S2MM
     -> DDR
     -> Zynq PS
+    -> local RGB LCD/VDMA virtual hand
 ```
 
 The three producer inputs run in `pl_clk`; the merged AXI-Stream runs in `axis_clk`. The current RTL modules are:
@@ -52,8 +53,13 @@ emg_pl_export.m_axis_tready <- AXI DMA S_AXIS_S2MM tready
 emg_pl_export.m_axis_tlast  -> AXI DMA S_AXIS_S2MM tlast
 ```
 
-Use an AXI-Stream data width of 64 bits and a PS/AXI clock domain for the DMA side. The mux asserts `tlast` every `PACKET_WORDS` accepted words; the default is 256 words. This avoids completing a DMA transfer after every 64-bit sample while keeping a bounded packet size.
+Use an AXI-Stream data width of 64 bits and a PS/AXI clock domain for the DMA side. The mux asserts `tlast` every `PACKET_WORDS` accepted words; the current default is 256 words. The PS direct-register DMA therefore arms `256 * 8 = 2048` bytes per ping-pong buffer. The batch length and `tlast` position must remain identical.
 
 ## Overflow behavior
 
-`raw_overflow`, `feature_overflow` and `result_overflow` latch when a producer presents valid data while its source FIFO is full. Clear these status bits only through a future AXI control register or a reset.
+`raw_overflow`, `feature_overflow` and `result_overflow` latch when a producer presents valid data while its source FIFO is full. The current PS monitor also counts raw and feature sequence gaps and discards partial feature windows after an ordering error. Clear the overflow status bits only through a future AXI control register or a reset.
+
+The PS application is standalone in steady state: the LCD renderer consumes
+the accepted class and fatigue state directly, while UART output is muted by
+default. UART remains an optional bring-up/data-capture interface (`d` for
+debug text, `f` for feature rows, `r` for the 2 Mbaud record mode).

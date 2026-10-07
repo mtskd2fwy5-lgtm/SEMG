@@ -35,21 +35,21 @@
 
 ### 4.1 数据流（已实现）
 
-`sEMG/电极 -> ADS1299 采样 -> PL 预处理 -> 特征提取 -> INT8 推理 / FFT 疲劳 -> AXI-Stream 合流 -> DMA -> PS 解析 -> UART/上位机 -> 虚拟手重建与显示`
+`sEMG/电极 -> ADS1299 采样 -> PL 预处理 -> 特征提取 -> INT8 推理 / FFT 疲劳 -> AXI-Stream 合流 -> DMA -> PS 判决 -> 板载 LCD 虚拟手与疲劳反馈`
 
-当前阶段（2026-09-21）：PL 全链路（采集、预处理、特征、INT8 NN 推理、FFT 疲劳监测多路并行，时分复用：FFT 单核轮服 8 通道占空 10%，NN 占空 <0.2%）已实现，经异步 FIFO 合流为 64-bit AXI-Stream（包 type：1=raw / 2=feature / 3=NN 结果 / 4=fatigue）进 DMA；PS 裸机固件解析全部包类型并经 UART0（115200）输出。ADC 挪脚（J4/bank13）与 `emg_nn_infer` argmax 多驱动修复后重综合通过、0 critical warning，待跑实现出位流并改线板测。板级已实测 raw/feature/NN 链路，疲劳链路板测待做。数据通路约定见 `report/pl_ps_data_path.md`。
+当前阶段（2026-09-30）：PL 全链路（采集、预处理、特征、INT8 NN 推理、FFT 疲劳监测多路并行，时分复用：FFT 单核轮服 8 通道占空 10%，NN 占空 <0.2%）已实现，经异步 FIFO 合流为 64-bit AXI-Stream（包 type：1=raw / 2=feature / 3=NN 结果 / 4=fatigue）进入 DMA。数据通路已统一为 256 个 64-bit word 一批、2048 B 双缓冲，PS 侧同步适配 TLAST、序号断包检测和不完整特征窗丢弃。PS 裸机固件解析全部包类型，直接驱动板载 RGB LCD 的本地虚拟手；UART0 仅保留为调试、日志和数据采集接口，断开 PC 不影响主功能。训练/量化信号链对齐实验见 `report/signal_chain_alignment.md`，数据通路约定见 `report/pl_ps_data_path.md`，硬件资源与验证证据见 `report/hardware_metrics.md`。当前仍需完成最终实现出位流、改线后的板级长时间稳定性和疲劳链路实测。
 
 ### 4.2 功能模块
 
 - 采集模块：SPI 驱动 ADS1299，读取 24 位多通道生物电帧
 - 预处理模块：去直流、带通滤波、整流、包络提取
 - 特征模块：MAV、WL、Energy、ZC、SSC 窗口特征（与 PC 参考模型逐位一致）
-- 推理模块：INT8 MLP（`emg_nn_infer.v`，16-MAC 时分复用阵列，56µs/窗 @100MHz），权重 1377 字 BRAM，与 PC 金模型逐位一致；LoSo 跨被试准确率 84.9%；后续可升级 1D-CNN / TCN
-- 疲劳模块：8 通道分时复用 2048 点 radix-2 FFT（`emg_fatigue.v`，自写 RTL 避开 Xilinx FFT IP），512ms 窗计算 MDF 均值，16 点历史线性回归斜率输出三级疲劳指数（正常/轻度/疲劳）
-- 判决与校准模块（PS，`sw/ps_uart_print/main.c`）：上电自动静息校准（丢弃 ~2s 后平均 16 个特征窗的每通道 MAV 得基线，动作阈值 = max(3×基线, 下限)），NN 判非 rest 但当前窗 8 通道 MAV 全部低于阈值时改判 rest（R 行附 g=1 标志）；UART 收 `c` 触发重校准；R 行附指示性置信度 p（定点近似 softmax）
+- 推理模块：INT8 MLP（`emg_nn_infer.v`，16-MAC 时分复用阵列，56µs/窗 @100MHz），权重 1377 字 BRAM，与 PC 金模型逐位一致；当前生产基线 LoSo pooled accuracy 为 84.04%，PL 对齐连续流实验为 83.46%；后续可升级 1D-CNN / TCN
+- 疲劳模块：8 通道分时复用 2048 点 radix-2 FFT（`emg_fatigue.v`，自写 RTL 避开 Xilinx FFT IP），512ms 窗计算 MDF 均值，16 点历史线性回归斜率输出 RTL 定义的疲劳等级；PS 已按有符号斜率分子和 0..3 等级解析并输出
+- 判决与校准模块（PS，`sw/ps_uart_print/main.c`）：上电自动静息校准（丢弃 ~2s 后平均 16 个特征窗的每通道 MAV 得基线，动作阈值 = max(3×基线, 下限)），NN 判非 rest 但当前窗 8 通道 MAV 全部低于阈值时改判 rest（R 行附 g=1 标志）；UART 收 `c` 触发重校准；R 行附指示性置信度 p（定点近似 softmax）；监控模式统计 raw/feature 序号缺口，发生乱序时丢弃残缺特征窗
 - 数据采集模式（运行时可切，无需重编）：UART 发 `r` 在监控模式（115200 文本行）与采集模式（2 Mbaud 二进制帧 `AA 55 | seq u16 | 8×int24`，28 B/帧）间切换；采集模式不打印任何文本保证帧流干净，切回监控自动重做静息校准。PC 端配套 `tools/record_uart.py`（`--enter` 自动两段式入采、`m` 命令切回），用于板卡自采数据集（NinaPro 契约 CSV）
 - 重建模块：把模型输出映射为离散手部姿态（rest/张开/握拳/腕屈/伸腕）+ 平滑插值的低维参数
-- 显示模块：PC 端 `tools/virtual_hand.py` 内部使用 22 自由度手部骨架，解析 `P v=1` 的 15 参数旧帧并自动补全，也支持 `schema=2` 连续 22 参数；保留 `R/T` 旧协议回退，支持鼠标旋转、平移和缩放（`--demo` 可离板演示）。模型轴系为 x 横跨手指、z 沿前臂至指尖、y 垂直掌面，spread 在 xz 平面，MCP/PIP/DIP 屈曲沿 y；渲染前执行关节限位、DIP/PIP 耦合、外展递减和时间平滑；PC 模型掌长约 100、掌宽约 132，与手指长度和四指总宽度匹配；板载 LCD 虚拟手待 PC 造型确认后移植
+- 显示模块：最终运行路径由 PS 裸机固件直接驱动 RGB LCD/VDMA，使用共享 22 自由度姿态表、定点三角函数查表和 5x7 内置字模绘制板端 2D/2.5D 虚拟手，显示动作、疲劳等级和 rest 门控状态，不依赖 PC 或操作系统。PC 端 `tools/virtual_hand.py` 保留为高保真 3D 调试视图，解析 `P v=1` 的 15 参数旧帧并自动补全，也支持 `schema=2` 连续 22 参数；保留 `R/T` 旧协议回退，支持鼠标旋转、平移和缩放（`--demo` 可离板演示）。本轮优化修正了掌指比例、腕部转角、拇指根部遮挡和握拳时指尖穿模问题，并生成了 `report/pose_preview_*.png` 预览图
 
 ## 5. 最小可交付版本
 
@@ -100,7 +100,7 @@ build/scripts/run_ads1299_sim.bat
 - 验证特征提取正确性
 - 对比 MATLAB / Python / RTL 结果
 
-状态：4 kSPS 重设计完成，特征与 PC 参考模型逐位一致（`tools/emg_reference.py` compare-export 回归全绿）。
+状态：4 kSPS 重设计完成，特征与 PC 参考模型逐位一致（`tools/emg_reference.py` compare-export 回归全绿）。训练和量化工具已增加连续流输入、RTL 定点带通、400/100 窗口配置和独立实验输出，避免训练参数与 PL 链路隐式漂移。
 
 ### Phase 3：模型训练与部署
 
@@ -108,7 +108,7 @@ build/scripts/run_ads1299_sim.bat
 - 再做 INT8 量化或轻量化模型
 - 明确哪些逻辑放在 PL，哪些放在 PS
 
-状态：INT8 MLP 已部署 PL（`tools/export_int8.py` 生成权重 → `emg_nn_infer.v` 推理，仿真与 Python 位精确模拟器逐值一致，时延 56µs）。
+状态：INT8 MLP 已部署 PL（`tools/export_int8.py` 生成权重 → `emg_nn_infer.v` 推理，仿真与 Python 位精确模拟器逐值一致，时延 56µs）。已补齐显式的 4 kSPS/400-100 窗口/RTL 定点带通实验路径；连续流 PL 对齐实验的浮点 LoSo pooled accuracy 为 83.46%，INT8 加权准确率为 83.64%，当前不替换生产权重，实验数据与结论见 `report/signal_chain_alignment.md`。
 
 ### Phase 4：手部重建
 
@@ -116,7 +116,7 @@ build/scripts/run_ads1299_sim.bat
 - 做虚拟手模型驱动
 - 加入个体化校准
 
-状态：分类驱动离散姿态（干电极 SNR 尚不足以支持连续角度回归）。已实现：个体化静息校准 + rest 门控（PS 固件，`c` 命令重校准）；PC 端 `tools/virtual_hand.py` 可串口驱动并以 `--demo` 离板预览。待做：先确认 PC 端手部模型比例与姿态，再移植到板载 LCD。
+状态：分类驱动离散姿态（干电极 SNR 尚不足以支持连续角度回归）。已实现：个体化静息校准 + rest 门控（PS 固件，`c` 命令重校准）、PS 端两窗动作确认、共享姿态契约和板载 LCD 本地虚拟手绘制；PC 端 `tools/virtual_hand.py` 可串口驱动并以 `--demo` 离板预览。本轮已完成虚拟手比例、姿态几何和板端整数渲染路径；待做：改线后的 LCD 实机验证、连续运行稳定性和显示更新耗时测量。
 
 ### Phase 5：展示与文档
 
@@ -124,7 +124,54 @@ build/scripts/run_ads1299_sim.bat
 - 输出资源占用、时序、延迟、准确率
 - 整理可复现脚本和实验记录
 
-状态：FFT 疲劳管线（FFT-MDF）已入 PL 并通过 56 词位精确仿真；工程检查单见 `report/competition_checklist.md`、`skill/checklist.md`。正式报告未开始，评分硬指标待补（基线对比表、干净目录复现验证）。
+状态：FFT 疲劳管线（FFT-MDF）已入 PL 并通过 56 词位精确仿真；工程检查单见 `report/competition_checklist.md`、`skill/checklist.md`。当前实现指标已由 `tools/collect_vivado_metrics.py` 汇总到 `report/hardware_metrics.md`；数据路径、PL 导出、生产 NN、PL 对齐实验 NN 和 PS 固件均已完成自动化验证。板级端到端延迟、连续运行稳定性、疲劳链路实测和干净目录复现仍待补齐。
+
+## 本轮优化总结（2026-09-30）
+
+本轮工作的目标是把“PL 数据通路、PS 解析、PC 训练和比赛展示”从能运行推进到参数明确、可复现、可验证。
+
+### 1. 数据通路和 PS 健壮性
+
+- 统一 AXI-Stream DMA 批次：256 个 64-bit word，即 2048 B；`TLAST` 只在批次末尾拉高。
+- PS DMA 双缓冲、链接脚本和 `BUF_PACKETS` 已统一到 256 包，避免 DMA 长度与 PL 批次边界不一致。
+- 增加 raw/feature 序号缺口检测；feature 序列或通道/特征顺序异常时，丢弃残缺窗口并重新同步。
+- 采集模式按 8 个通道的同一序号组帧，发现混帧或乱序时不输出错误训练帧。
+- 修正疲劳包解析：`num2` 按有符号斜率分子解析，支持 RTL 定义的 0..3 等级。
+
+### 2. 训练和量化链路对齐
+
+- `tools/train_baseline.py` 与 `tools/export_int8.py` 共用采样预处理配置。
+- 新增连续 `*_full.csv` 输入模式，滤波时保留非目标动作样本的状态，窗口筛选时再排除无关标签。
+- 新增 PL 定点带通实验路径：200 Hz 输入保持上采样 20 倍到 4 kSPS，再执行 RTL 同款整数带通。
+- 显式支持 400/100 窗口和步长，并将实验模型输出到独立目录，不覆盖生产 `data/models/nn_int8/`。
+- 实验结果：生产基线 LoSo pooled accuracy 为 `84.04%`；连续流 PL 对齐实验浮点结果为 `83.46%`，INT8 加权结果为 `83.64%`。当前证据不足以替换生产权重。
+
+### 3. 虚拟手展示与脱离 PC
+
+- 修正握拳时指尖弯曲上限、拇指链条长度和拇指根部遮挡。
+- 修正腕屈/腕伸角度和手掌/手指比例，保留 `P v=1` 与 `schema=2` 协议兼容。
+- 新增 `sw/ps_uart_print/pose_contract.h` 生成链路，PC 和 PS 共用动作编号、22 维字段、置信度门限、两窗确认和超时参数。
+- PS 端新增无浮点 LCD 渲染器：使用整数角度查表、线段/圆盘、内置 5x7 字模和三帧 RGB888 framebuffer；板端能独立显示动作、疲劳等级和门控状态。
+- 已生成 `report/pose_preview_*.png` 作为离板展示检查素材；LCD 物理接线、位流下载和长时间运行仍需上板验证。
+
+### 4. 自动化验证结果
+
+| 验证项 | 结果 |
+|---|---|
+| 数据路径与 TLAST | 通过，批次边界正确 |
+| PL 导出集成仿真 | 通过，6400 raw、200 feature 位精确 |
+| 生产 INT8 NN 仿真 | 通过，64/64 窗口位精确 |
+| PL 对齐实验 INT8 NN 仿真 | 通过，64/64 窗口位精确 |
+| 疲劳链路仿真 | 通过，56 个结果词位精确 |
+| PS 裸机固件 | 编译通过 |
+| 硬件实现指标 | WNS 1.561 ns，LUT 37.18%，BRAM 18.57%，DSP 38.64%，DRC 0 |
+
+详细数据、复现命令和证据索引见：
+
+- `report/pl_ps_data_path.md`
+- `report/signal_chain_alignment.md`
+- `report/hardware_metrics.md`
+- `build/scripts/run_nn_infer_pl_filter_sim.bat`
 
 ## 7. 里程碑
 
@@ -164,13 +211,14 @@ sEMG-HMRS/
 │   ├── switch_ps_uart0.tcl  # UART0 @ MIO14/15 定案脚本
 │   ├── scripts/             # 仿真入口 run_*_sim.bat
 │   ├── debug/               # 板级调试 XSCT 脚本（dbg_test_k 一键放跑等）
+│   ├── boot/                # FSBL + bitstream + PS ELF 的独立启动镜像
 │   └── attic/               # 已废弃/一次性修复脚本存档（勿用于现行流程）
 ├── board/                   # 板级约束与接线文档
 │   ├── constraints/         # hz_zynq_ads1299*.xdc（ADC @ J4-17..24, bank13）+ 时钟约束
 │   └── README.md            # ADS1299 接线对照表与改线注意点
 ├── data/                    # 数据集、模型与指标
 │   ├── raw/                 # NinaPro DB5（脚本再生成，不入库）
-│   ├── models/              # baseline MLP、INT8 权重、疲劳 twiddle/测试向量
+│   ├── models/              # baseline MLP、生产/实验 INT8 权重、疲劳测试向量
 │   ├── processed/
 │   └── metrics/
 ├── tools/                   # PC 端工具链
@@ -181,7 +229,9 @@ sEMG-HMRS/
 │       export_int8.py / gen_fatigue_mem.py / ...
 ├── skill/                   # 可复用检查清单（工程检查单、数据通路检查单）
 └── report/                  # 设计报告与图表
-    ├── signal_chain_spec.md / pl_ps_data_path.md / engineering_notes.md
+    ├── signal_chain_spec.md / pl_ps_data_path.md / signal_chain_alignment.md
+    ├── hardware_metrics.md
+    ├── engineering_notes.md
     ├── ads1299_command_verification.md / evaluation_template.md
     ├── competition_checklist.md
     └── figures/
@@ -196,6 +246,9 @@ vivado -mode batch -source build/create_project.tcl
 ```
 
 日常流程：改 RTL → `build/check_design.tcl`（防 XCI 缓存过期）→ 综合/实现 → `build/export_xsa.tcl` → Vitis 切换 XSA 重编固件；板级放跑用 `build/debug/dbg_test_k.tcl`（先跑 `build/debug/pre_debug_stop.bat` 停核防挂死）。
+
+最终脱离 PC 的启动流程：完成实现、生成 PS ELF 后运行
+`build/boot/build_boot_bin.bat`，得到 `build/boot/BOOT.BIN`。将该镜像一次性写入板卡 QSPI 后，板卡上电由 FSBL 自动加载 bitstream 和 PS 裸机程序，LCD 本地显示虚拟手；PC、JTAG 和 UART 仅用于首次烧录、调试或数据采集。QSPI 烧录和断电自启动仍需在目标板上完成实测确认。
 
 ## 9. 按比赛要求的交付闭环
 
@@ -227,8 +280,8 @@ vivado -mode batch -source build/create_project.tcl
 
 现在最应该做的三件事：
 
-1. 跑实现出位流 → 重导 XSA → 按 `board/README.md` 接线表把 ADC 八线改焊到 J4-17..24 → 复测 raw/feature/NN 链路 + 疲劳 T 行板测（bit 记得从 impl_1 拷贝覆盖 `dbg_test_k` 静态副本）
-2. 模式切换全流程板测：`python tools/record_uart.py --port COM3 --enter` 进采集 → 打标采集 → `m` 回监控自动重校准
-3. 补竞赛硬指标：基线对比表（PC 浮点 vs PL INT8 的准确率/时延/资源）、干净目录从零复现验证；板载虚拟手显示以厂商 lcd_demo DRM/KMS 例程为起点，10 月评估 PYNQ 融合路线
+1. 跑实现出位流 → 重导 XSA → 按 `board/README.md` 接线表把 ADC 八线改焊到 J4-17..24 → 复测 raw/feature/NN 链路 + 疲劳 T 行板测，并生成 `build/boot/BOOT.BIN`
+2. 模式切换全流程板测：`python tools/record_uart.py --port COM3 --enter` 进采集 → 打标采集 → `m` 回监控自动重校准，并记录长时间运行的 raw/feature 序号缺口
+3. 补最终竞赛证据：PC 浮点 vs PL INT8 的准确率/时延/资源对比、板级端到端延迟、功耗/稳定性、QSPI 断电自启动和干净目录复现；生产权重继续使用 `data/models/nn_int8/`，PL 对齐实验权重仅作对照，PC 3D 虚拟手只作为调试视图
 
 这个顺序最稳，也最符合竞赛评审对“完整性、可复现性、技术含量”的期待

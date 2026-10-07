@@ -113,6 +113,9 @@ module emg_data_path_tb;
                        errors = errors + 1;
                 default: errors = errors + 1;
             endcase
+            if ((received == 3 && !m_axis_tlast) ||
+                (received != 3 && m_axis_tlast))
+                errors = errors + 1;
             received = received + 1;
         end
     end

@@ -45,7 +45,7 @@ SECTIONS
 
     .dma_buffer (NOLOAD) : ALIGN(4096) {
         __dma_buf = .;
-        . += 0x2000;               /* 2 x 4096-byte ping-pong buffers */
+        . += 0x1000;               /* 2 x 2048-byte ping-pong buffers */
         __dma_buf_end = .;
     } > DMA
 

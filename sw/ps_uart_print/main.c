@@ -49,6 +49,8 @@ typedef int           i32;
 typedef unsigned short u16;
 typedef unsigned char u8;
 
+#include "pose_contract.h"
+
 /* ---- UART0 (Cadence UARTPS) ------------------------------------------ */
 
 #define UART_BASE       0xE0000000u
@@ -83,6 +85,7 @@ typedef unsigned char u8;
 #define REC_BAUDDIV     9
 
 static u32 g_mode = MODE_MONITOR;
+static u32 g_uart_debug;
 
 static void uart_reconfig(u32 baudgen, u32 bauddiv)
 {
@@ -99,6 +102,8 @@ static void uart_reconfig(u32 baudgen, u32 bauddiv)
 
 static void uart_putc(char c)
 {
+    if (g_mode == MODE_MONITOR && !g_uart_debug)
+        return;
     while (UART_SR & UART_SR_TXFULL)
         ;
     UART_FIFO = (u32)(unsigned char)c;
@@ -271,40 +276,373 @@ static u32 dma_wait(void)
 
 #define VDMA_DMACR_RESET  0x00000004u
 #define VDMA_DMACR_RS     0x00000001u
+#define VDMA_DMACR_PARK   0x00000002u
 #define VDMA_DMASR_HALTED 0x00000001u
 
-/* Fill one framebuffer with 8 vertical RGB888 color bars: line 0 is
- * built once, then word-copied to the other 599 lines.  All 3 frame
- * stores get identical content, so the circular VDMA readout can never
- * tear the static pattern.  ~1.4M u32 stores, a one-off boot cost. */
-static void lcd_fill_bars(volatile u32 *fb)
-{
-    static const u8 bars[8][3] = {              /* R, G, B */
-        {255, 255, 255}, {255, 255, 0}, {0, 255, 255}, {0, 255, 0},
-        {255, 0, 255},   {255, 0, 0},   {0, 0, 255},   {0, 0, 0}
-    };
-    u32 line[FB_WPL];
-    u8 *lp = (u8 *)line;
-    u32 x, y, w;
+typedef struct {
+    i32 x;
+    i32 y;
+} lcd_point;
 
-    for (x = 0; x < LCD_W; x++) {
-        const u8 *c = bars[x >> 7];             /* 128 px per bar */
-        *lp++ = c[2];                           /* B at lowest address */
-        *lp++ = c[1];                           /* G */
-        *lp++ = c[0];                           /* R */
+static const char *const lcd_pose_names[5] = {
+    "REST", "OPEN", "FIST", "FLEX", "EXT"
+};
+static const char *const lcd_fat_names[4] = {
+    "NORM", "MILD", "FATIG", "LEVEL3"
+};
+
+/* 5x7 bitmap font. Each byte is one column, bit 0 is the top pixel. */
+static const u8 lcd_font[37][5] = {
+    {0x3E,0x51,0x49,0x45,0x3E}, {0x00,0x42,0x7F,0x40,0x00},
+    {0x62,0x51,0x49,0x49,0x46}, {0x22,0x41,0x49,0x49,0x36},
+    {0x18,0x14,0x12,0x7F,0x10}, {0x2F,0x49,0x49,0x49,0x31},
+    {0x3E,0x49,0x49,0x49,0x32}, {0x01,0x71,0x09,0x05,0x03},
+    {0x36,0x49,0x49,0x49,0x36}, {0x26,0x49,0x49,0x49,0x3E},
+    {0x7E,0x11,0x11,0x11,0x7E}, {0x7F,0x49,0x49,0x49,0x36},
+    {0x3E,0x41,0x41,0x41,0x22}, {0x7F,0x41,0x41,0x22,0x1C},
+    {0x7F,0x49,0x49,0x49,0x41}, {0x7F,0x09,0x09,0x09,0x01},
+    {0x3E,0x41,0x49,0x49,0x7A}, {0x7F,0x08,0x08,0x08,0x7F},
+    {0x00,0x41,0x7F,0x41,0x00}, {0x20,0x40,0x41,0x3F,0x01},
+    {0x7F,0x08,0x14,0x22,0x41}, {0x7F,0x40,0x40,0x40,0x40},
+    {0x7F,0x02,0x0C,0x02,0x7F}, {0x7F,0x04,0x08,0x10,0x7F},
+    {0x3E,0x41,0x41,0x41,0x3E}, {0x7F,0x09,0x09,0x09,0x06},
+    {0x3E,0x41,0x51,0x21,0x5E}, {0x7F,0x09,0x19,0x29,0x46},
+    {0x46,0x49,0x49,0x49,0x31}, {0x01,0x01,0x7F,0x01,0x01},
+    {0x3F,0x40,0x40,0x40,0x3F}, {0x1F,0x20,0x40,0x20,0x1F},
+    {0x7F,0x20,0x18,0x20,0x7F}, {0x63,0x14,0x08,0x14,0x63},
+    {0x07,0x08,0x70,0x08,0x07}, {0x61,0x51,0x49,0x45,0x43},
+    {0x08,0x08,0x08,0x08,0x08},
+};
+
+static i32 lcd_sin_q12(i32 degrees)
+{
+    static const i32 q15[7] = { 0, 1059, 2048, 2896, 3547, 3951, 4096 };
+    i32 d = degrees % 360;
+    i32 sign = 1;
+    i32 a, index, rem, value;
+
+    if (d < 0)
+        d += 360;
+    if (d <= 90)
+        a = d;
+    else if (d <= 180)
+        a = 180 - d;
+    else if (d <= 270) {
+        a = d - 180;
+        sign = -1;
+    } else {
+        a = 360 - d;
+        sign = -1;
     }
-    for (y = 0; y < LCD_H; y++)
-        for (w = 0; w < FB_WPL; w++)
-            fb[y * FB_WPL + w] = line[w];
+    index = a / 15;
+    rem = a % 15;
+    if (index >= 6)
+        value = 4096;
+    else
+        value = q15[index] +
+                (q15[index + 1] - q15[index]) * rem / 15;
+    return sign < 0 ? -value : value;
+}
+
+static i32 lcd_cos_q12(i32 degrees)
+{
+    return lcd_sin_q12(degrees + 90);
+}
+
+static void lcd_pixel(volatile u8 *fb, i32 x, i32 y,
+                      u8 r, u8 g, u8 b)
+{
+    volatile u8 *p;
+    if (x < 0 || x >= LCD_W || y < 0 || y >= LCD_H)
+        return;
+    p = fb + y * FB_BPL + x * 3;
+    p[0] = b;
+    p[1] = g;
+    p[2] = r;
+}
+
+static void lcd_fill_rect(volatile u8 *fb, i32 x, i32 y, i32 w, i32 h,
+                          u8 r, u8 g, u8 b)
+{
+    i32 xx, yy;
+    if (x < 0) {
+        w += x;
+        x = 0;
+    }
+    if (y < 0) {
+        h += y;
+        y = 0;
+    }
+    if (x + w > LCD_W)
+        w = LCD_W - x;
+    if (y + h > LCD_H)
+        h = LCD_H - y;
+    if (w <= 0 || h <= 0)
+        return;
+    for (yy = 0; yy < h; yy++)
+        for (xx = 0; xx < w; xx++)
+            lcd_pixel(fb, x + xx, y + yy, r, g, b);
+}
+
+static void lcd_disc(volatile u8 *fb, lcd_point c, i32 radius,
+                     u8 r, u8 g, u8 b)
+{
+    i32 x, y;
+    i32 rr = radius * radius;
+    for (y = -radius; y <= radius; y++)
+        for (x = -radius; x <= radius; x++)
+            if (x * x + y * y <= rr)
+                lcd_pixel(fb, c.x + x, c.y + y, r, g, b);
+}
+
+static void lcd_round_rect(volatile u8 *fb, i32 x, i32 y, i32 w, i32 h,
+                           i32 radius, u8 r, u8 g, u8 b)
+{
+    lcd_fill_rect(fb, x + radius, y, w - 2 * radius, h, r, g, b);
+    lcd_fill_rect(fb, x, y + radius, w, h - 2 * radius, r, g, b);
+    lcd_disc(fb, (lcd_point){x + radius, y + radius}, radius, r, g, b);
+    lcd_disc(fb, (lcd_point){x + w - radius - 1, y + radius},
+             radius, r, g, b);
+    lcd_disc(fb, (lcd_point){x + radius, y + h - radius - 1},
+             radius, r, g, b);
+    lcd_disc(fb, (lcd_point){x + w - radius - 1, y + h - radius - 1},
+             radius, r, g, b);
+}
+
+static i32 lcd_abs(i32 value)
+{
+    return value < 0 ? -value : value;
+}
+
+static void lcd_line(volatile u8 *fb, lcd_point a, lcd_point b, i32 radius,
+                     u8 r, u8 g, u8 blue)
+{
+    i32 dx = lcd_abs(b.x - a.x);
+    i32 sx = a.x < b.x ? 1 : -1;
+    i32 dy = -lcd_abs(b.y - a.y);
+    i32 sy = a.y < b.y ? 1 : -1;
+    i32 err = dx + dy;
+    for (;;) {
+        lcd_disc(fb, a, radius, r, g, blue);
+        if (a.x == b.x && a.y == b.y)
+            break;
+        {
+            i32 e2 = 2 * err;
+            if (e2 >= dy) {
+                err += dy;
+                a.x += sx;
+            }
+            if (e2 <= dx) {
+                err += dx;
+                a.y += sy;
+            }
+        }
+    }
+}
+
+static const u8 *lcd_glyph(char ch)
+{
+    static const char alphabet[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ-";
+    int i;
+    for (i = 0; alphabet[i]; i++)
+        if (alphabet[i] == ch)
+            return lcd_font[i];
+    return (const u8 *)0;
+}
+
+static void lcd_text(volatile u8 *fb, i32 x, i32 y, i32 scale,
+                     u8 r, u8 g, u8 b, const char *text)
+{
+    const u8 *glyph;
+    int col, row;
+    while (*text) {
+        glyph = lcd_glyph(*text++);
+        if (glyph) {
+            for (col = 0; col < 5; col++)
+                for (row = 0; row < 7; row++)
+                    if (glyph[col] & (1u << row))
+                        lcd_fill_rect(fb, x + col * scale, y + row * scale,
+                                      scale, scale, r, g, b);
+        }
+        x += 6 * scale;
+    }
+}
+
+static lcd_point lcd_rotate(lcd_point p, lcd_point center, i32 degrees)
+{
+    i32 dx = p.x - center.x;
+    i32 dy = p.y - center.y;
+    i32 sn = lcd_sin_q12(degrees);
+    i32 cs = lcd_cos_q12(degrees);
+    lcd_point out;
+    out.x = center.x + (cs * dx - sn * dy) / 4096;
+    out.y = center.y + (sn * dx + cs * dy) / 4096;
+    return out;
+}
+
+static lcd_point lcd_advance(lcd_point p, i32 degrees, i32 length)
+{
+    p.x += lcd_sin_q12(degrees) * length / 4096;
+    p.y -= lcd_cos_q12(degrees) * length / 4096;
+    return p;
+}
+
+static void lcd_draw_hand(volatile u8 *fb, u32 cls, u32 fatigue)
+{
+    static const i32 base_x[4] = { 420, 480, 540, 600 };
+    static const i32 base_y[4] = { 338, 322, 318, 330 };
+    static const i32 len1[4] = { 86, 102, 98, 82 };
+    static const i32 len2[4] = { 60, 70, 68, 54 };
+    static const i32 len3[4] = { 42, 48, 46, 36 };
+    static const u8 skin[3] = { 224, 164, 108 };
+    static const u8 skin_hi[3] = { 247, 194, 135 };
+    static const u8 arm[3] = { 67, 77, 96 };
+    static const u8 band[4][3] = {
+        { 84, 96, 116 }, { 230, 202, 70 }, { 230, 86, 86 }, { 190, 70, 190 }
+    };
+    lcd_point center = { 512, 420 };
+    i32 wrist = pose_table[cls][0];
+    i32 i;
+
+    lcd_line(fb, lcd_rotate((lcd_point){512, 570}, center, wrist),
+             lcd_rotate((lcd_point){512, 410}, center, wrist),
+             43, arm[0], arm[1], arm[2]);
+    lcd_line(fb, lcd_rotate((lcd_point){512, 505}, center, wrist),
+             lcd_rotate((lcd_point){512, 465}, center, wrist),
+             48, band[fatigue < 4u ? fatigue : 3u][0],
+             band[fatigue < 4u ? fatigue : 3u][1],
+             band[fatigue < 4u ? fatigue : 3u][2]);
+    lcd_round_rect(fb, 386, 258, 252, 190, 52,
+                   skin[0], skin[1], skin[2]);
+    lcd_round_rect(fb, 410, 290, 204, 112, 30,
+                   skin_hi[0], skin_hi[1], skin_hi[2]);
+
+    for (i = 0; i < 4; i++) {
+        i32 off = 2 + i * 4;
+        i32 a1 = pose_table[cls][off] + pose_table[cls][off + 1];
+        i32 a2 = a1 + pose_table[cls][off + 2];
+        i32 a3 = a2 + pose_table[cls][off + 3];
+        lcd_point p0 = { base_x[i], base_y[i] };
+        lcd_point p1 = lcd_advance(p0, a1, len1[i]);
+        lcd_point p2 = lcd_advance(p1, a2, len2[i]);
+        lcd_point p3 = lcd_advance(p2, a3, len3[i]);
+        p0 = lcd_rotate(p0, center, wrist);
+        p1 = lcd_rotate(p1, center, wrist);
+        p2 = lcd_rotate(p2, center, wrist);
+        p3 = lcd_rotate(p3, center, wrist);
+        lcd_line(fb, p0, p1, 20, skin[0], skin[1], skin[2]);
+        lcd_line(fb, p1, p2, 16, skin_hi[0], skin_hi[1], skin_hi[2]);
+        lcd_line(fb, p2, p3, 12, skin[0], skin[1], skin[2]);
+        lcd_disc(fb, p1, 17, skin_hi[0], skin_hi[1], skin_hi[2]);
+        lcd_disc(fb, p2, 13, skin[0], skin[1], skin[2]);
+    }
+
+    {
+        i32 a1 = pose_table[cls][19];
+        i32 a2 = a1 + pose_table[cls][20];
+        i32 a3 = a2 + pose_table[cls][21];
+        lcd_point p0 = { 402, 405 };
+        lcd_point p1 = lcd_advance(p0, a1, 42);
+        lcd_point p2 = lcd_advance(p1, a2, 52);
+        lcd_point p3 = lcd_advance(p2, a3, 38);
+        p0 = lcd_rotate(p0, center, wrist);
+        p1 = lcd_rotate(p1, center, wrist);
+        p2 = lcd_rotate(p2, center, wrist);
+        p3 = lcd_rotate(p3, center, wrist);
+        lcd_line(fb, p0, p1, 21, skin[0], skin[1], skin[2]);
+        lcd_line(fb, p1, p2, 17, skin_hi[0], skin_hi[1], skin_hi[2]);
+        lcd_line(fb, p2, p3, 13, skin[0], skin[1], skin[2]);
+    }
+}
+
+static void lcd_render_pose(volatile u8 *fb, u32 cls, u32 conf,
+                            u32 fatigue, u32 gated, u32 full)
+{
+    static const u8 bg[3] = { 18, 24, 34 };
+    static const u8 white[3] = { 238, 243, 250 };
+    static const u8 muted[3] = { 140, 153, 170 };
+    static const u8 active[3] = { 89, 190, 220 };
+    static const u8 fatigue_color[4][3] = {
+        { 84, 96, 116 }, { 230, 202, 70 }, { 230, 86, 86 }, { 190, 70, 190 }
+    };
+    u32 i;
+    u32 safe_cls = cls < POSE_MODEL_CLASSES ? cls : 0u;
+    u32 safe_fat = fatigue < 4u ? fatigue : 3u;
+
+    if (full)
+        lcd_fill_rect(fb, 0, 0, LCD_W, LCD_H, bg[0], bg[1], bg[2]);
+    else {
+        lcd_fill_rect(fb, 0, 0, LCD_W, 92, bg[0], bg[1], bg[2]);
+        lcd_fill_rect(fb, 250, 100, 550, 430, bg[0], bg[1], bg[2]);
+        lcd_fill_rect(fb, 0, 530, LCD_W, 70, bg[0], bg[1], bg[2]);
+    }
+    lcd_fill_rect(fb, 0, 0, LCD_W, 92, 28, 37, 51);
+    lcd_text(fb, 28, 18, 4, white[0], white[1], white[2], "S-EMG HAND");
+    lcd_text(fb, 28, 57, 3, active[0], active[1], active[2],
+             lcd_pose_names[safe_cls]);
+    lcd_text(fb, 730, 57, 3, fatigue_color[safe_fat][0],
+             fatigue_color[safe_fat][1], fatigue_color[safe_fat][2],
+             lcd_fat_names[safe_fat]);
+    lcd_fill_rect(fb, 730, 22, 220, 16, 55, 66, 82);
+    lcd_fill_rect(fb, 730, 22, (i32)((conf > 100u ? 100u : conf) * 2u),
+                  16, active[0], active[1], active[2]);
+    if (gated)
+        lcd_text(fb, 875, 18, 3, 255, 120, 90, "GATE");
+
+    for (i = 0; i < POSE_MODEL_CLASSES; i++) {
+        u8 r = i == safe_cls ? active[0] : muted[0] / 2;
+        u8 g = i == safe_cls ? active[1] : muted[1] / 2;
+        u8 b = i == safe_cls ? active[2] : muted[2] / 2;
+        lcd_round_rect(fb, 24 + (i32)i * 190, 535, 160, 40, 8, r, g, b);
+        lcd_text(fb, 42 + (i32)i * 190, 546, 2,
+                 i == safe_cls ? bg[0] : muted[0],
+                 i == safe_cls ? bg[1] : muted[1],
+                 i == safe_cls ? bg[2] : muted[2],
+                 lcd_pose_names[i]);
+    }
+    lcd_draw_hand(fb, safe_cls, safe_fat);
+    (void)conf;
+}
+
+static u32 lcd_state_cls;
+static u32 lcd_state_conf;
+static u32 lcd_state_fatigue;
+static u32 lcd_state_gated;
+static u32 lcd_state_valid;
+static u32 lcd_stream_started;
+static u32 lcd_front_index;
+
+static void lcd_show_state(u32 cls, u32 conf, u32 fatigue, u32 gated)
+{
+    volatile u8 *fb;
+    u32 back;
+    if (lcd_state_valid && cls == lcd_state_cls && conf == lcd_state_conf &&
+        fatigue == lcd_state_fatigue && gated == lcd_state_gated)
+        return;
+    lcd_state_cls = cls;
+    lcd_state_conf = conf;
+    lcd_state_fatigue = fatigue;
+    lcd_state_gated = gated;
+    lcd_state_valid = 1u;
+    if (!lcd_stream_started) {
+        u32 i;
+        for (i = 0; i < 3; i++)
+            lcd_render_pose((volatile u8 *)(FB_BASE + i * FB_BYTES),
+                            cls, conf, fatigue, gated, 1u);
+        return;
+    }
+    back = (lcd_front_index + 1u) % 3u;
+    fb = (volatile u8 *)(FB_BASE + back * FB_BYTES);
+    lcd_render_pose(fb, cls, conf, fatigue, gated, 0u);
+    VDMA_PARKPTR = back & 0x1Fu;
+    lcd_front_index = back;
 }
 
 static void lcd_init(void)
 {
     u32 spins = 0;
 
-    lcd_fill_bars((volatile u32 *)FB_BASE);
-    lcd_fill_bars((volatile u32 *)(FB_BASE + FB_BYTES));
-    lcd_fill_bars((volatile u32 *)(FB_BASE + 2u * FB_BYTES));
+    lcd_show_state(0, 0, 0, 0);
     GPIO_BL = 1;                                /* backlight on */
 
     VDMA_DMACR = VDMA_DMACR_RESET;              /* soft-reset MM2S */
@@ -318,17 +656,19 @@ static void lcd_init(void)
     VDMA_START(2) = FB_BASE + 2u * FB_BYTES;
     VDMA_PARKPTR  = 0;
     VDMA_VSIZE    = LCD_H;                      /* arms the channel */
-    VDMA_DMACR    = VDMA_DMACR_RS;              /* run: 3-frame circular */
+    VDMA_DMACR    = VDMA_DMACR_RS | VDMA_DMACR_PARK;
+                                                /* run: safe parked frame */
+    lcd_stream_started = 1u;
 
     for (spins = 0; spins < 1000u; spins++)     /* let RS propagate */
         ;
-    uprintf("[LCD] vdma fstores=%u dmasr=%x\n",
+    uprintf("[LCD] virtual-hand fstores=%u dmasr=%x\n",
             VDMA_FRMSTORE & 0xFFu, VDMA_DMASR, 0, 0);
 }
 
 /* ---- Packet parsing ---------------------------------------------------- */
 
-#define BUF_PACKETS 512                 /* 512 x 8-byte packets */
+#define BUF_PACKETS 256                 /* 256 x 8-byte packets; matches TLAST */
 #define BUF_BYTES   (BUF_PACKETS * 8)
 
 extern unsigned char __dma_buf[];      /* linker-placed, NOLOAD @ 0x11000000 */
@@ -351,24 +691,24 @@ static u32 res_logits[5];              /* INT32 logits of the current window */
 static u32 res_cls;                    /* argmax class of the current window */
 static u32 res_rows;                   /* result rows printed */
 static u32 pose_rows;                  /* versioned PoseFrame rows printed */
-static u32 last_pose_cls = 0xFFFFFFFFu;
 static u32 feat_rows;                  /* feature windows seen (print gate) */
-static u32 fat_num2, fat_mdf;          /* id 8: window counter, mean MDF bin */
+static i32 fat_num2;                   /* id 8: signed MDF slope numerator */
+static u32 fat_mdf;                    /* id 8: mean MDF bin */
 static u32 fat_level, fat_full, fat_energy;   /* id 9 fields */
 static u32 parsed_total;
 static u32 next_report;
-
-/* PoseAdapter v2: stable 22-DOF renderer contract. */
-static const i32 pose_table[5][22] = {
-    {0,0,18,-10,20,12,14,-4,18,10,16,4,18,10,18,11,22,14,32,-38,28,20},
-    {0,0,4,-14,5,3,2,-5,4,2,3,4,5,3,5,13,8,5,20,-45,8,4},
-    {0,0,84,-4,88,60,86,-1,90,62,88,2,92,64,90,5,94,66,30,-35,76,56},
-    {28,0,20,-8,28,18,18,-3,26,16,20,4,26,18,22,9,30,20,34,-30,34,24},
-    {-28,0,8,-12,10,6,7,-4,8,4,8,4,10,5,10,8,12,6,24,-40,14,8}
-};
-#define POSE_SCHEMA_V2 2u
-#define POSE_VALID_MASK 0x3FFFFFu
-#define POSE_MODEL_CLASSES 5u
+static u32 raw_gap_cnt, feature_gap_cnt;
+static u16 raw_last_seq[8];
+static u8 raw_seen[8];
+static u16 feature_last_seq;
+static u8 feature_seq_seen;
+static u8 feature_synced;
+static u32 pose_active_cls;
+static u32 pose_active_conf;
+static u32 pose_active_gated;
+static u32 pose_pending_cls;
+static u32 pose_pending_count;
+static u32 feature_stream;              /* off by default for standalone mode */
 
 /* Emit one CSV line per feature window in the training feature order
  * (tools/train_baseline.py make_windows): MAV ch0..7, WL ch0..7,
@@ -498,23 +838,58 @@ static void print_pose_value(const char *name, i32 value)
 static void print_pose_frame(u32 seq, u32 cls, u32 conf, u32 gated)
 {
     u32 i;
-    if (cls >= POSE_MODEL_CLASSES || gated || conf < 30u)
+    if (cls >= POSE_MODEL_CLASSES || gated || conf < POSE_MIN_CONF)
         cls = 0u;
     uart_putc('P');
     uprintf(" v=1 s=%u schema=%u gid=%u q=%u",
             seq, POSE_SCHEMA_V2, cls, conf);
     uprintf(" mask=0x%x phase=0", POSE_VALID_MASK, 0, 0, 0);
-    for (i = 0; i < 22u; i++) {
-        static const char *const names[22] = {
-            "wf", "wd", "i_mcp", "i_abd", "i_pip", "i_dip",
-            "m_mcp", "m_abd", "m_pip", "m_dip", "r_mcp", "r_abd",
-            "r_pip", "r_dip", "l_mcp", "l_abd", "l_pip", "l_dip",
-            "t_cmc", "t_abd", "t_mcp", "t_ip"
-        };
-        print_pose_value(names[i], pose_table[cls][i]);
-    }
+    for (i = 0; i < 22u; i++)
+        print_pose_value(pose_field_names[i], pose_table[cls][i]);
     uart_puts("\r\n");
     pose_rows++;
+}
+
+static void pose_accept(u32 seq, u32 cls, u32 conf, u32 gated)
+{
+    pose_active_cls = cls;
+    pose_active_conf = conf;
+    pose_active_gated = gated;
+    pose_pending_count = 0;
+    print_pose_frame(seq, pose_active_cls, conf, gated);
+    lcd_show_state(pose_active_cls, pose_active_conf, fat_level,
+                   pose_active_gated);
+}
+
+static void pose_observe(u32 seq, u32 cls, u32 conf, u32 gated)
+{
+    if (cls >= POSE_MODEL_CLASSES || gated || conf < POSE_MIN_CONF)
+        cls = 0u;
+
+    if (cls == pose_active_cls) {
+        if (pose_active_gated != gated) {
+            pose_active_conf = conf;
+            pose_active_gated = gated;
+            lcd_show_state(pose_active_cls, pose_active_conf, fat_level,
+                           pose_active_gated);
+        }
+        pose_pending_count = 0;
+        return;
+    }
+
+    if (cls == 0u && (gated || conf < POSE_MIN_CONF)) {
+        pose_accept(seq, cls, conf, gated);
+        return;
+    }
+
+    if (cls == pose_pending_cls) {
+        pose_pending_count++;
+    } else {
+        pose_pending_cls = cls;
+        pose_pending_count = 1u;
+    }
+    if (pose_pending_count >= POSE_CONFIRM_WINDOWS)
+        pose_accept(seq, cls, conf, gated);
 }
 
 /* One line per inference window: 'R s=<seq> c=<class> p=<conf>[ g=1]',
@@ -544,29 +919,28 @@ static void print_result_row(u32 seq)
         uprintf(" %d", res_logits[4], 0, 0, 0);
     }
     uart_puts("\r\n");
-    /* Current classifier poses are static per gesture, so emit P only when
-     * the gesture changes. A continuous adapter can emit one every window. */
-    if (res_cls != last_pose_cls) {
-        print_pose_frame(seq, res_cls, logit_conf(), gated);
-        last_pose_cls = res_cls;
-    }
+    pose_observe(seq, res_cls, logit_conf(), gated);
     res_rows++;
 }
 
-/* One line per fatigue window (id 8+9 pair, ~2/s): 'T s=<seq> lv=<0..2>
- * mdf=<mean MDF bin> n2=<window counter> full=<hist filled> e=<energy>'.
+/* One line per fatigue window (id 8+9 pair, ~2/s): 'T s=<seq> lv=<0..3>
+ * mdf=<mean MDF bin> n2=<signed slope numerator> full=<hist filled> e=<energy>'.
  * lv comes from the 16-point MDF-history slope regression:
- * 0=NORM 1=MILD 2=FATIG.  ~55 B/row -> negligible next to the F/R rows. */
+ * 0=NORM 1=MILD 2=FATIG, 3=RTL-defined fourth state. */
 static void print_fatigue_row(u32 seq)
 {
-    static const char *const lv_names[3] = { "NORM", "MILD", "FATIG" };
+    static const char *const lv_names[4] = {
+        "NORM", "MILD", "FATIG", "LEVEL3"
+    };
     uart_putc('T');
     uprintf(" s=%u lv=%u", seq, fat_level, 0, 0);
-    uprintf(" mdf=%u n2=%u", fat_mdf, fat_num2, 0, 0);
+    uprintf(" mdf=%u n2=%d", fat_mdf, (u32)fat_num2, 0, 0);
     uprintf(" full=%u e=%u", fat_full, fat_energy, 0, 0);
-    if (fat_level < 3u)
+    if (fat_level < 4u)
         uprintf(" %s", (u32)(uintptr_t)lv_names[fat_level], 0, 0, 0);
     uart_puts("\r\n");
+    lcd_show_state(pose_active_cls, pose_active_conf, fat_level,
+                   pose_active_gated);
 }
 
 static void parse_packet(u32 payload, u32 hdr)
@@ -581,19 +955,55 @@ static void parse_packet(u32 payload, u32 hdr)
         if (ch < 8) {
             i32 v = (i32)(payload << 8) >> 8;
             raw_latest[ch] = (u32)v;
+            if (raw_seen[ch] &&
+                (u16)(seq - (u32)raw_last_seq[ch]) != (u16)1)
+                raw_gap_cnt++;
+            raw_last_seq[ch] = (u16)seq;
+            raw_seen[ch] = 1;
         }
         raw_cnt++;
         break;
     case 2:                            /* window feature */
         if (ch < 8 && id < 5) {
+            u8 is_window_start = (ch == 0u && id == 0u);
+            u32 expected_index;
+
+            if (feature_seq_seen &&
+                (u16)(seq - (u32)feature_last_seq) != (u16)1) {
+                feature_gap_cnt++;
+                feature_synced = 0;
+                feat_win_cnt = 0;
+            }
+            feature_last_seq = (u16)seq;
+            feature_seq_seen = 1;
+
+            if (is_window_start) {
+                feature_synced = 1;
+                feat_win_cnt = 0;
+            } else if (!feature_synced) {
+                feat_cnt++;
+                break;
+            }
+
+            expected_index = feat_win_cnt;
+            if (ch != expected_index / 5u || id != expected_index % 5u) {
+                feature_gap_cnt++;
+                feature_synced = 0;
+                feat_win_cnt = 0;
+                feat_cnt++;
+                break;
+            }
+
             feat_vals[id][ch] = payload;
             if (id == 0)
                 feat_mav[ch] = payload;   /* keep MAV for STAT line */
             if (++feat_win_cnt == 40u) {  /* one full window: 8 ch x 5 feats */
                 feat_win_cnt = 0;
                 cal_on_window();          /* rest-calibration window sink */
-                if ((feat_rows++ & 1u) == 0u)   /* every 2nd window */
+                if (feature_stream && (feat_rows++ & 1u) == 0u)
                     print_feature_row();
+                else
+                    feat_rows++;
             }
         }
         feat_cnt++;
@@ -610,10 +1020,10 @@ static void parse_packet(u32 payload, u32 hdr)
         break;
     case 4:                            /* fatigue monitor result (id 8/9) */
         if (id == 8u) {
-            fat_num2 = payload >> 16;          /* window counter */
+            fat_num2 = (i32)(payload & 0xFFFF0000u) >> 16;
             fat_mdf  = payload & 0xFFFFu;      /* mean MDF bin index */
         } else if (id == 9u) {
-            fat_level  = payload >> 30;        /* 0=norm 1=mild 2=fatigued */
+            fat_level  = payload >> 30;        /* RTL-defined 0..3 */
             fat_full   = (payload >> 29) & 1u; /* MDF history filled */
             fat_energy = payload & 0x7FFFFFu;  /* grand_total >> 23 */
             print_fatigue_row(seq);
@@ -657,7 +1067,8 @@ static void parse_packet(u32 payload, u32 hdr)
             uart_putc(' ');
             print_dec(raw_latest[ch]);
         }
-        uart_puts("\n");
+        uprintf("\n[STAT] gaps raw=%u feature=%u\n",
+                raw_gap_cnt, feature_gap_cnt, 0, 0);
     }
     parsed_total++;
 }
@@ -698,7 +1109,8 @@ static void parse_buffer(volatile u32 *buf)
  * banner emitted by mode_set) so the frame stream stays parseable. */
 
 static u32 rec_slot[8];
-static u32 rec_acc, rec_seq;
+static u16 rec_slot_seq[8];
+static u32 rec_acc;
 
 static void rec_put24(i32 v)
 {
@@ -718,17 +1130,35 @@ static void record_buffer(volatile u32 *buf)
         if ((hdr >> 28) != 1u)
             continue;
         ch = (hdr >> 24) & 7u;
+        {
+            u16 seq = (u16)(hdr & 0xFFFFu);
+
+            /* A repeated channel with a new sequence means that an input
+             * frame was lost or reordered. Drop the partial frame instead
+             * of mixing samples from different acquisition instants. */
+            if ((rec_acc & (1u << ch)) && rec_slot_seq[ch] != seq)
+                rec_acc = 0;
+            rec_slot_seq[ch] = seq;
+        }
         rec_slot[ch] = ((i32)(pay << 8)) >> 8;
         rec_acc |= 1u << ch;
         if (rec_acc == 0xFFu) {
-            uart_putc((char)0xAA);
-            uart_putc((char)0x55);
-            uart_putc((char)(rec_seq & 0xFFu));
-            uart_putc((char)((rec_seq >> 8) & 0xFFu));
-            for (ch = 0; ch < 8; ch++)
-                rec_put24((i32)rec_slot[ch]);
+            u16 frame_seq = rec_slot_seq[0];
+            u32 frame_ok = 1u;
+
+            for (ch = 0; ch < 8; ch++) {
+                if (rec_slot_seq[ch] != frame_seq)
+                    frame_ok = 0u;
+            }
+            if (frame_ok) {
+                uart_putc((char)0xAA);
+                uart_putc((char)0x55);
+                uart_putc((char)(frame_seq & 0xFFu));
+                uart_putc((char)((frame_seq >> 8) & 0xFFu));
+                for (ch = 0; ch < 8; ch++)
+                    rec_put24((i32)rec_slot[ch]);
+            }
             rec_acc = 0;
-            rec_seq++;
         }
     }
 }
@@ -756,8 +1186,9 @@ static void mode_set(u32 mode)
         cal_start();
 }
 
-/* Non-blocking RX poll; single-char commands: 'c' = recalibrate rest
- * (monitor mode only), 'r' = toggle monitor/record mode (any mode). */
+/* Non-blocking RX poll; 'c' recalibrates rest, 'd' toggles debug text,
+ * 'f' toggles the optional feature CSV stream, and 'r' toggles
+ * monitor/record mode. */
 static void uart_poll_rx(void)
 {
     while (!(UART_SR & UART_SR_RXEMPTY)) {
@@ -767,6 +1198,14 @@ static void uart_poll_rx(void)
         } else if (c == 'c' && g_mode == MODE_MONITOR) {
             uart_puts("[CAL] 'c' received, restart\n");
             cal_start();
+        } else if (c == 'd' && g_mode == MODE_MONITOR) {
+            g_uart_debug = !g_uart_debug;
+            uart_puts(g_uart_debug ? "[UART] debug ON\n"
+                                   : "[UART] debug OFF\n");
+        } else if (c == 'f' && g_mode == MODE_MONITOR) {
+            feature_stream = !feature_stream;
+            uart_puts(feature_stream ? "[UART] F rows ON\n"
+                                     : "[UART] F rows OFF\n");
         }
     }
 }
@@ -775,10 +1214,11 @@ int main(void)
 {
     u32 err;
 
+    g_uart_debug = 1u;                 /* show one boot banner for bring-up */
     uart_reconfig(MON_BAUDGEN, MON_BAUDDIV);
     uart_puts("\n=== sEMG hand-motion PL stream monitor ===\n");
     uart_puts("UART0(MIO14/15) 115200-8N1, AXI DMA @ 0x40400000 (S2MM polling)\n");
-    uart_puts("commands: 'c' = recalibrate rest, 'r' = toggle record mode\n");
+    uart_puts("commands: 'c' = recalibrate, 'd' = debug, 'f' = F rows, 'r' = record\n");
     uart_puts("  (record mode: 2 Mbaud RAWREC frames, run tools/record_uart.py)\n");
     uart_puts("packet: type/ch/id/seq/payload; 1=raw 2=feature 3=result 4=fatigue\n");
     uart_puts("F-rows: one CSV line per 100ms window = 40 model inputs\n");
@@ -787,14 +1227,15 @@ int main(void)
     uart_puts("  'R s=<seq> c=<class> p=<conf>[ g=1]' (+ logits every 4th window)\n");
     uart_puts("  (p = indicative confidence; g=1 = MAV gate re-classified to rest)\n");
     uart_puts("P-rows: versioned PoseFrame v=1 schema=2 (22 pose values)\n");
-    uart_puts("  (P is emitted on gesture changes; old R/T rows remain compatible)\n");
+    uart_puts("  (P after 2 stable windows; LCD runs locally without a PC)\n");
     uart_puts("T-rows: one per 512ms fatigue window: 'T s=.. lv=.. mdf=.. n2=..'\n");
-    uart_puts("  (lv: 0=NORM 1=MILD 2=FATIG from the 16-point MDF-slope regression)\n");
+    uart_puts("  (lv: 0=NORM 1=MILD 2=FATIG 3=LEVEL3 from MDF slope)\n");
     uart_puts("rest calibration: ~2.4 s after boot, [CAL] lines report baselines/thr\n");
     uart_puts("expected: ~32000 raw/s, ~1600 feature/s (40 windows/s)\n");
-    uart_puts("  -> 20 F-rows/s (every 2nd window) + 40 R-rows/s\n\n");
+    uart_puts("  -> debug/F rows OFF by default; LCD runs without a PC\n\n");
 
-    lcd_init();               /* color bars + VDMA MM2S + backlight (vh-3) */
+    lcd_init();               /* local virtual hand + VDMA MM2S + backlight */
+    g_uart_debug = 0u;                 /* steady state is LCD-local */
     cal_start();
     dma_init();
     dma_arm((u32)(uintptr_t)dma_buf[0], BUF_BYTES);
