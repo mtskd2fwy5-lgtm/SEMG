@@ -4,11 +4,9 @@
 //
 // Default configuration:
 //   CONFIG1 = 0x92 : high-resolution, 4 kSPS
-//   CONFIG2 = 0xD5 : internal calibration signal enabled for bring-up;
-//            use 0xC0 (INT_CAL=0) to disable it during real acquisition
+//   CONFIG2 = 0xD5 : internal calibration signal enabled for bring-up
 //   CONFIG3 = 0xEC : internal reference and bias circuitry enabled
-//   CHnSET  = 0x65 : internal test input, PGA gain 24, powered on
-//            use 0x60 (normal input) for real electrode acquisition
+//   CHnSET  = 0x05 : internal test input, PGA gain 1, powered on
 //
 // Register values are parameters so the final EMG front-end can choose a
 // different gain or data rate without changing the controller structure.
@@ -25,6 +23,12 @@
 // through to the chip.
 module ads1299_spi #(
     parameter integer CLK_FREQ_HZ = 25_000_000,
+    // Data-read SCLK.  At 4 kSPS the 216-bit frame must fit inside the
+    // 250 us DRDY period.  2.5 MHz was plenty in theory, but board evidence
+    // (2026-10-09 record-mode A/B: ~0.49% seq-gap frame loss, PS-side stall
+    // detector flat) points to intermittent read timing slips at the fast
+    // rate.  1.25 MHz halves the edge rate: 216 bits = 173 us, leaving
+    // ~60 us margin after CS gaps - still inside the 250 us window.
     parameter integer SCLK_FREQ_HZ = 1_250_000,
     parameter integer CHANNELS = 8,
     parameter integer DATA_BITS = 24,
@@ -35,13 +39,12 @@ module ads1299_spi #(
     parameter integer BTN_DEBOUNCE_CYCLES = 500_000,  /* 20 ms @ 25 MHz */
     parameter [7:0] CONFIG1_VALUE = 8'h92,  /* reserved bits=1,10; DR=010 (4 kSPS), CLK_EN=0 */
     // 0xD5 enables the internal calibration signal; CAL_FREQ=01 selects
-    // fCLK/2^20. Use 0xC0 (INT_CAL=0) to disable it for real EMG.
-    parameter [7:0] CONFIG2_VALUE = 8'hC0,
+    // fCLK/2^20 for repeatable digital-chain bring-up.
+    parameter [7:0] CONFIG2_VALUE = 8'hD5,
     parameter [7:0] CONFIG3_VALUE = 8'hEC,
     parameter [7:0] LOFF_VALUE = 8'h00,
-    // 0x60 = PD=0, GAIN=110 (24x), MUX=000 (normal electrode input).
-    // 0x65 (MUX=101) selects the internal test signal for board bring-up.
-    parameter [7:0] CHANNEL_VALUE = 8'h60
+    // 0x05 = PD=0, GAIN=000 (1x), MUX=101 (internal test signal).
+    parameter [7:0] CHANNEL_VALUE = 8'h05
 ) (
     input  wire                         clk,
     input  wire                         rst_n,
@@ -68,11 +71,16 @@ module ads1299_spi #(
     // Command/register-write lane runs at a quarter of the data-read SCLK
     // rate (312.5 kHz by default).  The STM32 reference driver configures
     // registers at low speed and only raises SPI speed for the data path;
-    // single-byte commands worked at 1.25 MHz here but the 14-byte WREG
+    // single-byte commands worked at the data rate here but the 14-byte WREG
     // burst silently failed, so commands now get extra timing margin.  The
     // data-read lane keeps the full rate: a 4 kSPS frame (216 bits) must
     // finish inside the 250 us DRDY period.
     localparam integer HALF_SCLK_CMD_CYCLES = HALF_SCLK_CYCLES * 4;
+    // Datasheet tSDECODE: the chip needs >=4 tCLK (~1.95 us at fCLK=2.048 MHz)
+    // after the DRDY falling edge before SCLK activity.  64 pl_clk cycles =
+    // 2.56 us at 25 MHz.  Read budget stays safe: 2.56 us decode + 172.8 us
+    // frame + command gap is well inside the 250 us DRDY period at 4 kSPS.
+    localparam integer DRDY_DECODE_CYCLES = 64;
     localparam integer FRAME_BITS = 24 + DATA_BITS * CHANNELS;
     localparam integer CONFIG_REG_COUNT = 4 + CHANNELS;
     localparam integer CONFIG_LAST_BYTE = 1 + CONFIG_REG_COUNT;
@@ -101,6 +109,13 @@ module ads1299_spi #(
     localparam [4:0] ST_START_CS_HIGH = 5'd18;
     localparam [4:0] ST_CONFIG_CS_HIGH = 5'd19;
     localparam [4:0] ST_READ_CS_HIGH = 5'd20;
+    // 2026-10-09 stall case: the FSM used to raise the first SCLK ~0.5 us
+    // after the DRDY falling edge, but the datasheet tSDECODE (command/data
+    // decode time) requires >=4 tCLK (~2 us at fCLK=2.048 MHz) of quiet
+    // before SCLK activity.  The per-frame violation is the prime suspect
+    // for the sporadic ~1.3 s interface lockups (LED proved the FSM sat in
+    // ST_WAIT_DRDY with DRDY static; stream resumed cleanly with zero loss).
+    localparam [4:0] ST_DRDY_DECODE = 5'd21;
 
     reg [4:0] state;
     reg [31:0] delay_count;
@@ -456,11 +471,25 @@ module ads1299_spi #(
                     end else if (drdy_falling) begin
                         busy <= 1'b1;
                         adc_cs_n <= 1'b0;
+                        delay_count <= DRDY_DECODE_CYCLES;
+                        state <= ST_DRDY_DECODE;
+                    end
+                end
+
+                // Honor tSDECODE: hold SCLK quiet for >=4 tCLK after the DRDY
+                // edge (and after CS fall) before shifting the frame out.
+                ST_DRDY_DECODE: begin
+                    busy <= 1'b1;
+                    adc_sclk <= 1'b0;
+                    if (delay_count == 0) begin
                         frame_bit_count <= 9'd0;
                         channel_bit_count <= 6'd0;
                         channel_count <= {CHANNEL_BITS{1'b0}};
                         rx_shift <= {DATA_BITS{1'b0}};
+                        sclk_count <= 32'd0;
                         state <= ST_READ_BITS;
+                    end else begin
+                        delay_count <= delay_count - 1'b1;
                     end
                 end
 

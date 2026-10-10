@@ -7,11 +7,11 @@
 set_property -dict {PACKAGE_PIN U18 IOSTANDARD LVCMOS33} [get_ports {clk}]
 create_clock -name pl_clk -period 40.000 [get_ports {clk}]
 
-# The RTL toggles adc_sclk every 10 PL_CLK cycles:
-# 25 MHz / (2 * 10) = 1.25 MHz.
+# The RTL toggles adc_sclk every 5 PL_CLK cycles:
+# 25 MHz / (2 * 5) = 2.5 MHz.
 create_generated_clock -name ads1299_sclk \
     -source [get_ports {clk}] \
-    -divide_by 20 \
+    -divide_by 10 \
     [get_ports {adc_sclk}]
 
 # ADS1299 interface on bank 13, MOVED off J3/LCD_B[7:0] (2026-09-21).

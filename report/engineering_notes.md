@@ -174,5 +174,5 @@ cd sim\results 后运行 tools\emg_reference.py 的 compare-*（详见 emg_refer
 
 - PL 端轻量神经网络推理引擎（40 维特征 → 动作类别 + 置信度）
 - PS 端解析/个体化校准/虚拟手模型驱动
-- QSPI 脱机启动（fsbl + 启动镜像）
+- QSPI 脱机启动：`build/boot/build_boot_bin.bat` 已能生成 FSBL + bitstream + PS ELF 的 `BOOT.BIN`；目标板写入 QSPI 后的断电自启动仍待实测
 - 实测数据采集与评估（report/evaluation_template.md）

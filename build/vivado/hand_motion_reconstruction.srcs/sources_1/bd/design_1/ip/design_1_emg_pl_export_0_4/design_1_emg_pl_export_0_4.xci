@@ -8,29 +8,31 @@
     "gen_directory": "../../../../../../hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_emg_pl_export_0_4",
     "parameters": {
       "component_parameters": {
-        "HP_B0": [ { "value": "64096", "resolve_type": "user", "usage": "all" } ],
+        "HP_B0": [ { "value": "64096", "resolve_type": "user", "format": "long", "usage": "all" } ],
         "HP_B1": [ { "value": "-128192", "resolve_type": "user", "format": "long", "usage": "all" } ],
-        "HP_B2": [ { "value": "64096", "resolve_type": "user", "usage": "all" } ],
+        "HP_B2": [ { "value": "64096", "resolve_type": "user", "format": "long", "usage": "all" } ],
         "HP_A1": [ { "value": "-128161", "resolve_type": "user", "format": "long", "usage": "all" } ],
-        "HP_A2": [ { "value": "62688", "resolve_type": "user", "usage": "all" } ],
-        "LP_ALPHA": [ { "value": "9392", "resolve_type": "user", "usage": "all" } ],
+        "HP_A2": [ { "value": "62688", "resolve_type": "user", "format": "long", "usage": "all" } ],
+        "LP_ALPHA": [ { "value": "9392", "resolve_type": "user", "format": "long", "usage": "all" } ],
         "DECIM_RATIO": [ { "value": "1", "resolve_type": "user", "format": "long", "usage": "all" } ],
         "WINDOW_SAMPLES": [ { "value": "400", "resolve_type": "user", "format": "long", "usage": "all" } ],
         "HOP_SAMPLES": [ { "value": "100", "resolve_type": "user", "format": "long", "usage": "all" } ],
         "RMS_INPUT_SHIFT": [ { "value": "12", "resolve_type": "user", "format": "long", "usage": "all" } ],
+        "PACKET_WORDS": [ { "value": "1024", "resolve_type": "user", "format": "long", "usage": "all" } ],
         "Component_Name": [ { "value": "design_1_emg_pl_export_0_4", "resolve_type": "user", "usage": "all" } ]
       },
       "model_parameters": {
-        "HP_B0": [ { "value": "64096", "resolve_type": "generated", "usage": "all" } ],
+        "HP_B0": [ { "value": "64096", "resolve_type": "generated", "format": "long", "usage": "all" } ],
         "HP_B1": [ { "value": "-128192", "resolve_type": "generated", "format": "long", "usage": "all" } ],
-        "HP_B2": [ { "value": "64096", "resolve_type": "generated", "usage": "all" } ],
+        "HP_B2": [ { "value": "64096", "resolve_type": "generated", "format": "long", "usage": "all" } ],
         "HP_A1": [ { "value": "-128161", "resolve_type": "generated", "format": "long", "usage": "all" } ],
-        "HP_A2": [ { "value": "62688", "resolve_type": "generated", "usage": "all" } ],
-        "LP_ALPHA": [ { "value": "9392", "resolve_type": "generated", "usage": "all" } ],
+        "HP_A2": [ { "value": "62688", "resolve_type": "generated", "format": "long", "usage": "all" } ],
+        "LP_ALPHA": [ { "value": "9392", "resolve_type": "generated", "format": "long", "usage": "all" } ],
         "DECIM_RATIO": [ { "value": "1", "resolve_type": "generated", "format": "long", "usage": "all" } ],
         "WINDOW_SAMPLES": [ { "value": "400", "resolve_type": "generated", "format": "long", "usage": "all" } ],
         "HOP_SAMPLES": [ { "value": "100", "resolve_type": "generated", "format": "long", "usage": "all" } ],
-        "RMS_INPUT_SHIFT": [ { "value": "12", "resolve_type": "generated", "format": "long", "usage": "all" } ]
+        "RMS_INPUT_SHIFT": [ { "value": "12", "resolve_type": "generated", "format": "long", "usage": "all" } ],
+        "PACKET_WORDS": [ { "value": "1024", "resolve_type": "generated", "format": "long", "usage": "all" } ]
       },
       "project_parameters": {
         "ARCHITECTURE": [ { "value": "zynq", "resolve_type": "generated", "usage": "all" } ],
@@ -170,5 +172,5 @@
       }
     }
   },
-  "checksum": "85ee2858"
+  "checksum": "0276611b"
 }

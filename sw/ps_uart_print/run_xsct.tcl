@@ -4,7 +4,7 @@
 #   xsct run_xsct.tcl
 #
 # After "con" completes, open a serial terminal on the board's USB-UART
-# (UART1, MIO 48/49) at 115200-8N1 to see the decoded PL stream.
+# (UART0, MIO 14/15) at 115200-8N1 to inspect optional debug output.
 
 set script_dir [file dirname [info script]]
 set root       [file normalize [file join $script_dir .. ..]]

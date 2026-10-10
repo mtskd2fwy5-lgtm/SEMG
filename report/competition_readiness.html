@@ -74,7 +74,7 @@
     <div style="margin-bottom:13px;">
       <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:4px;"><span><b>功能正确性与设计完整性</b>（权重 20）｜仿真位精确、raw/特征/NN 已板测</span><span><b style="color:#b45309;">~13</b> / 目标 17 / 20</span></div>
       <div style="position:relative;height:14px;background:#eef2f4;border-radius:7px;"><div style="position:absolute;left:0;top:0;height:14px;width:65%;background:#f59e0b;border-radius:7px;"></div><div style="position:absolute;top:-3px;left:85%;height:20px;width:2px;background:#0f766e;"></div></div>
-      <div style="font-size:12.5px;color:#b91c1c;margin-top:3px;">差距（最高风险）：疲劳链路板测进行中；<b>尚无真实人体肌电输入</b>，指南要求“在板上跑通并提供实测输出”，决赛为实物演示；虚拟手仍在 PC 端。</div>
+      <div style="font-size:12.5px;color:#b91c1c;margin-top:3px;">差距（最高风险）：疲劳链路和 LCD 仍待改线后板测；<b>尚无真实人体肌电输入</b>，还需完成五类动作显示、QSPI 断电自启动和长时间稳定性证据。</div>
     </div>
 
     <div style="margin-bottom:13px;">
@@ -127,7 +127,7 @@
       <div style="align-self:center;font-size:20px;color:#94a3b8;padding:0 6px;">→</div>
       <div style="flex:1 1 150px;min-width:150px;border:1px solid #16a34a;background:#f0fdf4;border-radius:6px;padding:8px;text-align:center;"><div style="font-size:13px;font-weight:600;">PS 裸机</div><div style="font-size:11.5px;color:#15803d;margin-top:3px;">静息校准/rest门控/双模式</div></div>
       <div style="align-self:center;font-size:20px;color:#94a3b8;padding:0 6px;">→</div>
-      <div style="flex:1 1 140px;min-width:140px;border:1px solid #0f766e;background:#f0fdfa;border-radius:6px;padding:8px;text-align:center;"><div style="font-size:13px;font-weight:600;">PC 虚拟手(pygame)</div><div style="font-size:11.5px;color:#0f766e;margin-top:3px;">插值+疲劳变色；板载屏待做</div></div>
+      <div style="flex:1 1 140px;min-width:140px;border:1px solid #0f766e;background:#f0fdfa;border-radius:6px;padding:8px;text-align:center;"><div style="font-size:13px;font-weight:600;">PS 本地 LCD 虚拟手</div><div style="font-size:11.5px;color:#0f766e;margin-top:3px;">整数 2D/2.5D + 疲劳反馈；PC 3D 仅调试</div></div>
     </div>
     <div style="font-size:12px;color:#64748b;margin-top:12px;line-height:1.6;">兜底方案：在真实电极就绪前，应做一条<b>“板上数据回放”</b>链路（NinaPro 经 PS 回灌 DMA 或测试端注入），保证决赛演示不被人体信号质量绑架；函数源/固定电压注入用于采集稳定性证据。</div>
   </div>
@@ -212,7 +212,7 @@
       <li><code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;">src/rtl/hand_motion_top.v</code> 是孤立旧顶层，实际综合走 Block Design(emg_pl_export)；建议删除或在注释/README 标明，避免复现混淆。</li>
       <li>指标口径需对齐：README 主张 LoSo 84.9%，而 data/metrics/baseline.json 写 pooled 84.04%（S3 65.1%），int8_validation 为 67.4%；提交前统一为最终功能选位模型口径并归档。</li>
       <li>PYNQ 是“推荐/加分”非必选。裸机链路已验证，<b>不建议 10 月重构架构</b>；若进度富余，只加一层薄 PYNQ（同一 Overlay + Python 读 DMA/虚拟手）冲通用 skill 加分。</li>
-      <li>虚拟手在 PC 端不违规（推理已在板内，满足“板上跑通”）；板载屏是锦上添花，优先级低于真实信号与指标表。</li>
+      <li>PC 3D 虚拟手仅保留为调试和造型检查；最终演示以 PS 本地 LCD 为准，仍需补真实输入、显示和 QSPI 自启动实测。</li>
     </ul>
   </div>
 

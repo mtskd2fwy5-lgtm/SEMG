@@ -8,12 +8,24 @@
 // argmax class) on the result lane.
 module emg_pl_export #(
     // Filter and window parameters forwarded to the feature bank.
-    parameter signed [17:0] HP_B0 = 18'sd64096,
-    parameter signed [17:0] HP_B1 = -18'sd128192,
-    parameter signed [17:0] HP_B2 = 18'sd64096,
-    parameter signed [17:0] HP_A1 = -18'sd128161,
-    parameter signed [17:0] HP_A2 = 18'sd62688,
-    parameter signed [15:0] LP_ALPHA = 16'sd9392,
+    // The six coefficient parameters are plain integers ON PURPOSE.
+    // Vivado 2025.2's module_ref OOC top wrapper quotes POSITIVE sized
+    // signed parameter values as string literals (.HP_B0("64096")); at
+    // elaboration the ASCII bytes get truncated to the parameter width,
+    // corrupting the filter (B0/B2 64096 -> 14646, A2 62688 -> -116680,
+    // LP_ALPHA 9392 -> 14642; A2 = -1.78 Q16 puts the poles outside the
+    // unit circle -> output rails -> MAV = INT_MAX on the board).
+    // Integer-typed parameters (like DECIM_RATIO below) and negative
+    // values are emitted bare and survive. The downstream feature bank /
+    // bandpass keep their signed [17:0]/[15:0] declarations: integer
+    // values truncate into them losslessly and the hand-written RTL to
+    // RTL instantiation path never goes through the wrapper. 2026-10-08.
+    parameter integer HP_B0 = 64096,
+    parameter integer HP_B1 = -128192,
+    parameter integer HP_B2 = 64096,
+    parameter integer HP_A1 = -128161,
+    parameter integer HP_A2 = 62688,
+    parameter integer LP_ALPHA = 9392,
     // Input decimation gate.  The ADC streams at 4 kSPS and the whole
     // processing chain (feature bank, fatigue monitor) runs on the native
     // rate, so the default DECIM_RATIO = 1 passes every frame.  The gate
@@ -22,7 +34,10 @@ module emg_pl_export #(
     parameter integer DECIM_RATIO = 1,
     parameter integer WINDOW_SAMPLES = 400,   // 100 ms window at 4 kSPS
     parameter integer HOP_SAMPLES = 100,      // 25 ms hop, 75% overlap
-    parameter integer RMS_INPUT_SHIFT = 12
+    parameter integer RMS_INPUT_SHIFT = 12,
+    // Larger DMA batches reduce PS polling/re-arm overhead.  The packet
+    // format is unchanged; TLAST moves to the end of each 16 KB batch.
+    parameter integer PACKET_WORDS = 1024
 ) (
     input  wire                  pl_clk,
     input  wire                  pl_rst_n,
@@ -222,7 +237,7 @@ module emg_pl_export #(
     assign nn_out_ready = result_ready && !fat_out_valid;
     assign fat_out_ready = result_ready && fat_out_valid;
 
-    emg_data_path u_emg_data_path (
+    emg_data_path #(.PACKET_WORDS(PACKET_WORDS)) u_emg_data_path (
         .pl_clk(pl_clk), .pl_rst_n(pl_rst_n), .axis_clk(axis_clk), .axis_rst_n(axis_rst_n),
         .raw_valid(sample_valid), .raw_ready(), .raw_channel(sample_channel),
         .raw_data(sample_data), .raw_sequence(raw_sequence),

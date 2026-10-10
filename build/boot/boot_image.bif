@@ -1,7 +1,7 @@
 //arch = zynq; split = false; format = BIN
 the_ROM_image:
 {
-	[bootloader]D:\FPGA\sEMG-HMRS\build\vitis_ws\platform\export\platform\sw\boot\fsbl.elf
-	D:\FPGA\sEMG-HMRS\build\vivado\hand_motion_reconstruction.runs\impl_1\design_1.bit
-	D:\FPGA\sEMG-HMRS\build\vitis_ws\ps_uart_print\build\ps_uart_print.elf
+	[bootloader]build\vitis_ws\platform\export\platform\sw\boot\fsbl.elf
+	build\vivado\hand_motion_reconstruction.runs\impl_1\design_1.bit
+	sw\ps_uart_print\ps_uart_print.elf
 }

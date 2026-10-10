@@ -173,9 +173,21 @@ module emg_window_features #(
 
             if (seg_done) begin
                 // Completed window totals: subtract oldest segment, add this one.
-                next_mav     = win_mav     - ring_mav[wr_ptr]     + (seg_mav     + abs_x);
-                next_wl      = win_wl      - ring_wl[wr_ptr]      + (seg_wl      + abs_diff);
-                next_energy  = win_energy  - ring_energy[wr_ptr]  + (seg_energy  + x_sq[31:0]);
+                // Cast every unsigned segment register before arithmetic.
+                // Without the explicit signed extension, Verilog can
+                // promote a mixed expression to unsigned and turn a small
+                // sliding-window total into a large positive value that
+                // clamps at INT32_MAX on hardware-scale streams.
+                next_mav     = win_mav
+                             - $signed({1'b0, ring_mav[wr_ptr]})
+                             + $signed({1'b0, seg_mav}) + $signed(abs_x);
+                next_wl      = win_wl
+                             - $signed({1'b0, ring_wl[wr_ptr]})
+                             + $signed({1'b0, seg_wl}) + $signed(abs_diff);
+                next_energy  = win_energy
+                             - $signed({1'b0, ring_energy[wr_ptr]})
+                             + $signed({1'b0, seg_energy})
+                             + $signed({16'd0, x_sq[31:0]});
                 next_zc      = win_zc      - ring_zc[wr_ptr]      + (seg_zc      + zc_event);
                 next_ssc     = win_ssc     - ring_ssc[wr_ptr]     + (seg_ssc     + ssc_event);
 

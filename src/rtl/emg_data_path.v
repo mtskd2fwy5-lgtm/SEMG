@@ -4,6 +4,15 @@
 // runs in axis_clk and is ready for an AXI DMA S2MM connection.
 module emg_data_path #(
     parameter integer FIFO_ADDR_WIDTH = 6,
+    // Raw samples arrive at 8 channels x 4 kSPS and are the only lane that
+    // can burst during a DMA buffer hand-off.  Keep the feature/result FIFOs
+    // compact, but give raw a deeper elastic buffer for short PS/DMA stalls.
+    // Depth 1024 (= 32 ms of raw stream at 32 k beats/s) rode exactly at the
+    // DMA re-arm window (~30 ms): 2026-10-09 ILA evidence showed occupancy
+    // pinned at the 1023/1024 rim with raw_overflow sticky set, and PS-side
+    // gaps grew 8/16/24 packets whenever a stall outlasted the ~2 ms margin.
+    // 4096 entries absorb 128 ms - four DMA windows - for 8 extra RAMB36.
+    parameter integer RAW_FIFO_ADDR_WIDTH = 12,
     parameter integer PACKET_WORDS = 256
 ) (
     input  wire                  pl_clk,
@@ -54,7 +63,7 @@ module emg_data_path #(
     wire raw_rd_ready, feature_rd_ready, result_rd_ready;
     wire [63:0] raw_rd_data, feature_rd_data, result_rd_data;
 
-    axis_async_fifo #(.DATA_WIDTH(64), .ADDR_WIDTH(FIFO_ADDR_WIDTH)) raw_fifo (
+    axis_async_fifo #(.DATA_WIDTH(64), .ADDR_WIDTH(RAW_FIFO_ADDR_WIDTH)) raw_fifo (
         .s_clk(pl_clk), .s_rst_n(pl_rst_n), .s_valid(raw_valid),
         .s_ready(raw_ready), .s_data(raw_word), .m_clk(axis_clk),
         .m_rst_n(axis_rst_n), .m_valid(raw_rd_valid), .m_ready(raw_rd_ready),

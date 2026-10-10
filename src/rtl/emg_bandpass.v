@@ -22,6 +22,29 @@
 //
 // The RTL is bit-exact against the fixed-point reference model in
 // tools/emg_reference.py. Any change here must be mirrored there.
+//
+// Coefficient registers (2026-10-08 MAV-saturation incident): the six
+// coefficients reach this module through three levels of parameter
+// forwarding (emg_pl_export -> emg_feature_bank -> here). The root
+// cause of the corruption was NOT synthesis: Vivado 2025.2's module_ref
+// OOC top wrapper writes POSITIVE sized signed parameter values as
+// QUOTED STRING literals (e.g. .HP_B0("64096")), and elaboration
+// truncates the ASCII bytes to the parameter width (B0/B2 64096 ->
+// 14646, A2 62688 -> -116680, LP_ALPHA 9392 -> 14642) while negative
+// values and integer-typed parameters pass through bare and correct.
+// A2 = -1.78 in Q16 pushed the poles outside the unit circle and
+// railed every channel (board symptom: MAV = INT_MAX). The fix lives
+// in emg_pl_export.v: the six parameters are declared `parameter
+// integer` there, which the wrapper emits unquoted.
+// The dont_touch coefficient registers below are retained as a netlist
+// verification anchor: tmp/verify_coeff_regs.py decodes the Q16/Q15
+// values straight from the FF INIT attributes of the synthesized
+// netlist (bandpass_0..7), so any parameter-binding regression is
+// caught before a bitstream is packed. Without dont_touch, sequential
+// constant propagation would fold the registers away and remove that
+// anchor.
+// Post-synth checks: tmp/scan_literal_b.py reports zero literal-B DSPs;
+// tmp/verify_coeff_regs.py reports ALL COEFFICIENT REGISTERS CORRECT.
 module emg_bandpass #(
     parameter integer SAMPLE_WIDTH = 24,
     // 2nd-order Butterworth high-pass, fc = 20 Hz @ 4 kSPS, Q16.
@@ -61,15 +84,46 @@ module emg_bandpass #(
     reg signed [SAMPLE_WIDTH-1:0] hp_y1, hp_y2;
     reg signed [SAMPLE_WIDTH-1:0] lp_y;
 
-    // Blocking-assignment intermediates (evaluated in zero time inside
-    // the clocked block; never read across clock edges).
-    reg signed [ACC_WIDTH-1:0]   hp_acc;
-    reg signed [47:0]            hp_shift;
-    reg signed [47:0]            sat_val;
-    reg signed [SAMPLE_WIDTH-1:0] hp_y;
-    reg signed [SAMPLE_WIDTH:0]  lp_diff;
-    reg signed [40:0]            lp_prod;
-    reg signed [41:0]            lp_sum;
+    // Filter coefficients in registers (see header note). Declared with
+    // bitstream init AND reset-loaded; either path alone would suffice.
+    (* dont_touch = "true" *) reg signed [17:0] b0_r = HP_B0;
+    (* dont_touch = "true" *) reg signed [17:0] b1_r = HP_B1;
+    (* dont_touch = "true" *) reg signed [17:0] b2_r = HP_B2;
+    (* dont_touch = "true" *) reg signed [17:0] a1_r = HP_A1;
+    (* dont_touch = "true" *) reg signed [17:0] a2_r = HP_A2;
+    (* dont_touch = "true" *) reg signed [15:0] alpha_r = LP_ALPHA;
+
+    always @(posedge clk) begin
+        if (!rst_n) begin
+            b0_r    <= HP_B0;
+            b1_r    <= HP_B1;
+            b2_r    <= HP_B2;
+            a1_r    <= HP_A1;
+            a2_r    <= HP_A2;
+            alpha_r <= LP_ALPHA;
+        end
+    end
+
+    // Combinational datapath as continuous assignments. The previous
+    // version used module-level regs assigned with blocking assignments
+    // inside the clocked block; Vivado inferred them as registers
+    // (Synth 8-6014 "Unused sequential element ... was removed") and the
+    // resulting netlist implemented a different filter than the RTL,
+    // which was unstable in the full-design synthesis context. Wires
+    // leave no such ambiguity.
+    wire signed [ACC_WIDTH-1:0] hp_acc_w = b0_r * sample_in
+                                          + b1_r * hp_x1
+                                          + b2_r * hp_x2
+                                          - a1_r * hp_y1
+                                          - a2_r * hp_y2;
+    wire signed [47:0] hp_sat_w = sat_to_input(hp_acc_w >>> 16);
+    wire signed [SAMPLE_WIDTH-1:0] hp_y_w = hp_sat_w[SAMPLE_WIDTH-1:0];
+
+    wire signed [SAMPLE_WIDTH:0] lp_diff_w = hp_y_w - lp_y;
+    wire signed [40:0] lp_prod_w = alpha_r * lp_diff_w;
+    wire signed [41:0] lp_sum_w = lp_y + (lp_prod_w >>> 15);
+    wire signed [47:0] lp_sat_w = sat_to_input(lp_sum_w);
+    wire signed [SAMPLE_WIDTH-1:0] lp_y_w = lp_sat_w[SAMPLE_WIDTH-1:0];
 
     always @(posedge clk) begin
         filtered_valid <= 1'b0;
@@ -81,29 +135,13 @@ module emg_bandpass #(
             lp_y  <= {SAMPLE_WIDTH{1'b0}};
             filtered_out <= {SAMPLE_WIDTH{1'b0}};
         end else if (sample_valid) begin
-            // High-pass biquad: y = (b0*x + b1*x1 + b2*x2 - a1*y1 - a2*y2) >> 16
-            hp_acc = HP_B0 * sample_in
-                   + HP_B1 * hp_x1
-                   + HP_B2 * hp_x2
-                   - HP_A1 * hp_y1
-                   - HP_A2 * hp_y2;
-            hp_shift = hp_acc >>> 16;      // sign-extends to 48 bits
-            sat_val = sat_to_input(hp_shift);
-            hp_y = sat_val[SAMPLE_WIDTH-1:0];
-
-            // Low-pass: y += (alpha * (x - y)) >> 15
-            lp_diff = hp_y - lp_y;
-            lp_prod = LP_ALPHA * lp_diff;
-            lp_sum  = lp_y + (lp_prod >>> 15);
-            sat_val = sat_to_input(lp_sum);
-            lp_y    = sat_val[SAMPLE_WIDTH-1:0];
-
-            filtered_out  <= lp_y;
+            filtered_out  <= lp_y_w;
             filtered_valid <= 1'b1;
             hp_x2 <= hp_x1;
             hp_x1 <= sample_in;
             hp_y2 <= hp_y1;
-            hp_y1 <= hp_y;
+            hp_y1 <= hp_y_w;
+            lp_y  <= lp_y_w;
         end
     end
 endmodule

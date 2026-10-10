@@ -23,6 +23,11 @@ The three producer inputs run in `pl_clk`; the merged AXI-Stream runs in `axis_c
 - `src/rtl/emg_data_path.v`
 - `src/rtl/emg_pl_export.v`
 
+The raw FIFO is intentionally deeper than the feature/result FIFOs: raw uses
+1024 entries (10-bit address) to absorb a short DMA/PS buffer hand-off stall;
+feature and result lanes retain the compact default depth. This does not
+change the packet format or the feature/result timing contract.
+
 ## 64-bit packet format
 
 ```text
@@ -53,7 +58,7 @@ emg_pl_export.m_axis_tready <- AXI DMA S_AXIS_S2MM tready
 emg_pl_export.m_axis_tlast  -> AXI DMA S_AXIS_S2MM tlast
 ```
 
-Use an AXI-Stream data width of 64 bits and a PS/AXI clock domain for the DMA side. The mux asserts `tlast` every `PACKET_WORDS` accepted words; the current default is 256 words. The PS direct-register DMA therefore arms `256 * 8 = 2048` bytes per ping-pong buffer. The batch length and `tlast` position must remain identical.
+Use an AXI-Stream data width of 64 bits and a PS/AXI clock domain for the DMA side. The mux asserts `tlast` every `PACKET_WORDS` accepted words; the current default is 1024 words. The PS direct-register DMA therefore arms `1024 * 8 = 8192` bytes per ping-pong buffer. This stays below the configured AXI DMA 14-bit BTT limit.
 
 ## Overflow behavior
 

@@ -6,11 +6,11 @@
 set_property -dict {PACKAGE_PIN U18 IOSTANDARD LVCMOS33} [get_ports {pl_clk_0}]
 create_clock -name pl_clk -period 40.000 [get_ports {pl_clk_0}]
 
-# The RTL toggles adc_sclk every 10 PL_CLK cycles:
-# 25 MHz / (2 * 10) = 1.25 MHz.
+# The RTL toggles adc_sclk every 5 PL_CLK cycles:
+# 25 MHz / (2 * 5) = 2.5 MHz.
 create_generated_clock -name ads1299_sclk \
     -source [get_ports {pl_clk_0}] \
-    -divide_by 20 \
+    -divide_by 10 \
     [get_ports {adc_sclk_0}]
 
 # ADS1299 interface on bank 13, MOVED off J3/LCD_B[7:0] (2026-09-21).
@@ -56,7 +56,7 @@ set_false_path -from [get_ports {pl_rst_n_0}]
 set_false_path -from [get_ports {reconfig_n_0}]
 set_false_path -to   [get_ports {status_led_0}]
 
-# ADS1299 source-synchronous SPI timing. SCLK runs at 1.25 MHz (400 ns
+# ADS1299 source-synchronous SPI timing. SCLK runs at 2.5 MHz (200 ns
 # half period), so these generous ADS1299 datasheet-class values still
 # leave an enormous margin: DOUT settles within ~25 ns of the SCLK edge,
 # device inputs need ~10 ns setup / ~5 ns hold.

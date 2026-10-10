@@ -17,9 +17,15 @@ module tb_emg_nn_infer;
     localparam integer NOUT = 5;
 
     // absolute paths keep the TB independent of the simulator run directory
+`ifdef NN_PL_FILTER_FULLSTREAM
+    localparam MEM_FILE    = "d:/FPGA/sEMG-HMRS/data/models/nn_int8_pl_filter_fullstream/nn_int8_weights.mem";
+    localparam IN_FILE     = "d:/FPGA/sEMG-HMRS/data/models/nn_int8_pl_filter_fullstream/tb_inputs.mem";
+    localparam GOLD_FILE   = "d:/FPGA/sEMG-HMRS/data/models/nn_int8_pl_filter_fullstream/tb_logits.mem";
+`else
     localparam MEM_FILE    = "d:/FPGA/sEMG-HMRS/data/models/nn_int8/nn_int8_weights.mem";
     localparam IN_FILE     = "d:/FPGA/sEMG-HMRS/data/models/nn_int8/tb_inputs.mem";
     localparam GOLD_FILE   = "d:/FPGA/sEMG-HMRS/data/models/nn_int8/tb_logits.mem";
+`endif
 
     reg clk = 1'b0, rst_n = 1'b0;
     always #5 clk = ~clk;           // 100 MHz

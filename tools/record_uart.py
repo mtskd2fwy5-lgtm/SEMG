@@ -53,6 +53,7 @@ def reader(ser, frames, state):
     buf = b""
     seq_prev = None
     dropped = 0
+    false_sync = 0
     while not state["quit"]:
         buf += ser.read(4096)
         while True:
@@ -64,8 +65,29 @@ def reader(ser, frames, state):
                 buf = buf[i:]
                 break
             chunk = buf[i:i + FRAME]
-            buf = buf[i + FRAME:]
             seq = chunk[2] | (chunk[3] << 8)
+
+            # The raw payload is arbitrary binary, so AA 55 can occur inside
+            # a corrupted or misaligned stream.  When the sequence does not
+            # continue, require a second aligned frame before accepting this
+            # candidate.  Otherwise discard one byte and search again; this
+            # prevents a false sync from turning into millions of fake drops.
+            if seq_prev is None or seq != ((seq_prev + 1) & 0xFFFF):
+                aligned = False
+                for step in (FRAME, 2 * FRAME):
+                    j = i + step
+                    if len(buf) - j >= FRAME and buf[j:j + 2] == SYNC:
+                        next_seq = buf[j + 2] | (buf[j + 3] << 8)
+                        if next_seq == ((seq + step // FRAME) & 0xFFFF):
+                            aligned = True
+                            break
+                if not aligned:
+                    buf = buf[i + 1:]
+                    false_sync += 1
+                    state["false_sync"] = false_sync
+                    continue
+
+            buf = buf[i + FRAME:]
             if seq_prev is not None and ((seq_prev + 1) & 0xFFFF) != seq:
                 gap = (seq - seq_prev) & 0xFFFF
                 dropped += gap - 1
@@ -248,7 +270,8 @@ def main():
 
     frames = []
     state = {"quit": False, "label": "none", "count": 0,
-             "t_us_step": 1000000 // args.fs, "dropped": 0}
+             "t_us_step": 1000000 // args.fs, "dropped": 0,
+             "false_sync": 0}
 
     if args.enter:
         # 'r' must arrive while the board still runs the 115200 monitor
@@ -349,6 +372,7 @@ def main():
         "frames_captured": n,
         "frames_written": written,
         "frames_dropped_uart": state["dropped"],
+        "false_sync_candidates": state["false_sync"],
         "trim_seconds": args.trim,
         "runs": runs,
     }

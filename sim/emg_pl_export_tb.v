@@ -7,7 +7,7 @@
 // export_out.csv (type,channel,id,sequence,payload). tools/emg_reference.py
 // verifies every raw and feature word bit-exact.
 //
-// Timing mirrors the board: pl_clk = 25 MHz, SCLK = 1.25 MHz, axis_clk
+// Timing mirrors the board: pl_clk = 25 MHz, SCLK = 2.5 MHz, axis_clk
 // = 50 MHz, one DRDY pulse per 6000 pl_clk cycles (faster than the real
 // 1 kSPS cadence but far slower than any pipeline hazard).
 module emg_pl_export_tb;

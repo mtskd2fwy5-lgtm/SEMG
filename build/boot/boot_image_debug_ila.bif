@@ -1,0 +1,10 @@
+//arch = zynq; split = false; format = BIN
+// DEBUG ILA boot image - on-board gap diagnosis ONLY, NOT production firmware.
+// Bitstream = production netlist + u_ila_raw (inserted via build\debug_ila.tcl).
+// PS app / FSBL identical to production. Restore production BOOT.BIN for normal use.
+the_ROM_image:
+{
+	[bootloader]build\vitis_ws\platform\export\platform\sw\boot\fsbl.elf
+	build\vivado\hand_motion_reconstruction.runs\impl_1\design_1_wrapper_debug.bit
+	sw\ps_uart_print\ps_uart_print.elf
+}

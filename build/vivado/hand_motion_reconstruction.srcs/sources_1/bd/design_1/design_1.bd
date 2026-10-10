@@ -7,7 +7,8 @@
       "name": "design_1",
       "rev_ctrl_bd_flag": "RevCtrlBdOff",
       "synth_flow_mode": "Hierarchical",
-      "tool_version": "2025.2"
+      "tool_version": "2025.2",
+      "validated": "true"
     },
     "design_tree": {
       "processing_system7_0": "",
@@ -208,11 +209,47 @@
     "ports": {
       "pl_clk_0": {
         "type": "clk",
-        "direction": "I"
+        "direction": "I",
+        "parameters": {
+          "ASSOCIATED_RESET": {
+            "value": "pl_rst_n_0",
+            "value_src": "default"
+          },
+          "CLK_DOMAIN": {
+            "value": "design_1_pl_clk_0",
+            "value_src": "default"
+          },
+          "FREQ_HZ": {
+            "value": "100000000",
+            "value_src": "default"
+          },
+          "FREQ_TOLERANCE_HZ": {
+            "value": "0",
+            "value_src": "default"
+          },
+          "INSERT_VIP": {
+            "value": "0",
+            "value_src": "default"
+          },
+          "PHASE": {
+            "value": "0.0",
+            "value_src": "default"
+          }
+        }
       },
       "pl_rst_n_0": {
         "type": "rst",
-        "direction": "I"
+        "direction": "I",
+        "parameters": {
+          "INSERT_VIP": {
+            "value": "0",
+            "value_src": "default"
+          },
+          "POLARITY": {
+            "value": "ACTIVE_LOW",
+            "value_src": "default"
+          }
+        }
       },
       "adc_drdy_n_0": {
         "direction": "I"
@@ -2554,13 +2591,13 @@
           "processing_system7_0/S_AXI_HP0_ACLK",
           "proc_sys_reset_0/slowest_sync_clk",
           "processing_system7_0/M_AXI_GP0_ACLK",
-          "emg_pl_export_0/axis_clk",
           "axi_vdma_0/s_axi_lite_aclk",
           "axi_vdma_0/m_axi_mm2s_aclk",
           "axi_vdma_0/m_axis_mm2s_aclk",
           "v_axi4s_vid_out_0/aclk",
           "axi_gpio_0/s_axi_aclk",
-          "v_tc_0/s_axi_aclk"
+          "v_tc_0/s_axi_aclk",
+          "emg_pl_export_0/axis_clk"
         ]
       },
       "processing_system7_0_FCLK_CLK1": {

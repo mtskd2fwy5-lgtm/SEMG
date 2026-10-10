@@ -23,9 +23,13 @@ Outputs:
   data/metrics/int8_validation.json         LoSo fold-by-fold INT8 vs float
 
 Usage:
-  python tools/export_int8.py            # retrain folds (same seed) + quantize
+  python tools/export_int8.py            # preserve the historical export path
+  python tools/export_int8.py --resample 20 --win-samples 400 \
+      --hop-samples 100 --pl-filter --out-dir data/models/nn_int8_pl_filter
+      # export a PL-aligned experiment without replacing nn_int8/
 """
 
+import argparse
 import glob
 import json
 import os
@@ -38,8 +42,10 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.pipeline import Pipeline
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import train_baseline
 from train_baseline import (CLASSES, RAW_DIR, ROOT, balance_downsample,
-                            load_session_csv, make_windows, new_model)
+                            load_training_session, make_windows, new_model,
+                            prepare_samples)
 
 INT8_DIR = os.path.join(ROOT, "data", "models", "nn_int8")
 VAL_PATH = os.path.join(ROOT, "data", "metrics", "int8_validation.json")
@@ -283,15 +289,29 @@ def build_mem(qp):
 # data loading (same as training pipeline)
 # ---------------------------------------------------------------------------
 
-def load_all(sessions):
-    subjects = sorted({os.path.basename(p)[:2] for p in
-                       glob.glob(os.path.join(RAW_DIR, "s*", "S*_E*_A1_baseline.csv"))})
+def load_all(sessions, fs=200, decim=1, resample=1,
+             win_samples=0, hop_samples=0, pl_filter=False,
+             requested_subjects=None, input_mode="baseline"):
+    """Load features using the same preprocessing contract as training."""
+    train_baseline.FS = fs
+    train_baseline.WINDOW = (
+        win_samples or train_baseline.WINDOW_MS * fs // 1000)
+    train_baseline.HOP = hop_samples or train_baseline.HOP_MS * fs // 1000
+    input_suffix = "full" if input_mode == "full" else "baseline"
+    subjects = sorted({
+        os.path.basename(os.path.dirname(p))
+        for p in glob.glob(os.path.join(
+            RAW_DIR, "s*", "*_E*_A1_%s.csv" % input_suffix))
+    })
+    if requested_subjects:
+        requested = {s.lower() for s in requested_subjects}
+        subjects = [s for s in subjects if s.lower() in requested]
     data = {}
     for subj in subjects:
         xs, ys = [], []
         for e in sessions:
-            x, y = load_session_csv(os.path.join(RAW_DIR, subj,
-                                   "%s_E%d_A1_baseline.csv" % (subj, e)))
+            x, y = load_training_session(RAW_DIR, subj, e, input_mode)
+            x, y = prepare_samples(x, y, decim, resample, pl_filter)
             f, wy = make_windows(x, y)
             xs.append(f)
             ys.append(wy)
@@ -300,17 +320,55 @@ def load_all(sessions):
 
 
 def main():
-    sessions = [2]
-    seed = 0
-    hidden = [64, 32]
-    data = load_all(sessions)
+    ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    ap.add_argument("--sessions", type=int, nargs="+", default=[2])
+    ap.add_argument("--subjects", nargs="+", default=None,
+                    help="subject directory names to include (default: all)")
+    ap.add_argument("--input-mode", choices=("baseline", "full"),
+                    default="baseline",
+                    help="baseline rows or continuous *_full.csv stream")
+    ap.add_argument("--fs", type=int, default=200)
+    ap.add_argument("--decim", type=int, default=1)
+    ap.add_argument("--resample", type=int, default=1,
+                    help="repeat each input sample before filtering/windowing")
+    ap.add_argument("--win-samples", type=int, default=0,
+                    help="window length; default is 200 ms at --fs")
+    ap.add_argument("--hop-samples", type=int, default=0,
+                    help="hop length; default is 50 ms at --fs")
+    ap.add_argument("--pl-filter", action="store_true",
+                    help="apply the exact integer PL bandpass")
+    ap.add_argument("--hidden", type=int, nargs="+", default=[64, 32])
+    ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--no-balance", action="store_true")
+    ap.add_argument("--out-dir", default=INT8_DIR,
+                    help="directory for quant params, vectors and weights")
+    ap.add_argument("--metrics-path", default=VAL_PATH)
+    args = ap.parse_args()
+
+    sessions = args.sessions
+    seed = args.seed
+    hidden = args.hidden
+    data = load_all(
+        sessions, fs=args.fs, decim=args.decim, resample=args.resample,
+        win_samples=args.win_samples, hop_samples=args.hop_samples,
+        pl_filter=args.pl_filter, requested_subjects=args.subjects,
+        input_mode=args.input_mode)
     subjects = sorted(data)
     print("subjects: %s, windows: %s" % (
         subjects, {s: len(data[s][1]) for s in subjects}))
     rng = np.random.default_rng(seed)
 
-    report = {"config": {"sessions": sessions, "seed": seed,
-                         "hidden": hidden, "classes": CLASSES},
+    report = {"config": {
+                  "sessions": sessions, "subjects": subjects, "seed": seed,
+                  "hidden": hidden, "fs_hz": args.fs,
+                  "decim": args.decim, "resample": args.resample,
+                  "window_samples": train_baseline.WINDOW,
+                  "hop_samples": train_baseline.HOP,
+                  "effective_fs_hz": args.fs * args.resample // args.decim,
+                  "pl_filter": args.pl_filter,
+                  "input_mode": args.input_mode,
+                  "balance": "none" if args.no_balance else "rest downsampled",
+                  "classes": CLASSES},
               "folds": {}}
 
     # ---- LoSo folds: quantize each fold model, evaluate on its test set ----
@@ -318,7 +376,10 @@ def main():
         tr_x = np.concatenate([data[s][0] for s in subjects if s != test_subj])
         tr_y = np.concatenate([data[s][1] for s in subjects if s != test_subj])
         te_x, te_y = data[test_subj]
-        tr_xb, tr_yb = balance_downsample(tr_x, tr_y, rng)
+        if args.no_balance:
+            tr_xb, tr_yb = tr_x, tr_y
+        else:
+            tr_xb, tr_yb = balance_downsample(tr_x, tr_y, rng)
         model = new_model(hidden, seed)
         model.fit(tr_xb, tr_yb)
         f_pred = model.predict(te_x)
@@ -342,7 +403,10 @@ def main():
     # ---- final model: full data, calibrate on raw distribution -------------
     all_x = np.concatenate([data[s][0] for s in subjects])
     all_y = np.concatenate([data[s][1] for s in subjects])
-    all_xb, all_yb = balance_downsample(all_x, all_y, rng)
+    if args.no_balance:
+        all_xb, all_yb = all_x, all_y
+    else:
+        all_xb, all_yb = balance_downsample(all_x, all_y, rng)
     final = new_model(hidden, seed)
     final.fit(all_xb, all_yb)
     f_pred = final.predict(all_xb)
@@ -363,27 +427,31 @@ def main():
 
     # ---- persist ------------------------------------------------------------
     qp["mem_layout"] = MEM_LAYOUT
-    os.makedirs(INT8_DIR, exist_ok=True)
+    out_dir = args.out_dir
+    metrics_path = args.metrics_path
+    os.makedirs(out_dir, exist_ok=True)
     demo = all_xb[:64]
     # $readmemh golden vectors for the RTL testbench: 64 windows, one u32
     # feature / logit per word, row-major.
-    with open(os.path.join(INT8_DIR, "tb_inputs.mem"), "w") as fh:
+    with open(os.path.join(out_dir, "tb_inputs.mem"), "w") as fh:
         for v in demo.reshape(-1).tolist():
             fh.write("%08x\n" % (int(v) & 0xFFFFFFFF))
-    with open(os.path.join(INT8_DIR, "tb_logits.mem"), "w") as fh:
+    with open(os.path.join(out_dir, "tb_logits.mem"), "w") as fh:
         for v in net.forward(demo).reshape(-1).tolist():
             fh.write("%08x\n" % (int(v) & 0xFFFFFFFF))
-    with open(os.path.join(INT8_DIR, "quant_params.json"), "w") as fh:
+    with open(os.path.join(out_dir, "quant_params.json"), "w") as fh:
         json.dump(qp, fh, indent=1)
-    with open(os.path.join(INT8_DIR, "nn_int8_weights.mem"), "w") as fh:
+    with open(os.path.join(out_dir, "nn_int8_weights.mem"), "w") as fh:
         fh.write(build_mem(qp))
-    os.makedirs(os.path.dirname(VAL_PATH), exist_ok=True)
-    with open(VAL_PATH, "w") as fh:
+    os.makedirs(os.path.dirname(metrics_path), exist_ok=True)
+    with open(metrics_path, "w") as fh:
         json.dump(report, fh, indent=2)
 
-    print("weights  -> data/models/nn_int8/nn_int8_weights.mem")
-    print("params   -> data/models/nn_int8/quant_params.json")
-    print("metrics  -> %s" % os.path.relpath(VAL_PATH, ROOT))
+    print("weights  -> %s" % os.path.relpath(
+        os.path.join(out_dir, "nn_int8_weights.mem"), ROOT))
+    print("params   -> %s" % os.path.relpath(
+        os.path.join(out_dir, "quant_params.json"), ROOT))
+    print("metrics  -> %s" % os.path.relpath(metrics_path, ROOT))
     return 0
 
 

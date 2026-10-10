@@ -34,6 +34,22 @@ set_property IS_ENABLED true  [get_files hz_zynq_ads1299_bd.xdc]
 # validate_bd_design re-binds the reference (same as build/fix_bd_refs.tcl).
 set bd_file [get_files -quiet -of [get_filesets sources_1] design_1.bd]
 if {[llength $bd_file] > 0} {
+    # Re-enable RTL sources Vivado auto-disabled (AutoDisabled=1 removes the
+    # module from elaboration, so module_ref blocks die with [filemgmt
+    # 56-587]; seen on lcd_clk_fwd after the 2026-10-09 cleanup).  A disabled
+    # RTL source is never intentional; disabled XDCs are left alone.
+    foreach f [get_files -quiet -of [get_filesets sources_1]] {
+        if {([string match *.v $f] || [string match *.sv $f]) &&
+            ![get_property IS_ENABLED $f]} {
+            set_property IS_ENABLED true $f
+            puts "REBIND: re-enabled auto-disabled RTL source $f"
+        }
+    }
+    # Rebind compile order first: if the project was touched by cleanup or
+    # a new session, module_ref sources can drop out of the compile order
+    # and validate/launch die with [filemgmt 56-587] (e.g. lcd_clk_fwd,
+    # 2026-10-09).  Automatic order re-discovers every src/rtl module.
+    update_compile_order -fileset sources_1
     open_bd_design [lindex $bd_file 0]
     validate_bd_design -force
     save_bd_design

@@ -17,6 +17,8 @@ Pipeline mirrors the PL signal chain so PC results transfer to RTL:
 Outputs:
   data/models/baseline_mlp.joblib   (StandardScaler + MLP pipeline)
   data/metrics/baseline.json        (config, per-fold and pooled metrics)
+  data/models/baseline_mlp_pl_filter.joblib and
+  data/metrics/baseline_pl_filter.json when --pl-filter is enabled
 
 Usage:
   python tools/train_baseline.py
@@ -25,12 +27,16 @@ Usage:
          --hop-samples 100
          # NinaPro 200 Hz upsampled to the PL's native 4 kSPS rate so the
          # feature magnitudes match the RTL 400/100 windows (100 ms/25 ms)
+  python tools/train_baseline.py --resample 20 --win-samples 400 \
+         --hop-samples 100 --pl-filter
+         # exact RTL integer bandpass after the 4 kSPS sample-and-hold stream
   python tools/train_baseline.py --data-dir data/raw/board --fs 4000 \
          --win-samples 400 --hop-samples 100
          # own 4 kSPS board raw data at the native feature pace
 """
 
 import argparse
+import csv
 import glob
 import json
 import os
@@ -44,11 +50,21 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from emg_reference import Bandpass
+
 RAW_DIR = os.path.join(ROOT, "data", "raw", "ninapro_db5")
 MODEL_PATH = os.path.join(ROOT, "data", "models", "baseline_mlp.joblib")
 METRICS_PATH = os.path.join(ROOT, "data", "metrics", "baseline.json")
+PL_FILTER_MODEL_PATH = os.path.join(
+    ROOT, "data", "models", "baseline_mlp_pl_filter.joblib")
+PL_FILTER_METRICS_PATH = os.path.join(
+    ROOT, "data", "metrics", "baseline_pl_filter.json")
 
 CLASSES = ["rest", "open_hand", "fist", "wrist_flex", "wrist_extend"]
+FULL_BASELINE_CODES = {
+    2: {0: 0, 5: 1, 6: 2, 13: 3, 14: 4},
+}
 FS = 200
 WINDOW_MS = 200
 HOP_MS = 50
@@ -83,16 +99,68 @@ def load_session_csv(path):
     return np.asarray(xs, dtype=np.int32), np.asarray(ys, dtype=np.int8)
 
 
-def make_windows(x, y):
+def load_full_session_csv(path):
+    """Read a continuous stream, retaining non-target labels as -1."""
+    xs, ys = [], []
+    channels = ["channel_%d" % i for i in range(8)]
+    with open(path, newline="") as fh:
+        for row in csv.DictReader(fh):
+            exercise = int(row["exercise"].lstrip("eE"))
+            code = int(row["restimulus"])
+            xs.append([row[c] for c in channels])
+            ys.append(FULL_BASELINE_CODES.get(exercise, {}).get(code, -1))
+    return np.asarray(xs, dtype=np.int32), np.asarray(ys, dtype=np.int8)
+
+
+def load_training_session(data_dir, subject, session, input_mode):
+    """Load one session from the selected dataset representation."""
+    suffix = "full" if input_mode == "full" else "baseline"
+    path = os.path.join(
+        data_dir, subject, "%s_E%d_A1_%s.csv" %
+        (subject.upper(), session, suffix))
+    loader = load_full_session_csv if input_mode == "full" else load_session_csv
+    return loader(path)
+
+
+def apply_pl_bandpass(x):
+    """Apply the exact RTL bandpass independently to every channel."""
+    x = np.asarray(x, dtype=np.int32)
+    out = np.empty(x.shape, dtype=np.int32)
+    for ch in range(x.shape[1]):
+        bp = Bandpass()
+        for i, sample in enumerate(x[:, ch]):
+            out[i, ch] = bp.step(int(sample))
+    return out
+
+
+def prepare_samples(x, y, decim=1, resample=1, pl_filter=False):
+    """Apply the shared sample-rate contract before feature extraction."""
+    x = np.asarray(x, dtype=np.int32)
+    y = np.asarray(y, dtype=np.int8)
+    if decim > 1:
+        x, y = x[::decim], y[::decim]
+    if resample > 1:
+        # Sample-and-hold upsample: the RTL feature sums see each source
+        # sample for the same number of native-rate cycles.
+        x = np.repeat(x, resample, axis=0)
+        y = np.repeat(y, resample, axis=0)
+    if pl_filter:
+        x = apply_pl_bandpass(x)
+    return x, y
+
+
+def make_windows(x, y, window=None, hop=None):
     """Window x, keep single-label windows, return (features, labels).
 
     Feature matrix is (n_windows, 5*8): MAV, WL, Energy, ZC, SSC per
     channel - integer definitions identical to the PL chain.
     """
-    n = (len(x) - WINDOW) // HOP + 1
-    idx = np.arange(WINDOW)[None, :] + HOP * np.arange(n)[:, None]
+    window = WINDOW if window is None else window
+    hop = HOP if hop is None else hop
+    n = (len(x) - window) // hop + 1
+    idx = np.arange(window)[None, :] + hop * np.arange(n)[:, None]
     yv = y[idx]
-    single = (yv == yv[:, :1]).all(axis=1)
+    single = (yv == yv[:, :1]).all(axis=1) & (yv[:, 0] >= 0)
     idx = idx[single]
     w = x[idx]                                    # (n, WINDOW, 8)
     d = np.diff(w, axis=1)                        # (n, WINDOW-1, 8)
@@ -138,6 +206,9 @@ def main():
     ap.add_argument("--data-dir", default=None,
                     help="dataset root with s*/ subdirs (default: NinaPro "
                          "%s)" % os.path.relpath(RAW_DIR, ROOT))
+    ap.add_argument("--input-mode", choices=("baseline", "full"),
+                    default="baseline",
+                    help="baseline rows or continuous *_full.csv stream")
     ap.add_argument("--fs", type=int, default=200,
                     help="sample rate of the input CSVs in Hz (default 200)")
     ap.add_argument("--win-samples", type=int, default=0,
@@ -151,10 +222,19 @@ def main():
                     help="repeat every sample this many times before "
                          "windowing (e.g. 20: NinaPro 200 Hz upsampled to "
                          "the PL's native 4 kSPS feature pace)")
+    ap.add_argument("--pl-filter", action="store_true",
+                    help="apply the exact integer PL bandpass after "
+                         "resampling and before feature windowing")
+    ap.add_argument("--subjects", nargs="+", default=None,
+                    help="subject directory names to include (default: all)")
     ap.add_argument("--hidden", type=int, nargs="+", default=[64, 32])
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--no-balance", action="store_true",
                     help="keep the full rest majority in training")
+    ap.add_argument("--model-path", default=None,
+                    help="override the output model path")
+    ap.add_argument("--metrics-path", default=None,
+                    help="override the output metrics path")
     args = ap.parse_args()
 
     global FS, WINDOW, HOP
@@ -164,11 +244,15 @@ def main():
     eff_fs = FS * args.resample // args.decim   # rate the windowed stream represents
     data_dir = args.data_dir or RAW_DIR
 
-    paths = sorted(glob.glob(os.path.join(data_dir, "s*",
-                                          "*_E*_A1_baseline.csv")))
+    input_suffix = "full" if args.input_mode == "full" else "baseline"
+    paths = sorted(glob.glob(os.path.join(
+        data_dir, "s*", "*_E*_A1_%s.csv" % input_suffix)))
     # subject key from the s*/ directory name (filename prefixes collide,
     # e.g. S30 vs S3 in a mixed dataset)
     subjects = sorted({os.path.basename(os.path.dirname(p)) for p in paths})
+    if args.subjects:
+        requested = {s.lower() for s in args.subjects}
+        subjects = [s for s in subjects if s.lower() in requested]
     if len(subjects) < 2:
         print("need at least 2 converted subjects under %s" % data_dir)
         return 1
@@ -177,16 +261,9 @@ def main():
     for subj in subjects:
         xs, ys = [], []
         for e in args.sessions:
-            path = os.path.join(data_dir, subj,
-                                "%s_E%d_A1_baseline.csv" % (subj.upper(), e))
-            x, y = load_session_csv(path)
-            if args.decim > 1:
-                x, y = x[::args.decim], y[::args.decim]
-            if args.resample > 1:
-                # sample-and-hold upsample: window sums scale by the same
-                # factor as the RTL feature sums at the higher rate
-                x = np.repeat(x, args.resample, axis=0)
-                y = np.repeat(y, args.resample, axis=0)
+            x, y = load_training_session(data_dir, subj, e, args.input_mode)
+            x, y = prepare_samples(x, y, args.decim, args.resample,
+                                    args.pl_filter)
             f, wy = make_windows(x, y)
             xs.append(f)
             ys.append(wy)
@@ -233,8 +310,12 @@ def main():
         all_x, all_y = balance_downsample(all_x, all_y, rng)
     final = new_model(args.hidden, args.seed)
     final.fit(all_x, all_y)
-    os.makedirs(os.path.dirname(MODEL_PATH), exist_ok=True)
-    joblib.dump(final, MODEL_PATH)
+    model_path = args.model_path or (
+        PL_FILTER_MODEL_PATH if args.pl_filter else MODEL_PATH)
+    metrics_path = args.metrics_path or (
+        PL_FILTER_METRICS_PATH if args.pl_filter else METRICS_PATH)
+    os.makedirs(os.path.dirname(model_path), exist_ok=True)
+    joblib.dump(final, model_path)
 
     metrics = {
         "dataset": DATASET,
@@ -245,19 +326,25 @@ def main():
             "window_ms": WINDOW * 1000 // eff_fs, "hop_ms": HOP * 1000 // eff_fs,
             "features": ["mav_sum", "wl_sum", "energy_sum", "zc_count", "ssc_count"],
             "zc_th": ZC_TH, "ssc_th": SSC_TH,
+            "pl_filter": args.pl_filter,
+            "input_mode": args.input_mode,
+            "filter_contract": (
+                "sample-hold to effective rate, then exact RTL integer "
+                "bandpass"
+            ) if args.pl_filter else "none",
             "model": "StandardScaler + MLP(%s)" % ",".join(map(str, args.hidden)),
             "balance": "rest downsampled to median class size" if not args.no_balance else "none",
-            "sessions": args.sessions, "seed": args.seed,
+            "sessions": args.sessions, "subjects": subjects, "seed": args.seed,
             "evaluation": "leave-one-subject-out",
         },
         "classes": CLASSES,
         "folds": folds,
         "pooled": pooled,
-        "model_path": os.path.relpath(MODEL_PATH, ROOT).replace("\\", "/"),
+        "model_path": os.path.relpath(model_path, ROOT).replace("\\", "/"),
         "trained_on": "%d subjects, %d windows" % (len(subjects), len(all_y)),
     }
-    os.makedirs(os.path.dirname(METRICS_PATH), exist_ok=True)
-    with open(METRICS_PATH, "w") as fh:
+    os.makedirs(os.path.dirname(metrics_path), exist_ok=True)
+    with open(metrics_path, "w") as fh:
         json.dump(metrics, fh, indent=2)
 
     print("pooled: acc=%.3f f1_macro=%.3f" % (pooled["accuracy"], pooled["f1_macro"]))
@@ -265,8 +352,8 @@ def main():
         "%d=%s" % (i, c) for i, c in enumerate(CLASSES)))
     for i, row in enumerate(pooled["confusion"]):
         print("  %s: %s" % (CLASSES[i], row))
-    print("model -> %s" % os.path.relpath(MODEL_PATH, ROOT))
-    print("metrics -> %s" % os.path.relpath(METRICS_PATH, ROOT))
+    print("model -> %s" % os.path.relpath(model_path, ROOT))
+    print("metrics -> %s" % os.path.relpath(metrics_path, ROOT))
     return 0
 
 

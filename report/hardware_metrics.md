@@ -34,7 +34,7 @@ require a board capture.
 | Total | 33844 packets/s |
 | 256-word DMA batch interval | 7.564 ms |
 
-The DMA batch is 256 64-bit words, or 2048 bytes. The AXI TLAST position,
+The DMA batch is 1024 64-bit words, or 8192 bytes. The AXI TLAST position,
 PS transfer length, and ping-pong buffer size must remain identical.
 
 ## Verification Evidence
