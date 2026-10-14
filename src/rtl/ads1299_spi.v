@@ -2,11 +2,14 @@
 
 // ADS1299 SPI controller for continuous multi-channel acquisition.
 //
-// Default configuration:
+// Default configuration (real electrode acquisition):
 //   CONFIG1 = 0x92 : high-resolution, 4 kSPS
-//   CONFIG2 = 0xD5 : internal calibration signal enabled for bring-up
+//   CONFIG2 = 0xC0 : internal calibration signal off for real acquisition;
+//            use 0xD5 (INT_CAL on, fCLK/2^20) for digital-chain bring-up
 //   CONFIG3 = 0xEC : internal reference and bias circuitry enabled
-//   CHnSET  = 0x05 : internal test input, PGA gain 1, powered on
+//   CHnSET  = 0x40 : normal electrode input, PGA gain 4, powered on
+//            (24x was tried first but electrode DC offsets pinned 4 channels
+//            near full scale; use 0x05 MUX=101 gain 1 test input for bring-up)
 //
 // Register values are parameters so the final EMG front-end can choose a
 // different gain or data rate without changing the controller structure.
@@ -38,13 +41,19 @@ module ads1299_spi #(
     parameter integer COMMAND_GAP_CYCLES = 250,
     parameter integer BTN_DEBOUNCE_CYCLES = 500_000,  /* 20 ms @ 25 MHz */
     parameter [7:0] CONFIG1_VALUE = 8'h92,  /* reserved bits=1,10; DR=010 (4 kSPS), CLK_EN=0 */
+    // 0xC0 = INT_CAL off (real electrode acquisition).  Bring-up A/B value:
     // 0xD5 enables the internal calibration signal; CAL_FREQ=01 selects
-    // fCLK/2^20 for repeatable digital-chain bring-up.
-    parameter [7:0] CONFIG2_VALUE = 8'hD5,
+    // fCLK/2^20 (~2 Hz square wave) for repeatable digital-chain bring-up.
+    parameter [7:0] CONFIG2_VALUE = 8'hC0,
     parameter [7:0] CONFIG3_VALUE = 8'hEC,
     parameter [7:0] LOFF_VALUE = 8'h00,
-    // 0x05 = PD=0, GAIN=000 (1x), MUX=101 (internal test signal).
-    parameter [7:0] CHANNEL_VALUE = 8'h05
+    // 0x40 = PD=0, GAIN=100 (4x), MUX=000 (normal electrode input).
+    // Board evidence (2026-10-10, first real-electrode run at 24x): electrode
+    // DC offsets of 9..86 mV between electrode pairs pinned CH5-CH8 at 91-92%
+    // of full scale, so 24x left no headroom for the actual EMG swing.  4x
+    // raises full scale to +/-1.125 V (~8% used by the offsets).  Bring-up
+    // A/B value: 0x05 (GAIN 1x, MUX=101) selects the internal test signal.
+    parameter [7:0] CHANNEL_VALUE = 8'h40
 ) (
     input  wire                         clk,
     input  wire                         rst_n,

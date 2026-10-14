@@ -34,7 +34,18 @@ This block is independent of the ADC brand and can be compared against a Python/
 4. The accumulator must not overflow for the selected ADC range and window length.
 5. RTL output must match the fixed-point reference within the stated rounding tolerance.
 
-## ADS1299 八通道布极规划（2026-09-11 定稿）
+## ADS1299 八通道布极规划（2026-09-11 定稿；2026-10-10 v3 修订：左臂双环）
+
+> **v3 修订（2026-10-10）：左臂双环布极。** 佩戴对象改为左臂（右手操作鼠标、
+> 左手佩戴系统）。CH1–CH6 重组为近端环 + 远端环两条横向电极带：环1 = 肘横纹
+> 远端约 8cm（肌腹最丰满处），环2 = 环1 远端约 5cm；每通道 = 环1 一片 + 环2
+> 一片环间纵向差分，环上按 6 扇区分度——掌侧：桡 FCR(CH3) / 正中偏尺 FDS(CH1)
+> / 尺 FCU(CH4)；背侧：桡 ECR(CH5) / 正中 EDC(CH2) / 尺 ECU(CH6)。
+> CH7(APL)/CH8(EPL/EPB) 为远端斜行肌不进环，保持斜行贴法。环间距 5cm 替代原
+> 2~3cm 差分间距：拾集体积更大、幅度更高但串扰更宽，换布极后 NN 必须重训
+> （本就是预期流程）。逐指分化收益：每指 compartment 在环上投影角度不同，
+> 双环 = 6 角度 × 2 纵深空间采样，为后续加单指分类重训预留结构。
+> 可视化：report/electrode-placement-v3/electrode-placement-v3.html。
 
 真实 ADS1299 前端的电极-通道映射按目标肌肉逐通道规划（区别于 DB5 训练数据的
 Myo 环带均匀布极）：
@@ -55,7 +66,7 @@ Myo 环带均匀布极）：
 1. **表面电极记录的是叠加信号**：前臂浅层肌群紧密相邻，每对差分电极采集的是
    目标肌肉为主、邻肌混入的混合信号。表中「目标肌肉」是定位依据，不代表单肌肉
    纯净记录。
-2. **差分对沿肌腹纵向布置**（间距 2~3 cm），参考电极置于腕横纹/肘部骨性部位；
+2. **差分对纵向布置**：v2 散点方案沿肌腹间距 2~3 cm；v3 双环方案为环间纵向差分（约 5 cm，见顶部修订说明）。参考电极置于腕横纹/肘部骨性部位；
    ADS1299 内置右腿驱动与 BIAS 导联做共模抑制。
 3. **五类 baseline 的通道覆盖**：握拳=CH1；张手=CH2；屈腕=CH3+CH4；
    伸腕=CH5+CH6；放松=全体静息。CH7/CH8 为拇指与手部精细动作预留（Phase 4

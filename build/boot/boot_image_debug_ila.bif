@@ -5,6 +5,6 @@
 the_ROM_image:
 {
 	[bootloader]build\vitis_ws\platform\export\platform\sw\boot\fsbl.elf
-	build\vivado\hand_motion_reconstruction.runs\impl_1\design_1_wrapper_debug.bit
+	impl_1\design_1_wrapper_debug.bit
 	sw\ps_uart_print\ps_uart_print.elf
 }

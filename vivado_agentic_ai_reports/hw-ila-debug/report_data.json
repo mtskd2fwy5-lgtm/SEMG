@@ -1,0 +1,163 @@
+{
+  "task": "ATK-4384 800x480 LCD white-screen root-cause hunt - round 2 (VDMA stream-side probes)",
+  "date": "2026-10-13",
+  "bitstream": "impl_1/design_1_wrapper_debug.bit + build/lcd_debug_probes.ltx (v4 cores, 3x ILA)",
+  "cores": {
+    "hw_ila_1": "u_ila_g50 @FCLK_CLK1: id_pins[23:0](3 loaded bits 7/15/23), mmcm_locked, id_reg[15:0], {id_settled,id_valid}",
+    "hw_ila_2": "u_ila_pclk @lcd_pclk: hcnt[11:0], vcnt[11:0], {sel4384_sync,sel4384_meta}, {vid_rst_out, v_axi4s_vid_out_0/locked}",
+    "hw_ila_3": "u_ila_axis @FCLK_CLK0: {s_axis_video_tvalid, tready, tuser}"
+  },
+  "captures": {
+    "capture_axis.csv": {
+      "window": "4096 aclk cycles (~41us @100MHz), trigger_now",
+      "result": "TVALID=0 for 4096/4096, TREADY=1 for 4096/4096, TUSER=0 for 4096/4096",
+      "verdict": "VDMA never presents a single stream beat; vid_out is waiting (tready high)"
+    },
+    "capture_pclk_2.csv": {
+      "result": "hcnt/vcnt counting (0xb8->0xc1 seen), vcnt=0x21, sel4384=1, locked=0, vid_rst_out=0 (released)",
+      "verdict": "adapter timing generator alive and correct; vid_out never synced (consistent with no SOF ever arriving)"
+    },
+    "capture_g50.csv": {
+      "result": "id_pins bit7=1, id_reg=0x4384, id_settled=1, id_valid=1, mmcm_locked=1",
+      "verdict": "panel ID detection perfect (ATK-4384)"
+    }
+  },
+  "vdma_register_poll_xsct": {
+    "method": "xsct mrd -force via ARM Cortex-A9#0, DAP access",
+    "CR_0x43000000": "0x00010003 (RS=1, bit1=1, bit16 RO=1) - stable across polls",
+    "SR_0x43000004": "0x00010000 - Halted=0, Idle=0 (channel busy), zero error bits (0xFF0 mask clean), FRMCNT field parked at 1",
+    "SR_poll_x3_1s": "0x00010000 / 0x00010000 / 0x00010000 - FRMCNT never increments",
+    "video_params": "VSIZE=0x1E0(480) HSIZE=0x960(2400) STRIDE=0x960 SA0=0x18000000 SA1=0x18119400 SA2=0x18232800 - all correct",
+    "FRMSTORE_0x18": "reads 0 (register not writable / IP config)",
+    "PARKPTR": "0x00000000",
+    "S2MM_CR_SR": "0x0 / 0x0 (unused, MM2S-only design)",
+    "debug_regs_0x48": "all 0 (C_ENABLE_DEBUG_INFO not set in IP)"
+  },
+  "cr_experiment": {
+    "action": "wrote CR=0x0000000B (RS|bit1|GenlockEn) on live VDMA via xsct mwr",
+    "result": "read back 0x00010003 - bit3 (GenlockEn) NOT writable",
+    "conclusion": "this axi_vdma IP config has genlock unconfigured (RtType hardwired No-Genlock); CR config ruled out as deadlock cause. bit16 is a RO constant. ATK example (21_vdma_lcd) uses EnableSync=1 which is not replicable on this IP config and is not needed."
+  },
+  "verdict_tree_state": {
+    "eliminated": [
+      "panel ID detect (id_reg=0x4384, settled, valid)",
+      "adapter timing gen (hcnt/vcnt sweep, sel4384 correct, reset released)",
+      "BD wiring/clocks (fix-17: vdma->vid_out intf net present, m_axi_mm2s_aclk=m_axis_mm2s_aclk=FCLK_CLK0)",
+      "vid_out enables/resets (fix-17 netlist evidence)",
+      "VDMA register config (VSIZE/HSIZE/STRIDE/SA/CR all correct or unwritable)",
+      "CR genlock mismatch (bit3 unwritable, RO)"
+    ],
+    "remaining": [
+      "AXI read path: does VDMA issue ARVALID at all? does smartconnect_1/HP0 accept? does R data return?",
+      "VDMA internal FSM stall (park/circular/first-frame logic)"
+    ],
+    "v5_probe": "u_ila_axis probe2 {m_axi_mm2s_arvalid, arready, rvalid, rlast} on FCLK_CLK0 - arvalid=0 -> internal stall; arready=0 -> smartconnect refuses; rvalid=0 after AR -> HP0/DDR read dead; rvalid=1 with tvalid=0 -> stream-side gating dead"
+  },
+  "next_action": "v5 build (job-707fcfd6) -> BOOT_DEBUG_ILA.BIN -> SD card -> capture u_ila_axis probe0+probe2 -> final verdict",
+  "files": ["capture_axis.csv", "capture_pclk_2.csv", "capture_g50.csv", "report_data.json", "REPORT.md"],
+  "round_4_vdma_revive_verdict": {
+    "date": "2026-10-13 14:30-16:20",
+    "bitstream": "v6 u_ila_vdma (11 probes) + u_ila_pclk",
+    "revive_experiment": {
+      "script": "build/xsct_revive_vdma.tcl",
+      "sequence": "halt -> rewrite geometry/SA -> CR=0x00FF0013 (RS FIRST) -> VSIZE=0x1E0 (LAST)",
+      "result": "channel left FSM idle, issued first DataMover command (tvalid0=1), SR frame count decrementing at ~82.5Hz for >=2.4s - write-order fix PROVEN effective"
+    },
+    "apparent_self_destruct": {
+      "ila_dead_state": "rs_mirror=0, mm2s_dm_prmry_resetn=0, sof_reset=1, tvalid0=1, arvalid=0",
+      "rtl_chain": "halt_i <- soft_reset_re|stop|run_stop_fe|fsize_mismatch_err (L15673); halt_reset requires stop=0 (L15718) => dma_err excluded; SR bit7 FSIZEERR=0 => fsize excluded; L19108: FRMCNTEN=1 AND ioc_irq_set -> run_stop_clr -> RS hw-cleared",
+      "xsct_final_read": "SR=0x00FF1001 (zero error bits, IOC_IRQ=1, FrameCount=0xFF), CR=0x00FF0012 (RS cleared)",
+      "verdict": "NOT self-destruct: spec behavior - revive CR enabled FrmCntEn+IrqThreshold=0xFF with no IRQ handler; channel streamed 255 frames (~3.1s) then auto-stopped"
+    },
+    "root_cause_final": "app lcd_init wrote VSIZE before DMACR=RS - command FSM never left idle (zero ARVALID across v4/v5/v6 bitstreams)",
+    "app_suspects_cleared": {
+      "runtime_PARKPTR_write": "legal Tail/Park buffer-flip (RTL L63856: frame number reloaded from PARKPTR[4:0] at each fsync)",
+      "FRMSTORE_read0": "read-only config echo; Tail mode independent of frame-store counting",
+      "linebuffer_512_lt_800": "not root cause; streaming FIFO backpressure works, 3.1s of frames streamed"
+    },
+    "fix_applied": {
+      "main_c": "lcd_init write order swapped (RS first, VSIZE last); lcd_enable re-arm path now waits HALTED and rewrites VSIZE; fix-16 FRMSTORE dead write/macro/print cleaned",
+      "elf": "ps_uart_print.elf 36856 bytes, -Wall -Wextra clean",
+      "boots": "BOOT_DEBUG_ILA.BIN 16:15:10 (v6 ILA + new ELF); BOOT.BIN 16:15:56 (production + new ELF)",
+      "pipeline": "G1-G5 ALL PASS (WNS=0.387 WHS=0.008)"
+    },
+    "files": ["capture_vdma_revive_now.csv", "capture_pclk_revive_now.csv", "capture_v6_vdma.csv", "capture_data.csv", "REPORT.md"]
+  },
+  "round_5_linebuffer_verdict": {
+    "date": "2026-10-13 16:30-18:30",
+    "bitstream_tested": "BOOT_DEBUG_ILA.BIN (v6 ILA + write-order-fix ELF, linebuffer 512) - still white screen",
+    "four_core_capture": {
+      "ila1_g50": "id_pins=000080 id_reg=4384 id_settled=1 id_valid=1 mmcm_locked=1 - panel detect + clock chain perfect",
+      "ila2_pclk": "hcnt sweep 0x16f-0x3cf, wrap 0x3cf->0x000 at sample 609 -> period 976 = 4384 panel H-total; vcnt increments; sel4384_sync/meta=1; locked=0 first_sof=1 vid_rst_out=0",
+      "ila3_axis": "TVALID uniq=1 (constant 1, stream alive); TREADY 0/1; TUSER uniq=1 (constant 0, ALL samples); ARVALID/ARREADY/RVALID/RLAST toggling - AXI read alive",
+      "ila4_vdma": "s_axis_mm2s_cmd_tvalid=1 steady, cmdsts_idle=0, all resetn=1, dmacr_RS=1, m_axi_mm2s_arvalid burst every ~65 samples - channel fully alive (vs arvalid==0 before write-order fix)"
+    },
+    "verdict": "only dead point = TUSER/SOF never asserts -> v_axi4s_vid_out never locks (first_sof=1, locked=0) -> DE never active -> white screen",
+    "reference_delta": "ATK 21_vdma_lcd system_axi_vdma_0_0.xci L260/L329: c_mm2s_linebuffer_depth=2048, SOF_ENABLE=1, THRESH=4; ours was 512 - linebuffer depth must cover the 800-pixel line, insufficient depth breaks stream-side frame timing (SOF/TUSER insertion)",
+    "round4_conclusion_overturned": "FRMCNT decrement + FIFO backpressure only proved register-side data movement, not stream-side frame timing; TUSER==0 across all samples + locked=0 measured on hardware is decisive",
+    "fix": "design_1_axi_vdma_0_0.xci c_mm2s_linebuffer_depth 512->2048 (value_src=user, verified before/after save_bd_design; S2MM side untouched at 512, unused)",
+    "build_incident": {
+      "build_1": "job-9bf7062d died [filemgmt 56-587] lcd_clk_fwd at launch_runs",
+      "mcp_fix": "5x module_ref upgrade_ip + validate -force (real 17s run) + save + generate_target",
+      "build_2": "job-6fb00568 died [filemgmt 56-587] emg_pl_export at same point",
+      "differential": "same .xpr on disk: sandboxed vivado = 5x [BD 41-1726] + [20-730] sim-top unvalidatable + boost_interprocess denials; non-sandboxed MCP session = zero warnings, report_compile_order complete (all 5 module_ref modules present, Missing instances empty)",
+      "root_cause": "TRAE sandbox severs Vivado IPC/subprocess infrastructure (C:\\ProgramData\\boost_interprocess shared memory needed by launch_runs OOC children); same family as historical sandboxed bootgen -1073741515 DLL deaths; project itself healthy (XCI git diff empty)",
+      "resolution": "build executed inside MCP Vivado session (non-sandboxed): all OOC runs incl. design_1_emg_pl_export_0_4 + synth_1 + impl_1 launched clean at 17:14, zero 56-587; gates/packaging via non-sandboxed shell (build_all.ps1 -SkipBuild) + MCP exec bootgen"
+    },
+    "build_result": "SUCCESS (both images): production impl_1 write_bitstream complete 17:26:57 (12 min, 0 critical warnings / 0 errors), routed WNS=+0.483 TNS=0 WHS=+0.039 all constraints met, XSA exported 17:37, G1-G5 ALL PASS (build_all.ps1 -SkipBuild non-sandboxed), BOOT.BIN 4,206,832 B @ 17:38:45. Debug ILA bitstream (v6 four cores + 2048) rebuilt 17:57:38, BOOT_DEBUG_ILA.BIN 4,206,832 B @ 18:01:19 (probes: build/lcd_debug_probes.ltx 17:46:23). Debug-bit timing deviation disclosed: FINAL-WNS=-1.058 on exactly 2 endpoints, both first_sof_reg(clk_fpga_0)->u_ila_pclk trigger-matcher probeDelay CDC instrumentation paths (non-functional); AXI-Lite domain clean (clk_fpga_0 intra WNS=+1.942 WHS=+0.052, zero hold violations) so the v5 AXI-Lite-write-loss failure mode is excluded; primary verify probes unaffected (ila3 TUSER aclk-domain, ila2 locked c31-intra +0.412); production BOOT.BIN is the timing-clean reference.",
+    "verify_criteria": ["ila3 TUSER pulses 1 (once per frame)", "ila2 locked=1", "LCD shows image"],
+    "files": ["capture_alive_ila1.csv", "capture_alive_ila2.csv", "capture_alive_ila3.csv", "capture_alive_ila4.csv", "REPORT.md"]
+  },
+  "round_6_genlock_verdict": {
+    "date": "2026-10-13 18:05-",
+    "bitstream_tested": "BOOT_DEBUG_ILA.BIN (linebuffer 2048 + write-order-fix ELF) - still white screen, round-5 linebuffer hypothesis overturned on hardware",
+    "four_core_capture_quantified": {
+      "ila1_g50": "id_pins=000080 id_reg=4384 id_settled=1 id_valid=1 mmcm_locked=1 - panel detect perfect",
+      "ila2_pclk": "hcnt 977 distinct sweep, vcnt incrementing, sel4384=1, locked=0, first_sof=1 (never saw SOF since reset), vid_rst_out=0",
+      "ila3_axis_4096_samples": "TVALID=4096/4096 (constant 1); TREADY=1280/4096=31.25% (vid_out consuming at VTG active-window pace ~=33.3MHz pclk / 100MHz aclk); TUSER=0/4096; ARVALID 61 bursts, ARREADY constant 1, RVALID 480",
+      "ila4_vdma": "cmd_tvalid=1, cmdsts_idle=0, all resetn=1, soft_reset=0, sof_reset=0 (reset path excluded), dmacr_RS=1"
+    },
+    "disambiguation": "TREADY=31.25% proves vid_out and lcd_panel_adapter (VTG timing) are BOTH healthy - vid_out consumes at pixel pace each active window searching for SOF and discards; dead point is 100% upstream in VDMA TUSER generation",
+    "xci_full_param_diff": "remaining significant deltas vs ATK 21_vdma_lcd: c_mm2s_genlock_mode ref=3 vs ours=0; c_num_fstores ref=1 vs ours=3; topology (ref has VTC+rgb2lcd+clk_wiz, we have custom lcd_panel_adapter); linebuffer/thresh/sof_enable/flush_on_fsync/use_fsync/use_mm2s_fsync all identical",
+    "rtl_deadlock_chain": "c_use_mm2s_fsync=0 -> fsync_gen GEN_FREE_RUN_MODE (L52360): frame_sync_i <= all_idle_re and run_stop (L52400, the ONLY SOF source in free-run); dma_ctl L62814: all_idle <= cmnd_idle AND sts_idle AND dwidth_fifo_pipe_empty AND line_buffer_empty; measured TVALID constant 1 -> line_buffer_empty=0 always (supply 100 Mpix/s >> drain 31.25 Mpix/s, linebuffer permanently backlogged); -> all_idle never asserts -> all_idle_re never pulses -> frame_sync dead -> SOF_FLAG_PROCESS (L47295, GEN_LINEBUF_FLUSH_SOF branch L47121) never sets sof_flag -> TUSER constant 0 -> vid_out first_sof never satisfied -> locked=0 -> DE never active -> white screen. DESIGN DEADLOCK: free-run SOF requires full inter-frame drain which bandwidth asymmetry + circular back-to-back reads never allow.",
+    "why_reference_works": "ref genlock_mode=3 (Dynamic Slave, L59705/L63677 branches) + PARKPTR park mode: frame output steered by PARKPTR, frame number reloaded from PARKPTR[4:0] at each fsync boundary (L63856, exists ONLY in DYNAMIC_SLAVE branch), command issue gated by frame alignment -> inter-frame drain gaps -> all_idle rising edges -> frame_sync alive -> SOF alive. Our genlock_mode=0 (MASTER_MODE_FRAME_CNT L64582) has none of this.",
+    "round5_conclusion_overturned": "linebuffer depth affects FIFO capacity only, not frame_sync generation mechanism; 2048 kept (correct config to cover 800-pixel line) but it was never the root cause",
+    "fix": "design_1_axi_vdma_0_0.xci c_mm2s_genlock_mode 0->3 via MCP session set_property (read-back verified 3) + validate_bd_design -force pass + save_bd_design + generate_target all, 18:20-18:29",
+    "app_side_contingency": "app keeps CR=0x03 for first board trial; if TUSER pulses but frame does not advance -> add GenlockEn (CR|=0x08) in lcd_init and repackage (board-side branch decision; ref app source not on disk)",
+    "build_result": "SUCCESS (production): impl_1 write_bitstream Complete 18:40:55 (~11 min, VDMA OOC rerun), WNS=+0.548 TNS=0 WHS=+0.036 all constraints met (better than 2048 build +0.483); XSA exported 18:44; G1-G5 ALL PASS (build_all.ps1 -SkipBuild non-sandboxed, G2 ALL COEFFICIENT REGISTERS CORRECT); BOOT.BIN 4,206,832 B @ 18:42:49 (genlock_mode=3 + linebuffer 2048 + write-order-fix ELF). Debug ILA bitstream rebuild in background.",
+    "verify_criteria": ["ila3 TUSER has at least one 1 (deadlock broken)", "ila2 locked=1", "LCD shows image; if white but TUSER=1 -> move to adapter DE/RGB path (Q3)"],
+    "files": ["capture_r6_ila1.csv", "capture_r6_ila2.csv", "capture_r6_ila3.csv", "capture_r6_ila4.csv", "REPORT.md"]
+  },
+  "round_8_final": {
+    "date": "2026-10-14 01:10",
+    "outcome": "IMAGE DISPLAYED - CASE CLOSED",
+    "true_root_cause": "v_axi4s_vid_out slave-mode timing control signal vtg_ce LEFT FLOATING when v_tc_0 was replaced by lcd_panel_adapter module_ref. vid_out pauses external timing via vtg_ce during SOF alignment + FIFO prefill, releases it to set locked=1 and start DE. Original v_tc_0 received this via gen_clken; adapter never wired it -> hcnt/vcnt free-run -> locked forever 0 -> DE never asserts -> white screen. External tool proved by Xilinx vid_out source simulation: correct SOF/EOL stream + free-running timing = never locks; vtg_ce-gated = locks. Confirmed on board: image displays.",
+    "fix_three_parts_all_required": {
+      "root_cause_fix_rtl_bd": "lcd_panel_adapter.v L57 input vtg_ce added, L268 counters gated by if(vtg_ce); BD wiring v_axi4s_vid_out_0/vtg_ce -> lcd_panel_adapter_0/vtg_ce + full vtg_active_video/field_id/hblank/vsync/vblank slave handshake (= example VTC native wiring, the topology-level port step)",
+      "register_map_fix_app": "main.c L423-430 remapped from park-group (SA@+0x18/PARKPTR@+0x28/VSIZE@+0x40) to direct-group (VSIZE@+0x50/HSIZE@+0x54/STRIDE@+0x58/START(n)@+0x5C+4n); fstores=1 direct mode has single SA@0x5C matching port config; start order CR=0x0B (RS|TAIL|SYNC) first, VSIZE last (write-order fix retained); old park-mapped ELF on fstores=1 bitstream = wrong register group -> channel never armed -> why 19:33 build stayed white",
+      "vdma_xci_port": "genlock_mode=3 + max_burst_length=64 + linebuffer_depth=2048 + num_fstores=1 (rounds 6/7, full example param alignment)"
+    },
+    "final_artifacts": {"bitstream": "impl_1/design_1.bit 10-14 01:10:13, 5 gates PASS, WNS=+0.602/WHS=+0.036", "BOOT_BIN": "4,206,868 B 10-14 01:10:56", "ELF": "36,892 B 00:32:27 (direct-map, -Wall -Wextra clean)", "XSA": "build/export/design_1.xsa 01:10:45", "display_mode": "single-buffer SA0 continuous refresh (example native mode); triple-buffer page writes degrade to no-op (harmless)"},
+    "retrospective": "locked=0/first_sof=1 visible since round 2 but read as 'VDMA never sends TUSER' (upstream supply side) instead of questioning 'vid_out locked REQUIRES a slaved timing generator' (PG044 slave-mode contract); rounds 4/7 fixes were all necessary (write order, fstores/burst/register map) but not sufficient; XCI param port missed the TOPOLOGY wiring (vtg_ce) which was the actual root cause; ILA live-evidence chain TVALID->TUSER->locked->DE remained valid exclusion evidence throughout"
+  },
+  "round_7_example_port": {
+    "date": "2026-10-13 evening",
+    "bitstream_tested": "BOOT.BIN genlock_mode=3 production @18:42:49 - STILL WHITE SCREEN; user authorized direct port of ATK example 21_vdma_lcd",
+    "bit1_misread_correction": "round-2 'wrote CR=0x0B readback 0x03 -> genlock not generated' was a MISREAD: DMACR bit1=GenLockEn (VDMA has NO Circular bit; AXI-DMA concept), bit3 is RO reserved; app CR=0x03 has always had GenLockEn set; 'IP genlock unconfigured' hypothesis void (cross-checked: genlock_mode 0->3 XCI edit DID land in round 6)",
+    "vid_out_xci_full_diff": "14 params ALL identical vs example (2020.2 XML vs 2025.2 JSON): PIXELS_PER_CLOCK=1, S_AXIS_VIDEO_FORMAT=2, S_AXIS_VIDEO_DATA_WIDTH=8, NATIVE_COMPONENT_WIDTH=8, HAS_ASYNC_CLK=1, ADDR_WIDTH=10, HYSTERESIS_LEVEL=12, VTG_MASTER_SLAVE=0, SYNC_LOCK_THRESHOLD=4, PIXEL_REPEAT=0, PIXEL_REMAP_420=0, ADDR_WIDTH_REMAP=10, COMPONENTS_PER_PIXEL=3, S_AXIS_TDATA_WIDTH=24; only 2025.2-new ARBITRARY_RES_EN=false default. vid_out config ELIMINATED",
+    "vdma_remaining_delta": "initially converged to c_num_fstores ref=1 vs ours=3 (genlock_mode=3 fixed r6, linebuffer=2048 fixed r5, internal_genlock/num_masters/thresh/sof_enable verified identical); THEN external-tool hint (user-forwarded screenshot, 18:58) verified TRUE: c_mm2s_max_burst_length ref=64 vs ours=8 (confirmed at PARAM_VALUE/MODELPARAM/BUSIFPARAM in ref XCI) - a round-6 full-diff miss; screenshot's other claims outdated (mode=3 already burned, still white) or contradicted by evidence (CR[3]=EnableSync: PG020 says bit1=GenlockEn, board-proven bit3 RO unwritable, app CR=0x03 already has bit1)",
+    "app_impact": "fstores=1 -> SA1/SA2 + runtime PARKPTR writes become no-ops (harmless, verified non-blocking at main.c:1237); display degrades to single-buffer SA0 continuous refresh = the example's native operating mode (ref app source not on disk); expected outcome: static image",
+    "final_example_port_config": "c_num_fstores=1 + c_mm2s_max_burst_length=64 + c_mm2s_genlock_mode=3 + c_mm2s_linebuffer_depth=2048; MCP set_property list readback '64 1 3' all confirmed; validate/save/generate done; full chain relaunched 19:16:42 (VDMA OOC + smartconnect_1 OOC rerun due to interface attribute change + synth_1 + impl_1 -> write_bitstream); background monitor job-b75c47953d2f4c7fbaa8f3a16c076dbe",
+    "evidence_capture_r7": {
+      "bitstream": "BOOT_DEBUG_ILA.BIN @19:02:31 (genlock_mode=3, fstores=3, burst=8, write-order-fix ELF)",
+      "result": "STILL WHITE SCREEN",
+      "steady_snapshot_1921": {"TUSER": "constant 0 (4096/4096)", "TVALID": "constant 1", "TREADY": "toggling", "ARVALID": "toggling", "RVALID": "toggling", "locked": 0, "first_sof": 1},
+      "tuser_rising_edge_watch": "eq1'bR armed 19:24:13, ZERO trigger in 35s (~2870 frame periods) - SOF still dead under genlock_mode=3",
+      "xsct": "DMACR=0x00010003 lite-side RS=1 + GenlockEn=1 intact (app write correct, not hw-cleared)",
+      "ila4_verdict": "mm2s_dmacr deep-path probe reads 0 but engine demonstrably running (cmd_tvalid=1, AR/R toggling) -> probe net-ladder drifted after genlock=3 resynthesis changed VDMA internal structure; ila4 data this round INVALID, verdict rests on ila3/ila2 BD-port nets",
+      "conclusion": "genlock_mode=3 ALONE (with fstores=3+burst=8) did NOT break the SOF deadlock; r6 hypothesis not realized under this config; suspect burst=8 fragmented reads prevent drain or fstores=3 park mismatch blocks frame advance; next piece: fstores=1+burst=64 full example-port build (19:16:42 in flight)",
+      "files": ["capture_r7_ila1.csv", "capture_r7_ila2.csv", "capture_r7_ila3.csv", "capture_r7_ila4.csv"]
+    },
+    "plan": ["fstores=1+burst=64 full rebuild completes -> XSA -> G1-G5 -> BOOT.BIN + debug_ila rerun -> BOOT_DEBUG_ILA.BIN (full example-port version) -> burn -> if image appears: done; if white: TUSER capture again + topology-level port evaluation (VTC + rgb2lcd)"]
+  }
+}

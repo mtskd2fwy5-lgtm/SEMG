@@ -1,0 +1,58 @@
+{
+  "schema": "xilinx.com:schema:json_instance:1.0",
+  "ip_inst": {
+    "xci_name": "design_1_lcd_panel_adapter_0_1",
+    "cell_name": "lcd_panel_adapter_0",
+    "component_reference": "xilinx.com:module_ref:lcd_panel_adapter:1.0",
+    "ip_revision": "1",
+    "gen_directory": "../../../../../../hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_lcd_panel_adapter_0_1",
+    "parameters": {
+      "component_parameters": {
+        "Component_Name": [ { "value": "design_1_lcd_panel_adapter_0_1", "resolve_type": "user", "usage": "all" } ]
+      },
+      "project_parameters": {
+        "ARCHITECTURE": [ { "value": "zynq", "resolve_type": "generated", "usage": "all" } ],
+        "BASE_BOARD_PART": [ { "value": "", "resolve_type": "generated", "usage": "all" } ],
+        "BOARD_CONNECTIONS": [ { "value": "", "resolve_type": "generated", "usage": "all" } ],
+        "DEVICE": [ { "value": "xc7z020", "resolve_type": "generated", "usage": "all" } ],
+        "PACKAGE": [ { "value": "clg400", "resolve_type": "generated", "usage": "all" } ],
+        "PREFHDL": [ { "value": "VERILOG", "resolve_type": "generated", "usage": "all" } ],
+        "SILICON_REVISION": [ { "value": "", "resolve_type": "generated", "usage": "all" } ],
+        "SIMULATOR_LANGUAGE": [ { "value": "MIXED", "resolve_type": "generated", "usage": "all" } ],
+        "SPEEDGRADE": [ { "value": "-2", "resolve_type": "generated", "usage": "all" } ],
+        "STATIC_POWER": [ { "value": "", "resolve_type": "generated", "usage": "all" } ],
+        "TEMPERATURE_GRADE": [ { "value": "", "resolve_type": "generated", "usage": "all" } ]
+      },
+      "runtime_parameters": {
+        "IPCONTEXT": [ { "value": "IP_Integrator" } ],
+        "IPREVISION": [ { "value": "1" } ],
+        "MANAGED": [ { "value": "TRUE" } ],
+        "OUTPUTDIR": [ { "value": "../../../../../../hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_lcd_panel_adapter_0_1" } ],
+        "SELECTEDSIMMODEL": [ { "value": "" } ],
+        "SHAREDDIR": [ { "value": "../../ipshared" } ],
+        "SWVERSION": [ { "value": "2025.2" } ],
+        "SYNTHESISFLOW": [ { "value": "OOC_HIERARCHICAL" } ]
+      }
+    },
+    "boundary": {
+      "ports": {
+        "lcd_data_io": [ { "direction": "inout", "size_left": "23", "size_right": "0" } ],
+        "rgb_o": [ { "direction": "in", "size_left": "23", "size_right": "0" } ],
+        "de_o": [ { "direction": "in" } ],
+        "rst_in": [ { "direction": "in" } ],
+        "clk50_in": [ { "direction": "in" } ],
+        "vid_rst_out": [ { "direction": "out" } ],
+        "lcd_pclk": [ { "direction": "out" } ],
+        "vtg_ce": [ { "direction": "in" } ],
+        "lcd_id": [ { "direction": "out", "size_left": "15", "size_right": "0" } ],
+        "vtiming_out_active_video": [ { "direction": "out" } ],
+        "vtiming_out_field": [ { "direction": "out" } ],
+        "vtiming_out_hblank": [ { "direction": "out" } ],
+        "vtiming_out_hsync": [ { "direction": "out" } ],
+        "vtiming_out_vblank": [ { "direction": "out" } ],
+        "vtiming_out_vsync": [ { "direction": "out" } ]
+      }
+    }
+  },
+  "checksum": "8bd81fa0"
+}

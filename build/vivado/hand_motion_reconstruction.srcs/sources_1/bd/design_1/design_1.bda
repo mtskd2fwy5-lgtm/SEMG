@@ -268,6 +268,42 @@
             },
             "V7": {
                 "VT": "AC",
+                "BA": "0x41210000",
+                "HA": "0x4121FFFF",
+                "BP": "C_BASEADDR",
+                "HP": "C_HIGHADDR",
+                "MA": "Data",
+                "MX": "/processing_system7_0",
+                "MI": "M_AXI_GP0",
+                "MS": "SEG_axi_gpio_1_Reg",
+                "MV": "xilinx.com:ip:processing_system7:5.5",
+                "SX": "/axi_gpio_1",
+                "SI": "S_AXI",
+                "SS": "Reg",
+                "SV": "xilinx.com:ip:axi_gpio:2.0",
+                "TM": "both",
+                "TU": "register"
+            },
+            "V8": {
+                "VT": "AC",
+                "BA": "0x41220000",
+                "HA": "0x4122FFFF",
+                "BP": "C_BASEADDR",
+                "HP": "C_HIGHADDR",
+                "MA": "Data",
+                "MX": "/processing_system7_0",
+                "MI": "M_AXI_GP0",
+                "MS": "SEG_axi_gpio_2_Reg",
+                "MV": "xilinx.com:ip:processing_system7:5.5",
+                "SX": "/axi_gpio_2",
+                "SI": "S_AXI",
+                "SS": "Reg",
+                "SV": "xilinx.com:ip:axi_gpio:2.0",
+                "TM": "both",
+                "TU": "register"
+            },
+            "V9": {
+                "VT": "AC",
                 "BA": "0x43000000",
                 "HA": "0x4300FFFF",
                 "BP": "C_BASEADDR",
@@ -281,24 +317,6 @@
                 "SI": "S_AXI_LITE",
                 "SS": "Reg",
                 "SV": "xilinx.com:ip:axi_vdma:6.3",
-                "TM": "both",
-                "TU": "register"
-            },
-            "V8": {
-                "VT": "AC",
-                "BA": "0x43C00000",
-                "HA": "0x43C0FFFF",
-                "BP": "C_BASEADDR",
-                "HP": "C_HIGHADDR",
-                "MA": "Data",
-                "MX": "/processing_system7_0",
-                "MI": "M_AXI_GP0",
-                "MS": "SEG_v_tc_0_Reg",
-                "MV": "xilinx.com:ip:processing_system7:5.5",
-                "SX": "/v_tc_0",
-                "SI": "ctrl",
-                "SS": "Reg",
-                "SV": "xilinx.com:ip:v_tc:6.2",
                 "TM": "both",
                 "TU": "register"
             }
@@ -339,6 +357,11 @@
             },
             {
                 "src": "V8",
+                "trg": "V2",
+                "EH": "2"
+            },
+            {
+                "src": "V9",
                 "trg": "V2",
                 "EH": "2"
             }

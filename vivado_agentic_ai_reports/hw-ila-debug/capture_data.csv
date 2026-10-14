@@ -1,0 +1,10 @@
+reg,addr,value,interpretation
+CR,0x43000000,0x00FF0012,RS=0 (hw-cleared) TailEn=1 FrmCntEn=1 Thresh=0xFF - revive-experiment CR after auto-stop
+SR,0x43000004,0x00FF1001,HALTED=1 IDLE=0 ERR=0 IntErr=0 SlvErr=0 DecErr=0 FSIZEERR=0 LSIZEERR=0 SOF_LATE=0 IOC_IRQ=1 FrameCount=0xFF
+FRMSTORE,0x43000018,0x00000000,read-only config echo (v6.3); Tail mode does not need it
+PARKPTR,0x43000028,0x00000001,MM2S_FRMPTR=1 - app triple-buffer flip still writing (alive)
+VSIZE,0x43000050,0x000001E0,480 lines (geometry intact)
+HSIZE,0x43000054,0x00000960,2400 bytes/line
+STRIDE,0x43000058,0x00000960,packed frames
+verdict,,,NO hardware error - RS cleared by spec behavior: FRMCNT_EN + IRQFrameCount reached 0 -> ioc_irq_set -> run_stop_clr (RTL L19108) -> halt chain; channel had streamed 255 frames (~3.1s @82.5Hz) before stopping
+root_cause,,,"white screen = app lcd_init write order (VSIZE before RS); fixed by RS-first/VSIZE-last (Xilinx driver order)"

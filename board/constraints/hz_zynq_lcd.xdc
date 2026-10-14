@@ -1,8 +1,15 @@
-# HZ-ZYNQ_MV01 / HZ-ZYNQ_CV01 RGB LCD constraints (ATK 7" 1024x600, DE mode)
+# HZ-ZYNQ_MV01 / HZ-ZYNQ_CV01 RGB LCD constraints (ATK RGB module, DE mode)
+#
+# Panel auto-detection (ATK 21_lcd_rgb_char scheme): lcd_panel_adapter_0
+# tri-states lcd_data while DE is idle and samples the panel ID bits
+# (B7/G7/R7) once at boot; the pixel clock (MMCM 50M -> {50, 31.25} MHz +
+# BUFGMUX) and the video timing are selected in the PL.  Both ATK-4384
+# 4.3" 800x480 and ATK-7016 7" 1024x600 work from the same bitstream -
+# no rebuild on panel swap.  FCLK_CLK1 stays at 50 MHz (MMCM base).
 #
 # Display path (created by build/scripts/add_lcd_vdma.tcl):
 #   DDR -> axi_vdma_0 (MM2S, RGB888 24-bit) -> v_axi4s_vid_out_0
-#   v_tc_0 supplies 1024x600@50 MHz timing (FCLK_CLK1 pixel clock)
+#   v_tc_0 supplies the panel timing (FCLK_CLK1 pixel clock)
 #   lcd_clk_fwd_0 (ODDR) forwards the inverted pixel clock as LCD DCLK
 #   axi_gpio_0 drives the backlight enable
 #
@@ -55,19 +62,86 @@ set_property -dict {PACKAGE_PIN M20 IOSTANDARD LVCMOS33 DRIVE 8 SLEW SLOW} [get_
 
 # PS7 FCLKs are auto-constrained by the PS7 IP (verified in
 # design_1_routed.dcp: FCLK_CLK0 appears as auto clock "clk_fpga_0"),
-# so no create_clock is needed for the 50 MHz FCLK_CLK1 pixel clock.
+# so no create_clock is needed for the FCLK_CLK1 pixel clock
+# (50 MHz on 7016, 31.25 MHz on 4384).
 #
 # lcd_clk_fwd_0 uses ODDR D1=0/D2=1 => Q = ~C: the LCD DCLK rising edge
-# coincides with the FCLK_CLK1 falling edge, giving vid_data a half
-# period (10 ns) to reach the pins (UG471 clock forwarding).
-create_generated_clock -name lcd_pclk -divide_by 1 -invert \
-    -source [get_pins -hier -filter {NAME =~ *oddr_lcd_dclk/C}] \
-    [get_ports {lcd_clk}]
+# coincides with the pixel-clock falling edge, giving vid_data a half
+# period (10 ns on 7016, 16 ns on 4384) to reach the pins (UG471 clock
+# forwarding).
+#
+# The pixel clock is a BUFGMUX between two MMCM outputs (lcd_panel_adapter):
+#   CLKOUT0 = 50.000 MHz (7016) -> net c50_raw
+#   CLKOUT1 = 31.250 MHz (4384) -> net c31_raw
+# ODDR forwards ~C, so the panel latches on the FALLING edge of the
+# launching clock.  Referencing the internal clocks directly with
+# -clock_fall (instead of creating generated clocks on the forwarded
+# port) keeps BOTH modes checked in one build: two create_generated_clock
+# on one port overwrite each other (XDCC-8, -add silently rejected).
+# Not modeling the ODDR delay costs ~1-2 ns of pessimism - safe side.
+set_clock_groups -logically_exclusive \
+    -group c31_raw \
+    -group c50_raw
 
 # The ATK panel spec has no per-pixel tsu/th numbers (bare DE panel);
-# assume 5 ns setup / 5 ns hold against the 10 ns half period.
-set_output_delay -clock lcd_pclk -max 5.0 [get_ports {lcd_data[*] lcd_de lcd_hsync lcd_vsync}]
-set_output_delay -clock lcd_pclk -min -5.0 [get_ports {lcd_data[*] lcd_de lcd_hsync lcd_vsync}]
+# assume 5 ns setup / 5 ns hold against the half period (10/16 ns).
+set_output_delay -clock c50_raw -clock_fall -max 5.0 [get_ports {lcd_data[*] lcd_de lcd_hsync lcd_vsync}]
+set_output_delay -clock c50_raw -clock_fall -min -5.0 [get_ports {lcd_data[*] lcd_de lcd_hsync lcd_vsync}]
+set_output_delay -clock c31_raw -clock_fall -max 5.0 [get_ports {lcd_data[*] lcd_de lcd_hsync lcd_vsync}]
+set_output_delay -clock c31_raw -clock_fall -min -5.0 [get_ports {lcd_data[*] lcd_de lcd_hsync lcd_vsync}]
+
+# Input direction of the bidirectional RGB pins: only the quasi-static
+# panel ID levels (B7/G7/R7) are sampled, once at boot (~20 ms after
+# reset).  No meaningful input timing to meet.  id_reg lives in the fixed
+# c50 domain while the driving side may be c31 (4384), so also cut the
+# paths at the sampler pins themselves.
+set_false_path -to [get_pins -quiet {lcd_panel_adapter_0/inst/id_reg_reg[*]/D}]
+set_false_path -from [get_ports {lcd_data[*]}]
 
 # Backlight is a quasi-static GPIO toggled from the 100 MHz domain.
 set_false_path -to [get_ports {lcd_bl}]
+
+###################### touch (GT911, ATK capacitive) ######################
+
+# Same J10 40P FPC as the RGB signals.  J10 pin numbers per the ATK module
+# 40P table (user re-checked 2026-10-11 - an earlier draft was shifted up
+# one row: T_CS is J10-35).  The ball mapping is keyed to the carrier NET
+# names at J2, cross-validated against the working LCD pins, so it is
+# unaffected by the J10 renumbering:
+#   J10-35 T_CS     = CT_RST -> touch_rst    M19  (B35_L7P)
+#   J10-36 IIC2_SDA = CT_SDA -> touch_sda_io P20  (B34_L14N, open drain)
+#   J10-37 T_MISO              (unused on the capacitive module)
+#   J10-38 IIC2_SCL = CT_SCL -> touch_scl    R19  (B34_IO0)
+#   J10-39 T_PEN    = CT_INT -> touch_int_io U19  (B34_L12N)
+#   J10-40 LCD_RST             (RC self-released on the carrier, not wired)
+# The IIC2 bus is shared with the on-board HDMI transmitter; the GT911
+# addresses (0x5D/0x14) never collide with it.  Module pull-ups exist on
+# SDA/SCL/INT (MD0700R RP8/RP9).
+set_property -dict {PACKAGE_PIN M19 IOSTANDARD LVCMOS33 DRIVE 8 SLEW SLOW} [get_ports {touch_rst}]
+set_property -dict {PACKAGE_PIN R19 IOSTANDARD LVCMOS33 DRIVE 8 SLEW SLOW} [get_ports {touch_scl}]
+set_property -dict {PACKAGE_PIN P20 IOSTANDARD LVCMOS33 DRIVE 8 SLEW SLOW} [get_ports {touch_sda_io}]
+set_property -dict {PACKAGE_PIN U19 IOSTANDARD LVCMOS33 DRIVE 8 SLEW SLOW} [get_ports {touch_int_io}]
+
+# Bit-banged I2C at 200 kHz plus quasi-static reset/int strobes: there is
+# no source-synchronous timing relationship to meet in either direction.
+set_false_path -from [get_ports {touch_sda_io touch_int_io}]
+set_false_path -to   [get_ports {touch_rst touch_scl touch_sda_io touch_int_io}]
+
+###################### mpu6050 (GY-521 forearm tilt) ######################
+
+# Carrier J11 "OLED&CAMERA" 2x9 2.54 mm header (carries 3.3V; CMOS_SCL/
+# CMOS_SDA have carrier pull-ups R33/R34 4.7k).  Dedicated PL I2C - the
+# bus is separate from the touch GT911 IIC2 and the board EEPROM IIC1.
+# Ball mapping keyed to the carrier NET names at J2, cross-validated
+# against the working LCD/touch balls in a7z020clg400_pkg.xml
+# (IO_L1N_T0_34 / IO_L1P_T0_34 are plain IO, no special function):
+#   CMOS_SCL = B34_L1N -> mpu_scl    T10
+#   CMOS_SDA = B34_L1P -> mpu_sda_io T11 (open drain)
+# GY-521 module side: VCC->3.3V, GND, SCL, SDA (AD0 grounded on module
+# -> address 0x68).
+set_property -dict {PACKAGE_PIN T10 IOSTANDARD LVCMOS33 DRIVE 8 SLEW SLOW} [get_ports {mpu_scl}]
+set_property -dict {PACKAGE_PIN T11 IOSTANDARD LVCMOS33 DRIVE 8 SLEW SLOW} [get_ports {mpu_sda_io}]
+
+# Bit-banged I2C at 200 kHz: no source-synchronous timing to meet.
+set_false_path -from [get_ports {mpu_sda_io}]
+set_false_path -to   [get_ports {mpu_scl mpu_sda_io}]
