@@ -92,3 +92,7 @@ data/metrics/*.json
 
 # Versioned boot candidates are rebuilt from source; hashes live in reports
 build/boot/BOOT_*.BIN
+
+# First-round training originals are tracked as BIN; regenerate expanded waves
+report/rehab_round1_20261023/EMG000_raw.csv
+report/rehab_round1_20261023/EMG000_processed.csv

@@ -1,0 +1,14 @@
+{
+  "EMG000.BIN": {
+    "bytes": 31214032,
+    "sha256": "ea3241895d5700eb1d274aa157ef8abacb35f53530b8384d5b247c24c9b22c45"
+  },
+  "RH000.CSV": {
+    "bytes": 1100,
+    "sha256": "988ea7d77d902cf20f1aceb109cfffb18b3105d0bb223f4e36a4317d991868a6"
+  },
+  "RH001.CSV": {
+    "bytes": 1102,
+    "sha256": "68c74e63f39e4a920967ff359f5567d91a1514dfc4f8f54507b4e9cad3585eeb"
+  }
+}

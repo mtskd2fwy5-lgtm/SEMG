@@ -1,0 +1,3 @@
+# Preserve archived acquisition files byte for byte, including CSV newlines.
+data/rehab/**/*.BIN -text
+data/rehab/**/*.CSV -text whitespace=cr-at-eol
