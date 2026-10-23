@@ -1,59 +1,48 @@
-# ADS1299 Command Verification
+# ADS1299 command verification
 
-## Simulation
-
-Run:
+Current configuration: `20261015_BIAS_RREG_V1`.
 
 ```text
-build/scripts/run_ads1299_sim.bat
+RESET pulse and recovery wait
+11                                      SDATAC
+41 0D 92 C0 EC 00 40 40 40 40 40 40 40 40 01 01
+21 0D [14 dummy DIN bytes; 14 actual register bytes on DOUT]
+10                                      RDATAC (only if readback matches)
+08                                      START
 ```
 
-The testbench samples `adc_din` on every rising edge of `adc_sclk`, groups the bits into bytes while `CS` is low, and checks each transaction:
+WREG and RREG each keep CS low for all 16 bytes. The 14 registers are addresses
+01–0E: CONFIG1/2/3, LOFF, CH1–8SET, BIAS_SENSP/N. CONFIG3 comparison masks
+only its read-only bit 0; all other bytes are checked in full. Masks are fixed
+at addresses 0D/0E even on ADS1299-4/-6. CHnSET=40 means gain 8, normal input.
 
-```text
-transfer 0: 11
-transfer 1: 41 0B 94 D0 EC 00 60 60 60 60 60 60 60 60
-transfer 2: 10
-transfer 3: 08
-```
+The controller sets DIN on rising SCLK, and the pin model captures DIN on
+falling SCLK, matching the device. The model drives DOUT after rising SCLK
+(including the 17th rising edge for RREG's first data MSB); the controller
+samples DOUT on falling SCLK. Command/register bytes retain decode gaps and
+CS hold time. Data frames remain 24 status bits followed by 8 × 24 sample bits.
 
-Meaning:
+Run `build/scripts/run_ads1299_sim.bat`. The shared pin-level ADC model stores
+only bytes captured on DIN, and returns those stored registers through SPI.
+The test independently checks normal-input configuration and channel masks;
+it never feeds back DUT parameter values as a substitute for a register model.
 
-- `11`: `SDATAC`;
-- `41 0B`: `WREG`, starting at `CONFIG1`, writing 12 registers;
-- `94 D0 EC 00`: `CONFIG1`, `CONFIG2`, `CONFIG3`, `LOFF`;
-- eight `60` bytes: `CH1SET` through `CH8SET`;
-- `10`: `RDATAC`;
-- `08`: `START`.
+Required terminal marker: `TEST_PASS ADS1299`. Compile/exit alone is insufficient.
+The test has a 20 ms watchdog and uses board SPI timing with shortened reset waits.
+It covers signed data, positive/negative full scale, replay, BIAS P/N and channel
+corruption, stuck-low/high DOUT, failure hold/recovery, read-only status changes,
+and fixed BIAS addressing/mask truncation for 4/6 channels.
 
-The same testbench then checks one 216-bit data frame and expects eight samples with channel indexes 0 through 7.
+Failure holds CS high and START low without entering RDATAC. The first bad
+address and actual CONFIG3/P/N are exported. PL_KEY0 requests a complete replay.
+The failure state does not imply that the analog BIAS amplifier is powered down.
 
-## ILA capture
+`build/scripts/run_pl_export_sim.bat` checks the board adapter, coherent status
+mailbox, all raw/notch/feature words and five inference results against independent
+reference code. Status WAIT/error/recovery is also checked in the AXI clock domain.
 
-Probe these signals in the first board test:
+For future board validation, capture CS/SCLK/DIN/DOUT/DRDY/RESET/START, verify
+the five transactions, and compare monitor UART `b` with the captured RREG bytes.
+No hardware capture was performed in this change.
 
-```text
-adc_cs_n
-adc_sclk
-adc_din
-adc_dout
-adc_drdy_n
-adc_reset_n
-adc_start
-adc_pwdn_n
-frame_valid
-sample_valid
-sample_channel
-sample_data
-error
-```
-
-Trigger first on `adc_reset_n` rising, then on `adc_cs_n == 0`. Decode `adc_din` MSB first on the ADS1299 SPI sampling edge. Verify the four transactions above before enabling electrode input tests.
-
-## Acceptance criteria
-
-- Four initialization transactions are present in the expected order.
-- The WREG transaction contains 14 bytes and remains under one CS assertion.
-- `DRDY` produces one falling-edge event per conversion frame.
-- `frame_valid` occurs after 24 status bits plus 8 x 24 channel bits.
-- `sample_channel` cycles from 0 to 7 and then returns to the wait state.
+See [the BIAS bench report](bias_bench_20261015.md) for artifacts and limitations.

@@ -1,0 +1,72 @@
+{
+  "build_tag": "20261015_NOTCH50_V1",
+  "all_five_build_gates": "PASS",
+  "programmed_hardware": false,
+  "board_capture_performed": false,
+  "wns_ns": 0.57,
+  "whs_ns": 0.031,
+  "artifacts": {
+    "build/boot/BOOT.BIN": {
+      "bytes": 4254536,
+      "sha256": "310e7a9e0296083e9c023de6f5f8e0e419f8f0f836eebbb1b3acbf4a60bfb928"
+    },
+    "build/vivado/hand_motion_reconstruction.runs/impl_1/design_1.bit": {
+      "bytes": 4045684,
+      "sha256": "f145dfa7df40460097290d9adb8b9bc092614bcf7248bc26515968e806ff67a2"
+    },
+    "sw/ps_uart_print/ps_uart_print.elf": {
+      "bytes": 92748,
+      "sha256": "acbc01b97ad8cb1b3c9dcd406cd201607d233e472be762af522cb8fdad107753"
+    },
+    "build/export/design_1.xsa": {
+      "bytes": 1538482,
+      "sha256": "108641960416a5217c33cc73e348b8556a0bf7df1b123c1e6de32636145bc1f2"
+    }
+  },
+  "notch_simulation": {
+    "filter": "notch50_q10_q24_v1",
+    "samples_bit_exact": 225792,
+    "measurements": [
+      {
+        "frequency_hz": 50,
+        "rtl_gain_db": -86.1947
+      },
+      {
+        "frequency_hz": 49,
+        "rtl_gain_db": -8.5286
+      },
+      {
+        "frequency_hz": 51,
+        "rtl_gain_db": -8.6763
+      },
+      {
+        "frequency_hz": 40,
+        "rtl_gain_db": -0.2094
+      },
+      {
+        "frequency_hz": 60,
+        "rtl_gain_db": -0.3114
+      },
+      {
+        "frequency_hz": 100,
+        "rtl_gain_db": -0.0192
+      },
+      {
+        "frequency_hz": 215,
+        "rtl_gain_db": -0.0026
+      },
+      {
+        "frequency_hz": 450,
+        "rtl_gain_db": -0.0005
+      }
+    ],
+    "full_scale_recovery_max_counts": 1,
+    "hardware_measured": false
+  },
+  "voltage_user_measured_v": {
+    "AVSS": -2.5,
+    "plus5V": 5.0,
+    "DVDD": 3.32,
+    "AVDD": 2.49
+  }
+}

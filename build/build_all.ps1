@@ -20,8 +20,8 @@
 #   G2  tools\verify_coeff_regs.py: decode the coefficients from the
 #       dont_touch FF INIT attributes in the OOC sim netlist (expected
 #       values passed in via --expect, extracted from the RTL)
-#   G3  tools\scan_literal_b.py: no constant-B DSP48E1, no known-bad
-#       literals folded into the datapath
+#   G3  tools\scan_literal_b.py: no unexpected constant-B DSP48E1 in the
+#       EMG coefficient paths, no known-bad literals folded into the datapath
 #   G4  Routed timing: "All user specified timing constraints are met"
 #   G5  tools\verify_boot_partition.py: BOOT.BIN bitstream partition is a
 #       byte-exact wordrev of the bitstream (header length auto-probed)

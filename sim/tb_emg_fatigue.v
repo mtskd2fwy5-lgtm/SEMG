@@ -5,8 +5,8 @@
 //
 // Golden vectors (data/models/fatigue/):
 //   tb_fatigue_samples.mem  57344 frames x 8 ch, 24-bit samples (hex)
-//   tb_fatigue_exp_id.mem   56 expected result ids (8,9 per window)
-//   tb_fatigue_exp_data.mem 56 expected result data words
+//   tb_fatigue_exp_id.mem   224 expected result ids (8..15 per window)
+//   tb_fatigue_exp_data.mem 224 expected result data words
 //
 // The stream is driven ch0..ch7 interleaved (ADS1299 frame order), 8
 // back-to-back samples + 1 gap cycle per frame.  A new window only starts
@@ -18,7 +18,7 @@
 module tb_emg_fatigue;
 
     localparam integer NFRAMES = 57344;   // 28 windows x 2048 frames
-    localparam integer NWORDS  = 56;      // 28 windows x 2 result words
+    localparam integer NWORDS  = 224;     // 28 windows x 8 result words
     localparam [3:0]  P_IDLE  = 4'd0;
 
     // absolute paths keep the TB independent of the simulator run directory
@@ -66,14 +66,14 @@ module tb_emg_fatigue;
                          words, out_id, out_data, out_sequence);
             end else if (out_id !== exp_id[words] ||
                          out_data !== exp_data[words] ||
-                         out_sequence !== (words >> 1) + 1) begin
+                         out_sequence !== (words >> 3) + 1) begin
                 errors = errors + 1;
                 $display("FAIL word %0d (win %0d): id %0d data %h seq %0d, exp id %0d data %h seq %0d",
                          words, words >> 1, out_id, out_data, out_sequence,
-                         exp_id[words], exp_data[words], (words >> 1) + 1);
+                         exp_id[words], exp_data[words], (words >> 3) + 1);
             end else begin
                 $display("PASS word %0d (win %0d): id %0d data %h",
-                         words, words >> 1, out_id, out_data);
+                         words, words >> 3, out_id, out_data);
             end
             words = words + 1;
         end

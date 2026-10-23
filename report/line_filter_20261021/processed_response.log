@@ -1,0 +1,89 @@
+{
+  "filter": "notch50_q10_comb50_bw1_hp20_lp215_v1",
+  "samples_bit_exact": 802824,
+  "measurements": [
+    {
+      "frequency_hz": 50,
+      "rtl_gain_db": -353.9794,
+      "dc_mean_counts": 0.0
+    },
+    {
+      "frequency_hz": 49,
+      "rtl_gain_db": -9.8376,
+      "dc_mean_counts": -0.001625
+    },
+    {
+      "frequency_hz": 51,
+      "rtl_gain_db": -9.9852,
+      "dc_mean_counts": 0.00025
+    },
+    {
+      "frequency_hz": 75,
+      "rtl_gain_db": -0.58,
+      "dc_mean_counts": 0.0
+    },
+    {
+      "frequency_hz": 100,
+      "rtl_gain_db": -353.9794,
+      "dc_mean_counts": 0.0
+    },
+    {
+      "frequency_hz": 150,
+      "rtl_gain_db": -166.0206,
+      "dc_mean_counts": -0.00375
+    },
+    {
+      "frequency_hz": 250,
+      "rtl_gain_db": -353.9794,
+      "dc_mean_counts": 0.0
+    },
+    {
+      "frequency_hz": 450,
+      "rtl_gain_db": -353.9794,
+      "dc_mean_counts": 0.0
+    },
+    {
+      "frequency_hz": 40,
+      "rtl_gain_db": -0.6336,
+      "dc_mean_counts": -0.000125
+    },
+    {
+      "frequency_hz": 60,
+      "rtl_gain_db": -0.6989,
+      "dc_mean_counts": -0.00075
+    },
+    {
+      "frequency_hz": 125,
+      "rtl_gain_db": -1.2642,
+      "dc_mean_counts": -0.0
+    },
+    {
+      "frequency_hz": 175,
+      "rtl_gain_db": -2.1856,
+      "dc_mean_counts": -0.000625
+    },
+    {
+      "frequency_hz": 200,
+      "rtl_gain_db": -353.9794,
+      "dc_mean_counts": 0.0
+    },
+    {
+      "frequency_hz": 300,
+      "rtl_gain_db": -353.9794,
+      "dc_mean_counts": 0.0
+    },
+    {
+      "frequency_hz": 350,
+      "rtl_gain_db": -353.9794,
+      "dc_mean_counts": 0.0
+    },
+    {
+      "frequency_hz": 400,
+      "rtl_gain_db": -353.9794,
+      "dc_mean_counts": 0.0
+    }
+  ],
+  "recovery_max_counts": 0,
+  "hardware_measured": false
+}
+TEST_PASS line_filter: bit-exact, 50-450 Hz teeth, passband, DC, full-scale recovery, isolation

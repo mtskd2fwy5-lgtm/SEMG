@@ -1,0 +1,9 @@
+{
+  "source_bin": "D:\\电脑管家迁移文件\\xwechat_files\\wxid_ait3nzfjnd1g22_ae1e\\msg\\file\\2026-10\\EMG018.BIN",
+  "sha256": "5ec08356d14b5630dc35709e3bc273b86abd15316b3478e382e5ff11259210f1",
+  "total_frames": 693492,
+  "valid_prefix_frames": 637952,
+  "valid_prefix_s": 159.488,
+  "excluded_tail_frames": 55540,
+  "reason": "First sequence discontinuity, invalid action or nonzero reserved byte; no resynchronization claimed."
+}

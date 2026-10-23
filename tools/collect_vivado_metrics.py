@@ -58,19 +58,27 @@ def main():
     power_w = power_match.group(1)
 
     drc = re.search(r"DRC finished with (\d+) Errors", run_log)
-    warnings = re.search(
+    warnings = re.findall(
         r"\d+ Infos, (\d+) Warnings, (\d+) Critical Warnings and (\d+) Errors",
         run_log,
     )
     if not drc or not warnings:
         raise ValueError("could not parse implementation status")
+    critical_warnings = warnings[-1][1]
+    rtl = required(ROOT / "src" / "rtl" / "emg_pl_export.v")
+    firmware = required(ROOT / "sw" / "ps_uart_print" / "main.c")
+    batch = int(re.search(r"parameter\s+integer\s+PACKET_WORDS\s*=\s*(\d+)", rtl).group(1))
+    ps_batch = int(re.search(r"#define\s+BUF_PACKETS\s+(\d+)", firmware).group(1))
+    if batch != ps_batch:
+        raise ValueError("PL PACKET_WORDS and PS BUF_PACKETS disagree")
 
     raw_rate = 8 * 4000
+    notch_rate = raw_rate
     feature_rate = 40 * 8 * 5
     nn_rate = 40 * 6
-    fatigue_rate = 2 * 2
-    total_rate = raw_rate + feature_rate + nn_rate + fatigue_rate
-    batch_ms = 1000.0 * 256 / total_rate
+    fatigue_rate = 8 * 2
+    total_rate = raw_rate + notch_rate + feature_rate + nn_rate + fatigue_rate
+    batch_ms = 1000.0 * batch / total_rate
     bit_size = BIT.stat().st_size if BIT.exists() else "n/a"
 
     report = """# Hardware Metrics
@@ -91,34 +99,52 @@ Generated: {date}
 | DSPs | {dsp_used} ({dsp_pct}%) |
 | Vectorless on-chip power | {power_w} W |
 | DRC errors | {drc_errors} |
-| Critical warnings | {critical_warnings} |
+| Implementation final critical warnings | {critical_warnings} |
 | Bitstream size | {bit_size} bytes |
 
 The power result is vectorless implementation-report data, not a board
-power-meter measurement. End-to-end latency and long-run stability still
-require a board capture.
+power-meter measurement (confidence: low). End-to-end latency and long-run
+stability still require a board capture. The final implementation summary
+is not a count of top-level synthesis warnings: synthesis has four LCD
+clock-group critical warnings because the auto-derived pixel clocks are
+not available at that stage. Routed methodology reports 36 warnings:
+LUTAR-1 (1), TIMING-18 (28), TIMING-28 (6), ULMTCS-1 (1). These have not
+been waived or resolved by the notch change. Both 31.25/50 MHz pixel clocks
+exist in the final timing report; positive WNS does not imply full
+methodology closure. See `report/notch50_validation_20261015.md`.
 
 ## Stream Budget
 
 | Lane | Rate |
 |---|---:|
 | Raw | {raw_rate} packets/s |
+| Notch50 | {notch_rate} packets/s |
 | Features | {feature_rate} packets/s |
 | NN results | {nn_rate} packets/s |
-| Fatigue results | {fatigue_rate} packets/s |
+| Fatigue + spectrum results | {fatigue_rate} packets/s |
 | Total | {total_rate} packets/s |
-| 256-word DMA batch interval | {batch_ms:.3f} ms |
+| {batch}-word DMA batch interval | {batch_ms:.3f} ms |
 
-The DMA batch is 256 64-bit words, or 2048 bytes. The AXI TLAST position,
+The DMA batch is {batch} 64-bit words, or {batch_bytes} bytes. The AXI TLAST position,
 PS transfer length, and ping-pong buffer size must remain identical.
+Exactly one waveform source goes to UART (112000 B/s, 1.12 Mbit/s at 8N1,
+within 2 Mbaud). Each 4096x64 waveform FIFO infers LUTRAM rather than BRAM.
+Isolated synthesis breakdowns are recorded in the notch validation report.
 
 ## Verification Evidence
 
-- `build/scripts/run_data_path_sim.bat`: packet format and TLAST boundary.
+- `build/scripts/run_data_path_sim.bat`: four lanes, TLAST, 174 backpressure
+  checks, overflow/reset PASS.
 - `build/scripts/run_pl_export_sim.bat`: 800-frame integration test,
-  6400 raw words and 200 feature words bit-exact against the reference.
-- `build/scripts/run_fatigue_sim.bat`: 56 fatigue words bit-exact.
+  6400 raw + 6400 notch + 200 feature words bit-exact; five NN windows exact.
+- `build/scripts/run_notch50_sim.ps1`: 225792 samples bit-exact; 50 Hz
+  simulated gain -86.1947 dB, not a board interference measurement.
+- `build/scripts/run_uart_record_test.ps1`: actual firmware frame assembly
+  for both sources, signed samples, partial/mixed frames and switching PASS.
+- Python UART/preprocessing regression: 26 tests PASS, no board port opened.
 - `sw/ps_uart_print/build.bat`: PS firmware compiles with warnings enabled.
+- `build/build_all.ps1`: all five parameter/netlist/timing/boot gates PASS
+  on 2026-10-15. Build and artifact hashes are recorded in the notch report.
 """.format(
         date=datetime.now().strftime("%Y-%m-%d"),
         wns=wns,
@@ -133,14 +159,17 @@ PS transfer length, and ping-pong buffer size must remain identical.
         dsp_pct=dsp_pct,
         power_w=power_w,
         drc_errors=drc.group(1),
-        critical_warnings=warnings.group(2),
+        critical_warnings=critical_warnings,
         bit_size=bit_size,
         raw_rate=raw_rate,
+        notch_rate=notch_rate,
         feature_rate=feature_rate,
         nn_rate=nn_rate,
         fatigue_rate=fatigue_rate,
         total_rate=total_rate,
         batch_ms=batch_ms,
+        batch=batch,
+        batch_bytes=batch * 8,
     )
     OUT.write_text(report, encoding="utf-8")
     print("metrics -> %s" % OUT.relative_to(ROOT))

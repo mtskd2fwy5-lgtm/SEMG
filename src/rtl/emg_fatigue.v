@@ -5,9 +5,12 @@
 // -> 512 ms window, 1.95 Hz bins, 1/2 scaling per stage = 1/N total),
 // median frequency (MDF) from the power spectrum, and - across the eight
 // channels averaged - a 16-window least-squares MDF slope plus a 4-level
-// fatigue state.  Two words ride the existing result lane each window:
+// fatigue state.  Eight words ride the existing result lane each window:
 //   id 8 : { num2_sat[15:0] signed, mdf_mean[15:0] }
 //   id 9 : { level[1:0], hist_full, 6'b0, grand_total[45:23] }
+//   id 10..14 : five packets, each carrying six 5-bit logarithmic
+//               powers for 30 narrow bands spanning 20-450 Hz
+//   id 15 : { peak_bin[10:0], peak_power[20:0] } for the 20-450 Hz peak
 // num2 = sum((2i-15) * y_i) over the circular 16-entry MDF history; the
 // per-window MDF slope in bins equals num2 / 2720 (PS-side conversion).
 //
@@ -22,7 +25,8 @@ module emg_fatigue #(
     parameter signed [15:0] T_MILD    = -16'sd100,     // slope ~ -0.037 bin/win
     parameter signed [15:0] T_FATIGUE = -16'sd300,     // slope ~ -0.110 bin/win
     parameter signed [15:0] T_REST    = -16'sd600,     // slope ~ -0.220 bin/win
-    parameter [31:0] MIN_ENERGY = 32'd0                // window energy gate
+    parameter [31:0] MIN_ENERGY = 32'd0,               // window energy gate
+    parameter integer LEVEL_CONFIRM_WINDOWS = 3        // suppress one-window level jumps
 ) (
     input  wire                  clk,
     input  wire                  rst_n,
@@ -74,6 +78,30 @@ module emg_fatigue #(
         end
     endfunction
 
+    // Compress a 51-bit accumulated power to a 5-bit logarithmic level.
+    // The top bit position gives the coarse energy decade.  Six such levels
+    // fit in one existing 32-bit result payload with two bits reserved.
+    function [4:0] power_level;
+        input [50:0] v;
+        integer k;
+        reg found;
+        begin
+            power_level = 5'd0;
+            found = 1'b0;
+            for (k = 50; k >= 0; k = k - 1) begin
+                if (!found && v[k]) begin
+                    found = 1'b1;
+                    if (k >= 31)
+                        power_level = 5'd31;
+                    else if (k == 0)
+                        power_level = 5'd1;
+                    else
+                        power_level = k[4:0];
+                end
+            end
+        end
+    endfunction
+
     localparam [3:0] P_IDLE = 4'd0,   // wait for a full window buffer
                      P_LOAD = 4'd1,   // bit-reversed load of one channel
                      P_FFT  = 4'd2,   // 11 stages x 1024 butterflies
@@ -82,7 +110,7 @@ module emg_fatigue #(
                      P_UPD  = 4'd5,   // push MDF mean into history
                      P_SLOPE= 4'd6,   // least-squares numerator
                      P_OUT1 = 4'd7,   // result word id 8
-                     P_OUT2 = 4'd8;   // result word id 9
+                     P_OUT2 = 4'd8;   // result words id 9..15
 
     // ------------------------------------------------------------------
     // collection side: 8x 1st-order HP + ping-pong sample buffers
@@ -175,6 +203,9 @@ module emg_fatigue #(
     reg [10:0] mdf_ch;
     reg [13:0] mdf_sum;
     reg [50:0] grand_total;
+    reg [50:0] spec_acc [0:29];
+    reg [36:0] peak_power;
+    reg [10:0] peak_bin;
     reg [15:0] mdf_mean_q;
     reg signed [15:0] hist [0:15];   // signed: sc_coef*hist must stay signed
     reg [3:0]  hist_ptr;
@@ -183,6 +214,8 @@ module emg_fatigue #(
     reg signed [31:0] num2_acc;
     reg signed [15:0] num2_sat;
     reg [1:0]  level_q;
+    reg [1:0]  level_pending_q;
+    reg [1:0]  level_pending_count;
 
     // butterfly operand registers
     reg signed [17:0] a_re, a_im, b_re, b_im;
@@ -230,6 +263,8 @@ module emg_fatigue #(
 
     // power pass helper: bin power of the currently latched bin
     wire [36:0] pwr_incr = re_rd * re_rd + im_rd * im_rd;
+    wire [12:0] spec_offset = {2'd0, pwr_idx} - 13'd11;
+    wire [12:0] spec_idx = (spec_offset * 13'd30) / 13'd220;
 
     // slope term: (2i-15) * hist[(hist_ptr + i) mod 16]
     wire [3:0]  hidx = hist_ptr + slope_i;
@@ -240,6 +275,10 @@ module emg_fatigue #(
     wire        energy_ok = (grand_total >= {19'd0, MIN_ENERGY});
     wire signed [15:0] num2_next = sat16_32(num2_acc);
     wire signed [15:0] num2_rpt  = hist_full ? num2_next : 16'sd0;
+    wire [1:0] level_candidate = !hist_full ? 2'd0 :
+                                 (num2_next <= T_REST) ? 2'd3 :
+                                 (num2_next <= T_FATIGUE) ? 2'd2 :
+                                 (num2_next <= T_MILD) ? 2'd1 : 2'd0;
 
     always @(posedge clk) begin
         if (!rst_n) begin
@@ -249,9 +288,15 @@ module emg_fatigue #(
             pwr_idx <= 11'd0; pwr_ph <= 1'b0;
             total_acc <= 48'd0; cum_acc <= 48'd0; crossed <= 1'b0;
             mdf_ch <= 11'd0; mdf_sum <= 14'd0; grand_total <= 51'd0;
+            for (i = 0; i < 30; i = i + 1)
+                spec_acc[i] <= 51'd0;
+            peak_power <= 37'd0;
+            peak_bin <= 11'd0;
             mdf_mean_q <= 16'd0; hist_ptr <= 4'd0; hist_cnt <= 5'd0;
             slope_i <= 4'd0; num2_acc <= 32'sd0; num2_sat <= 16'sd0;
             level_q <= 2'd0;
+            level_pending_q <= 2'd0;
+            level_pending_count <= 2'd0;
             out_valid <= 1'b0; out_id <= 4'd0; out_data <= 32'd0;
             out_sequence <= 16'd0;
         end else begin
@@ -267,6 +312,10 @@ module emg_fatigue #(
                     ch_cnt     <= 3'd0;
                     mdf_sum    <= 14'd0;
                     grand_total<= 51'd0;
+                    for (i = 0; i < 30; i = i + 1)
+                        spec_acc[i] <= 51'd0;
+                    peak_power <= 37'd0;
+                    peak_bin   <= 11'd0;
                     load_idx   <= 11'd0;
                     load_ph    <= 2'd0;
                     state      <= P_LOAD;
@@ -344,6 +393,16 @@ module emg_fatigue #(
                 2'd1: pwr_ph <= 2'd2;   // re/im_rd latch this edge
                 default: begin
                     total_acc <= total_acc + pwr_incr;
+                    // One-sided FFT bins at 4 kSPS / 2048.  Exclude DC and
+                    // the low-frequency motion baseline.  Bins 11..230 are
+                    // mapped uniformly to 30 narrow bands (~14.3 Hz each).
+                    if (pwr_idx >= 11'd11 && pwr_idx <= 11'd230)
+                        spec_acc[spec_idx] <= spec_acc[spec_idx] + pwr_incr;
+                    if (pwr_idx >= 11'd11 && pwr_idx <= 11'd230 &&
+                        pwr_incr > peak_power) begin
+                        peak_power <= pwr_incr;
+                        peak_bin   <= pwr_idx;
+                    end
                     pwr_ph <= 2'd0;
                     if (pwr_idx == 11'd1024) begin
                         pwr_idx <= 11'd0;
@@ -416,16 +475,20 @@ module emg_fatigue #(
             end
             P_OUT1: begin
                 num2_sat <= num2_next;
-                if (!hist_full)
-                    level_q <= 2'd0;
-                else if (num2_next <= T_REST)
-                    level_q <= 2'd3;
-                else if (num2_next <= T_FATIGUE)
-                    level_q <= 2'd2;
-                else if (num2_next <= T_MILD)
-                    level_q <= 2'd1;
-                else
-                    level_q <= 2'd0;
+                if (level_candidate == level_q) begin
+                    level_pending_q <= level_candidate;
+                    level_pending_count <= 2'd0;
+                end else if (level_candidate == level_pending_q) begin
+                    if (level_pending_count >= LEVEL_CONFIRM_WINDOWS - 1) begin
+                        level_q <= level_candidate;
+                        level_pending_count <= 2'd0;
+                    end else begin
+                        level_pending_count <= level_pending_count + 2'd1;
+                    end
+                end else begin
+                    level_pending_q <= level_candidate;
+                    level_pending_count <= 2'd1;
+                end
                 out_valid    <= 1'b1;
                 out_id       <= 4'd8;
                 out_data     <= {num2_rpt, mdf_mean_q};
@@ -438,6 +501,49 @@ module emg_fatigue #(
                         out_id   <= 4'd9;
                         out_data <= {level_q, hist_full, 6'd0,
                                      grand_total[45:23]};
+                    end else if (out_id == 4'd9) begin
+                        out_id   <= 4'd10;
+                        out_data <= {2'd0, power_level(spec_acc[5]),
+                                     power_level(spec_acc[4]),
+                                     power_level(spec_acc[3]),
+                                     power_level(spec_acc[2]),
+                                     power_level(spec_acc[1]),
+                                     power_level(spec_acc[0])};
+                    end else if (out_id == 4'd10) begin
+                        out_id   <= 4'd11;
+                        out_data <= {2'd0, power_level(spec_acc[11]),
+                                     power_level(spec_acc[10]),
+                                     power_level(spec_acc[9]),
+                                     power_level(spec_acc[8]),
+                                     power_level(spec_acc[7]),
+                                     power_level(spec_acc[6])};
+                    end else if (out_id == 4'd11) begin
+                        out_id   <= 4'd12;
+                        out_data <= {2'd0, power_level(spec_acc[17]),
+                                     power_level(spec_acc[16]),
+                                     power_level(spec_acc[15]),
+                                     power_level(spec_acc[14]),
+                                     power_level(spec_acc[13]),
+                                     power_level(spec_acc[12])};
+                    end else if (out_id == 4'd12) begin
+                        out_id   <= 4'd13;
+                        out_data <= {2'd0, power_level(spec_acc[23]),
+                                     power_level(spec_acc[22]),
+                                     power_level(spec_acc[21]),
+                                     power_level(spec_acc[20]),
+                                     power_level(spec_acc[19]),
+                                     power_level(spec_acc[18])};
+                    end else if (out_id == 4'd13) begin
+                        out_id   <= 4'd14;
+                        out_data <= {2'd0, power_level(spec_acc[29]),
+                                     power_level(spec_acc[28]),
+                                     power_level(spec_acc[27]),
+                                     power_level(spec_acc[26]),
+                                     power_level(spec_acc[25]),
+                                     power_level(spec_acc[24])};
+                    end else if (out_id == 4'd14) begin
+                        out_id   <= 4'd15;
+                        out_data <= {peak_bin, peak_power[20:0]};
                     end else begin
                         out_valid <= 1'b0;
                         state     <= P_IDLE;

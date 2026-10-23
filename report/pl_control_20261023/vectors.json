@@ -1,0 +1,10 @@
+{
+  "rows": 28228,
+  "synthetic": 7500,
+  "captures": {
+    "report\\emg008_20261022\\EMG008_processed.csv": 4104,
+    "report\\emg009_20261022\\EMG009_processed.csv": 10078,
+    "report\\emg015_20261022\\EMG015_processed.csv": 2171,
+    "report\\emg018_20261022\\EMG018_validprefix_processed.csv": 4375
+  }
+}

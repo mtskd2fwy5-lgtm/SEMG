@@ -1,0 +1,103 @@
+{
+  "input": "F:/EMG000.BIN",
+  "format": "SEMGSD1 v1",
+  "sample_rate_hz": 4000,
+  "frames": 189576,
+  "duration_s": 47.394,
+  "sequence_gaps": 0,
+  "quality_status": "CHECK",
+  "first_pca_fraction": 0.9537622797969046,
+  "correlation_median_offdiag": 0.8906960356303842,
+  "raw_50hz_fraction": [
+    0.13223646858814764,
+    0.025924018749946733,
+    0.04451020727534115,
+    0.08062515002582128,
+    0.3639273781350445,
+    0.07988932428958276,
+    0.029346725831276073,
+    0.06617384773705501
+  ],
+  "notch50_50hz_fraction": [
+    0.0008246033906771443,
+    0.0008174739690561647,
+    0.0014428027784321252,
+    0.00207523018700863,
+    0.0010085635899244074,
+    0.0007711113969510854,
+    0.0007333456903639884,
+    0.000896796784434025
+  ],
+  "labels": {
+    "counts": {
+      "rest": 90437,
+      "open_hand": 58031,
+      "fist": 41108
+    },
+    "segments": [
+      {
+        "label": "rest",
+        "start_s": 0.0,
+        "end_s": 11.3825,
+        "frames": 45531
+      },
+      {
+        "label": "open_hand",
+        "start_s": 11.38275,
+        "end_s": 16.778,
+        "frames": 21582
+      },
+      {
+        "label": "rest",
+        "start_s": 16.77825,
+        "end_s": 20.8205,
+        "frames": 16170
+      },
+      {
+        "label": "open_hand",
+        "start_s": 20.82075,
+        "end_s": 24.8945,
+        "frames": 16296
+      },
+      {
+        "label": "rest",
+        "start_s": 24.89475,
+        "end_s": 29.124,
+        "frames": 16918
+      },
+      {
+        "label": "fist",
+        "start_s": 29.12425,
+        "end_s": 32.80925,
+        "frames": 14741
+      },
+      {
+        "label": "rest",
+        "start_s": 32.8095,
+        "end_s": 35.76375,
+        "frames": 11818
+      },
+      {
+        "label": "fist",
+        "start_s": 35.764,
+        "end_s": 39.8995,
+        "frames": 16543
+      },
+      {
+        "label": "open_hand",
+        "start_s": 39.89975,
+        "end_s": 44.93775,
+        "frames": 20153
+      },
+      {
+        "label": "fist",
+        "start_s": 44.938,
+        "end_s": 47.39375,
+        "frames": 9824
+      }
+    ]
+  },
+  "raw_analysis": "EMG000_raw_analysis.json",
+  "notch50_analysis": "EMG000_notch50_analysis.json",
+  "segments_file": "EMG000_segments.json"
+}

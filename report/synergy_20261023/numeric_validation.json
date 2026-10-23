@@ -1,0 +1,26 @@
+{
+  "EMG008": {
+    "windows": 6109,
+    "relative_l2_p99": 0.0005509576591071662,
+    "relative_l2_mean": 0.0001591926620260624,
+    "max_absolute_mean_adc_counts": 0.016917493842761644,
+    "relative_reconstruction_p50": 0.32494633200390427,
+    "relative_reconstruction_p95": 0.5478105634147517
+  },
+  "EMG009": {
+    "windows": 11835,
+    "relative_l2_p99": 0.0005080620040107425,
+    "relative_l2_mean": 0.0001257867836729832,
+    "max_absolute_mean_adc_counts": 0.018734461626898735,
+    "relative_reconstruction_p50": 0.42084253225605095,
+    "relative_reconstruction_p95": 0.6257799778629157
+  },
+  "EMG018_validprefix": {
+    "windows": 6380,
+    "relative_l2_p99": 0.0005636370096461591,
+    "relative_l2_mean": 0.00016918849471349597,
+    "max_absolute_mean_adc_counts": 0.015473648175493793,
+    "relative_reconstruction_p50": 0.3678201685441561,
+    "relative_reconstruction_p95": 0.6358852814675333
+  }
+}

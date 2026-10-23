@@ -1,0 +1,37 @@
+{
+  "firmware": "20261014_LCD_3D_GT911",
+  "app_segments": [
+    {
+      "address": "0x10000000",
+      "file_bytes": 36840,
+      "boot_offset": "0x3fc900"
+    },
+    {
+      "address": "0x1000c000",
+      "file_bytes": 32768,
+      "boot_offset": "0x405900"
+    },
+    {
+      "address": "0x10014000",
+      "file_bytes": 160,
+      "boot_offset": "0x40d900"
+    }
+  ],
+  "files": [
+    {
+      "path": "build\\boot\\BOOT.BIN",
+      "bytes": 4250016,
+      "sha256": "CB89325AA4E07B36578FA11255274EC3F133D5C55C172E36043726DB677CD108"
+    },
+    {
+      "path": "sw\\ps_uart_print\\ps_uart_print.elf",
+      "bytes": 91668,
+      "sha256": "73DD8C1113F6670030485A8F4861AD5A2EB2975810DB8F56DD99F74892EB2A0A"
+    },
+    {
+      "path": "build\\vivado\\hand_motion_reconstruction.runs\\impl_1\\design_1.bit",
+      "bytes": 4045684,
+      "sha256": "49D0EBE69E5233F7C60FE16BC41A857B381F80FE87137FF82CFC27607434324A"
+    }
+  ]
+}

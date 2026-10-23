@@ -1,0 +1,41 @@
+{
+  "build_tag": "20261021_LCD_WHITE_SKIN",
+  "panels": [
+    [
+      800,
+      480
+    ],
+    [
+      1024,
+      600
+    ]
+  ],
+  "board_programmed": false,
+  "files": [
+    {
+      "path": "sw/ps_uart_print/main.c",
+      "bytes": 129476,
+      "sha256": "9d22de8d2a704ec70153997dc71d16152ef4ce8139cdd6d891801ccaa7a7bc60"
+    },
+    {
+      "path": "sw/ps_uart_print/lcd_hand_3d.h",
+      "bytes": 12094,
+      "sha256": "68dc473b8830273a7765b4b615be5d058acb8ca77aaf003d914b63fa0d254a26"
+    },
+    {
+      "path": "sw/ps_uart_print/ps_uart_print.elf",
+      "bytes": 462536,
+      "sha256": "2ac21962b3db4b94250ac92bc89e007db61a0771ed5b4f5cd3862f2b6c97b6b4"
+    },
+    {
+      "path": "build/boot/BOOT.BIN",
+      "bytes": 4606516,
+      "sha256": "2540110225ed42cd006b9e9538a81ee01c50940919865e4672fc8573c85a5db2"
+    },
+    {
+      "path": "build/boot/SourceHanSans-OFL.txt",
+      "bytes": 4463,
+      "sha256": "fcac737e761ec63dbfbdce11030a1780161920d80315edba9c8beff1c2bac5a2"
+    }
+  ]
+}

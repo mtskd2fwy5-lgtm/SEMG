@@ -1,0 +1,106 @@
+{
+  "build_tag": "20261015_BIAS_RREG_V1",
+  "completed_at": "2026-10-16T00:27:44.941519+08:00",
+  "pl_rebuilt": true,
+  "hardware_programmed": false,
+  "source_hashes_unchanged_during_build": true,
+  "all_five_build_gates_pass": true,
+  "elf_load_segments": [
+    {
+      "index": 1,
+      "address": "0x10000000",
+      "file_bytes": 50460,
+      "memory_bytes": 50460,
+      "boot_offset": 4180224,
+      "exact_match": true
+    },
+    {
+      "index": 2,
+      "address": "0x10010000",
+      "file_bytes": 32988,
+      "memory_bytes": 1425780,
+      "boot_offset": 4230720,
+      "exact_match": true
+    },
+    {
+      "index": 3,
+      "address": "0x11000000",
+      "file_bytes": 0,
+      "memory_bytes": 16384,
+      "boot_offset": null,
+      "exact_match": null
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "build/boot/BOOT.BIN",
+      "bytes": 4263708,
+      "sha256": "d88f93e3720e5b50475b79c54579976a74d21896d583bb25d13bd3994055250f"
+    },
+    {
+      "path": "sw/ps_uart_print/ps_uart_print.elf",
+      "bytes": 110604,
+      "sha256": "58637270663679ff9653a9afc6e9d954670691ebfc7f476f75099b69621dfd98"
+    },
+    {
+      "path": "build/vivado/hand_motion_reconstruction.runs/impl_1/design_1.bit",
+      "bytes": 4045684,
+      "sha256": "1eea61c40f30655b4c8ce1f2db5d5b5e4d64eb63f6f185a7a501e09feeef0f19"
+    },
+    {
+      "path": "build/export/design_1.xsa",
+      "bytes": 1546234,
+      "sha256": "8ca4149a4301a073ac5864dc7d6eb7d5db01b491aa8156d30901d0a01561ac3f"
+    },
+    {
+      "path": "src/rtl/ads1299_spi.v",
+      "bytes": 29135,
+      "sha256": "2e06afa3376312f0f5edee8f423eaa544628278bb2938e1efccedc1c1aa8a8ca"
+    },
+    {
+      "path": "src/rtl/emg_pl_export.v",
+      "bytes": 14922,
+      "sha256": "754e4dc0c18d980aa3daea4282ea534379b55953114fc752e3371d9641e5015b"
+    },
+    {
+      "path": "src/rtl/emg_pl_export_status.v",
+      "bytes": 2082,
+      "sha256": "86c9b3f433b290c84652940027ec66ebb52baba3875a5bc79b3c6e5091b52b0e"
+    },
+    {
+      "path": "sw/ps_uart_print/main.c",
+      "bytes": 104584,
+      "sha256": "5bcaaf9f51448c06eb9f5eb2aea56edb41441aa3f0bf7c3c25689d5bba16b931"
+    },
+    {
+      "path": "sim/results/ads1299_bias.log",
+      "bytes": 1736,
+      "sha256": "0148f44ff97f716099e03e9e2a27a5b9981da82a4a2bf5c0f2b006026f5ddbbc"
+    },
+    {
+      "path": "sim/results/emg_pl_export_bias.log",
+      "bytes": 1537,
+      "sha256": "5db8892d2b43115ac828f9f62ed71f1ad1f1c04b0b62155d7c0398cbfef2bd84"
+    },
+    {
+      "path": "sim/results_lcd/firmware_test.log",
+      "bytes": 2630,
+      "sha256": "270ab1ada30af0e91caaf552633ec18c819aeddffa692dc574e3a2d5c7f3094b"
+    },
+    {
+      "path": "report/bias_lcd_preview_20261015.png",
+      "bytes": 18521,
+      "sha256": "940d2651870bfa8e5615e6ea33ad9026a3afbb21d242614449c3984b85202de4"
+    },
+    {
+      "path": "report/bias_gpio_config_final_20261015.log",
+      "bytes": 24675,
+      "sha256": "a81408b09bdd0b1059035f83169ec3249b000926d6f45d2e945b157bf943011e"
+    },
+    {
+      "path": "report/bias_build_gates_20261015.log",
+      "bytes": 146935,
+      "sha256": "a99b7799f0b5b7a9645459d45701faf1d2b4a1702ee0945c7effa3bf81d5c381"
+    }
+  ]
+}

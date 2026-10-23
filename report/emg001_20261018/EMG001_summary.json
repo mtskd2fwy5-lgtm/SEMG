@@ -1,0 +1,39 @@
+{
+  "input": "F:/EMG001.BIN",
+  "format": "SEMGSD1 v1",
+  "sample_rate_hz": 4000,
+  "frames": 44611,
+  "duration_s": 11.15275,
+  "file_bytes": 2320284,
+  "forward_sequence_gaps": 0,
+  "sequence_discontinuities": [
+    {
+      "row": 178,
+      "previous": 65202,
+      "next": 64691,
+      "modular_delta": 65025,
+      "time_s": 0.04475
+    }
+  ],
+  "labels": {
+    "none": 44611
+  },
+  "bias_channel": "channel_8",
+  "emg_channels": "channel_1..channel_7",
+  "bias_raw": {
+    "median": -1201784.0,
+    "mean": -592850.8048239223,
+    "rms": 6399546.617051735,
+    "min": -8388608,
+    "max": 8360234,
+    "abs_gt_7m_fraction": 0.5131245656900765,
+    "zero_crossings": 981,
+    "estimated_frequency_hz": 50.0
+  },
+  "emg_ch1_7": {
+    "pca_first_fraction": 0.8472547993546237,
+    "correlation_median_offdiag": 0.3738076853248109
+  },
+  "raw_analysis": "EMG001_raw_analysis.json",
+  "notch50_analysis": "EMG001_notch50_analysis.json"
+}

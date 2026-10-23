@@ -1,0 +1,87 @@
+INFO: [VRFC 10-2263] Analyzing Verilog file "D:/FPGA/sEMG-HMRS/src/rtl/ads1299_spi.v" into library work
+INFO: [VRFC 10-311] analyzing module ads1299_spi
+INFO: [VRFC 10-2263] Analyzing Verilog file "D:/FPGA/sEMG-HMRS/src/rtl/emg_notch50.v" into library work
+INFO: [VRFC 10-311] analyzing module emg_notch50
+INFO: [VRFC 10-2263] Analyzing Verilog file "D:/FPGA/sEMG-HMRS/src/rtl/emg_comb50.v" into library work
+INFO: [VRFC 10-311] analyzing module emg_comb50
+INFO: [VRFC 10-2263] Analyzing Verilog file "D:/FPGA/sEMG-HMRS/src/rtl/emg_line_filter.v" into library work
+INFO: [VRFC 10-311] analyzing module emg_line_filter
+INFO: [VRFC 10-2263] Analyzing Verilog file "D:/FPGA/sEMG-HMRS/src/rtl/emg_bandpass.v" into library work
+INFO: [VRFC 10-311] analyzing module emg_bandpass
+INFO: [VRFC 10-2263] Analyzing Verilog file "D:/FPGA/sEMG-HMRS/src/rtl/emg_window_features.v" into library work
+INFO: [VRFC 10-311] analyzing module emg_window_features
+INFO: [VRFC 10-2263] Analyzing Verilog file "D:/FPGA/sEMG-HMRS/src/rtl/emg_feature_bank.v" into library work
+INFO: [VRFC 10-311] analyzing module emg_feature_bank
+INFO: [VRFC 10-2263] Analyzing Verilog file "D:/FPGA/sEMG-HMRS/src/rtl/emg_nn_infer.v" into library work
+INFO: [VRFC 10-311] analyzing module emg_nn_infer
+INFO: [VRFC 10-2263] Analyzing Verilog file "D:/FPGA/sEMG-HMRS/src/rtl/emg_fatigue.v" into library work
+INFO: [VRFC 10-311] analyzing module emg_fatigue
+INFO: [VRFC 10-2263] Analyzing Verilog file "D:/FPGA/sEMG-HMRS/src/rtl/axis_async_fifo.v" into library work
+INFO: [VRFC 10-311] analyzing module axis_async_fifo
+INFO: [VRFC 10-2263] Analyzing Verilog file "D:/FPGA/sEMG-HMRS/src/rtl/axis_packet_mux.v" into library work
+INFO: [VRFC 10-311] analyzing module axis_packet_mux
+INFO: [VRFC 10-2263] Analyzing Verilog file "D:/FPGA/sEMG-HMRS/src/rtl/emg_data_path.v" into library work
+INFO: [VRFC 10-311] analyzing module emg_data_path
+INFO: [VRFC 10-2263] Analyzing Verilog file "D:/FPGA/sEMG-HMRS/src/rtl/emg_pl_export.v" into library work
+INFO: [VRFC 10-311] analyzing module emg_pl_export
+INFO: [VRFC 10-2263] Analyzing Verilog file "D:/FPGA/sEMG-HMRS/src/rtl/emg_pl_export_status.v" into library work
+INFO: [VRFC 10-311] analyzing module emg_pl_export_status
+INFO: [VRFC 10-2263] Analyzing Verilog file "D:/FPGA/sEMG-HMRS/sim/ads1299_model.v" into library work
+INFO: [VRFC 10-311] analyzing module ads1299_model
+INFO: [VRFC 10-2263] Analyzing Verilog file "D:/FPGA/sEMG-HMRS/sim/emg_pl_export_tb.v" into library work
+INFO: [VRFC 10-311] analyzing module emg_pl_export_tb
+Vivado Simulator v2025.2
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+Running: D:/FPGA/VIVADO/2025.2/Vivado/bin/unwrapped/win64.o/xelab.exe emg_pl_export_tb -s emg_pl_export_sim -debug typical 
+Multi-threading is on. Using 30 slave threads.
+Starting static elaboration
+Pass Through NonSizing Optimizer
+Completed static elaboration
+Starting simulation data flow analysis
+Completed simulation data flow analysis
+Time Resolution for simulation is 1ps
+Compiling module work.ads1299_spi(POST_RESET_CYCLES=35...
+Compiling module work.emg_notch50
+Compiling module work.emg_comb50
+Compiling module work.emg_bandpass(FRACTION_SAVE=1)
+Compiling module work.emg_line_filter(BANDPASS_ENABLE=...
+Compiling module work.emg_window_features(ZC_THRESHOLD...
+Compiling module work.emg_feature_bank(BYPASS_BANDPASS...
+Compiling module work.emg_nn_infer
+Compiling module work.emg_fatigue
+Compiling module work.axis_async_fifo(ADDR_WIDTH=12)
+Compiling module work.axis_async_fifo_default
+Compiling module work.axis_packet_mux(PACKET_WORDS=102...
+Compiling module work.emg_data_path(PACKET_WORDS=1024)
+Compiling module work.emg_pl_export_default
+Compiling module work.emg_pl_export_status
+Compiling module work.ads1299_model
+Compiling module work.emg_pl_export_tb
+Built simulation snapshot emg_pl_export_sim
+
+****** xsim v2025.2 (64-bit)
+  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025
+  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025
+  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025
+  **** Start of session at: Wed Oct 21 22:00:53 2026
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+
+source xsim.dir/emg_pl_export_sim/xsim_script.tcl
+# xsim {emg_pl_export_sim} -autoloadwcfg -runall
+Time resolution is 1 ps
+run -all
+CHECK ADC mailbox WAIT/error/actual bytes/recovery PASS
+TEST_PASS EMG export: frames=800 raw=6400 notch=6400 feature=200 result=30
+$finish called at time : 183541610 ns : File "D:/FPGA/sEMG-HMRS/sim/emg_pl_export_tb.v" Line 185
+run: Time (s): cpu = 00:00:00 ; elapsed = 00:00:05 . Memory (MB): peak = 227.250 ; gain = 0.000
+exit
+INFO: [Common 17-206] Exiting xsim at Wed Oct 21 22:01:01 2026...
+compare-export PASSED: 6400 raw + 6400 processed words + 200 feature words bit-exact
+PASS window seq 0: class 2 logits [-32041, -35430, 20431, -7261, -19795]
+PASS window seq 40: class 2 logits [-31813, -37260, 18299, -6460, -18250]
+PASS window seq 80: class 2 logits [-31903, -37200, 17981, -6112, -18175]
+PASS window seq 120: class 2 logits [-31900, -38874, 15366, -3707, -16630]
+PASS window seq 160: class 2 logits [-31818, -38771, 15479, -3871, -16709]
+check-pl-nn PASSED: 5 windows x (5 logits + class) bit-exact vs the INT8 model

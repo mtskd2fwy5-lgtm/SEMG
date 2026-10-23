@@ -1,0 +1,2 @@
+SUMMARY {"frames": 548698, "duration_s": 137.1745, "segments": 17, "quality": {"raw": "PASS", "processed": "CHECK"}, "ch6_p99": 1254.3924926709622, "ch6_max": 13008.325044466717}
+TEST_PASS: record integrity, action labels, finite analysis and CH6 transient detection

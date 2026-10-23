@@ -47,6 +47,9 @@
 // tmp/verify_coeff_regs.py reports ALL COEFFICIENT REGISTERS CORRECT.
 module emg_bandpass #(
     parameter integer SAMPLE_WIDTH = 24,
+    // Preserve discarded fractions in the final export chain. Default 0
+    // retains historical standalone/training arithmetic bit for bit.
+    parameter integer FRACTION_SAVE = 0,
     // 2nd-order Butterworth high-pass, fc = 20 Hz @ 4 kSPS, Q16.
     parameter signed [17:0] HP_B0 = 18'sd64096,
     parameter signed [17:0] HP_B1 = -18'sd128192,
@@ -83,6 +86,8 @@ module emg_bandpass #(
     reg signed [SAMPLE_WIDTH-1:0] hp_x1, hp_x2;
     reg signed [SAMPLE_WIDTH-1:0] hp_y1, hp_y2;
     reg signed [SAMPLE_WIDTH-1:0] lp_y;
+    reg [15:0] hp_fraction;
+    reg [14:0] lp_fraction;
 
     // Filter coefficients in registers (see header note). Declared with
     // bitstream init AND reset-loaded; either path alone would suffice.
@@ -115,12 +120,14 @@ module emg_bandpass #(
                                           + b1_r * hp_x1
                                           + b2_r * hp_x2
                                           - a1_r * hp_y1
-                                          - a2_r * hp_y2;
+                                          - a2_r * hp_y2
+                                          + (FRACTION_SAVE ? $signed({1'b0,hp_fraction}) : 17'sd0);
     wire signed [47:0] hp_sat_w = sat_to_input(hp_acc_w >>> 16);
     wire signed [SAMPLE_WIDTH-1:0] hp_y_w = hp_sat_w[SAMPLE_WIDTH-1:0];
 
     wire signed [SAMPLE_WIDTH:0] lp_diff_w = hp_y_w - lp_y;
-    wire signed [40:0] lp_prod_w = alpha_r * lp_diff_w;
+    wire signed [40:0] lp_prod_w = alpha_r * lp_diff_w
+                                 + (FRACTION_SAVE ? $signed({1'b0,lp_fraction}) : 16'sd0);
     wire signed [41:0] lp_sum_w = lp_y + (lp_prod_w >>> 15);
     wire signed [47:0] lp_sat_w = sat_to_input(lp_sum_w);
     wire signed [SAMPLE_WIDTH-1:0] lp_y_w = lp_sat_w[SAMPLE_WIDTH-1:0];
@@ -133,6 +140,8 @@ module emg_bandpass #(
             hp_y1 <= {SAMPLE_WIDTH{1'b0}};
             hp_y2 <= {SAMPLE_WIDTH{1'b0}};
             lp_y  <= {SAMPLE_WIDTH{1'b0}};
+            hp_fraction <= 0;
+            lp_fraction <= 0;
             filtered_out <= {SAMPLE_WIDTH{1'b0}};
         end else if (sample_valid) begin
             filtered_out  <= lp_y_w;
@@ -142,6 +151,9 @@ module emg_bandpass #(
             hp_y2 <= hp_y1;
             hp_y1 <= hp_y_w;
             lp_y  <= lp_y_w;
+            // Clear the saved error on saturation (no quantizer windup).
+            hp_fraction <= (hp_sat_w == (hp_acc_w >>> 16)) ? hp_acc_w[15:0] : 16'd0;
+            lp_fraction <= (lp_sat_w == lp_sum_w) ? lp_prod_w[14:0] : 15'd0;
         end
     end
 endmodule

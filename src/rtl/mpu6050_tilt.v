@@ -6,8 +6,7 @@
  * The PS only reads one 32-bit word through axi_gpio_2 (single 32-bit
  * input channel), mirroring the touch path contract:
  *
- *   [31]    link_valid - MPU6050 probed + configured successfully and the
- *                        last poll round-trip ACKed
+ *   [31]    link_valid - configured link; cleared after six poll failures
  *   [30:24] seq        - increments on every accepted burst read; the PS
  *                        reads the word twice and compares seq to avoid
  *                        tearing across the asynchronous update
@@ -26,7 +25,7 @@
  *   - PWR_MGMT_1  (0x6B) = 0x00  wake, internal oscillator
  *   - SMPLRT_DIV  (0x19) = 0x09  1 kHz/(1+9) = 100 Hz sample rate
  *   - CONFIG      (0x1A) = 0x03  DLPF 44 Hz (gyro + accel), 4.9 ms delay
- *   - GYRO_CONFIG (0x1B) = 0x00  +/-250 dps  (131 LSB/deg/s)
+ *   - GYRO_CONFIG (0x1B) = 0x10  +/-1000 dps (32.8 LSB/deg/s)
  *   - ACCEL_CONFIG(0x1C) = 0x00  +/-2g       (16384 LSB/g)
  *   - poll: burst-read 14 bytes from 0x3B at 100 Hz (matches the sample
  *     rate; the DLPF keeps any update-boundary straddle negligible)
@@ -34,15 +33,15 @@
  * Attitude: shared sequential 13-iteration vectoring CORDIC (1/64 deg
  * units) computes
  *   roll_acc  = atan2(ay, az)
- *   pitch_acc = atan2(ax, hypot(ay, az))
+ *   pitch_acc = atan2(-ax, hypot(ay, az))
  * The CORDIC gain (1.647) on the magnitude output is removed with a Q14
  * constant before the second job.  Then the 100 Hz complementary filter
- *   angle += gyro_step + 0.02 * (acc_angle - angle)
- * anchors the slow gyro drift to the gravity vector.  Gyro per-step term:
- * LSB * (1/131 deg/s) * 10 ms -> 0.1 deg units = LSB * 50/65536.
+ *   angle += gyro_step + (acc_angle - angle)/32
+ * anchors the slow gyro drift to the gravity vector. State uses Q8
+ * subunits of 0.1 degree; gyro_step = LSB * 51150/65536 in those units.
  *
- * Any NACK (probe/config/poll) waits 100 ms and restarts from the probe;
- * configuration is replayed on every recovery, so a mid-run device power
+ * Probe/config NACKs retry after 100 ms; six consecutive poll failures
+ * also trigger reprobe. Configuration is replayed on recovery, so a power
  * cycle self-heals.  No hardware reset pin is wired (J11 carries SCL/SDA
  * only), which is fine - the register map is writable at any time.
  *
@@ -62,7 +61,10 @@ module mpu6050_tilt (
     input  wire rst_in,         // active high (peripheral_reset)
     output wire mpu_scl,        // I2C SCL, push-pull master
     inout  wire mpu_sda_io,     // I2C SDA, open drain
-    output reg  [31:0] mpu_data
+    output reg  [31:0] mpu_data,
+    output reg  [31:0] motion_a,
+    output reg  [31:0] motion_b,
+    output reg  [31:0] motion_c
 );
     // ------------------------------------------------------------
     // Bench-tunable axis mapping (module flat on forearm, cable exit
@@ -73,7 +75,7 @@ module mpu6050_tilt (
     //           rate sensor gy)
     // ------------------------------------------------------------
     localparam ROLL_ACC_SIGN  = 1;
-    localparam PITCH_ACC_SIGN = 1;
+    localparam PITCH_ACC_SIGN = -1; // pitch around Y: atan2(-ax, hypot(ay,az))
     localparam GX_SIGN        = 1;
     localparam GY_SIGN        = 1;
 
@@ -141,7 +143,8 @@ module mpu6050_tilt (
     reg [2:0] nph;
     always @* begin
         case (ph)
-            PH_ADDR_W: nph = t_write1            ? PH_WDATA  :
+            PH_ADDR_W: nph = t_reg_en            ? PH_REG    :
+                              t_write1            ? PH_WDATA  :
                               (t_nread != 4'd0)  ? PH_REG    : PH_STOP;
             PH_REG:    nph = t_write1            ? PH_WDATA  :
                               (t_nread != 4'd0)  ? PH_ADDR_R : PH_STOP;
@@ -170,7 +173,7 @@ module mpu6050_tilt (
 
             // watchdog: any non-idle state longer than 10 ms -> abort
             if (eng_st != E_IDLE) begin
-                if (&eng_wd) begin
+                if (eng_wd >= T_I2C_WD) begin
                     eng_st      <= E_IDLE;
                     scl_r       <= 1'b0;
                     sda_oe_r    <= 1'b0;
@@ -183,7 +186,7 @@ module mpu6050_tilt (
                 eng_wd <= 20'd0;
             end
 
-            case (eng_st)
+            if (!(eng_st != E_IDLE && eng_wd >= T_I2C_WD)) case (eng_st)
             E_IDLE: begin
                 scl_r <= 1'b0;
                 sda_oe_r <= 1'b0;
@@ -396,11 +399,13 @@ module mpu6050_tilt (
     reg [6:0]  seq;
 
     // raw sensor latches (big-endian byte pairs out of rx_word)
-    reg signed [15:0] ax_raw, ay_raw, az_raw, gx_raw, gy_raw;
+    reg signed [15:0] ax_raw, ay_raw, az_raw, gx_raw, gy_raw, gz_raw;
     reg signed [15:0] roll_raw, pitch_raw;  // CORDIC results, 1/64 deg
 
-    // filter state, 0.1 deg units
+    // Q8 subunits of 0.1 degree retain small gyro steps and corrections.
     reg signed [31:0] roll_f, pitch_f;
+    reg filter_valid;
+    reg [2:0] poll_fail;
 
     // sign-normalized job inputs / gyro terms
     wire signed [16:0] ay_ext = $signed({ay_raw[15], ay_raw});
@@ -413,17 +418,22 @@ module mpu6050_tilt (
     wire signed [16:0] gy_s   = (GY_SIGN < 0) ? -gy_ext : gy_ext;
 
     // complementary filter terms (all signed 32-bit)
-    // acc angle: 1/64 deg -> 0.1 deg = *10 >> 6
-    // gyro step: LSB/131 deg/s * 10 ms -> 0.1 deg = LSB * 50/65536
-    // correction: alpha = 0.02 = 1311/65536
-    wire signed [31:0] roll_acc_0p1  = (roll_raw  * 32'sd10) >>> 6;
-    wire signed [31:0] pitch_acc_0p1 = (pitch_raw * 32'sd10) >>> 6;
-    wire signed [31:0] gx_step       = (gx_s      * 32'sd50) >>> 16;
-    wire signed [31:0] gy_step       = (gy_s      * 32'sd50) >>> 16;
+    // acc angle: 1/64 deg -> Q8 of 0.1 deg = *40
+    // gyro step: LSB/32.8 deg/s * 10 ms -> Q8 of 0.1 deg = *51150 >> 16
+    // complementary correction: alpha = 1/32
+    wire signed [31:0] roll_acc_q8  = roll_raw * 32'sd40;
+    wire signed [31:0] pitch_acc_q8 = cacc * 32'sd40; // current pitch job
+    // 10 ms between STARTs: 10*256/(32.8*100) ~=51150/65536.
+    wire signed [31:0] gx_step       = (gx_s * 32'sd51150) >>> 16;
+    wire signed [31:0] gy_step       = (gy_s * 32'sd51150) >>> 16;
     wire signed [31:0] roll_corr     =
-        ((roll_acc_0p1  - roll_f ) * 32'sd1311) >>> 16;
+        (roll_acc_q8 - roll_f) >>> 5;   // 1/32: no 32-bit multiply overflow
     wire signed [31:0] pitch_corr    =
-        ((pitch_acc_0p1 - pitch_f) * 32'sd1311) >>> 16;
+        (pitch_acc_q8 - pitch_f) >>> 5;
+    wire signed [31:0] roll_next = filter_valid ? roll_f + gx_step + roll_corr : roll_acc_q8;
+    wire signed [31:0] pitch_next = filter_valid ? pitch_f + gy_step + pitch_corr : pitch_acc_q8;
+    wire signed [31:0] roll_out = roll_next >>> 8;
+    wire signed [31:0] pitch_out = pitch_next >>> 8;
 
     // config register table
     function [7:0] cfg_reg; input [2:0] i;
@@ -440,7 +450,7 @@ module mpu6050_tilt (
             3'd0:    cfg_val = 8'h00;   // wake up
             3'd1:    cfg_val = 8'h09;   // 1 kHz/(1+9) = 100 Hz
             3'd2:    cfg_val = 8'h03;   // DLPF 44 Hz
-            3'd3:    cfg_val = 8'h00;   // gyro +/-250 dps
+            3'd3:    cfg_val = 8'h10;   // gyro +/-1000 dps
             default: cfg_val = 8'h00;   // accel +/-2g
         endcase
     endfunction
@@ -452,10 +462,13 @@ module mpu6050_tilt (
             link_valid <= 1'b0; seq <= 7'd0;
             ax_raw <= 16'sd0;  ay_raw <= 16'sd0;  az_raw <= 16'sd0;
             gx_raw <= 16'sd0;  gy_raw <= 16'sd0;
+            gz_raw <= 0;
             roll_raw <= 16'sd0; pitch_raw <= 16'sd0;
             roll_f <= 32'sd0;  pitch_f <= 32'sd0;
+            filter_valid <= 1'b0; poll_fail <= 3'd0;
             cord_x <= 17'sd0;  cord_y <= 17'sd0;  cord_start <= 1'b0;
             mpu_data <= 32'd0;
+            motion_a<=0;motion_b<=0;motion_c<=0;
             t_addr <= MPU_ADDR0; t_reg <= REG_WHOAMI;
             t_reg_en <= 1'b0;   t_write1 <= 1'b0; t_wdata <= 8'd0;
             t_nread <= 4'd0;    sq_req <= 1'b0;
@@ -475,6 +488,8 @@ module mpu6050_tilt (
 
             // --- probe: read WHO_AM_I, ACK-only gate (clones ID = 0x70) ---
             S_PROBE: begin
+                link_valid <= 1'b0;
+                mpu_data[31] <= 1'b0;
                 t_addr   <= addr_sel ? MPU_ADDR1 : MPU_ADDR0;
                 t_reg    <= REG_WHOAMI;
                 t_reg_en <= 1'b1;
@@ -513,6 +528,8 @@ module mpu6050_tilt (
                 if (eng_done) begin
                     sq_req <= 1'b0;
                     if (eng_ack_err) begin
+                        mpu_data[31] <= 1'b0;
+                        filter_valid <= 1'b0;
                         sq <= S_RETRY;
                     end else if (cfg_i == 3'd4) begin
                         link_valid <= 1'b1;
@@ -527,6 +544,7 @@ module mpu6050_tilt (
 
             // --- 100 Hz burst read of the 14 sensor bytes at 0x3B ---
             S_POLL: begin
+                tmr <= 23'd0; // poll interval includes the burst/CORDIC latency
                 t_reg    <= REG_MEAS;
                 t_reg_en <= 1'b1;
                 t_write1 <= 1'b0;
@@ -538,18 +556,30 @@ module mpu6050_tilt (
                 if (eng_done) begin
                     sq_req <= 1'b0;
                     if (eng_ack_err) begin
-                        link_valid <= 1'b0;
-                        sq         <= S_RETRY;  // link lost: re-probe
+                        if (poll_fail == 3'd5) begin
+                            link_valid <= 1'b0;
+                            mpu_data[31] <= 1'b0;
+                            filter_valid <= 1'b0;
+                            poll_fail <= 3'd0;
+                            sq <= S_RETRY;
+                        end else begin
+                            poll_fail <= poll_fail + 3'd1;
+                            sq <= S_GAP;
+                        end
                     end else begin
-                        seq    <= seq + 7'd1;
+                        poll_fail <= 3'd0;
                         ax_raw <= {rx_word[111:104], rx_word[103:96]};
                         ay_raw <= {rx_word[95:88],   rx_word[87:80]};
                         az_raw <= {rx_word[79:72],   rx_word[71:64]};
                         gx_raw <= {rx_word[47:40],   rx_word[39:32]};
                         gy_raw <= {rx_word[31:24],   rx_word[23:16]};
+                        gz_raw <= rx_word[15:0];
                         // job A: roll = atan2(ay, az)
-                        cord_x    <= ay_s;
-                        cord_y    <= $signed({az_raw[15], az_raw});
+                        // Use the current burst (ax_raw etc update next edge).
+                        cord_x <= $signed({rx_word[79],rx_word[79:64]});
+                        cord_y <= (ROLL_ACC_SIGN < 0) ?
+                            -$signed({rx_word[95],rx_word[95:80]}) :
+                             $signed({rx_word[95],rx_word[95:80]});
                         cord_start<= 1'b1;
                         sq        <= S_ANG_A;
                     end
@@ -561,8 +591,8 @@ module mpu6050_tilt (
                 cord_start <= 1'b0;
                 if (cord_done) begin
                     roll_raw  <= cacc;
-                    cord_x    <= ax_s;
-                    cord_y    <= mag_c[16:0];
+                    cord_x    <= mag_c[16:0];
+                    cord_y    <= ax_s;
                     cord_start<= 1'b1;
                     sq        <= S_ANG_B;
                 end
@@ -573,11 +603,16 @@ module mpu6050_tilt (
                 cord_start <= 1'b0;
                 if (cord_done) begin
                     pitch_raw <= cacc;
-                    roll_f    <= roll_f  + gx_step + roll_corr;
-                    pitch_f   <= pitch_f + gy_step + pitch_corr;
-                    mpu_data  <= {link_valid, seq, pitch_f[11:0],
-                                  roll_f[11:0]};
-                    tmr       <= 23'd0;
+                    roll_f    <= roll_next;
+                    pitch_f   <= pitch_next;
+                    filter_valid <= 1'b1;
+                    seq <= seq + 7'd1;
+                    mpu_data <= {link_valid, seq + 7'd1, pitch_out[11:0], roll_out[11:0]};
+                    // Atomic snapshot. PS brackets the three GPIO reads with
+                    // the sequence-bearing mpu_data word before consuming.
+                    motion_a <= {ax_raw,ay_raw};
+                    motion_b <= {az_raw,gx_raw};
+                    motion_c <= {gy_raw,gz_raw};
                     sq        <= S_GAP;
                 end
             end

@@ -15,6 +15,7 @@ _start:
 
     .section .text, "ax"
 reset:
+    bl display_memory_prepare
     /* clear .bss (the DMA buffers live outside .bss and are NOT cleared) */
     ldr r0, =__bss_start
     ldr r1, =__bss_end
@@ -24,6 +25,7 @@ reset:
     blo 1b
 
     ldr sp, =__stack_top
+    bl display_memory_init
     bl  main
 
 hang:

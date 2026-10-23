@@ -9,7 +9,7 @@ Reads sim/results/export_out.csv (written by sim/emg_pl_export_tb.v) and:
      feeder does (window starts at id 0/ch 0, ends at id 4/ch 7, index
      = feature_id*8 + channel);
   3. replays the exact INT8 MLP semantics of src/rtl/emg_nn_infer.v with
-     the constants from data/models/nn_int8/quant_params.json on the RTL's
+     the quant_params.json beside the RTL's default MEM_FILE on the RTL's
      own feature values and compares the six type-3 result words
      (logits 0..4 + argmax class) bit-exact, matched by the window-start
      sequence number (the RTL stamps every result with it).
@@ -21,6 +21,7 @@ Usage: python tools/check_pl_nn_sim.py
 
 import json
 import os
+import re
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -28,7 +29,11 @@ sys.path.insert(0, os.path.join(ROOT, "tools"))
 import emg_reference
 
 SIM_DIR = emg_reference.SIM_DIR
-QP_PATH = os.path.join(ROOT, "data", "models", "nn_int8", "quant_params.json")
+with open(os.path.join(ROOT, "src", "rtl", "emg_nn_infer.v"), encoding="utf-8") as fh:
+    _match = re.search(r'parameter\s+MEM_FILE\s*=\s*"([^"]+)"', fh.read())
+if not _match:
+    raise ValueError("cannot determine RTL default model MEM_FILE")
+QP_PATH = os.path.join(os.path.dirname(_match.group(1)), "quant_params.json")
 
 
 def mul_shift(v, m, n):

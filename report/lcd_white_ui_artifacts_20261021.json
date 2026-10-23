@@ -1,0 +1,68 @@
+{
+  "build_tag": "20261021_LCD_WHITE_SOURCEHAN",
+  "panels": [
+    [
+      800,
+      480
+    ],
+    [
+      1024,
+      600
+    ]
+  ],
+  "font": "Source Han Sans CN Regular",
+  "license": "SIL Open Font License 1.1",
+  "board_programmed": false,
+  "files": [
+    {
+      "path": "sw/ps_uart_print/main.c",
+      "bytes": 129481,
+      "sha256": "94b52fc1581416cf82e2c2544aaea40e98a9636f15cc81574d39c03420f99d81"
+    },
+    {
+      "path": "sw/ps_uart_print/lcd_ui.h",
+      "bytes": 2137,
+      "sha256": "4afe629cf3d9458ec323420b37d43904971d35a427747c083cc01d9c58cfc30c"
+    },
+    {
+      "path": "sw/ps_uart_print/lcd_font_zh.h",
+      "bytes": 1613932,
+      "sha256": "e93513ac2d03fc43dc3732ebddb431b7da871ccee10438c80134cab1a9f3c7d3"
+    },
+    {
+      "path": "sw/ps_uart_print/lcd_settings.h",
+      "bytes": 3743,
+      "sha256": "be5ad5135dff4cff43ccda63cb92a2aa5c432b57b3c11dcc7604b594a079246d"
+    },
+    {
+      "path": "sw/ps_uart_print/lcd_waveform.h",
+      "bytes": 11953,
+      "sha256": "0bfe7df21ecbba627f8a9d2a18e222e031982cf353b8916fb38192bc83c107bd"
+    },
+    {
+      "path": "tools/gen_hz_glyphs.py",
+      "bytes": 3534,
+      "sha256": "b171c5ad8d9842ac1f3875d21ef695d9caa9fb243e0be22a430563d9682043be"
+    },
+    {
+      "path": "sw/ps_uart_print/ps_uart_print.elf",
+      "bytes": 462536,
+      "sha256": "a272cada403dd6f9e8c16055f4a8993b7675fc89f59e0e170adc5e21c4187f95"
+    },
+    {
+      "path": "build/boot/BOOT.BIN",
+      "bytes": 4606516,
+      "sha256": "96156bef4197cf2c8ef8a768e22755bc9f52aa3148be4434c8f01290a9a06411"
+    },
+    {
+      "path": "build/boot/SourceHanSans-OFL.txt",
+      "bytes": 4463,
+      "sha256": "fcac737e761ec63dbfbdce11030a1780161920d80315edba9c8beff1c2bac5a2"
+    },
+    {
+      "path": "third_party/fonts/source-han-sans/SourceHanSansCN-Regular.otf",
+      "bytes": 8429224,
+      "sha256": "e2bc8a2e7f37474b774fff8db758681ece40bb6947a90d571bce9dd60671a8e4"
+    }
+  ]
+}

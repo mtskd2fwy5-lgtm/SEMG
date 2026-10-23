@@ -1,0 +1,19 @@
+{
+  "format": "SEMGSD1",
+  "version": 2,
+  "sample_rate_hz": 4000,
+  "channels": 8,
+  "frames": 990981,
+  "sequence_gaps": 0,
+  "sequence_backwards": 0,
+  "sequence_duplicates": 0,
+  "sequence_wraps": 15,
+  "sequence_events": [],
+  "sequence_direction_limit": "modulo half-range; gaps >=32768 frames are ambiguous",
+  "timestamp_alignment": "forward sequence steps; backwards/duplicate advances one row and is flagged",
+  "keep_all": true,
+  "hardware_filter_warm_start": true,
+  "signal": "raw",
+  "filter": null,
+  "frames_written": 990981
+}

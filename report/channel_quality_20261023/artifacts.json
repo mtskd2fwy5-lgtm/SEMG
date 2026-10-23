@@ -1,0 +1,58 @@
+{
+  "date": "2026-10-23",
+  "tag": "20261023_QUALITY_V1",
+  "application_load_checks": [
+    {
+      "load_address": "0x10000000",
+      "elf_file_bytes": 721228,
+      "boot_offset": "0x3fc900",
+      "match": true
+    }
+  ],
+  "pl_partition": "full word-reversed payload matches current design_1.bit",
+  "tests": {
+    "quality": "C edge cases + NumPy synthetic and EMG008/015/018 24s replay PASS",
+    "lcd": "800x480 + 1024x600 real renderer/touch/frame ownership PASS",
+    "uart": "record/monitor diagnostic source + binary output regression PASS",
+    "font": "PASS",
+    "arm_build": "PASS; vendor ff.c unused vol warning"
+  },
+  "hardware_verified": false,
+  "artifacts": [
+    {
+      "path": "build/boot/BOOT_20261023_QUALITY_V1.BIN",
+      "bytes": 4901452,
+      "sha256": "6fb7c253325c80484a39a68a74591e4dfb7ae18f7123f6124d7d275703a89557"
+    },
+    {
+      "path": "sw/ps_uart_print/ps_uart_print.elf",
+      "bytes": 760292,
+      "sha256": "ea5a857f48812e8e06cd4986115421b0b48b1ebd837cd752ca7ba6797be4770c"
+    },
+    {
+      "path": "sw/ps_uart_print/main.c",
+      "bytes": 146890,
+      "sha256": "4762c69554ecde296c49ba83ed5f226c98f271a3430f509b81068f5f0c037fd6"
+    },
+    {
+      "path": "sw/ps_uart_print/channel_quality.h",
+      "bytes": 5208,
+      "sha256": "12904d9681f07cbc4a32fcc2a64cb2206e63989458e868db9d0a1b6b22c26fe1"
+    },
+    {
+      "path": "sw/ps_uart_print/lcd_channel_quality.h",
+      "bytes": 6236,
+      "sha256": "2a713dfd9e2ba31ba4aa0870216530ae057bb299b1b9a50d90bedb708a26dd91"
+    },
+    {
+      "path": "sw/ps_uart_print/lcd_font_zh.h",
+      "bytes": 2962866,
+      "sha256": "4550f02445924878b95d0fc4a04bad13676ca043daa01b4fc41a85327e8fdfd9"
+    },
+    {
+      "path": "build/vivado/hand_motion_reconstruction.runs/impl_1/design_1.bit",
+      "bytes": 4045684,
+      "sha256": "30a424a82e23a2650c6d8a93a7d2e4d13178950b570a6b6177325bd944174b91"
+    }
+  ]
+}

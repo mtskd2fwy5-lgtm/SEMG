@@ -1,0 +1,82 @@
+{
+  "source": "data/raw/board/s30/S30_E3_A1_waveform.csv",
+  "source_sha256": {
+    "S30_E3_A1_waveform.csv": "0f94a90cc682be85bfef052c84627676f783f299b5c799470eb53926e0516f25",
+    "S30_E3_A1_waveform.json": "0eebc34f9e9bcb8dc235d55427154cc781f4bc55e8b1cc083469463badf837a8"
+  },
+  "sample_rate_hz": 4000,
+  "frames": 305158,
+  "duration_s": 76.70474999999999,
+  "missing_frame_sequences": 1661,
+  "gap_events": 1607,
+  "missing_fraction": 0.0054136151933224476,
+  "timestamp_step_us_counts": {
+    "250": 303550,
+    "500": 1553,
+    "750": 54
+  },
+  "rail_counts": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "ch8_old_AA_highbyte_signature_count": 0,
+  "labels": [
+    "none"
+  ],
+  "bias_contact_user_report": "not touching body throughout E3",
+  "calibration_bias_state_user_report": "unknown",
+  "bias_triggers_gate_user_report": "observed in monitor mode, not recording; stale record-mode label is not the explanation",
+  "actions_user_report": "continuously alternating rest, fist, open; no timestamps",
+  "mains_fraction_49_51_over_20_450": [
+    0.00013724645752066634,
+    3.0489360242260036e-05,
+    7.527374143615722e-06,
+    3.310848957768592e-05,
+    2.5341257988434425e-05,
+    8.569155339062253e-06,
+    0.0010665896836393424,
+    5.222601366944703e-05
+  ],
+  "harmonic_fraction_100_to_400_step50_pm2_over_20_450": [
+    0.9923536068496587,
+    0.9966017728661262,
+    0.9985890637650814,
+    0.9854670145570857,
+    0.9972846350150112,
+    0.9974965103561065,
+    0.9687448300693962,
+    0.9928587087325266
+  ],
+  "spectral_method": "Welch Hann 16000 points, 50% overlap, linear detrend; interpolation for spectrum only",
+  "continuous_check_windows": 21,
+  "continuous_check_seconds": 4.2,
+  "continuous_check_peak_hz": [
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    150.0,
+    150.0
+  ],
+  "continuous_check_harmonic_fraction_pm5": [
+    0.9925582413835462,
+    0.9962311057496835,
+    0.9987428564694676,
+    0.986568597355478,
+    0.9975928253750435,
+    0.9977720979996175,
+    0.9621059342995707,
+    0.9955726149601758
+  ],
+  "continuous_check_method": "mean Hann periodogram of disjoint 800-sample measured contiguous windows; no interpolation, nonuniform coverage",
+  "comparison_limitation": "E2 raw with BIAS attached vs E3 notch50 with BIAS detached; not a controlled attenuation comparison",
+  "wire_limitation": "no CRC; boundary validation does not prove payload integrity"
+}

@@ -58,20 +58,98 @@ def clamp32(v):
     return v
 
 
+class Notch50:
+    """PL 50 Hz/Q10 notch at 4 kSPS; Q24 coefficients, Q12 states.
+
+    Rounding is nearest, ties toward +infinity. Feedback has four guard
+    bits beyond int24; only the waveform output clips to int24.
+    """
+    FILTER_ID = "notch50_q10_q24_v1"
+    B0, B1, A2 = 16711589, -33320146, 16645962
+
+    def __init__(self):
+        self.x1 = self.x2 = self.y1 = self.y2 = 0
+
+    def step(self, x):
+        xq = int(x) << 12
+        acc = (self.B0 * (xq + self.x2) + self.B1 * self.x1
+               - self.B1 * self.y1 - self.A2 * self.y2)
+        y = max(-(1 << 39), min((1 << 39) - 1,
+                               (acc + (1 << 23)) >> 24))
+        self.x2, self.x1 = self.x1, xq
+        self.y2, self.y1 = self.y1, y
+        return sat24((y + (1 << 11)) >> 12)
+
+
+class Comb50:
+    """80-sample IIR notch comb, 1 Hz teeth, Q24 coefficients/Q12 history."""
+    B, R, DELAY = 16266035, 15754854, 80
+
+    def __init__(self):
+        self.x = [0] * self.DELAY
+        self.y = [0] * self.DELAY
+        self.pos = 0
+
+    def step(self, x):
+        x = int(x)
+        p = self.pos
+        acc = self.B * ((x - self.x[p]) << 12) + self.R * self.y[p]
+        y = max(-(1 << 39), min((1 << 39) - 1, (acc + (1 << 23)) >> 24))
+        self.x[p], self.y[p] = x, y
+        self.pos = (p + 1) % self.DELAY
+        return sat24((y + (1 << 11)) >> 12)
+
+
+class NotchComb:
+    """Deployed PL chain; keep Notch50 unchanged for historical recordings."""
+    FILTER_ID = "notch50_q10_comb50_bw1_q24_v1"
+
+    def __init__(self):
+        self.notch, self.comb = Notch50(), Comb50()
+
+    def step(self, x):
+        return self.comb.step(self.notch.step(x))
+
+
+def line_filter_metadata(signal, location="PL"):
+    if signal == "raw":
+        return None
+    if signal not in ("notch50", "notchcomb", "processed"):
+        raise ValueError("unknown filter signal: " + signal)
+    kind = {"notch50":Notch50, "notchcomb":NotchComb, "processed":ProcessedSignal}[signal]
+    meta = {"id": kind.FILTER_ID,
+            "frequency_hz": 50, "q": 10, "sample_rate_hz": 4000, "location": location}
+    if signal in ("notchcomb", "processed"):
+        meta.update(comb_spacing_hz=50, comb_bandwidth_hz=1, comb_delay_samples=80,
+                    removes_dc=True)
+    if signal == "processed":
+        meta.update(highpass_hz=20, lowpass_hz=215, bandpass_id="hp20_q16_lp215_q15_fraction_save_v1",
+                    stages=["notch50_q10", "comb50_bw1", "hp20", "lp215"])
+    return meta
+
+
 class Bandpass:
     """HP biquad (DF-I, quantized feedback) + first-order LP."""
 
-    def __init__(self):
+    def __init__(self, fraction_save=False):
         self.x1 = self.x2 = 0
         self.y1 = self.y2 = 0
         self.lp_y = 0
+        self.fraction_save = fraction_save
+        self.hp_fraction = self.lp_fraction = 0
 
     def step(self, x):
         acc = (HP_B0 * x + HP_B1 * self.x1 + HP_B2 * self.x2
-               - HP_A1 * self.y1 - HP_A2 * self.y2)
+               - HP_A1 * self.y1 - HP_A2 * self.y2 + self.hp_fraction)
         hp_y = sat24(acc >> 16)
+        self.hp_fraction = (acc - (hp_y << 16)
+                            if self.fraction_save and hp_y == acc >> 16 else 0)
         diff = hp_y - self.lp_y
-        self.lp_y = sat24(self.lp_y + ((LP_ALPHA * diff) >> 15))
+        prod = LP_ALPHA * diff + self.lp_fraction
+        next_y = sat24(self.lp_y + (prod >> 15))
+        self.lp_fraction = (prod - ((next_y-self.lp_y) << 15)
+                            if self.fraction_save and next_y == self.lp_y + (prod >> 15) else 0)
+        self.lp_y = next_y
         self.x2, self.x1 = self.x1, x
         self.y2, self.y1 = self.y1, hp_y
         return self.lp_y
@@ -109,6 +187,17 @@ def window_features(samples, window, hop, shift, zc_th, ssc_th):
                     sum(zc[sl]),
                     sum(ssc[sl])))
     return out
+
+
+class ProcessedSignal:
+    """Final signed waveform exported by current PL; no rectification."""
+    FILTER_ID = "notch50_q10_comb50_bw1_hp20_lp215_v1"
+
+    def __init__(self):
+        self.line, self.bandpass = NotchComb(), Bandpass(fraction_save=True)
+
+    def step(self, x):
+        return self.bandpass.step(self.line.step(x))
 
 
 class BankModel:
@@ -321,39 +410,45 @@ def compare_export():
               for line in open(stim_path) if line.strip()]
     rows = read_csv_rows(os.path.join(SIM_DIR, "export_out.csv"), 5)
     bank = BankModel()
+    notch = [ProcessedSignal() for _ in range(8)]
+    notch_frames = []
     for i, frame in enumerate(frames):
+        filtered = [notch[ch].step(x) for ch, x in enumerate(frame)]
+        notch_frames.append(filtered)
         if i % EXPORT_DECIM == 0:      # emg_pl_export input gate (1 = off)
-            bank.feed_frame(frame)
+            for ch, value in enumerate(filtered):
+                bank.filtered[ch].append(value)
     wins = bank.windows()
 
     raw_rows = [r for r in rows if r[0] == 1]
+    notch_rows = [r for r in rows if r[0] == 5]
     feat_rows = [r for r in rows if r[0] == 2]
-    other = [r for r in rows if r[0] not in (1, 2, 3, 4)]
+    other = [r for r in rows if r[0] not in (1, 2, 3, 4, 5)]
     if other:
         fail("compare-export", f"unexpected packet types: {other[:3]}")
     # type-3 result words are verified by tools/check_pl_nn_sim.py
     # type-4 fatigue words need a >=16384-sample run; covered by the
     # fatigue unit sim and the board test
 
-    if len(raw_rows) != len(frames) * 8:
-        fail("compare-export",
-             f"raw words {len(raw_rows)} != {len(frames) * 8}")
-    for i, r in enumerate(raw_rows):
-        ptype, ch, fid, seq, payload = r
-        frame_i = i // 8
-        ch_i = i % 8
-        if ch != ch_i or fid != 0 or seq != frame_i:
-            fail("compare-export", f"raw word {i}: {r}")
-        val = payload & 0xFFFFFF
-        if val >= 1 << 23:
-            val -= 1 << 24
-        if val != frames[frame_i][ch_i]:
-            fail("compare-export",
-                 f"raw word {i}: payload {val} != stimulus {frames[frame_i][ch_i]}")
+    for name, lane, expected in (("raw", raw_rows, frames),
+                                  ("processed", notch_rows, notch_frames)):
+        if len(lane) != len(frames) * 8:
+            fail("compare-export", f"{name} words {len(lane)} != {len(frames)*8}")
+        for i, r in enumerate(lane):
+            _, ch, fid, seq, payload = r
+            frame_i, ch_i = divmod(i, 8)
+            if ch != ch_i or fid != 0 or seq != (frame_i & 0xFFFF):
+                fail("compare-export", f"{name} word {i}: {r}")
+            val = payload & 0xFFFFFF
+            if val >= 1 << 23:
+                val -= 1 << 24
+            if val != expected[frame_i][ch_i]:
+                fail("compare-export", f"{name} word {i}: {val} != "
+                     f"expected {expected[frame_i][ch_i]}")
 
     feat = [[r[1], r[2], r[3], r[4]] for r in feat_rows]
     total = check_feature_stream("compare-export", feat, wins)
-    print(f"compare-export PASSED: {len(raw_rows)} raw words + "
+    print(f"compare-export PASSED: {len(raw_rows)} raw + {len(notch_rows)} processed words + "
           f"{total} feature words bit-exact")
 
 

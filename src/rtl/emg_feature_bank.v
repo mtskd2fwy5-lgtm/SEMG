@@ -18,6 +18,7 @@ module emg_feature_bank #(
     parameter integer CHANNELS = 8,
     parameter integer CHANNEL_BITS = 3,
     parameter integer SAMPLE_WIDTH = 24,
+    parameter integer BYPASS_BANDPASS = 0,
     // Filter / window parameters forwarded to the per-channel chains.
     parameter signed [17:0] HP_B0 = 18'sd64096,
     parameter signed [17:0] HP_B1 = -18'sd128192,
@@ -60,6 +61,10 @@ module emg_feature_bank #(
             wire bp_valid;
             wire signed [SAMPLE_WIDTH-1:0] bp_out;
 
+            if (BYPASS_BANDPASS) begin : shared_filtered_input
+                assign bp_valid=ch_sample_valid;
+                assign bp_out=sample_data;
+            end else begin : local_bandpass
             emg_bandpass #(
                 .SAMPLE_WIDTH(SAMPLE_WIDTH),
                 .HP_B0(HP_B0), .HP_B1(HP_B1), .HP_B2(HP_B2),
@@ -69,6 +74,7 @@ module emg_feature_bank #(
                 .sample_valid(ch_sample_valid), .sample_in(sample_data),
                 .filtered_valid(bp_valid), .filtered_out(bp_out)
             );
+            end
 
             emg_window_features #(
                 .SAMPLE_WIDTH(SAMPLE_WIDTH),

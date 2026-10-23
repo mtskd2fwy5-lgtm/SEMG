@@ -40,8 +40,8 @@ module axis_async_fifo #(
                          m_gray_sync2[ADDR_WIDTH-2:0]});
     wire m_empty_next = (m_gray_next == s_gray_sync2);
 
-    assign s_ready = !s_full;
-    assign m_valid = !m_empty;
+    assign s_ready = s_rst_n && !s_full;
+    assign m_valid = m_rst_n && !m_empty;
     assign m_data = mem[m_bin[ADDR_WIDTH-1:0]];
 
     always @(posedge s_clk) begin

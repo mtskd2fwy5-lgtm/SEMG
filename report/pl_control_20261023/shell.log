@@ -1,0 +1,31 @@
+#-----------------------------------------------------------
+# xsim v2025.2 (64-bit)
+# SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025
+# IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025
+# SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025
+# Start of session at: Fri Oct 23 18:11:36 2026
+# Process ID         : 35464
+# Current directory  : D:/FPGA/sEMG-HMRS/sim/results_control
+# Command line       : xsim.exe -log shell.log -mode tcl -source {xsim.dir/shell_sim/xsim_script.tcl}
+# Log file           : D:/FPGA/sEMG-HMRS/sim/results_control/shell.log
+# Journal file       : D:/FPGA/sEMG-HMRS/sim/results_control\xsim.jou
+# Running On         : LAPTOP-VCCV41QO
+# Platform           : Windows Server 2016 or Windows 10
+# Operating System   : 26200
+# Processor Detail   : AMD Ryzen 9 7945HX with Radeon Graphics        
+# CPU Frequency      : 2495 MHz
+# CPU Physical cores : 16
+# CPU Logical cores  : 32
+# Host memory        : 16844 MB
+# Swap memory        : 16844 MB
+# Total Virtual      : 33689 MB
+# Available Virtual  : 9870 MB
+#-----------------------------------------------------------
+source xsim.dir/shell_sim/xsim_script.tcl
+# xsim {shell_sim} -autoloadwcfg -runall
+Time resolution is 1 ps
+run -all
+TEST_PASS PL shell independent of DMA backpressure, overflow/recovery, command CDC
+$finish called at time : 25533340 ns : File "D:/FPGA/sEMG-HMRS/sim/emg_pl_control_tb.sv" Line 50
+exit
+INFO: [Common 17-206] Exiting xsim at Fri Oct 23 18:11:40 2026...

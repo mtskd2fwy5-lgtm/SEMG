@@ -1,0 +1,9 @@
+{
+  "format": "SEMGSD1",
+  "version": 1,
+  "sample_rate_hz": 4000,
+  "frames": 1081620,
+  "sequence_gaps": 65024,
+  "raw_csv": "EMG005_raw.csv",
+  "notch50_csv": "EMG005_notch50.csv"
+}

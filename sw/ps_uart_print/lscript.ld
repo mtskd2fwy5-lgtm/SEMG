@@ -10,8 +10,8 @@ ENTRY(_start)
 
 MEMORY
 {
-    APP (rwx) : ORIGIN = 0x10000000, LENGTH = 2M
-    DMA (rw)  : ORIGIN = 0x11000000, LENGTH = 64K
+    APP (rwx) : ORIGIN = 0x10000000, LENGTH = 4M
+    DMA (rw)  : ORIGIN = 0x11000000, LENGTH = 1M
 }
 
 SECTIONS
@@ -45,9 +45,10 @@ SECTIONS
 
     .dma_buffer (NOLOAD) : ALIGN(4096) {
         __dma_buf = .;
-        . += 0x4000;               /* 2 x 8 KB ping-pong buffers */
+        . += 0x100000;             /* 128 x 8 KB acquisition buffers */
         __dma_buf_end = .;
     } > DMA
 
     __stack_top = ORIGIN(APP) + LENGTH(APP) - 16;
+    ASSERT(__bss_end + 0x10000 < __stack_top, "APP leaves less than 64 KiB stack")
 }

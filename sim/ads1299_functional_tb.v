@@ -1,217 +1,125 @@
 `timescale 1ns/1ps
-
 module ads1299_functional_tb;
-    reg clk = 1'b0;
-    reg rst_n = 1'b0;
-    reg start = 1'b0;
-    reg reconfig_n = 1'b1;
-    reg adc_drdy_n = 1'b1;
-    reg adc_dout = 1'b0;
-    wire adc_sclk;
-    wire adc_din;
-    wire adc_cs_n;
-    wire adc_reset_n;
-    wire adc_start;
-    wire adc_pwdn_n;
-    wire sample_valid;
+    reg clk=0, rst_n=0, reconfig_n=1, drdy_n=1;
+    wire sclk,din,cs_n,reset_n,adc_start,pwdn_n,sample_valid,frame_valid,busy,error,dout;
     wire signed [23:0] sample_data;
-    wire [2:0] sample_channel;
-    wire frame_valid;
-    wire busy;
-    wire error;
-
-    reg [215:0] frame_bits;
-    reg [8:0] driven_bit;
-    reg read_active = 1'b0;
-    integer received_count = 0;
-    integer error_count = 0;
-    integer command_error_count = 0;
-    integer command_transfer = 0;
-    integer command_byte_count = 0;
-    integer command_bit_count = 0;
-    reg command_monitor_enable = 1'b1;
-    reg [7:0] command_shift = 8'd0;
-
-    function [7:0] expected_command_byte;
-        input integer transfer_index;
-        input integer byte_index;
-        begin
-            case (transfer_index)
-                0: expected_command_byte = 8'h11;
-                1: begin
-                    case (byte_index)
-                        0: expected_command_byte = 8'h41;  /* WREG @ CONFIG1 (addr 01h): op 010r rrrr */
-                        1: expected_command_byte = 8'h0B;
-                        2: expected_command_byte = 8'h92;  /* CONFIG1: DR=010 = 4 kSPS */
-                        3: expected_command_byte = 8'hD5;  /* internal calibration signal */
-                        4: expected_command_byte = 8'hEC;
-                        5: expected_command_byte = 8'h00;
-                        default: expected_command_byte = 8'h05;  /* MUX=101, gain 1x internal test */
-                    endcase
-                end
-                2: expected_command_byte = 8'h10;
-                3: expected_command_byte = 8'h08;
-                default: expected_command_byte = 8'h00;
-            endcase
+    wire [2:0] channel;
+    wire [31:0] config_status;
+    reg [1:0] fault=0;
+    reg [4:0] fault_address=13;
+    integer samples=0,frames=0,phase=0,k;
+    wire variant4_done,variant6_done;
+    ads1299_variant_check #(.N(4)) check4(.done(variant4_done));
+    ads1299_variant_check #(.N(6)) check6(.done(variant6_done));
+    reg [215:0] frame_bits={24'hC00000,24'h800000,24'hFFFFFF,24'd0,24'd1,
+                           24'h7FFFFF,24'hAA55AA,24'd123456,24'hFE1DC0};
+    always #20 clk=~clk;
+    ads1299_spi #(.RESET_CYCLES(8),.POST_RESET_CYCLES(8),.BTN_DEBOUNCE_CYCLES(4)) dut (
+        .clk(clk),.rst_n(rst_n),.start(1'b1),.reconfig_n(reconfig_n),
+        .adc_drdy_n(drdy_n),.adc_dout(dout),.adc_sclk(sclk),.adc_din(din),
+        .adc_cs_n(cs_n),.adc_reset_n(reset_n),.adc_start(adc_start),.adc_pwdn_n(pwdn_n),
+        .sample_valid(sample_valid),.sample_data(sample_data),.sample_channel(channel),
+        .frame_valid(frame_valid),.busy(busy),.error(error),.config_status(config_status));
+    ads1299_model adc(.reset_n(reset_n),.cs_n(cs_n),.sclk(sclk),.din(din),
+        .drdy_n(drdy_n),.frame_bits(frame_bits),.fault(fault),.fault_address(fault_address),.dout(dout));
+    always @(posedge clk) begin
+        if(sample_valid) begin
+            if(error || !config_status[30]) $fatal(1,"sample without verified config");
+            if(channel !== (samples%8) || sample_data !== frame_bits[191-(samples%8)*24 -:24])
+                $fatal(1,"sample mismatch ch=%0d data=%h",channel,sample_data);
+            samples=samples+1;
         end
-    endfunction
-
-    function integer expected_command_count;
-        input integer transfer_index;
+        if(frame_valid) frames=frames+1;
+    end
+    task replay;
         begin
-            case (transfer_index)
-                1: expected_command_count = 14;
-                default: expected_command_count = 1;
-            endcase
+            @(negedge clk); reconfig_n=0;
+            repeat(20) @(negedge clk); reconfig_n=1;
+            wait(config_status==0);
         end
-    endfunction
-
-    always #5 clk = ~clk;
-
-    ads1299_spi #(
-        .CLK_FREQ_HZ(10_000_000),
-        .SCLK_FREQ_HZ(1_000_000),
-        .RESET_CYCLES(2),
-        .POST_RESET_CYCLES(2),
-        .COMMAND_GAP_CYCLES(5),
-        .BTN_DEBOUNCE_CYCLES(4)
-    ) dut (
-        .clk(clk), .rst_n(rst_n), .start(start), .reconfig_n(reconfig_n),
-        .adc_drdy_n(adc_drdy_n), .adc_dout(adc_dout),
-        .adc_sclk(adc_sclk), .adc_din(adc_din), .adc_cs_n(adc_cs_n),
-        .adc_reset_n(adc_reset_n), .adc_start(adc_start),
-        .adc_pwdn_n(adc_pwdn_n), .sample_valid(sample_valid),
-        .sample_data(sample_data), .sample_channel(sample_channel),
-        .frame_valid(frame_valid), .busy(busy), .error(error)
-    );
-
-    // Data frame: 24 status bits followed by eight 24-bit test values.
+    endtask
+    task check_registers;
+        begin
+            if(adc.registers[1]!==8'h92 || adc.registers[2]!==8'hC0 ||
+               adc.registers[3]!==8'hEC || adc.registers[4]!==8'h00 ||
+               adc.registers[13]!==8'h01 || adc.registers[14]!==8'h01)
+                $fatal(1,"wrong real-acquisition/BIAS registers");
+            for(k=5;k<=12;k=k+1) if(adc.registers[k]!==8'h40)
+                $fatal(1,"CHn normal-input/gain mismatch");
+        end
+    endtask
+    task good_boot;
+        begin
+            wait(adc_start); @(negedge clk);
+            if(config_status!==32'hC0ED0101 || error) $fatal(1,"readback status %h",config_status);
+            check_registers;
+            drdy_n=0; repeat(12) @(negedge clk); drdy_n=1;
+            wait(frames==(phase+1)); wait(!busy); @(negedge clk);
+            if(samples!=(phase+1)*8) $fatal(1,"missing samples");
+            phase=phase+1;
+        end
+    endtask
+    task bad_boot;
+        input [4:0] bad_address;
+        begin
+            wait(config_status[31]); repeat(100) @(negedge clk);
+            if(!error || adc_start || config_status[30] || !config_status[29] ||
+               config_status[28:24]!==bad_address || !cs_n || busy)
+                $fatal(1,"failed readback not held: %h",config_status);
+            drdy_n=0; repeat(12) @(negedge clk);drdy_n=1;
+            repeat(5000) @(negedge clk);
+            if(samples!=phase*8 || adc.starts!=phase) $fatal(1,"started after bad readback");
+        end
+    endtask
     initial begin
-        frame_bits = {24'hC00000, 24'd1, 24'd2, 24'd3, 24'd4,
-                      24'd5, 24'd6, 24'd7, 24'd8};
-        #40;
-        rst_n = 1'b1;
-        repeat (10) @(posedge clk);
-        start = 1'b1;
-        repeat (2) @(posedge clk);
-        start = 1'b0;
-        // Allow the controller to complete reset, configuration and START.
-        repeat (4000) @(posedge clk);
-        adc_drdy_n = 1'b0;
-        repeat (4) @(posedge clk);
-        adc_drdy_n = 1'b1;
-        repeat (3500) @(posedge clk);
-        if (received_count != 8)
-            error_count = error_count + 1;
-        if (error || error_count != 0 || command_error_count != 0 || command_transfer != 4)
-            $display("ADS1299 functional test FAILED (boot phase): samples=%0d data_errors=%0d command_errors=%0d transfers=%0d",
-                     received_count, error_count, command_error_count, command_transfer);
-        else
-            $display("ADS1299 functional test boot phase PASSED: samples=%0d command_transfers=%0d",
-                     received_count, command_transfer);
-
-        // Reconfig button: replay of the full command sequence, then a new
-        // data frame.  Expected byte stream repeats (transfers 4..7 mirror
-        // 0..3) and the monitor counts to 8 transfers total.  The monitor is
-        // re-armed BEFORE the press so the debounced CS falling edge resets
-        // the byte counters; the burst starts within the debounce window.
-        command_monitor_enable = 1'b1;
-        reconfig_n = 1'b0;
-        repeat (20) @(posedge clk);
-        reconfig_n = 1'b1;
-        repeat (3000) @(posedge clk);
-        if (adc_start !== 1'b1) begin
-            $display("ADS1299 reconfig FAILED: adc_start not restored");
-            error_count = error_count + 1;
-        end
-        adc_drdy_n = 1'b0;
-        repeat (4) @(posedge clk);
-        adc_drdy_n = 1'b1;
-        repeat (3500) @(posedge clk);
-        if (received_count != 16)
-            error_count = error_count + 1;
-        if (error || error_count != 0 || command_error_count != 0 || command_transfer != 8)
-            $display("ADS1299 functional test FAILED: samples=%0d data_errors=%0d command_errors=%0d transfers=%0d",
-                     received_count, error_count, command_error_count, command_transfer);
-        else
-            $display("ADS1299 functional test PASSED: samples=%0d command_transfers=%0d (reconfig replay OK)",
-                     received_count, command_transfer);
+        repeat(5) @(negedge clk); rst_n=1;
+        good_boot; $display("CHECK boot/actual RREG/RO bit/signed frame PASS");
+        replay; good_boot; $display("CHECK button replay PASS");
+        fault=1;fault_address=13;replay;bad_boot(13);
+        if(config_status[15:8]!==0) $fatal(1,"actual corrupt BIAS P not exported");
+        $display("CHECK BIAS P corruption/stop PASS");
+        fault_address=14;replay;bad_boot(14);
+        if(config_status[7:0]!==0) $fatal(1,"actual corrupt BIAS N not exported");
+        fault_address=5;replay;bad_boot(5);
+        $display("CHECK BIAS N/channel corruption PASS");
+        fault=2;replay;bad_boot(1);
+        if(config_status[23:0]!==0) $fatal(1,"stuck-low data not exported");
+        fault=3;replay;bad_boot(1);
+        if(config_status[23:0]!==24'hFFFFFF) $fatal(1,"stuck-high data not exported");
+        $display("CHECK DOUT stuck-low/high PASS");
+        fault=0; replay; good_boot;
+        if(adc.writes!=8 || adc.reads!=8 || adc.starts!=3) $fatal(1,"unexpected transaction totals");
+        if(!variant4_done || !variant6_done) $fatal(1,"parameterized channel tests incomplete");
+        $display("TEST_PASS ADS1299 BIAS/readback/failure/recovery: 8 configurations, 3 signed frames");
         $finish;
     end
+    initial begin #20_000_000; $fatal(1,"watchdog: status=%h phase=%0d",config_status,phase); end
+endmodule
 
-    // Capture DIN on each SCLK falling edge, matching the ADS1299 (the chip
-    // latches DIN on the falling edge). The controller places each bit on the
-    // preceding rising edge, so it is stable here with >= half-cycle setup.
-    always @(negedge adc_cs_n) begin
-        if (rst_n && command_monitor_enable) begin
-            command_shift = 8'd0;
-            command_bit_count = 0;
-            command_byte_count = 0;
-        end
-    end
-
-    always @(negedge adc_sclk) begin
-        if (rst_n && command_monitor_enable && !adc_cs_n) begin
-            command_shift = {command_shift[6:0], adc_din};
-            if (command_bit_count == 7) begin
-                $display("ADS1299 TX transfer=%0d byte=%0d value=0x%02h expected=0x%02h",
-                         command_transfer, command_byte_count, command_shift,
-                         expected_command_byte(command_transfer % 4, command_byte_count));
-                if (command_shift !== expected_command_byte(command_transfer % 4, command_byte_count))
-                    command_error_count = command_error_count + 1;
-                command_byte_count = command_byte_count + 1;
-                command_bit_count = 0;
-            end else begin
-                command_bit_count = command_bit_count + 1;
-            end
-        end
-    end
-
-    always @(posedge adc_cs_n) begin
-        if (rst_n && command_monitor_enable) begin
-            if (command_byte_count != expected_command_count(command_transfer % 4)) begin
-                $display("ADS1299 TX transfer=%0d byte_count=%0d expected_count=%0d",
-                         command_transfer, command_byte_count,
-                         expected_command_count(command_transfer % 4));
-                command_error_count = command_error_count + 1;
-            end
-            command_transfer = command_transfer + 1;
-            // Disable between command phases: data-read frames also pulse
-            // CS/SCLK and would pollute the byte stream (re-armed in the
-            // stimulus right after the reconfig button press).
-            if (command_transfer == 4 || command_transfer == 8)
-                command_monitor_enable = 1'b0;
-        end
-    end
-
-    // ADS1299 updates DOUT after rising SCLK edges; the controller samples
-    // each bit on the following falling edge.
-    always @(negedge adc_drdy_n) begin
-        read_active = 1'b1;
-        driven_bit = 0;
-        adc_dout = 1'b0;
-    end
-
-    always @(posedge adc_sclk) begin
-        if (read_active && !adc_cs_n) begin
-            if (driven_bit < 216) begin
-                adc_dout = frame_bits[215-driven_bit];
-                driven_bit = driven_bit + 1'b1;
-            end
-        end
-    end
-
-    always @(posedge clk) begin
-        if (sample_valid) begin
-            $display("sample channel=%0d data=%0d expected_channel=%0d expected_data=%0d",
-                     sample_channel, sample_data, received_count, (received_count % 8) + 1);
-            // Same test frame (values 1..8) is driven after every DRDY edge,
-            // so expectations wrap per 8-sample frame.
-            if (sample_channel !== received_count[2:0] || sample_data !== (received_count % 8) + 1)
-                error_count = error_count + 1;
-            received_count = received_count + 1;
-            if (received_count == 8)
-                read_active = 1'b0;
-        end
+module ads1299_variant_check #(parameter integer N=4)(output reg done=0);
+    reg clk=0,rst_n=0;
+    wire sclk,din,cs_n,reset_n,adc_start,dout,error;
+    wire [31:0] status;
+    integer k;
+    localparam [7:0] MASK=8'hFF>>(8-N);
+    always #20 clk=~clk;
+    ads1299_spi #(.CHANNELS(N),.RESET_CYCLES(8),.POST_RESET_CYCLES(8),
+        .BIAS_SENSP_VALUE(8'hFF),.BIAS_SENSN_VALUE(8'hFF)) dut(
+        .clk(clk),.rst_n(rst_n),.start(1'b1),.reconfig_n(1'b1),
+        .adc_drdy_n(1'b1),.adc_dout(dout),.adc_sclk(sclk),.adc_din(din),
+        .adc_cs_n(cs_n),.adc_reset_n(reset_n),.adc_start(adc_start),
+        .adc_pwdn_n(),.sample_valid(),.sample_data(),.sample_channel(),.frame_valid(),.busy(),
+        .error(error),.config_status(status));
+    ads1299_model #(.CHANNELS(N)) adc(.reset_n(reset_n),.cs_n(cs_n),.sclk(sclk),
+        .din(din),.drdy_n(1'b1),.frame_bits({(24+24*N){1'b0}}),
+        .fault(2'd0),.fault_address(5'd0),.dout(dout));
+    initial begin
+        repeat(5) @(negedge clk);rst_n=1;
+        wait(adc_start);@(negedge clk);
+        if(status!=={16'hC0ED,MASK,MASK} || error) $fatal(1,"variant %0d readback %h",N,status);
+        for(k=5+N;k<=12;k=k+1) if(adc.registers[k]!==0) $fatal(1,"reserved slot nonzero");
+        if(adc.registers[13]!==MASK || adc.registers[14]!==MASK)
+            $fatal(1,"variant masks at wrong fixed address");
+        done=1; $display("CHECK ADS1299-%0d fixed 0D/0E addresses/masks PASS",N);
     end
 endmodule

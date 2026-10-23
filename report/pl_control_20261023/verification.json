@@ -1,0 +1,12 @@
+{
+  "policy_windows": 28228,
+  "mapping_inference_windows": 384,
+  "mapping_count": 6,
+  "firmware": "PASS mailbox/epoch/authority/stale/request-coalescing/record-silence",
+  "shell": "PASS DMA stopped to FIFO overflow, recovery, command CDC",
+  "pwm": "PASS disabled/atomic/pulse/slew/limits/watchdog/estop",
+  "legacy_full_chain": "PASS 6400 raw + 6400 processed + 200 features + 5 logits/class windows",
+  "lcd": "PASS 800x480 and 1024x600 renderer/touch/rehab/quality/wave/spectrum",
+  "uart": "PASS both source markers and binary frame validation",
+  "hardware_verified": false
+}

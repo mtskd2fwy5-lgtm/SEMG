@@ -1,0 +1,59 @@
+{
+  "build_tag": "20261015_LCD_WAVE_V1",
+  "pl_rebuilt": false,
+  "pl_matches_prior_notch50_bitstream": true,
+  "hardware_programmed": false,
+  "elf_load_segments": [
+    {
+      "index": 1,
+      "address": "0x10000000",
+      "file_bytes": 49788,
+      "memory_bytes": 49788,
+      "boot_offset": 4180224,
+      "exact_match": true
+    },
+    {
+      "index": 2,
+      "address": "0x10010000",
+      "file_bytes": 32988,
+      "memory_bytes": 1425772,
+      "boot_offset": 4230016,
+      "exact_match": true
+    },
+    {
+      "index": 3,
+      "address": "0x11000000",
+      "file_bytes": 0,
+      "memory_bytes": 16384,
+      "boot_offset": null,
+      "exact_match": null
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "sw/ps_uart_print/ps_uart_print.elf",
+      "bytes": 110572,
+      "sha256": "8368bf20f917abbe45c3e8fd75a63273b8ed63bd0ac5c74091e2b5b09d85a7b1"
+    },
+    {
+      "path": "build/boot/BOOT.BIN",
+      "bytes": 4263004,
+      "sha256": "678e9cdbef0a5d21f60347697ff12ef2e4a28e38a0c5a7ff6fe0604e4aa1fb3a"
+    },
+    {
+      "path": "build/vivado/hand_motion_reconstruction.runs/impl_1/design_1.bit",
+      "bytes": 4045684,
+      "sha256": "f145dfa7df40460097290d9adb8b9bc092614bcf7248bc26515968e806ff67a2"
+    },
+    {
+      "path": "report/lcd_waveform_preview_20261015.png",
+      "bytes": 7566,
+      "sha256": "06e3ae6f8fe211c11c6ed255b4e18d7333b43562c9536398d6423e1699252f14"
+    },
+    {
+      "path": "report/lcd_waveform_preview_1024_20261015.png",
+      "bytes": 9165,
+      "sha256": "b5164030e16fe71e91ed028009e4300d7b289a92502f4dad074cbab2774ebe00"
+    }
+  ]
+}

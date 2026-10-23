@@ -1,0 +1,2 @@
+sd_record_test.c
+TEST_PASS sd_record: signed paired frames, wrap, tail flush, periodic sync, no overwrite, IO errors, aligned bounce, SDSC addressing.

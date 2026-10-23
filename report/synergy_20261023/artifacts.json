@@ -1,0 +1,63 @@
+{
+  "date": "2026-10-23",
+  "tag": "20261023_SYNERGY_V1",
+  "application_load_checks": [
+    {
+      "load_address": "0x10000000",
+      "elf_file_bytes": 121500,
+      "boot_offset": "0x3fc900",
+      "match": true
+    },
+    {
+      "load_address": "0x10020000",
+      "elf_file_bytes": 557380,
+      "boot_offset": "0x41a3c0",
+      "match": true
+    }
+  ],
+  "pl_partition": "full word-reversed bit payload matches current design_1.bit",
+  "tests": {
+    "solver": "edge cases + EMG008/009/018 compiled C replay PASS",
+    "lcd": "800x480 / 1024x600 real parser and renderer PASS",
+    "font": "PASS",
+    "arm_build": "PASS; existing vendor ff.c unused vol warning"
+  },
+  "hardware_verified": false,
+  "artifacts": [
+    {
+      "path": "build/boot/BOOT_20261023_SYNERGY_V1.BIN",
+      "bytes": 4859140,
+      "sha256": "d2e9686dacacf1d523c7db9f8e382a8b51e50af4a9d6aac02492481a11e89edd"
+    },
+    {
+      "path": "sw/ps_uart_print/ps_uart_print.elf",
+      "bytes": 710824,
+      "sha256": "221585b14e749fee16cb260f0aed18449d2425651f13655f1cad2d78ea35a638"
+    },
+    {
+      "path": "build/vivado/hand_motion_reconstruction.runs/impl_1/design_1.bit",
+      "bytes": 4045684,
+      "sha256": "30a424a82e23a2650c6d8a93a7d2e4d13178950b570a6b6177325bd944174b91"
+    },
+    {
+      "path": "sw/ps_uart_print/main.c",
+      "bytes": 146533,
+      "sha256": "49972fa355538cc5afb4b6d609d4fe9e2bb53bd6f4d67e96d873fcee176b5bb2"
+    },
+    {
+      "path": "sw/ps_uart_print/synergy_nmf.h",
+      "bytes": 3214,
+      "sha256": "eba345f25aa7f1be9f916c1c9519573b3fca601689bf35f51c125814e45b0f0b"
+    },
+    {
+      "path": "sw/ps_uart_print/synergy_nmf_model.h",
+      "bytes": 526,
+      "sha256": "fcc2e3e365d025ee4e73a50b8c9d78ddc5b81314f59daf2a10ab310bde3e5839"
+    },
+    {
+      "path": "sw/ps_uart_print/lcd_font_zh.h",
+      "bytes": 2741466,
+      "sha256": "e10fe9a68af440a93e547b9291d3a583418927de29442dfa6944b498b90d178a"
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "inputs": [
+    {
+      "path": "report\\emg008_20261022\\EMG008_processed.csv",
+      "sha256": "d2eed72c68e6251604877e7106345734dd830616f0c4b1cefcbd4938797caad5"
+    },
+    {
+      "path": "report\\emg009_20261022\\EMG009_processed.csv",
+      "sha256": "e362e98523b771ea38e6df639e3462739691fcd536164d45c983715193cdfb10"
+    }
+  ],
+  "windows": 17936,
+  "fit_seed": 7,
+  "window_samples": 400,
+  "hop_samples": 100,
+  "fit_c_iters": 2,
+  "fit_w_period": 50,
+  "fit_lam": 0.999,
+  "firmware": "fixed W, fresh projection and eight C iterations per window",
+  "weight_q15": [
+    [
+      1924,
+      8720,
+      119
+    ],
+    [
+      1732,
+      8434,
+      127
+    ],
+    [
+      16985,
+      18060,
+      30732
+    ],
+    [
+      443,
+      7281,
+      21
+    ],
+    [
+      27208,
+      17077,
+      10392
+    ],
+    [
+      5724,
+      11898,
+      4605
+    ],
+    [
+      2288,
+      7531,
+      157
+    ],
+    [
+      332,
+      7583,
+      137
+    ]
+  ],
+  "display_ref_q8": [
+    14592,
+    50432,
+    11008
+  ],
+  "scope": "relative activity visualization; no force/accuracy claim"
+}

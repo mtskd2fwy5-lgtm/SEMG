@@ -15,34 +15,35 @@ module emg_pl_export_tb;
     reg axis_clk = 1'b0;
     reg pl_rst_n = 1'b0;
     reg axis_rst_n = 1'b0;
+    reg reconfig_n = 1'b1;
+    reg [1:0] adc_fault = 0;
     reg adc_drdy_n = 1'b1;
-    reg adc_dout = 1'b0;
+    wire adc_dout;
     wire adc_sclk, adc_din, adc_cs_n, adc_reset_n, adc_start, adc_pwdn_n;
     wire status_led;
+    wire [31:0] adc_config_status;
     wire [63:0] m_axis_tdata;
     wire m_axis_tvalid, m_axis_tlast;
     wire raw_overflow, feature_overflow, result_overflow;
 
     reg [215:0] frame_bits;
-    reg [8:0] driven_bit;
-    reg read_active = 1'b0;
 
     integer stim_fd, out_fd, code;
     integer v0, v1, v2, v3, v4, v5, v6, v7;
-    integer frames, axi_words, feature_words, raw_words, result_words;
+    integer frames, axi_words, feature_words, raw_words, result_words, notch_words;
     integer errors, wait_count;
 
     always #20 pl_clk = ~pl_clk;    // 25 MHz
     always #10 axis_clk = ~axis_clk; // 50 MHz
 
-    emg_pl_export dut (
+    emg_pl_export_status dut (
         .pl_clk(pl_clk), .pl_rst_n(pl_rst_n),
         .axis_clk(axis_clk), .axis_rst_n(axis_rst_n),
-        .reconfig_n(1'b1),
+        .reconfig_n(reconfig_n),
         .adc_drdy_n(adc_drdy_n), .adc_dout(adc_dout),
         .adc_sclk(adc_sclk), .adc_din(adc_din), .adc_cs_n(adc_cs_n),
         .adc_reset_n(adc_reset_n), .adc_start(adc_start),
-        .adc_pwdn_n(adc_pwdn_n), .status_led(status_led),
+        .adc_pwdn_n(adc_pwdn_n), .status_led(status_led), .adc_config_status(adc_config_status),
         .m_axis_tdata(m_axis_tdata), .m_axis_tvalid(m_axis_tvalid),
         .m_axis_tready(1'b1), .m_axis_tlast(m_axis_tlast),
         .raw_overflow(raw_overflow), .feature_overflow(feature_overflow),
@@ -52,24 +53,12 @@ module emg_pl_export_tb;
     // Keep the integration test short while preserving the RTL state
     // sequence. The board value is 140 ms; this test only needs to verify
     // reset/configuration ordering before feeding the behavioral ADC.
-    defparam dut.u_ads1299_spi.POST_RESET_CYCLES = 3_500;
+    defparam dut.u_core.u_ads1299_spi.POST_RESET_CYCLES = 3_500;
+    defparam dut.u_core.u_ads1299_spi.BTN_DEBOUNCE_CYCLES = 8;
 
-    // Behavioral ADS1299 data path: DOUT updates after rising SCLK edges;
-    // the controller samples it on the following falling edge.
-    always @(negedge adc_drdy_n) begin
-        read_active = 1'b1;
-        driven_bit = 9'd0;
-        adc_dout = 1'b0;
-    end
-
-    always @(posedge adc_sclk) begin
-        if (read_active && !adc_cs_n) begin
-            if (driven_bit < 9'd216) begin
-                adc_dout = frame_bits[215-driven_bit];
-                driven_bit = driven_bit + 1'b1;
-            end
-        end
-    end
+    ads1299_model adc(.reset_n(adc_reset_n),.cs_n(adc_cs_n),.sclk(adc_sclk),
+        .din(adc_din),.drdy_n(adc_drdy_n),.frame_bits(frame_bits),
+        .fault(adc_fault),.fault_address(5'd13),.dout(adc_dout));
 
     // AXI consumer: always ready, log every accepted word.  Result words
     // (type 3) are verified bit-exact by tools/check_pl_nn_sim.py against
@@ -78,8 +67,10 @@ module emg_pl_export_tb;
         if (m_axis_tvalid) begin
             axi_words = axi_words + 1;
             if (m_axis_tdata[63:60] == 4'h1) raw_words = raw_words + 1;
+            else if (m_axis_tdata[63:60] == 4'h5) notch_words = notch_words + 1;
             else if (m_axis_tdata[63:60] == 4'h2) feature_words = feature_words + 1;
-            else if (m_axis_tdata[63:60] == 4'h3) result_words = result_words + 1;
+            else if (m_axis_tdata[63:60] == 4'h3 ||
+                     m_axis_tdata[63:60] == 4'h4) result_words = result_words + 1;
             else errors = errors + 1;
             $fdisplay(out_fd, "%0d,%0d,%0d,%0d,%0d",
                       m_axis_tdata[63:60], m_axis_tdata[59:56],
@@ -113,22 +104,42 @@ module emg_pl_export_tb;
                 errors = errors + 1;
                 $display("timeout waiting for frame read end");
             end
-            read_active = 1'b0;
             @(posedge pl_clk);
+        end
+    endtask
+
+    task check_status_replay;
+        begin
+            adc_fault=1;
+            @(negedge pl_clk);reconfig_n=0;
+            repeat(30) @(negedge pl_clk);reconfig_n=1;
+            wait(adc_config_status==0);
+            wait(adc_config_status[31]);
+            if(adc_config_status!==32'hADED0001 || adc_start || status_led)
+                $fatal(1,"failure mailbox mismatch %h",adc_config_status);
+            adc_fault=0;
+            @(negedge pl_clk);reconfig_n=0;
+            repeat(30) @(negedge pl_clk);reconfig_n=1;
+            wait(adc_config_status==0);
+            wait(adc_start);
+            repeat(100) @(posedge axis_clk);
+            if(adc_config_status!==32'hC0ED0101)
+                $fatal(1,"recovery mailbox mismatch %h",adc_config_status);
+            $display("CHECK ADC mailbox WAIT/error/actual bytes/recovery PASS");
         end
     endtask
 
     initial begin
         stim_fd = $fopen("export_stim.txt", "r");
         if (stim_fd == 0) begin
-            $display("EMG export TB FAILED: cannot open export_stim.txt");
-            $finish;
+            $fatal(1,"EMG export TB FAILED: cannot open export_stim.txt");
         end
         out_fd = $fopen("export_out.csv", "w");
         $fdisplay(out_fd, "type,channel,id,sequence,payload");
         frames = 0;
         axi_words = 0;
         raw_words = 0;
+        notch_words = 0;
         feature_words = 0;
         result_words = 0;
         errors = 0;
@@ -146,10 +157,11 @@ module emg_pl_export_tb;
             wait_count = wait_count + 1;
         end
         if (status_led !== 1'b1) begin
-            $display("EMG export TB FAILED: controller never became ready");
-            $finish;
+            $fatal(1,"EMG export TB FAILED: controller never became ready");
         end
         repeat (100) @(posedge pl_clk);
+        if(adc_config_status!==32'hC0ED0101)
+            $fatal(1,"ADC config mailbox mismatch %h",adc_config_status);
 
         forever begin
             code = $fscanf(stim_fd, "%d %d %d %d %d %d %d %d",
@@ -159,12 +171,14 @@ module emg_pl_export_tb;
                 repeat (20000) @(posedge pl_clk);
                 $fclose(stim_fd);
                 $fclose(out_fd);
-                if (errors == 0 && !raw_overflow && !feature_overflow
+                check_status_replay;
+                if (errors == 0 && raw_words == frames*8 && notch_words == frames*8
+                    && !raw_overflow && !feature_overflow
                     && !result_overflow)
-                    $display("EMG export TB PASSED: frames=%0d raw=%0d feature=%0d result=%0d",
-                             frames, raw_words, feature_words, result_words);
+                    $display("TEST_PASS EMG export: frames=%0d raw=%0d notch=%0d feature=%0d result=%0d",
+                             frames, raw_words, notch_words, feature_words, result_words);
                 else
-                    $display("EMG export TB FAILED: frames=%0d raw=%0d feature=%0d result=%0d errors=%0d overflow=%b%b%b",
+                    $fatal(1,"EMG export TB FAILED: frames=%0d raw=%0d feature=%0d result=%0d errors=%0d overflow=%b%b%b",
                              frames, raw_words, feature_words, result_words,
                              errors, raw_overflow, feature_overflow,
                              result_overflow);
@@ -177,4 +191,5 @@ module emg_pl_export_tb;
             frames = frames + 1;
         end
     end
+    initial begin #1_000_000_000; $fatal(1,"EMG export watchdog"); end
 endmodule

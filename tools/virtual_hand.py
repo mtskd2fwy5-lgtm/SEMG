@@ -38,7 +38,8 @@ except ImportError:
     sys.exit(1)
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from pose_contract import (POSE_CONFIRM_WINDOWS, POSE_FIELDS_V2, POSE_MIN_CONF,
+from pose_contract import (LEGACY_POSE_CONFIRM_WINDOWS as POSE_CONFIRM_WINDOWS,
+                           LEGACY_POSE_MIN_CONF as POSE_MIN_CONF, POSE_FIELDS_V2,
                            POSE_NAMES, POSE_SCHEMA_V2, POSE_SMOOTH_MS,
                            POSE_STALE_MS, POSES_V2, sanitize_pose22)
 
@@ -341,7 +342,9 @@ def handle_pose_line(line, st, now, conf_min, log):
     except (KeyError, TypeError, ValueError):
         return False
 
-    if conf < conf_min:
+    # New firmware has already applied hysteresis and bounded holding. Its
+    # accepted P pose is authoritative even when the current support drops.
+    if conf < conf_min and fields.get("stable") != "1":
         values = list(POSES_V2["rest"] if schema == POSE_SCHEMA_V2
                       else POSES["rest"])
         gid = 0

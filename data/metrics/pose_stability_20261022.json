@@ -1,0 +1,864 @@
+{
+  "model_sha256": "8ca80b14ecd48907a55c6fe983b472f0382b6beeff3b2a4f4e36e1aeea4819ef",
+  "weights_unchanged": true,
+  "policy": {
+    "entry": 70,
+    "hold": 50,
+    "action_windows": 3,
+    "rest_windows": 6,
+    "uncertain_windows": 8
+  },
+  "captures": {
+    "EMG017_processed": {
+      "source": "report/emg017_20261022/EMG017_processed.csv",
+      "frames": 1098578,
+      "duration_s": 274.6445,
+      "csv_sha256": "a9cef96c68438cd77651c12b93fab8aba1028aa7f8b93f58a72f1aa58cb52969",
+      "calibration_assumption": "MAV calibration at CSV start; actual board baseline unavailable",
+      "calibration_all_rest": true,
+      "baseline": [
+        4489,
+        3404,
+        4444,
+        4695,
+        4251,
+        8175,
+        4143,
+        5540
+      ],
+      "variants": {
+        "raw_argmax": {
+          "windows": 8579,
+          "accuracy": 0.8815712787038116,
+          "macro_f1": 0.8963854805815371,
+          "recall": [
+            0.6766990291262136,
+            1.0,
+            0.9985369422092173,
+            0.9892163910855499,
+            1.0
+          ],
+          "rest_false_action_rate": 0.3233009708737864,
+          "confusion": [
+            [
+              2091,
+              22,
+              0,
+              357,
+              620
+            ],
+            [
+              0,
+              1432,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              1365,
+              1,
+              0
+            ],
+            [
+              4,
+              5,
+              6,
+              1376,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              1299
+            ]
+          ]
+        },
+        "old_mav0": {
+          "windows": 8579,
+          "accuracy": 0.9096631309010375,
+          "macro_f1": 0.9136890714889088,
+          "recall": [
+            0.982200647249191,
+            0.901536312849162,
+            0.9904901243599122,
+            0.8634076204169662,
+            0.7105465742879138
+          ],
+          "rest_false_action_rate": 0.01779935275080906,
+          "confusion": [
+            [
+              3035,
+              0,
+              0,
+              55,
+              0
+            ],
+            [
+              141,
+              1291,
+              0,
+              0,
+              0
+            ],
+            [
+              13,
+              0,
+              1354,
+              0,
+              0
+            ],
+            [
+              190,
+              0,
+              0,
+              1201,
+              0
+            ],
+            [
+              376,
+              0,
+              0,
+              0,
+              923
+            ]
+          ],
+          "switches_within_stable_labels": 346,
+          "switches_whole_stream": 444
+        },
+        "new_mav0": {
+          "windows": 8579,
+          "accuracy": 0.8659517426273459,
+          "macro_f1": 0.884330380902866,
+          "recall": [
+            0.627831715210356,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "rest_false_action_rate": 0.37216828478964403,
+          "confusion": [
+            [
+              1940,
+              9,
+              0,
+              377,
+              764
+            ],
+            [
+              0,
+              1432,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              1367,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1391,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              1299
+            ]
+          ],
+          "switches_within_stable_labels": 86,
+          "switches_whole_stream": 169
+        },
+        "old_mav1": {
+          "windows": 8579,
+          "accuracy": 0.8999883436297936,
+          "macro_f1": 0.903435943677567,
+          "recall": [
+            0.983495145631068,
+            0.901536312849162,
+            0.9904901243599122,
+            0.8353702372393961,
+            0.6735950731331793
+          ],
+          "rest_false_action_rate": 0.01650485436893204,
+          "confusion": [
+            [
+              3039,
+              0,
+              0,
+              51,
+              0
+            ],
+            [
+              141,
+              1291,
+              0,
+              0,
+              0
+            ],
+            [
+              13,
+              0,
+              1354,
+              0,
+              0
+            ],
+            [
+              229,
+              0,
+              0,
+              1162,
+              0
+            ],
+            [
+              424,
+              0,
+              0,
+              0,
+              875
+            ]
+          ],
+          "switches_within_stable_labels": 358,
+          "switches_whole_stream": 452
+        },
+        "new_mav1": {
+          "windows": 8579,
+          "accuracy": 0.9652640167851732,
+          "macro_f1": 0.969201569273829,
+          "recall": [
+            0.9035598705501618,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "rest_false_action_rate": 0.0964401294498382,
+          "confusion": [
+            [
+              2792,
+              0,
+              0,
+              202,
+              96
+            ],
+            [
+              0,
+              1432,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              1367,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1391,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              1299
+            ]
+          ],
+          "switches_within_stable_labels": 30,
+          "switches_whole_stream": 91
+        }
+      },
+      "segments": [
+        {
+          "start_s": 0.0,
+          "end_s": 7.339,
+          "cls": 0
+        },
+        {
+          "start_s": 7.339,
+          "end_s": 17.67925,
+          "cls": 1
+        },
+        {
+          "start_s": 17.67925,
+          "end_s": 25.51575,
+          "cls": 0
+        },
+        {
+          "start_s": 25.51575,
+          "end_s": 39.526,
+          "cls": 2
+        },
+        {
+          "start_s": 39.526,
+          "end_s": 50.31675,
+          "cls": 0
+        },
+        {
+          "start_s": 50.31675,
+          "end_s": 67.048,
+          "cls": 1
+        },
+        {
+          "start_s": 67.048,
+          "end_s": 78.78725,
+          "cls": 0
+        },
+        {
+          "start_s": 78.78725,
+          "end_s": 94.2585,
+          "cls": 2
+        },
+        {
+          "start_s": 94.2585,
+          "end_s": 102.935,
+          "cls": 0
+        },
+        {
+          "start_s": 102.935,
+          "end_s": 117.9715,
+          "cls": 1
+        },
+        {
+          "start_s": 117.9715,
+          "end_s": 126.8035,
+          "cls": 0
+        },
+        {
+          "start_s": 126.8035,
+          "end_s": 137.7805,
+          "cls": 2
+        },
+        {
+          "start_s": 137.7805,
+          "end_s": 143.021,
+          "cls": 0
+        },
+        {
+          "start_s": 143.021,
+          "end_s": 153.43875,
+          "cls": 3
+        },
+        {
+          "start_s": 153.43875,
+          "end_s": 162.442,
+          "cls": 0
+        },
+        {
+          "start_s": 162.442,
+          "end_s": 174.05675,
+          "cls": 3
+        },
+        {
+          "start_s": 174.05675,
+          "end_s": 179.997,
+          "cls": 0
+        },
+        {
+          "start_s": 179.997,
+          "end_s": 189.7615,
+          "cls": 4
+        },
+        {
+          "start_s": 189.7615,
+          "end_s": 201.2215,
+          "cls": 0
+        },
+        {
+          "start_s": 201.2215,
+          "end_s": 213.48975,
+          "cls": 4
+        },
+        {
+          "start_s": 213.48975,
+          "end_s": 217.1125,
+          "cls": 0
+        },
+        {
+          "start_s": 217.1125,
+          "end_s": 229.16325,
+          "cls": 3
+        },
+        {
+          "start_s": 229.16325,
+          "end_s": 236.81325,
+          "cls": 0
+        },
+        {
+          "start_s": 236.81325,
+          "end_s": 245.89425,
+          "cls": 3
+        },
+        {
+          "start_s": 245.89425,
+          "end_s": 250.6525,
+          "cls": 0
+        },
+        {
+          "start_s": 250.6525,
+          "end_s": 260.495,
+          "cls": 4
+        },
+        {
+          "start_s": 260.495,
+          "end_s": 265.64175,
+          "cls": 0
+        },
+        {
+          "start_s": 265.64175,
+          "end_s": 274.6445,
+          "cls": 4
+        }
+      ],
+      "processed_rms_counts": [
+        82.49623917112184,
+        46.13166454965614,
+        80.9420300731243,
+        39.84073343732119,
+        57.451485226675906,
+        76.83129593351396,
+        50.253785202006775,
+        58.77032777089439
+      ],
+      "processed_rails": 0
+    },
+    "EMG018_validprefix_processed": {
+      "source": "report/emg018_20261022/EMG018_validprefix_processed.csv",
+      "frames": 637952,
+      "duration_s": 159.488,
+      "csv_sha256": "3009c33f4b4ec53497aaf11628844533b2f7e1079701291d7564f070df8459ed",
+      "calibration_assumption": "MAV calibration at CSV start; actual board baseline unavailable",
+      "calibration_all_rest": true,
+      "baseline": [
+        2808,
+        2942,
+        5522,
+        2815,
+        3221,
+        5041,
+        3099,
+        5024
+      ],
+      "variants": {
+        "raw_argmax": {
+          "windows": 4309,
+          "accuracy": 0.8902297516825249,
+          "macro_f1": 0.8888432361603142,
+          "recall": [
+            0.851528384279476,
+            0.9393203883495146,
+            0.8721719457013575,
+            1.0,
+            0.9746835443037974
+          ],
+          "rest_false_action_rate": 0.14847161572052403,
+          "confusion": [
+            [
+              1755,
+              0,
+              0,
+              306,
+              0
+            ],
+            [
+              0,
+              774,
+              0,
+              50,
+              0
+            ],
+            [
+              82,
+              24,
+              771,
+              5,
+              2
+            ],
+            [
+              0,
+              0,
+              0,
+              382,
+              0
+            ],
+            [
+              0,
+              4,
+              0,
+              0,
+              154
+            ]
+          ]
+        },
+        "old_mav0": {
+          "windows": 4309,
+          "accuracy": 0.6467857971687166,
+          "macro_f1": 0.4753229786424435,
+          "recall": [
+            0.9344978165938864,
+            0.04733009708737864,
+            0.498868778280543,
+            0.9842931937172775,
+            0.03164556962025317
+          ],
+          "rest_false_action_rate": 0.06550218340611354,
+          "confusion": [
+            [
+              1926,
+              0,
+              0,
+              135,
+              0
+            ],
+            [
+              785,
+              39,
+              0,
+              0,
+              0
+            ],
+            [
+              432,
+              11,
+              441,
+              0,
+              0
+            ],
+            [
+              6,
+              0,
+              0,
+              376,
+              0
+            ],
+            [
+              153,
+              0,
+              0,
+              0,
+              5
+            ]
+          ],
+          "switches_within_stable_labels": 174,
+          "switches_whole_stream": 262
+        },
+        "new_mav0": {
+          "windows": 4309,
+          "accuracy": 0.8988164307263866,
+          "macro_f1": 0.9004707053234048,
+          "recall": [
+            0.8466763706938379,
+            0.9696601941747572,
+            0.8925339366515838,
+            1.0,
+            1.0
+          ],
+          "rest_false_action_rate": 0.15332362930616206,
+          "confusion": [
+            [
+              1745,
+              0,
+              0,
+              316,
+              0
+            ],
+            [
+              0,
+              799,
+              0,
+              25,
+              0
+            ],
+            [
+              64,
+              25,
+              789,
+              6,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              382,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              158
+            ]
+          ],
+          "switches_within_stable_labels": 27,
+          "switches_whole_stream": 65
+        },
+        "old_mav1": {
+          "windows": 4309,
+          "accuracy": 0.6567649106521235,
+          "macro_f1": 0.48129919358472106,
+          "recall": [
+            1.0,
+            0.04733009708737864,
+            0.498868778280543,
+            0.743455497382199,
+            0.03164556962025317
+          ],
+          "rest_false_action_rate": 0.0,
+          "confusion": [
+            [
+              2061,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              785,
+              39,
+              0,
+              0,
+              0
+            ],
+            [
+              432,
+              11,
+              441,
+              0,
+              0
+            ],
+            [
+              98,
+              0,
+              0,
+              284,
+              0
+            ],
+            [
+              153,
+              0,
+              0,
+              0,
+              5
+            ]
+          ],
+          "switches_within_stable_labels": 169,
+          "switches_whole_stream": 260
+        },
+        "new_mav1": {
+          "windows": 4309,
+          "accuracy": 0.9721513112090973,
+          "macro_f1": 0.9717186409502954,
+          "recall": [
+            1.0,
+            0.9696601941747572,
+            0.8925339366515838,
+            1.0,
+            1.0
+          ],
+          "rest_false_action_rate": 0.0,
+          "confusion": [
+            [
+              2061,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              799,
+              0,
+              25,
+              0
+            ],
+            [
+              64,
+              25,
+              789,
+              6,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              382,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              158
+            ]
+          ],
+          "switches_within_stable_labels": 17,
+          "switches_whole_stream": 57
+        }
+      },
+      "segments": [
+        {
+          "start_s": 0.0,
+          "end_s": 12.64125,
+          "cls": 0
+        },
+        {
+          "start_s": 12.64125,
+          "end_s": 22.76375,
+          "cls": 1
+        },
+        {
+          "start_s": 22.76375,
+          "end_s": 27.53725,
+          "cls": 0
+        },
+        {
+          "start_s": 27.53725,
+          "end_s": 36.89825,
+          "cls": 1
+        },
+        {
+          "start_s": 36.89825,
+          "end_s": 41.06525,
+          "cls": 0
+        },
+        {
+          "start_s": 41.06525,
+          "end_s": 47.596,
+          "cls": 2
+        },
+        {
+          "start_s": 47.596,
+          "end_s": 54.90425,
+          "cls": 0
+        },
+        {
+          "start_s": 54.90425,
+          "end_s": 61.481,
+          "cls": 2
+        },
+        {
+          "start_s": 61.481,
+          "end_s": 74.34025,
+          "cls": 0
+        },
+        {
+          "start_s": 74.34025,
+          "end_s": 81.757,
+          "cls": 1
+        },
+        {
+          "start_s": 81.757,
+          "end_s": 87.37075,
+          "cls": 0
+        },
+        {
+          "start_s": 87.37075,
+          "end_s": 98.3485,
+          "cls": 2
+        },
+        {
+          "start_s": 98.3485,
+          "end_s": 104.0545,
+          "cls": 0
+        },
+        {
+          "start_s": 104.0545,
+          "end_s": 110.49225,
+          "cls": 2
+        },
+        {
+          "start_s": 110.49225,
+          "end_s": 115.0795,
+          "cls": 0
+        },
+        {
+          "start_s": 115.0795,
+          "end_s": 120.0545,
+          "cls": 3
+        },
+        {
+          "start_s": 120.0545,
+          "end_s": 124.922,
+          "cls": 0
+        },
+        {
+          "start_s": 124.922,
+          "end_s": 130.1465,
+          "cls": 3
+        },
+        {
+          "start_s": 130.1465,
+          "end_s": 134.71775,
+          "cls": 0
+        },
+        {
+          "start_s": 134.71775,
+          "end_s": 140.362,
+          "cls": 3
+        },
+        {
+          "start_s": 140.362,
+          "end_s": 146.65925,
+          "cls": 0
+        },
+        {
+          "start_s": 146.65925,
+          "end_s": 152.4905,
+          "cls": 4
+        },
+        {
+          "start_s": 152.4905,
+          "end_s": 157.155,
+          "cls": 0
+        },
+        {
+          "start_s": 157.155,
+          "end_s": 159.488,
+          "cls": 4
+        }
+      ],
+      "processed_rms_counts": [
+        33.29031345363079,
+        30.44586823950243,
+        54.72745522186461,
+        29.20450909813108,
+        35.660122348435614,
+        35.20831992009283,
+        36.512251281311244,
+        34.70449284076445
+      ],
+      "processed_rails": 0
+    }
+  },
+  "c_crosscheck": "PASS: 34386 actual C confidence/pose rows",
+  "softmax_max_error_percentage_points": 1.682330248007112,
+  "limitations": [
+    "MAV-on is a simulated calibration scenario, not measured board accuracy.",
+    "State is continuous through transitions; scores exclude 1s at bout edges and calibration startup.",
+    "EMG017 was used for exploration; EMG018 baseline was inspected before implementation; development validation only.",
+    "LCD interpolation, real packet arrival timing and exact hardware feature-window phase are not replayed.",
+    "Softmax scores are uncalibrated and are not empirical correctness probabilities."
+  ]
+}

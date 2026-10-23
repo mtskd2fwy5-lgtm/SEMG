@@ -1,0 +1,1 @@
+{"signal": "notch50", "sample_rate_hz": 4000, "channel_placement": {"CH1-CH6": "wrist", "CH7-CH8": "near elbow", "all": "skin EMG electrodes; no BIAS monitor channel"}, "sequence_gaps": 0}

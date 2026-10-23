@@ -1,0 +1,30 @@
+{
+  "firmware_tag": "20261021_LINE_FILTER_V1",
+  "filter_id": "notch50_q10_comb50_bw1_hp20_lp215_v1",
+  "build_gates": "ALL PASS",
+  "wns_ns": 0.36,
+  "whs_ns": 0.042,
+  "hardware_programmed": false,
+  "boot_tag_found": true,
+  "previous_boot_sha256": "5ae9bb1b2ca2eb5c5568638335eaf175f1346ff32d74834578a2e7b33ce09605",
+  "files": [
+    {
+      "path": "D:\\FPGA\\sEMG-HMRS\\build\\boot\\BOOT.BIN",
+      "bytes": 4655668,
+      "modified": "2026-10-21T22:18:28.3343627+08:00",
+      "sha256": "cb354b839ee3990ead298fc185062e77089b472138c928b205ab60249b844456"
+    },
+    {
+      "path": "D:\\FPGA\\sEMG-HMRS\\build\\vivado\\hand_motion_reconstruction.runs\\impl_1\\design_1.bit",
+      "bytes": 4045684,
+      "modified": "2026-10-21T22:17:47.2607239+08:00",
+      "sha256": "9c9e30fa89faa536ed1304319b4a22a2b18ba2d9f44ab06aef418828bf103c75"
+    },
+    {
+      "path": "D:\\FPGA\\sEMG-HMRS\\sw\\ps_uart_print\\ps_uart_print.elf",
+      "bytes": 511788,
+      "modified": "2026-10-21T22:09:31.5704388+08:00",
+      "sha256": "66d3fd5b8b805b451e7eb7e8bae546cffea4dd326c4bbb383ad457c12fade0c5"
+    }
+  ]
+}

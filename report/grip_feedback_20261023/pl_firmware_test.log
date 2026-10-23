@@ -1,0 +1,2 @@
+pl_control_firmware_test.c
+TEST_PASS PL firmware mailbox/epoch/authority/no-double-filter/stale/binary-silence/grip-feature-join

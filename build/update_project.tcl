@@ -28,7 +28,9 @@ open_project $project_file
 # synthesis falls back to the default flow anyway.
 catch { set_property INCREMENTAL_CHECKPOINT {} [get_runs synth_1] }
 
-set rtl_files [glob -nocomplain -directory [file join $project_root src rtl] -types f *.v *.sv]
+set rtl_files [glob -nocomplain -directory [file join $project_root src rtl] -types f *.v *.sv *.vh]
+set_property include_dirs [list [file join $project_root src rtl]] [get_filesets sources_1]
+set_property include_dirs [list [file join $project_root src rtl]] [get_filesets sim_1]
 set sim_files [glob -nocomplain -directory [file join $project_root sim] -types f *.v *.sv]
 set xdc_files [glob -nocomplain -directory [file join $project_root board constraints] -types f *.xdc]
 

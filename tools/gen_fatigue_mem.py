@@ -173,25 +173,52 @@ def main():
     # ---- per-window pipeline ----
     exp_words = []                            # (id, data, info)
     hist = []                                 # chronological MDF means
+    fatigue_level = 0
+    pending_level = 0
+    pending_count = 0
     for w in range(n_win):
         mdf_sum = 0
         grand_total = 0
+        spec_sum = [0] * 30
+        peak_power, peak_bin = 0, 0
         for ch in range(8):
             re, im = fft_fixed(filt[ch][w * N:(w + 1) * N], tw)
             mdf_ch, tot_ch = mdf_of(re, im)
             mdf_sum += mdf_ch
             grand_total += tot_ch
+            for k in range(11, 231):
+                p = re[k] * re[k] + im[k] * im[k]
+                if 11 <= k <= 230:
+                    spec_sum[((k - 11) * 30) // 220] += p
+                if p > peak_power:
+                    peak_power, peak_bin = p, k
         mdf_mean = mdf_sum >> 3
         hist.append(mdf_mean)
         if len(hist) > 16:
             hist = hist[-16:]
         if len(hist) == 16:
             num2 = sat16(sum((2 * i - 15) * hist[i] for i in range(16)))
-            level = (3 if num2 <= T_REST else
-                     2 if num2 <= T_FATIGUE else
-                     1 if num2 <= T_MILD else 0)
+            candidate = (3 if num2 <= T_REST else
+                         2 if num2 <= T_FATIGUE else
+                         1 if num2 <= T_MILD else 0)
+            if candidate == fatigue_level:
+                pending_level = candidate
+                pending_count = 0
+            elif candidate == pending_level:
+                if pending_count >= 2:
+                    fatigue_level = candidate
+                    pending_count = 0
+                else:
+                    pending_count += 1
+            else:
+                pending_level = candidate
+                pending_count = 1
+            level = fatigue_level
         else:
             num2, level = 0, 0
+            fatigue_level = 0
+            pending_level = 0
+            pending_count = 0
         full = len(hist) == 16
         d8 = ((num2 & 0xFFFF) << 16) | (mdf_mean & 0xFFFF)
         energy = (grand_total >> 23) & 0x7FFFFF
@@ -199,6 +226,24 @@ def main():
         exp_words.append((8, d8, {"win": w, "mdf": mdf_mean, "num2": num2}))
         exp_words.append((9, d9, {"win": w, "level": level, "full": full,
                                   "energy": energy}))
+        def power_level(value):
+            if value == 0:
+                return 0
+            msb = value.bit_length() - 1
+            return 1 if msb == 0 else min(31, msb)
+
+        for packet in range(5):
+            payload = 0
+            levels = []
+            for j in range(6):
+                idx = packet * 6 + j
+                level = power_level(spec_sum[idx])
+                levels.append(level)
+                payload |= level << (5 * j)
+            exp_words.append((10 + packet, payload,
+                              {"win": w, "bands": packet, "levels": levels}))
+        d15 = ((peak_bin & 0x7FF) << 21) | (peak_power & 0x1FFFFF)
+        exp_words.append((15, d15, {"win": w, "peak_bin": peak_bin}))
         print("win %2d: mdf=%3d num2=%6d level=%d" % (w, mdf_mean, num2,
                                                       level))
 

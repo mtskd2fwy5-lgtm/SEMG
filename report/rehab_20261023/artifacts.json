@@ -1,0 +1,80 @@
+{
+  "tag": "20261023_REHAB_V1",
+  "all_build_gates": "PASS",
+  "elf_load_segments_byte_exact": [
+    {
+      "index": 1,
+      "address": "0x10000000",
+      "bytes": 110340,
+      "boot_offset": "0x3fc900"
+    },
+    {
+      "index": 2,
+      "address": "0x1001c000",
+      "bytes": 442692,
+      "boot_offset": "0x417840"
+    }
+  ],
+  "verified_unchanged_from_pose_stable_v2": [
+    "sw/ps_uart_print/nn_confidence.h",
+    "sw/ps_uart_print/pose_contract.h",
+    "data/models/nn_int8_board_multiwear/quant_params.json",
+    "data/models/nn_int8_board_multiwear/nn_int8_weights.mem",
+    "build/vivado/hand_motion_reconstruction.runs/impl_1/design_1.bit"
+  ],
+  "files": {
+    "build/boot/BOOT.BIN": {
+      "size": 4733316,
+      "sha256": "d0c5695b44b349a2b428de60833034bf76742d78e2ffa7e66b6b16265e7a7ae7"
+    },
+    "sw/ps_uart_print/ps_uart_print.elf": {
+      "size": 578672,
+      "sha256": "eb4d962ef85f051a7990d042435379d25d9d57d0ebd925170f468785c25ba8df"
+    },
+    "sw/ps_uart_print/main.c": {
+      "size": 133984,
+      "sha256": "32073b2ccff4f2cd6161a72b79c6f93379ecc83c17267750c39286c6918232c8"
+    },
+    "sw/ps_uart_print/rehab_training.h": {
+      "size": 6716,
+      "sha256": "4e9db5d535c2e7f716f3bca046eb37a7d83c01f8ec21c58f32a730ca377fa3dd"
+    },
+    "sw/ps_uart_print/lcd_rehab.h": {
+      "size": 13953,
+      "sha256": "40dce55863b4315b224a77f0f6c2ad1d6ba4aceea906c14f536463d05bddccbf"
+    },
+    "sw/ps_uart_print/sd_record.c": {
+      "size": 10062,
+      "sha256": "5a0dcc384b1526b30d8a04a83a9c470ae308c7cfc81e42dcb09dd4a92fb00945"
+    },
+    "sw/ps_uart_print/sd_record.h": {
+      "size": 805,
+      "sha256": "8ffda4421b55be4f2c13830c1cb798b6649cd847bf2cf49ce854b93ee0e9ac9c"
+    },
+    "sw/ps_uart_print/lcd_font_zh.h": {
+      "size": 2224866,
+      "sha256": "29c87226aca10297725b93394679e2fd1736c1ea89b0ac3933edeffdd5161094"
+    },
+    "sw/ps_uart_print/nn_confidence.h": {
+      "size": 2021,
+      "sha256": "47a40a1fa9422850244009e8860916731e5dffdaac9defb035da8d01a42d25ff"
+    },
+    "sw/ps_uart_print/pose_contract.h": {
+      "size": 2213,
+      "sha256": "a3ef9ec8aeb682d6bd2c211ce97401b5de6e51bba2df8ea6a1e830aa33e667af"
+    },
+    "data/models/nn_int8_board_multiwear/quant_params.json": {
+      "size": 69515,
+      "sha256": "8ca80b14ecd48907a55c6fe983b472f0382b6beeff3b2a4f4e36e1aeea4819ef"
+    },
+    "data/models/nn_int8_board_multiwear/nn_int8_weights.mem": {
+      "size": 22362,
+      "sha256": "5bb2c512365bc8af6b57835f8d678694fa78427999b085814225f968d66bbe62"
+    },
+    "build/vivado/hand_motion_reconstruction.runs/impl_1/design_1.bit": {
+      "size": 4045684,
+      "sha256": "30a424a82e23a2650c6d8a93a7d2e4d13178950b570a6b6177325bd944174b91"
+    }
+  },
+  "hardware_trial": "not performed; SD card not written"
+}

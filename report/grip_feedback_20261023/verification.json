@@ -1,0 +1,16 @@
+{
+  "checks": {
+    "feedback_test.log": true,
+    "lcd_test.log": true,
+    "synergy_test.log": true,
+    "uart_test.log": true,
+    "pl_firmware_test.log": true,
+    "rehab_test.log": true
+  },
+  "lcd_panels": [
+    800,
+    1024
+  ],
+  "hardware_verified": false,
+  "new_rtl_build": false
+}

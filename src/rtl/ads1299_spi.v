@@ -7,7 +7,8 @@
 //   CONFIG2 = 0xC0 : internal calibration signal off for real acquisition;
 //            use 0xD5 (INT_CAL on, fCLK/2^20) for digital-chain bring-up
 //   CONFIG3 = 0xEC : internal reference and bias circuitry enabled
-//   CHnSET  = 0x40 : normal electrode input, PGA gain 4, powered on
+//   CHnSET  = 0x40 : normal electrode input, PGA gain 8, powered on
+//   BIAS_SENSP/N = 0x01/0x01 : CH1 P/N common-mode feedback (bench setup)
 //            (24x was tried first but electrode DC offsets pinned 4 channels
 //            near full scale; use 0x05 MUX=101 gain 1 test input for bring-up)
 //
@@ -47,13 +48,11 @@ module ads1299_spi #(
     parameter [7:0] CONFIG2_VALUE = 8'hC0,
     parameter [7:0] CONFIG3_VALUE = 8'hEC,
     parameter [7:0] LOFF_VALUE = 8'h00,
-    // 0x40 = PD=0, GAIN=100 (4x), MUX=000 (normal electrode input).
-    // Board evidence (2026-10-10, first real-electrode run at 24x): electrode
-    // DC offsets of 9..86 mV between electrode pairs pinned CH5-CH8 at 91-92%
-    // of full scale, so 24x left no headroom for the actual EMG swing.  4x
-    // raises full scale to +/-1.125 V (~8% used by the offsets).  Bring-up
-    // A/B value: 0x05 (GAIN 1x, MUX=101) selects the internal test signal.
-    parameter [7:0] CHANNEL_VALUE = 8'h40
+    // 0x40 = PD=0, GAIN=100 (8x), MUX=000. At VREF=4.5 V, ideal
+    // differential full scale is +/-0.5625 V (common-mode limits also apply).
+    parameter [7:0] CHANNEL_VALUE = 8'h40,
+    parameter [7:0] BIAS_SENSP_VALUE = 8'h01,
+    parameter [7:0] BIAS_SENSN_VALUE = 8'h01
 ) (
     input  wire                         clk,
     input  wire                         rst_n,
@@ -72,7 +71,10 @@ module ads1299_spi #(
     output reg [CHANNEL_BITS-1:0]       sample_channel,
     output reg                          frame_valid,
     output reg                          busy,
-    output reg                          error
+    output reg                          error,
+    // Published only after actual RREG: done/ok/error/first bad address,
+    // followed by actual CONFIG3, BIAS_SENSP, BIAS_SENSN bytes. Zero = waiting.
+    output reg [31:0]                    config_status
 );
 
     localparam integer HALF_SCLK_CYCLES = (CLK_FREQ_HZ / (2 * SCLK_FREQ_HZ) < 1) ?
@@ -91,7 +93,9 @@ module ads1299_spi #(
     // frame + command gap is well inside the 250 us DRDY period at 4 kSPS.
     localparam integer DRDY_DECODE_CYCLES = 64;
     localparam integer FRAME_BITS = 24 + DATA_BITS * CHANNELS;
-    localparam integer CONFIG_REG_COUNT = 4 + CHANNELS;
+    // Addresses stay fixed for ADS1299-4/-6: CH1..8 occupy 05h..0Ch;
+    // BIAS masks are always 0Dh/0Eh. Unimplemented channel slots read zero.
+    localparam integer CONFIG_REG_COUNT = 14;
     localparam integer CONFIG_LAST_BYTE = 1 + CONFIG_REG_COUNT;
 
     localparam [4:0] ST_RESET_HOLD = 5'd0;
@@ -125,6 +129,7 @@ module ads1299_spi #(
     // for the sporadic ~1.3 s interface lockups (LED proved the FSM sat in
     // ST_WAIT_DRDY with DRDY static; stream resumed cleanly with zero loss).
     localparam [4:0] ST_DRDY_DECODE = 5'd21;
+    localparam [4:0] ST_CONFIG_ERROR = 5'd22;
 
     reg [4:0] state;
     reg [31:0] delay_count;
@@ -132,6 +137,11 @@ module ads1299_spi #(
     reg [7:0] tx_shift;
     reg [3:0] tx_bit_count;
     reg [4:0] config_byte_index;
+    reg config_read;
+    reg [7:0] config_rx_shift;
+    reg [7:0] config3_readback, bias_p_readback, bias_n_readback;
+    reg readback_bad;
+    reg [4:0] first_bad_address;
     reg [8:0] frame_bit_count;
     reg [5:0] channel_bit_count;
     reg [CHANNEL_BITS-1:0] channel_count;
@@ -182,7 +192,9 @@ module ads1299_spi #(
                 4'd1: config_data = CONFIG2_VALUE;
                 4'd2: config_data = CONFIG3_VALUE;
                 4'd3: config_data = LOFF_VALUE;
-                default: config_data = CHANNEL_VALUE;
+                4'd12: config_data = BIAS_SENSP_VALUE & (8'hFF >> (8-CHANNELS));
+                4'd13: config_data = BIAS_SENSN_VALUE & (8'hFF >> (8-CHANNELS));
+                default: config_data = (index < 4+CHANNELS) ? CHANNEL_VALUE : 8'h00;
             endcase
         end
     endfunction
@@ -191,12 +203,17 @@ module ads1299_spi #(
         input [4:0] index;
         begin
             case (index)
-                5'd0: config_tx_byte = 8'h41;  /* WREG (010r rrrr) @ CONFIG1 = addr 01h */
+                5'd0: config_tx_byte = config_read ? 8'h21 : 8'h41;
                 5'd1: config_tx_byte = CONFIG_REG_COUNT - 1;
-                default: config_tx_byte = config_data(index - 5'd2);
+                default: config_tx_byte = config_read ? 8'h00 : config_data(index - 5'd2);
             endcase
         end
     endfunction
+
+    wire [7:0] config_rx_byte = {config_rx_shift[6:0], adc_dout};
+    // CONFIG3 bit 0 is read-only BIAS_STAT; it is not configuration proof
+    // and must not cause a mismatch when the electrode state changes.
+    wire [7:0] config_compare_mask = (config_byte_index == 5'd4) ? 8'hFE : 8'hFF;
 
     always @(posedge clk) begin
         sample_valid <= 1'b0;
@@ -209,6 +226,14 @@ module ads1299_spi #(
             tx_shift <= 8'd0;
             tx_bit_count <= 4'd0;
             config_byte_index <= 5'd0;
+            config_read <= 1'b0;
+            config_rx_shift <= 8'd0;
+            config3_readback <= 8'd0;
+            bias_p_readback <= 8'd0;
+            bias_n_readback <= 8'd0;
+            readback_bad <= 1'b0;
+            first_bad_address <= 5'd0;
+            config_status <= 32'd0;
             frame_bit_count <= 9'd0;
             channel_bit_count <= 6'd0;
             channel_count <= {CHANNEL_BITS{1'b0}};
@@ -236,6 +261,11 @@ module ads1299_spi #(
             case (state)
                 ST_RESET_HOLD: begin
                     busy <= 1'b1;
+                    error <= 1'b0;
+                    config_status <= 32'd0;
+                    config_read <= 1'b0;
+                    readback_bad <= 1'b0;
+                    first_bad_address <= 5'd0;
                     adc_reset_n <= 1'b0;
                     adc_cs_n <= 1'b1;
                     adc_sclk <= 1'b0;
@@ -314,6 +344,7 @@ module ads1299_spi #(
                     config_byte_index <= 5'd0;
                     tx_shift <= config_tx_byte(5'd0);
                     tx_bit_count <= 4'd0;
+                    config_rx_shift <= 8'd0;
                     adc_din <= config_tx_byte(5'd0) >> 7;
                     state <= ST_CONFIG_BITS;
                 end
@@ -326,7 +357,22 @@ module ads1299_spi #(
                             adc_din <= tx_shift[7];  /* place at rising edge, [7]=bit k after k-1 shifts */
                         end else begin
                             adc_sclk <= 1'b0;
+                            config_rx_shift <= config_rx_byte;
                             if (tx_bit_count == 4'd7) begin
+                                if (config_read && config_byte_index >= 5'd2) begin
+                                    if ((config_rx_byte & config_compare_mask) !=
+                                        (config_data(config_byte_index - 5'd2) & config_compare_mask)) begin
+                                        readback_bad <= 1'b1;
+                                        if (!readback_bad)
+                                            first_bad_address <= config_byte_index - 5'd1;
+                                    end
+                                    case (config_byte_index)
+                                        5'd4: config3_readback <= config_rx_byte;
+                                        5'd14: bias_p_readback <= config_rx_byte;
+                                        5'd15: bias_n_readback <= config_rx_byte;
+                                        default: begin end
+                                    endcase
+                                end
                                 delay_count <= COMMAND_GAP_CYCLES;
                                 state <= ST_CONFIG_GAP;
                             end else begin
@@ -358,10 +404,33 @@ module ads1299_spi #(
                 end
 
                 ST_CONFIG_CS_HIGH: begin
-                    if (delay_count == 0)
-                        state <= ST_RDATAC_START;
-                    else
+                    if (delay_count == 0) begin
+                        if (!config_read) begin
+                            config_read <= 1'b1;
+                            state <= ST_CONFIG_START;
+                        end else begin
+                            config_status <= {1'b1, !readback_bad, readback_bad,
+                                first_bad_address, config3_readback,
+                                bias_p_readback, bias_n_readback};
+                            error <= readback_bad;
+                            state <= readback_bad ? ST_CONFIG_ERROR : ST_RDATAC_START;
+                        end
+                    end else
                         delay_count <= delay_count - 1'b1;
+                end
+
+                ST_CONFIG_ERROR: begin
+                    // Bounded failure: do not start unverified acquisition.
+                    // PL_KEY0 requests another complete reset/write/read cycle.
+                    busy <= 1'b0;
+                    adc_start <= 1'b0;
+                    adc_cs_n <= 1'b1;
+                    adc_sclk <= 1'b0;
+                    if (reconfig_pend) begin
+                        reconfig_pend <= 1'b0;
+                        state <= ST_RESET_HOLD;
+                        delay_count <= RESET_CYCLES;
+                    end
                 end
 
                 ST_RDATAC_START: begin

@@ -27,6 +27,9 @@ Usage:
   python tools/export_int8.py --resample 20 --win-samples 400 \
       --hop-samples 100 --pl-filter --out-dir data/models/nn_int8_pl_filter
       # export a PL-aligned experiment without replacing nn_int8/
+  python tools/export_int8.py --data-dir data/raw/board --input-mode waveform --fs 4000 \
+      --win-samples 400 --hop-samples 100 --notch50 --pl-filter
+      # new notch experiments default to a separate output directory
 """
 
 import argparse
@@ -291,17 +294,20 @@ def build_mem(qp):
 
 def load_all(sessions, fs=200, decim=1, resample=1,
              win_samples=0, hop_samples=0, pl_filter=False,
-             requested_subjects=None, input_mode="baseline"):
+             requested_subjects=None, input_mode="baseline", notch50=False,
+             data_dir=None):
     """Load features using the same preprocessing contract as training."""
+    train_baseline.check_sample_contract(fs, decim, resample, pl_filter, notch50)
+    data_dir = data_dir or RAW_DIR
     train_baseline.FS = fs
     train_baseline.WINDOW = (
         win_samples or train_baseline.WINDOW_MS * fs // 1000)
     train_baseline.HOP = hop_samples or train_baseline.HOP_MS * fs // 1000
-    input_suffix = "full" if input_mode == "full" else "baseline"
+    input_suffix = input_mode
     subjects = sorted({
         os.path.basename(os.path.dirname(p))
         for p in glob.glob(os.path.join(
-            RAW_DIR, "s*", "*_E*_A1_%s.csv" % input_suffix))
+            data_dir, "s*", "*_E*_A1_%s.csv" % input_suffix))
     })
     if requested_subjects:
         requested = {s.lower() for s in requested_subjects}
@@ -310,8 +316,11 @@ def load_all(sessions, fs=200, decim=1, resample=1,
     for subj in subjects:
         xs, ys = [], []
         for e in sessions:
-            x, y = load_training_session(RAW_DIR, subj, e, input_mode)
-            x, y = prepare_samples(x, y, decim, resample, pl_filter)
+            x, y, meta = load_training_session(
+                data_dir, subj, e, input_mode, with_metadata=True,
+                keep_unknown=notch50)
+            x, y = prepare_samples(x, y, decim, resample, pl_filter,
+                                    notch50=notch50, fs=fs, metadata=meta)
             f, wy = make_windows(x, y)
             xs.append(f)
             ys.append(wy)
@@ -324,9 +333,11 @@ def main():
     ap.add_argument("--sessions", type=int, nargs="+", default=[2])
     ap.add_argument("--subjects", nargs="+", default=None,
                     help="subject directory names to include (default: all)")
-    ap.add_argument("--input-mode", choices=("baseline", "full"),
+    ap.add_argument("--data-dir", default=None,
+                    help="dataset root with s*/ subdirectories (default NinaPro DB5)")
+    ap.add_argument("--input-mode", choices=("baseline", "full", "waveform"),
                     default="baseline",
-                    help="baseline rows or continuous *_full.csv stream")
+                    help="baseline rows, continuous NinaPro full stream, or board waveform capture")
     ap.add_argument("--fs", type=int, default=200)
     ap.add_argument("--decim", type=int, default=1)
     ap.add_argument("--resample", type=int, default=1,
@@ -337,13 +348,25 @@ def main():
                     help="hop length; default is 50 ms at --fs")
     ap.add_argument("--pl-filter", action="store_true",
                     help="apply the exact integer PL bandpass")
+    line_filter = ap.add_mutually_exclusive_group()
+    line_filter.add_argument("--notch-comb", dest="notch50", action="store_const", const="notchcomb",
+                            help="use deployed notch + comb contract")
+    line_filter.add_argument("--notch50", dest="notch50", action="store_const", const="processed",
+                            help="current final notch + comb + bandpass contract")
+    line_filter.add_argument("--legacy-notch50", dest="notch50", action="store_true",
+                    help="use the PL notch contract and check CSV filter provenance")
     ap.add_argument("--hidden", type=int, nargs="+", default=[64, 32])
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--no-balance", action="store_true")
-    ap.add_argument("--out-dir", default=INT8_DIR,
-                    help="directory for quant params, vectors and weights")
-    ap.add_argument("--metrics-path", default=VAL_PATH)
+    ap.add_argument("--out-dir", default=None,
+                    help="output directory (notch50 defaults to a separate experiment)")
+    ap.add_argument("--metrics-path", default=None)
     args = ap.parse_args()
+    try:
+        train_baseline.check_sample_contract(
+            args.fs, args.decim, args.resample, args.pl_filter, args.notch50)
+    except ValueError as exc:
+        ap.error(str(exc))
 
     sessions = args.sessions
     seed = args.seed
@@ -352,8 +375,10 @@ def main():
         sessions, fs=args.fs, decim=args.decim, resample=args.resample,
         win_samples=args.win_samples, hop_samples=args.hop_samples,
         pl_filter=args.pl_filter, requested_subjects=args.subjects,
-        input_mode=args.input_mode)
+        input_mode=args.input_mode, notch50=args.notch50, data_dir=args.data_dir)
     subjects = sorted(data)
+    if len(subjects) < 2:
+        ap.error("need at least 2 converted subjects for leave-one-subject-out evaluation")
     print("subjects: %s, windows: %s" % (
         subjects, {s: len(data[s][1]) for s in subjects}))
     rng = np.random.default_rng(seed)
@@ -366,6 +391,11 @@ def main():
                   "hop_samples": train_baseline.HOP,
                   "effective_fs_hz": args.fs * args.resample // args.decim,
                   "pl_filter": args.pl_filter,
+                  "notch50": args.notch50,
+                  "notch_filter_id": (train_baseline.notch_model(args.notch50).FILTER_ID
+                                      if args.notch50 else None),
+                  "filter_contract": train_baseline.filter_contract(
+                      args.pl_filter, args.notch50),
                   "input_mode": args.input_mode,
                   "balance": "none" if args.no_balance else "rest downsampled",
                   "classes": CLASSES},
@@ -427,8 +457,11 @@ def main():
 
     # ---- persist ------------------------------------------------------------
     qp["mem_layout"] = MEM_LAYOUT
-    out_dir = args.out_dir
-    metrics_path = args.metrics_path
+    qp["preprocessing"] = report["config"]
+    suffix = ("_processed" if args.notch50 == "processed" else "_notchcomb" if args.notch50 == "notchcomb" else "_notch50") + ("_pl_filter" if args.pl_filter else "")
+    out_dir = args.out_dir or (INT8_DIR + suffix if args.notch50 else INT8_DIR)
+    metrics_path = args.metrics_path or (
+        VAL_PATH.replace(".json", suffix + ".json") if args.notch50 else VAL_PATH)
     os.makedirs(out_dir, exist_ok=True)
     demo = all_xb[:64]
     # $readmemh golden vectors for the RTL testbench: 64 windows, one u32

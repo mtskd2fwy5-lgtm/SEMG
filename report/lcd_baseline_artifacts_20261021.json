@@ -1,0 +1,78 @@
+{
+  "build_tag": "20261021_LCD_TEXT_BASELINE",
+  "panels": [
+    [
+      800,
+      480
+    ],
+    [
+      1024,
+      600
+    ]
+  ],
+  "checks": {
+    "font_baseline": "PASS",
+    "lcd_both_panels": "PASS",
+    "arm_compile": "PASS",
+    "G1-G5": "PASS"
+  },
+  "reused_existing_pl_bitstream": true,
+  "board_programmed": false,
+  "files": [
+    {
+      "path": "sw/ps_uart_print/main.c",
+      "bytes": 130400,
+      "sha256": "5c4d9f1b718a04fc5e87533529d6a0a616a5a8cf422f68989e208f11fa363fe6"
+    },
+    {
+      "path": "sw/ps_uart_print/lcd_font_zh.h",
+      "bytes": 1887641,
+      "sha256": "0398c54b6fa58934289dd6356465aaae9cb7adbdb820ac8e1c6b10ab5832e996"
+    },
+    {
+      "path": "sw/ps_uart_print/lcd_ui.h",
+      "bytes": 2425,
+      "sha256": "6eb5f9ce36a6d18a22ec7e0d66a11ccdf1306acb424734fc0f99e0b3c99314cc"
+    },
+    {
+      "path": "sw/ps_uart_print/lcd_settings.h",
+      "bytes": 3743,
+      "sha256": "c89a704da81731fa4ccadfab34f81bd4f219d22dec66c7c32f9b54a6e84c5f4a"
+    },
+    {
+      "path": "sw/ps_uart_print/lcd_waveform.h",
+      "bytes": 12010,
+      "sha256": "0a7fd1fd54d7d0c36b3d5ab86341993beec41b5ed8da9ea60bbd8ae1ebedc01f"
+    },
+    {
+      "path": "tools/gen_hz_glyphs.py",
+      "bytes": 3715,
+      "sha256": "ab398bf5c18846f9da7b9945274c66cf833622bb19a4eebf3694e58f19460f3e"
+    },
+    {
+      "path": "sim/test_lcd_font.py",
+      "bytes": 1927,
+      "sha256": "2e99923e1feab3a4a0dd97e7178140b27e2f4c3735f00e723cb52d1767f55541"
+    },
+    {
+      "path": "sim/lcd_firmware_test.c",
+      "bytes": 44693,
+      "sha256": "5960f42bd6bd37cc9e99694a1d33a38abb17a80d7738f5bb640ee577b7fed251"
+    },
+    {
+      "path": "sw/ps_uart_print/ps_uart_print.elf",
+      "bytes": 511720,
+      "sha256": "bae077de10f3111156698aee32e4da1d89bf5f5186a6e1e4832db8a26c427c05"
+    },
+    {
+      "path": "build/boot/BOOT.BIN",
+      "bytes": 4655668,
+      "sha256": "5ae9bb1b2ca2eb5c5568638335eaf175f1346ff32d74834578a2e7b33ce09605"
+    },
+    {
+      "path": "build/boot/SourceHanSans-OFL.txt",
+      "bytes": 4463,
+      "sha256": "fcac737e761ec63dbfbdce11030a1780161920d80315edba9c8beff1c2bac5a2"
+    }
+  ]
+}

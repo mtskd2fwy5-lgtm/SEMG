@@ -7,7 +7,7 @@
  * through axi_gpio_1 (single 32-bit input channel):
  *
  *   [31]    link_valid - GT911 acknowledged its I2C address probe
- *   [30]    down       - contact present (point event is not "lift up")
+ *   [30]    down       - buffer-ready status has at least one contact
  *   [29:24] roll       - increments on every accepted point report; the PS
  *                        reads the word twice and compares roll to avoid
  *                        tearing across the asynchronous update
@@ -28,9 +28,9 @@
  *
  * Polling (~2.5 ms period, gated by the GT911 buffer-status bit):
  *   read 0x814E (bit7 = buffer ready, [3:0] = points);
- *   if ready and >= 1 point: read point 1 at 0x8150..0x8154
- *     (track id, xL, xH, yL, yH; event = xH[7:6]: 00 press, 01 lift,
- *      10 contact) and write 0x00 back to 0x814E to release the buffer;
+ *   if ready and >= 1 point: read point 1 at 0x814F..0x8153
+ *     (track id, xL, xH, yL, yH) and write 0x00 back to 0x814E;
+ *     GT911 down/up comes from the status point count, not xH event bits.
  *   if ready with 0 points: just clear 0x814E.
  *
  * Board wiring (banks 34/35, LVCMOS33, see hz_zynq_lcd.xdc).  J10 pin
@@ -74,7 +74,7 @@ module touch_gt911 (
     localparam [6:0] GT_ADDR0 = 7'h5D;            // INT low  at reset release
     localparam [6:0] GT_ADDR1 = 7'h14;            // INT high at reset release
     localparam [15:0] REG_STATUS = 16'h814E;      // buffer status / points
-    localparam [15:0] REG_POINT1 = 16'h8150;      // point 1: id,xL,xH,yL,yH
+    localparam [15:0] REG_POINT1 = 16'h814F;      // point 1: id,xL,xH,yL,yH
 
     // ---------------- pin drives ----------------
     // Explicit IOBUF primitives are MANDATORY: OOC synthesis (module_ref
@@ -157,7 +157,7 @@ module touch_gt911 (
 
             // watchdog: any non-idle state longer than 10 ms -> abort
             if (eng_st != E_IDLE) begin
-                if (&eng_wd) begin
+                if (eng_wd >= T_I2C_WD) begin
                     eng_st      <= E_IDLE;
                     scl_r       <= 1'b0;
                     sda_oe_r    <= 1'b0;
@@ -170,7 +170,7 @@ module touch_gt911 (
                 eng_wd <= 20'd0;
             end
 
-            case (eng_st)
+            if (!(eng_st != E_IDLE && eng_wd >= T_I2C_WD)) case (eng_st)
             E_IDLE: begin
                 scl_r <= 1'b0;
                 sda_oe_r <= 1'b0;
@@ -308,7 +308,6 @@ module touch_gt911 (
     wire [7:0] status  = rx_word[7:0];
     wire [11:0] pt_x   = {rx_word[19:16], rx_word[31:24]};  // xH[3:0],xL
     wire [11:0] pt_y   = {rx_word[3:0],   rx_word[15:8]};   // yH[3:0],yL
-    wire        pt_dn  = ~rx_word[22];                      // xH[6]: 1 = lift up
 
     always @(posedge clk) begin
         if (rst_in) begin
@@ -326,6 +325,7 @@ module touch_gt911 (
 
             // --- hardware reset + address selection window ---
             S_RST0: begin                       // RST low, INT low, 10 ms
+                touch_data[31:30] <= 2'b00;
                 rst_pin  <= 1'b0;
                 int_drv  <= 1'b1;
                 link_valid <= 1'b0;
@@ -365,6 +365,7 @@ module touch_gt911 (
                     sq_req <= 1'b0;
                     if (!eng_ack_err) begin
                         link_valid  <= 1'b1;
+                        touch_data[31] <= 1'b1;
                         probe_round <= 2'd0;
                         sq          <= S_POLL;
                     end else if (!probe_sel) begin
@@ -375,6 +376,7 @@ module touch_gt911 (
                         if (probe_round == 2'd2) begin
                             probe_round <= 2'd0;
                             sq          <= S_RST0;  // hard reset and retry
+                            tmr         <= 23'd0;
                         end else begin
                             probe_round <= probe_round + 2'd1;
                             sq          <= S_RETRY;
@@ -385,6 +387,7 @@ module touch_gt911 (
 
             // --- poll buffer status 0x814E ---
             S_POLL: begin
+                tmr <= 23'd0;
                 t_reg    <= REG_STATUS;
                 t_reg_en <= 1'b1;
                 t_write1 <= 1'b0;
@@ -396,9 +399,11 @@ module touch_gt911 (
                 if (eng_done) begin
                     sq_req <= 1'b0;
                     if (eng_ack_err) begin
+                        touch_data[30] <= 1'b0; // no stuck button across bus errors
                         if (tx_fail == 3'd5) begin
                             tx_fail <= 3'd0;
                             sq      <= S_RST0;  // link lost, hard reset
+                            tmr     <= 23'd0;
                         end else begin
                             tx_fail <= tx_fail + 3'd1;
                             sq      <= S_RETRY;
@@ -406,13 +411,17 @@ module touch_gt911 (
                     end else begin
                         tx_fail <= 3'd0;
                         if (status[7] && status[3:0] != 4'd0) sq <= S_POINT;
-                        else if (status[7])                   sq <= S_CLEAR;
+                        else if (status[7]) begin
+                            roll <= roll + 6'd1;
+                            touch_data <= {link_valid,1'b0,roll+6'd1,touch_data[23:0]};
+                            sq <= S_CLEAR;
+                        end
                         else                                  sq <= S_WAIT;
                     end
                 end
             end
 
-            // --- read point 1 (5 bytes from 0x8150) ---
+            // --- read point 1 (ID at 0x814F, XY at 0x8150..0x8153) ---
             S_POINT: begin
                 t_reg    <= REG_POINT1;
                 t_reg_en <= 1'b1;
@@ -426,8 +435,9 @@ module touch_gt911 (
                     sq_req <= 1'b0;
                     roll   <= roll + 6'd1;
                     if (!eng_ack_err)
-                        touch_data <= {link_valid, pt_dn, roll + 6'd1,
+                        touch_data <= {link_valid, 1'b1, roll + 6'd1,
                                        pt_x, pt_y};
+                    else touch_data[30] <= 1'b0;
                     sq <= S_CLEAR;
                 end
             end

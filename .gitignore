@@ -79,3 +79,16 @@ data/metrics/*.json
 
 # Reference PDFs stay out of the repo (guide requires ASCII-only filenames)
 *.pdf
+
+# Local editor/AI tool state and renderer/simulator scratch outputs
+/.trae/
+/.trae-html-share-packages/
+/.vivado-ai/
+/*.ppm
+/*.wdb
+/xelab.pb
+/xsim*.jou
+/~$*.docx
+
+# Versioned boot candidates are rebuilt from source; hashes live in reports
+build/boot/BOOT_*.BIN

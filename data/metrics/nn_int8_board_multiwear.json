@@ -1,0 +1,17 @@
+{
+  "source_model": "data/models/emg008_009_multiwear.joblib",
+  "calibration_windows": 38252,
+  "test_capture": "report/emg017_20261022/EMG017_processed.csv",
+  "test_windows": 8649,
+  "float_accuracy": 0.8885420279801133,
+  "int8_accuracy": 0.8783674413226963,
+  "float_int8_agreement": 0.9786102439588392,
+  "classes": [
+    "rest",
+    "open_hand",
+    "fist",
+    "wrist_flex",
+    "wrist_extend"
+  ],
+  "output_dir": "data/models/nn_int8_board_multiwear"
+}

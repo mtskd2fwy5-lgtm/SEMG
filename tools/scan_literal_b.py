@@ -13,9 +13,28 @@ import glob
 # Usage: python tools/scan_literal_b.py [netlist.v]
 #   Without arguments the newest *emg_pl_export* OOC sim netlist under
 #   build/vivado is used.
-# Exit 0 iff zero literal-B DSPs and zero known-bad literal hits.
+# Exit 0 iff zero unexpected literal-B DSPs and zero known-bad literal hits.
 
 BAD_VALUES = ((14646, 'B0/B2 bad'), (-116680, 'A2 bad'), (14642, 'LP bad'))
+
+# The 30-band spectrum index uses `(spec_offset * 30) / 220`. Vivado
+# implements that small, non-EMG mapping multiply as one constant-B DSP
+# (`p_0_out__1` in the current OOC netlist). It is not a filter coefficient
+# path and must not be confused with a folded EMG coefficient. Keep the
+# exception narrow and explicit so a new constant-B DSP still fails the gate.
+BENIGN_LITERAL_DSP = {
+    ('p_0_out__1', 30),
+}
+
+
+def benign_literal(module, instance, value):
+    # Policy's percentage numerator is exps[index] * 100, not an EMG
+    # filter coefficient. Scope AND leaf name AND exact value must match.
+    if module.endswith('_emg_control_policy') and instance == 'numerator_reg' and value == 100:
+        return 'policy confidence percent numerator'
+    if module.endswith('_emg_fatigue') and (instance, value) in BENIGN_LITERAL_DSP:
+        return 'spectrum-index mapping'
+    return ''
 
 
 def default_netlist():
@@ -35,6 +54,7 @@ def main():
     txt = open(net, encoding='utf-8', errors='replace').read()
 
     rows = []
+    modules=list(re.finditer(r'^module\s+([A-Za-z_][\w$]*)',txt,re.M))
     for m in re.finditer(r'DSP48E1 #\((.*?)\)\s*\n\s*(\w+)\s*\((.*?)\)\);', txt, re.S):
         params, inst, body = m.groups()
 
@@ -54,14 +74,20 @@ def main():
                 v = int(mm.group(1), 16)
                 blit = v - (1 << 18) if v >= (1 << 17) else v
         line = txt.count('\n', 0, m.start()) + 1
-        rows.append((line, inst, blit, ' '.join(braw.split())[:70]))
+        module=next(x.group(1) for x in reversed(modules) if x.start()<m.start())
+        rows.append((line, inst, blit, ' '.join(braw.split())[:70],module))
 
     print('total DSP48E1 instances :', len(rows))
     lits = [r for r in rows if r[2] is not None]
     print('literal-B (constant) DSP:', len(lits))
     for r in lits:
-        print('  line %-8d inst=%-12s B=%-8d raw=%s' % r)
-    print('wire-B (dynamic) DSP    :', len(rows) - len(lits))
+        reason=benign_literal(r[4],r[1],r[2])
+        tag=f' [benign {reason}]' if reason else ''
+        print('  line %-8d inst=%-12s B=%-8d raw=%s%s' % (*r[:4], tag))
+    unexpected_lits = [r for r in lits if not benign_literal(r[4],r[1],r[2])]
+    print('benign literal-B DSP     :', len(lits) - len(unexpected_lits))
+    print('unexpected literal-B DSP :', len(unexpected_lits))
+    print('wire-B (dynamic) DSP     :', len(rows) - len(lits))
 
     bad_hits = 0
     for val, name in BAD_VALUES:
@@ -76,8 +102,8 @@ def main():
         print('value %-7d (%s): %d literal hits' % (val, name, hits))
         bad_hits += hits
 
-    ok = (len(lits) == 0) and (bad_hits == 0)
-    print('RESULT:', 'OK - zero literal-B DSPs, zero bad-value hits'
+    ok = (len(unexpected_lits) == 0) and (bad_hits == 0)
+    print('RESULT:', 'OK - zero unexpected literal-B DSPs, zero bad-value hits'
           if ok else 'FAIL - literal-B DSPs or known-bad literals present')
     return 0 if ok else 1
 

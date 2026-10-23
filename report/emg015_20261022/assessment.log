@@ -1,0 +1,2 @@
+SUMMARY {"frames": 225400, "duration_s": 56.35, "quality": {"raw": "CHECK", "processed": "PASS"}, "processed_rms": [10.7, 11.0, 10.0, 10.3, 10.6, 16.4, 9.7, 11.3]}
+TEST_PASS: continuous pure-rest record, finite PSD/RMS, no raw rails

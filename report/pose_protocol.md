@@ -49,17 +49,29 @@ has arrived, so an old board image and a new PC tool can coexist.
 The shared board/PC state policy is:
 
 ```text
-POSE_MIN_CONF        = 30
-POSE_CONFIRM_WINDOWS = 2
+POSE_MIN_CONF        = 70
+POSE_HOLD_CONF       = 50
+POSE_CONFIRM_WINDOWS = 3
+POSE_REST_WINDOWS   = 6
+POSE_UNCERTAIN_WINDOWS = 8
 POSE_SMOOTH_MS       = 220
 POSE_STALE_MS        = 1500
 ```
 
-The PS confirms a new classifier class only after two consecutive valid
-windows. A gated or low-confidence rest decision takes effect immediately.
-The PC renderer mirrors this policy for legacy `R`-only streams. The LCD
-uses the accepted class directly and therefore remains functional with the
-UART disconnected.
+As of `20261022_POSE_STABLE_V2`, PS confidence is model-scaled, uncalibrated
+softmax via a fixed-point exponential lookup; it is not an estimated empirical
+correctness probability. Old images used max-positive-logit / sum-absolute-logits.
+The PS confirms a new action after three valid windows (70 minimum score),
+keeps the same action down to 50, confirms rest/MAV evidence for six windows,
+and holds ambiguous input for at most eight windows before returning to rest.
+Each hop is 25 ms. A discontinuous feature sequence resets pending confirmation.
+The LCD score updates for its displayed class every inference window.
+
+New P frames include `stable=1`: `gid` and the pose vector have already passed
+this policy and must not be gated a second time by their instantaneous `q`.
+The PC accepts that field; frames without it retain the old confidence fallback.
+R-only PC fallback retains the old 30-point, two-window adapter, not the new PS hysteresis.
+The LCD uses the accepted class directly and remains functional without UART.
 
 ## Model changes
 

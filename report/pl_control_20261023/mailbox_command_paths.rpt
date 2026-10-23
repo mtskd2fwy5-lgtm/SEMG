@@ -1,0 +1,1457 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025
+| Date         : Fri Oct 23 18:43:54 2026
+| Host         : LAPTOP-VCCV41QO running 64-bit major release  (build 9200)
+| Command      : report_timing -user_ignored -from [get_cells -hier -filter {NAME =~ axi_gpio_4/*gpio_Data_Out_reg*}] -to [get_cells -hier -regexp emg_pl_export_0/inst/(epoch_reg.*|shift_reg.*|recalibrate_reg)] -max_paths 32 -nworst 4 -file D:/FPGA/sEMG-HMRS/report/pl_control_20261023/mailbox_command_paths.rpt
+| Design       : design_1
+| Device       : 7z020-clg400
+| Speed File   : -2  PRODUCTION 1.12 2019-11-22
+| Design State : Routed
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Timing Report
+
+Slack:                    inf
+  Source:                 axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[26]/C
+                            (rising edge-triggered cell FDRE clocked by clk_fpga_0  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            emg_pl_export_0/inst/epoch_reg[1]/D
+                            (rising edge-triggered cell FDRE clocked by pl_clk  {rise@0.000ns fall@20.000ns period=40.000ns})
+  Path Group:             (none)
+  Path Type:              Setup (Max at Slow Process Corner)
+  Data Path Delay:        1.393ns  (logic 0.379ns (27.216%)  route 1.014ns (72.784%))
+  Logic Levels:           0  
+  Clock Path Skew:        1.914ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    4.355ns
+    Source Clock Delay      (SCD):    2.441ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.154ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.300ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+  Timing Exception:       Asynchronous Clock Groups
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk_fpga_0 rise edge)
+                                                      0.000     0.000 r  
+    PS7_X0Y0             PS7                          0.000     0.000 r  processing_system7_0/inst/PS7_i/FCLKCLK[0]
+                         net (fo=1, routed)           0.994     0.994    processing_system7_0/inst/FCLK_CLK_unbuffered[0]
+    BUFGCTRL_X0Y30       BUFG (Prop_bufg_I_O)         0.085     1.079 r  processing_system7_0/inst/buffer_fclk_clk_0.FCLK_CLK_0_BUFG/O
+                         net (fo=11850, routed)       1.362     2.441    axi_gpio_4/U0/gpio_core_1/s_axi_aclk
+    SLICE_X53Y72         FDRE                                         r  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[26]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X53Y72         FDRE (Prop_fdre_C_Q)         0.379     2.820 r  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[26]/Q
+                         net (fo=2, routed)           1.014     3.834    emg_pl_export_0/inst/control_command[5]
+    SLICE_X52Y71         FDRE                                         r  emg_pl_export_0/inst/epoch_reg[1]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock pl_clk rise edge)     0.000     0.000 r  
+    U18                                               0.000     0.000 r  pl_clk_0 (IN)
+                         net (fo=0)                   0.000     0.000    pl_clk_0
+    U18                  IBUF (Prop_ibuf_I_O)         1.363     1.363 r  pl_clk_0_IBUF_inst/O
+                         net (fo=1, routed)           1.701     3.064    pl_clk_0_IBUF
+    BUFGCTRL_X0Y29       BUFG (Prop_bufg_I_O)         0.077     3.141 r  pl_clk_0_IBUF_BUFG_inst/O
+                         net (fo=29781, routed)       1.213     4.355    emg_pl_export_0/inst/pl_clk
+    SLICE_X52Y71         FDRE                                         r  emg_pl_export_0/inst/epoch_reg[1]/C
+
+Slack:                    inf
+  Source:                 axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[26]/C
+                            (rising edge-triggered cell FDRE clocked by clk_fpga_0  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            emg_pl_export_0/inst/epoch_reg[1]/D
+                            (rising edge-triggered cell FDRE clocked by pl_clk  {rise@0.000ns fall@20.000ns period=40.000ns})
+  Path Group:             (none)
+  Path Type:              Setup (Max at Slow Process Corner)
+  Data Path Delay:        1.393ns  (logic 0.379ns (27.216%)  route 1.014ns (72.784%))
+  Logic Levels:           0  
+  Clock Path Skew:        1.914ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    4.355ns
+    Source Clock Delay      (SCD):    2.441ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.154ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.300ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+  Timing Exception:       Asynchronous Clock Groups
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk_fpga_0 rise edge)
+                                                      0.000     0.000 r  
+    PS7_X0Y0             PS7                          0.000     0.000 r  processing_system7_0/inst/PS7_i/FCLKCLK[0]
+                         net (fo=1, routed)           0.994     0.994    processing_system7_0/inst/FCLK_CLK_unbuffered[0]
+    BUFGCTRL_X0Y30       BUFG (Prop_bufg_I_O)         0.085     1.079 r  processing_system7_0/inst/buffer_fclk_clk_0.FCLK_CLK_0_BUFG/O
+                         net (fo=11850, routed)       1.362     2.441    axi_gpio_4/U0/gpio_core_1/s_axi_aclk
+    SLICE_X53Y72         FDRE                                         r  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[26]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X53Y72         FDRE (Prop_fdre_C_Q)         0.379     2.820 f  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[26]/Q
+                         net (fo=2, routed)           1.014     3.834    emg_pl_export_0/inst/control_command[5]
+    SLICE_X52Y71         FDRE                                         f  emg_pl_export_0/inst/epoch_reg[1]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock pl_clk rise edge)     0.000     0.000 r  
+    U18                                               0.000     0.000 r  pl_clk_0 (IN)
+                         net (fo=0)                   0.000     0.000    pl_clk_0
+    U18                  IBUF (Prop_ibuf_I_O)         1.363     1.363 r  pl_clk_0_IBUF_inst/O
+                         net (fo=1, routed)           1.701     3.064    pl_clk_0_IBUF
+    BUFGCTRL_X0Y29       BUFG (Prop_bufg_I_O)         0.077     3.141 r  pl_clk_0_IBUF_BUFG_inst/O
+                         net (fo=29781, routed)       1.213     4.355    emg_pl_export_0/inst/pl_clk
+    SLICE_X52Y71         FDRE                                         r  emg_pl_export_0/inst/epoch_reg[1]/C
+
+Slack:                    inf
+  Source:                 axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[28]/C
+                            (rising edge-triggered cell FDRE clocked by clk_fpga_0  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            emg_pl_export_0/inst/recalibrate_reg/D
+                            (rising edge-triggered cell FDRE clocked by pl_clk  {rise@0.000ns fall@20.000ns period=40.000ns})
+  Path Group:             (none)
+  Path Type:              Setup (Max at Slow Process Corner)
+  Data Path Delay:        1.282ns  (logic 0.484ns (37.758%)  route 0.798ns (62.242%))
+  Logic Levels:           1  (LUT3=1)
+  Clock Path Skew:        1.905ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    4.358ns
+    Source Clock Delay      (SCD):    2.453ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.154ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.300ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+  Timing Exception:       Asynchronous Clock Groups
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk_fpga_0 rise edge)
+                                                      0.000     0.000 r  
+    PS7_X0Y0             PS7                          0.000     0.000 r  processing_system7_0/inst/PS7_i/FCLKCLK[0]
+                         net (fo=1, routed)           0.994     0.994    processing_system7_0/inst/FCLK_CLK_unbuffered[0]
+    BUFGCTRL_X0Y30       BUFG (Prop_bufg_I_O)         0.085     1.079 r  processing_system7_0/inst/buffer_fclk_clk_0.FCLK_CLK_0_BUFG/O
+                         net (fo=11850, routed)       1.374     2.453    axi_gpio_4/U0/gpio_core_1/s_axi_aclk
+    SLICE_X48Y70         FDRE                                         r  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[28]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X48Y70         FDRE (Prop_fdre_C_Q)         0.379     2.832 r  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[28]/Q
+                         net (fo=2, routed)           0.798     3.630    emg_pl_export_0/inst/control_command[3]
+    SLICE_X51Y69         LUT3 (Prop_lut3_I2_O)        0.105     3.735 r  emg_pl_export_0/inst/recalibrate_i_1/O
+                         net (fo=1, routed)           0.000     3.735    emg_pl_export_0/inst/recalibrate
+    SLICE_X51Y69         FDRE                                         r  emg_pl_export_0/inst/recalibrate_reg/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock pl_clk rise edge)     0.000     0.000 r  
+    U18                                               0.000     0.000 r  pl_clk_0 (IN)
+                         net (fo=0)                   0.000     0.000    pl_clk_0
+    U18                  IBUF (Prop_ibuf_I_O)         1.363     1.363 r  pl_clk_0_IBUF_inst/O
+                         net (fo=1, routed)           1.701     3.064    pl_clk_0_IBUF
+    BUFGCTRL_X0Y29       BUFG (Prop_bufg_I_O)         0.077     3.141 r  pl_clk_0_IBUF_BUFG_inst/O
+                         net (fo=29781, routed)       1.216     4.358    emg_pl_export_0/inst/pl_clk
+    SLICE_X51Y69         FDRE                                         r  emg_pl_export_0/inst/recalibrate_reg/C
+
+Slack:                    inf
+  Source:                 axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[28]/C
+                            (rising edge-triggered cell FDRE clocked by clk_fpga_0  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            emg_pl_export_0/inst/recalibrate_reg/D
+                            (rising edge-triggered cell FDRE clocked by pl_clk  {rise@0.000ns fall@20.000ns period=40.000ns})
+  Path Group:             (none)
+  Path Type:              Setup (Max at Slow Process Corner)
+  Data Path Delay:        1.282ns  (logic 0.484ns (37.758%)  route 0.798ns (62.242%))
+  Logic Levels:           1  (LUT3=1)
+  Clock Path Skew:        1.905ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    4.358ns
+    Source Clock Delay      (SCD):    2.453ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.154ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.300ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+  Timing Exception:       Asynchronous Clock Groups
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk_fpga_0 rise edge)
+                                                      0.000     0.000 r  
+    PS7_X0Y0             PS7                          0.000     0.000 r  processing_system7_0/inst/PS7_i/FCLKCLK[0]
+                         net (fo=1, routed)           0.994     0.994    processing_system7_0/inst/FCLK_CLK_unbuffered[0]
+    BUFGCTRL_X0Y30       BUFG (Prop_bufg_I_O)         0.085     1.079 r  processing_system7_0/inst/buffer_fclk_clk_0.FCLK_CLK_0_BUFG/O
+                         net (fo=11850, routed)       1.374     2.453    axi_gpio_4/U0/gpio_core_1/s_axi_aclk
+    SLICE_X48Y70         FDRE                                         r  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[28]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X48Y70         FDRE (Prop_fdre_C_Q)         0.379     2.832 f  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[28]/Q
+                         net (fo=2, routed)           0.798     3.630    emg_pl_export_0/inst/control_command[3]
+    SLICE_X51Y69         LUT3 (Prop_lut3_I2_O)        0.105     3.735 f  emg_pl_export_0/inst/recalibrate_i_1/O
+                         net (fo=1, routed)           0.000     3.735    emg_pl_export_0/inst/recalibrate
+    SLICE_X51Y69         FDRE                                         f  emg_pl_export_0/inst/recalibrate_reg/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock pl_clk rise edge)     0.000     0.000 r  
+    U18                                               0.000     0.000 r  pl_clk_0 (IN)
+                         net (fo=0)                   0.000     0.000    pl_clk_0
+    U18                  IBUF (Prop_ibuf_I_O)         1.363     1.363 r  pl_clk_0_IBUF_inst/O
+                         net (fo=1, routed)           1.701     3.064    pl_clk_0_IBUF
+    BUFGCTRL_X0Y29       BUFG (Prop_bufg_I_O)         0.077     3.141 r  pl_clk_0_IBUF_BUFG_inst/O
+                         net (fo=29781, routed)       1.216     4.358    emg_pl_export_0/inst/pl_clk
+    SLICE_X51Y69         FDRE                                         r  emg_pl_export_0/inst/recalibrate_reg/C
+
+Slack:                    inf
+  Source:                 axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[30]/C
+                            (rising edge-triggered cell FDRE clocked by clk_fpga_0  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            emg_pl_export_0/inst/shift_reg[1]/D
+                            (rising edge-triggered cell FDRE clocked by pl_clk  {rise@0.000ns fall@20.000ns period=40.000ns})
+  Path Group:             (none)
+  Path Type:              Setup (Max at Slow Process Corner)
+  Data Path Delay:        1.161ns  (logic 0.503ns (43.313%)  route 0.658ns (56.687%))
+  Logic Levels:           1  (LUT2=1)
+  Clock Path Skew:        1.902ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    4.355ns
+    Source Clock Delay      (SCD):    2.453ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.154ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.300ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+  Timing Exception:       Asynchronous Clock Groups
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk_fpga_0 rise edge)
+                                                      0.000     0.000 r  
+    PS7_X0Y0             PS7                          0.000     0.000 r  processing_system7_0/inst/PS7_i/FCLKCLK[0]
+                         net (fo=1, routed)           0.994     0.994    processing_system7_0/inst/FCLK_CLK_unbuffered[0]
+    BUFGCTRL_X0Y30       BUFG (Prop_bufg_I_O)         0.085     1.079 r  processing_system7_0/inst/buffer_fclk_clk_0.FCLK_CLK_0_BUFG/O
+                         net (fo=11850, routed)       1.374     2.453    axi_gpio_4/U0/gpio_core_1/s_axi_aclk
+    SLICE_X48Y70         FDRE                                         r  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[30]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X48Y70         FDRE (Prop_fdre_C_Q)         0.379     2.832 r  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[30]/Q
+                         net (fo=4, routed)           0.658     3.490    emg_pl_export_0/inst/control_command[1]
+    SLICE_X52Y71         LUT2 (Prop_lut2_I1_O)        0.124     3.614 r  emg_pl_export_0/inst/shift[1]_i_1/O
+                         net (fo=1, routed)           0.000     3.614    emg_pl_export_0/inst/shift[1]_i_1_n_0
+    SLICE_X52Y71         FDRE                                         r  emg_pl_export_0/inst/shift_reg[1]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock pl_clk rise edge)     0.000     0.000 r  
+    U18                                               0.000     0.000 r  pl_clk_0 (IN)
+                         net (fo=0)                   0.000     0.000    pl_clk_0
+    U18                  IBUF (Prop_ibuf_I_O)         1.363     1.363 r  pl_clk_0_IBUF_inst/O
+                         net (fo=1, routed)           1.701     3.064    pl_clk_0_IBUF
+    BUFGCTRL_X0Y29       BUFG (Prop_bufg_I_O)         0.077     3.141 r  pl_clk_0_IBUF_BUFG_inst/O
+                         net (fo=29781, routed)       1.213     4.355    emg_pl_export_0/inst/pl_clk
+    SLICE_X52Y71         FDRE                                         r  emg_pl_export_0/inst/shift_reg[1]/C
+
+Slack:                    inf
+  Source:                 axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[30]/C
+                            (rising edge-triggered cell FDRE clocked by clk_fpga_0  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            emg_pl_export_0/inst/shift_reg[1]/D
+                            (rising edge-triggered cell FDRE clocked by pl_clk  {rise@0.000ns fall@20.000ns period=40.000ns})
+  Path Group:             (none)
+  Path Type:              Setup (Max at Slow Process Corner)
+  Data Path Delay:        1.161ns  (logic 0.503ns (43.313%)  route 0.658ns (56.687%))
+  Logic Levels:           1  (LUT2=1)
+  Clock Path Skew:        1.902ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    4.355ns
+    Source Clock Delay      (SCD):    2.453ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.154ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.300ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+  Timing Exception:       Asynchronous Clock Groups
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk_fpga_0 rise edge)
+                                                      0.000     0.000 r  
+    PS7_X0Y0             PS7                          0.000     0.000 r  processing_system7_0/inst/PS7_i/FCLKCLK[0]
+                         net (fo=1, routed)           0.994     0.994    processing_system7_0/inst/FCLK_CLK_unbuffered[0]
+    BUFGCTRL_X0Y30       BUFG (Prop_bufg_I_O)         0.085     1.079 r  processing_system7_0/inst/buffer_fclk_clk_0.FCLK_CLK_0_BUFG/O
+                         net (fo=11850, routed)       1.374     2.453    axi_gpio_4/U0/gpio_core_1/s_axi_aclk
+    SLICE_X48Y70         FDRE                                         r  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[30]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X48Y70         FDRE (Prop_fdre_C_Q)         0.379     2.832 f  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[30]/Q
+                         net (fo=4, routed)           0.658     3.490    emg_pl_export_0/inst/control_command[1]
+    SLICE_X52Y71         LUT2 (Prop_lut2_I1_O)        0.124     3.614 f  emg_pl_export_0/inst/shift[1]_i_1/O
+                         net (fo=1, routed)           0.000     3.614    emg_pl_export_0/inst/shift[1]_i_1_n_0
+    SLICE_X52Y71         FDRE                                         f  emg_pl_export_0/inst/shift_reg[1]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock pl_clk rise edge)     0.000     0.000 r  
+    U18                                               0.000     0.000 r  pl_clk_0 (IN)
+                         net (fo=0)                   0.000     0.000    pl_clk_0
+    U18                  IBUF (Prop_ibuf_I_O)         1.363     1.363 r  pl_clk_0_IBUF_inst/O
+                         net (fo=1, routed)           1.701     3.064    pl_clk_0_IBUF
+    BUFGCTRL_X0Y29       BUFG (Prop_bufg_I_O)         0.077     3.141 r  pl_clk_0_IBUF_BUFG_inst/O
+                         net (fo=29781, routed)       1.213     4.355    emg_pl_export_0/inst/pl_clk
+    SLICE_X52Y71         FDRE                                         r  emg_pl_export_0/inst/shift_reg[1]/C
+
+Slack:                    inf
+  Source:                 axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[31]/C
+                            (rising edge-triggered cell FDRE clocked by clk_fpga_0  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            emg_pl_export_0/inst/shift_reg[0]/D
+                            (rising edge-triggered cell FDRE clocked by pl_clk  {rise@0.000ns fall@20.000ns period=40.000ns})
+  Path Group:             (none)
+  Path Type:              Setup (Max at Slow Process Corner)
+  Data Path Delay:        1.157ns  (logic 0.484ns (41.821%)  route 0.673ns (58.179%))
+  Logic Levels:           1  (LUT3=1)
+  Clock Path Skew:        1.914ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    4.355ns
+    Source Clock Delay      (SCD):    2.441ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.154ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.300ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+  Timing Exception:       Asynchronous Clock Groups
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk_fpga_0 rise edge)
+                                                      0.000     0.000 r  
+    PS7_X0Y0             PS7                          0.000     0.000 r  processing_system7_0/inst/PS7_i/FCLKCLK[0]
+                         net (fo=1, routed)           0.994     0.994    processing_system7_0/inst/FCLK_CLK_unbuffered[0]
+    BUFGCTRL_X0Y30       BUFG (Prop_bufg_I_O)         0.085     1.079 r  processing_system7_0/inst/buffer_fclk_clk_0.FCLK_CLK_0_BUFG/O
+                         net (fo=11850, routed)       1.362     2.441    axi_gpio_4/U0/gpio_core_1/s_axi_aclk
+    SLICE_X53Y72         FDRE                                         r  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[31]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X53Y72         FDRE (Prop_fdre_C_Q)         0.379     2.820 r  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[31]/Q
+                         net (fo=2, routed)           0.673     3.493    emg_pl_export_0/inst/control_command[0]
+    SLICE_X52Y71         LUT3 (Prop_lut3_I2_O)        0.105     3.598 r  emg_pl_export_0/inst/shift[0]_i_1/O
+                         net (fo=1, routed)           0.000     3.598    emg_pl_export_0/inst/shift[0]_i_1_n_0
+    SLICE_X52Y71         FDRE                                         r  emg_pl_export_0/inst/shift_reg[0]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock pl_clk rise edge)     0.000     0.000 r  
+    U18                                               0.000     0.000 r  pl_clk_0 (IN)
+                         net (fo=0)                   0.000     0.000    pl_clk_0
+    U18                  IBUF (Prop_ibuf_I_O)         1.363     1.363 r  pl_clk_0_IBUF_inst/O
+                         net (fo=1, routed)           1.701     3.064    pl_clk_0_IBUF
+    BUFGCTRL_X0Y29       BUFG (Prop_bufg_I_O)         0.077     3.141 r  pl_clk_0_IBUF_BUFG_inst/O
+                         net (fo=29781, routed)       1.213     4.355    emg_pl_export_0/inst/pl_clk
+    SLICE_X52Y71         FDRE                                         r  emg_pl_export_0/inst/shift_reg[0]/C
+
+Slack:                    inf
+  Source:                 axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[31]/C
+                            (rising edge-triggered cell FDRE clocked by clk_fpga_0  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            emg_pl_export_0/inst/shift_reg[0]/D
+                            (rising edge-triggered cell FDRE clocked by pl_clk  {rise@0.000ns fall@20.000ns period=40.000ns})
+  Path Group:             (none)
+  Path Type:              Setup (Max at Slow Process Corner)
+  Data Path Delay:        1.157ns  (logic 0.484ns (41.821%)  route 0.673ns (58.179%))
+  Logic Levels:           1  (LUT3=1)
+  Clock Path Skew:        1.914ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    4.355ns
+    Source Clock Delay      (SCD):    2.441ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.154ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.300ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+  Timing Exception:       Asynchronous Clock Groups
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk_fpga_0 rise edge)
+                                                      0.000     0.000 r  
+    PS7_X0Y0             PS7                          0.000     0.000 r  processing_system7_0/inst/PS7_i/FCLKCLK[0]
+                         net (fo=1, routed)           0.994     0.994    processing_system7_0/inst/FCLK_CLK_unbuffered[0]
+    BUFGCTRL_X0Y30       BUFG (Prop_bufg_I_O)         0.085     1.079 r  processing_system7_0/inst/buffer_fclk_clk_0.FCLK_CLK_0_BUFG/O
+                         net (fo=11850, routed)       1.362     2.441    axi_gpio_4/U0/gpio_core_1/s_axi_aclk
+    SLICE_X53Y72         FDRE                                         r  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[31]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X53Y72         FDRE (Prop_fdre_C_Q)         0.379     2.820 f  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[31]/Q
+                         net (fo=2, routed)           0.673     3.493    emg_pl_export_0/inst/control_command[0]
+    SLICE_X52Y71         LUT3 (Prop_lut3_I2_O)        0.105     3.598 f  emg_pl_export_0/inst/shift[0]_i_1/O
+                         net (fo=1, routed)           0.000     3.598    emg_pl_export_0/inst/shift[0]_i_1_n_0
+    SLICE_X52Y71         FDRE                                         f  emg_pl_export_0/inst/shift_reg[0]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock pl_clk rise edge)     0.000     0.000 r  
+    U18                                               0.000     0.000 r  pl_clk_0 (IN)
+                         net (fo=0)                   0.000     0.000    pl_clk_0
+    U18                  IBUF (Prop_ibuf_I_O)         1.363     1.363 r  pl_clk_0_IBUF_inst/O
+                         net (fo=1, routed)           1.701     3.064    pl_clk_0_IBUF
+    BUFGCTRL_X0Y29       BUFG (Prop_bufg_I_O)         0.077     3.141 r  pl_clk_0_IBUF_BUFG_inst/O
+                         net (fo=29781, routed)       1.213     4.355    emg_pl_export_0/inst/pl_clk
+    SLICE_X52Y71         FDRE                                         r  emg_pl_export_0/inst/shift_reg[0]/C
+
+Slack:                    inf
+  Source:                 axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[30]/C
+                            (rising edge-triggered cell FDRE clocked by clk_fpga_0  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            emg_pl_export_0/inst/shift_reg[0]/D
+                            (rising edge-triggered cell FDRE clocked by pl_clk  {rise@0.000ns fall@20.000ns period=40.000ns})
+  Path Group:             (none)
+  Path Type:              Setup (Max at Slow Process Corner)
+  Data Path Delay:        1.142ns  (logic 0.484ns (42.370%)  route 0.658ns (57.630%))
+  Logic Levels:           1  (LUT3=1)
+  Clock Path Skew:        1.902ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    4.355ns
+    Source Clock Delay      (SCD):    2.453ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.154ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.300ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+  Timing Exception:       Asynchronous Clock Groups
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk_fpga_0 rise edge)
+                                                      0.000     0.000 r  
+    PS7_X0Y0             PS7                          0.000     0.000 r  processing_system7_0/inst/PS7_i/FCLKCLK[0]
+                         net (fo=1, routed)           0.994     0.994    processing_system7_0/inst/FCLK_CLK_unbuffered[0]
+    BUFGCTRL_X0Y30       BUFG (Prop_bufg_I_O)         0.085     1.079 r  processing_system7_0/inst/buffer_fclk_clk_0.FCLK_CLK_0_BUFG/O
+                         net (fo=11850, routed)       1.374     2.453    axi_gpio_4/U0/gpio_core_1/s_axi_aclk
+    SLICE_X48Y70         FDRE                                         r  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[30]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X48Y70         FDRE (Prop_fdre_C_Q)         0.379     2.832 f  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[30]/Q
+                         net (fo=4, routed)           0.658     3.490    emg_pl_export_0/inst/control_command[1]
+    SLICE_X52Y71         LUT3 (Prop_lut3_I1_O)        0.105     3.595 r  emg_pl_export_0/inst/shift[0]_i_1/O
+                         net (fo=1, routed)           0.000     3.595    emg_pl_export_0/inst/shift[0]_i_1_n_0
+    SLICE_X52Y71         FDRE                                         r  emg_pl_export_0/inst/shift_reg[0]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock pl_clk rise edge)     0.000     0.000 r  
+    U18                                               0.000     0.000 r  pl_clk_0 (IN)
+                         net (fo=0)                   0.000     0.000    pl_clk_0
+    U18                  IBUF (Prop_ibuf_I_O)         1.363     1.363 r  pl_clk_0_IBUF_inst/O
+                         net (fo=1, routed)           1.701     3.064    pl_clk_0_IBUF
+    BUFGCTRL_X0Y29       BUFG (Prop_bufg_I_O)         0.077     3.141 r  pl_clk_0_IBUF_BUFG_inst/O
+                         net (fo=29781, routed)       1.213     4.355    emg_pl_export_0/inst/pl_clk
+    SLICE_X52Y71         FDRE                                         r  emg_pl_export_0/inst/shift_reg[0]/C
+
+Slack:                    inf
+  Source:                 axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[30]/C
+                            (rising edge-triggered cell FDRE clocked by clk_fpga_0  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            emg_pl_export_0/inst/shift_reg[0]/D
+                            (rising edge-triggered cell FDRE clocked by pl_clk  {rise@0.000ns fall@20.000ns period=40.000ns})
+  Path Group:             (none)
+  Path Type:              Setup (Max at Slow Process Corner)
+  Data Path Delay:        1.142ns  (logic 0.484ns (42.370%)  route 0.658ns (57.630%))
+  Logic Levels:           1  (LUT3=1)
+  Clock Path Skew:        1.902ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    4.355ns
+    Source Clock Delay      (SCD):    2.453ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.154ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.300ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+  Timing Exception:       Asynchronous Clock Groups
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk_fpga_0 rise edge)
+                                                      0.000     0.000 r  
+    PS7_X0Y0             PS7                          0.000     0.000 r  processing_system7_0/inst/PS7_i/FCLKCLK[0]
+                         net (fo=1, routed)           0.994     0.994    processing_system7_0/inst/FCLK_CLK_unbuffered[0]
+    BUFGCTRL_X0Y30       BUFG (Prop_bufg_I_O)         0.085     1.079 r  processing_system7_0/inst/buffer_fclk_clk_0.FCLK_CLK_0_BUFG/O
+                         net (fo=11850, routed)       1.374     2.453    axi_gpio_4/U0/gpio_core_1/s_axi_aclk
+    SLICE_X48Y70         FDRE                                         r  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[30]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X48Y70         FDRE (Prop_fdre_C_Q)         0.379     2.832 r  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[30]/Q
+                         net (fo=4, routed)           0.658     3.490    emg_pl_export_0/inst/control_command[1]
+    SLICE_X52Y71         LUT3 (Prop_lut3_I1_O)        0.105     3.595 f  emg_pl_export_0/inst/shift[0]_i_1/O
+                         net (fo=1, routed)           0.000     3.595    emg_pl_export_0/inst/shift[0]_i_1_n_0
+    SLICE_X52Y71         FDRE                                         f  emg_pl_export_0/inst/shift_reg[0]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock pl_clk rise edge)     0.000     0.000 r  
+    U18                                               0.000     0.000 r  pl_clk_0 (IN)
+                         net (fo=0)                   0.000     0.000    pl_clk_0
+    U18                  IBUF (Prop_ibuf_I_O)         1.363     1.363 r  pl_clk_0_IBUF_inst/O
+                         net (fo=1, routed)           1.701     3.064    pl_clk_0_IBUF
+    BUFGCTRL_X0Y29       BUFG (Prop_bufg_I_O)         0.077     3.141 r  pl_clk_0_IBUF_BUFG_inst/O
+                         net (fo=29781, routed)       1.213     4.355    emg_pl_export_0/inst/pl_clk
+    SLICE_X52Y71         FDRE                                         r  emg_pl_export_0/inst/shift_reg[0]/C
+
+Slack:                    inf
+  Source:                 axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[30]/C
+                            (rising edge-triggered cell FDRE clocked by clk_fpga_0  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            emg_pl_export_0/inst/shift_reg[2]/D
+                            (rising edge-triggered cell FDRE clocked by pl_clk  {rise@0.000ns fall@20.000ns period=40.000ns})
+  Path Group:             (none)
+  Path Type:              Setup (Max at Slow Process Corner)
+  Data Path Delay:        1.139ns  (logic 0.484ns (42.490%)  route 0.655ns (57.510%))
+  Logic Levels:           1  (LUT2=1)
+  Clock Path Skew:        1.902ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    4.355ns
+    Source Clock Delay      (SCD):    2.453ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.154ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.300ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+  Timing Exception:       Asynchronous Clock Groups
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk_fpga_0 rise edge)
+                                                      0.000     0.000 r  
+    PS7_X0Y0             PS7                          0.000     0.000 r  processing_system7_0/inst/PS7_i/FCLKCLK[0]
+                         net (fo=1, routed)           0.994     0.994    processing_system7_0/inst/FCLK_CLK_unbuffered[0]
+    BUFGCTRL_X0Y30       BUFG (Prop_bufg_I_O)         0.085     1.079 r  processing_system7_0/inst/buffer_fclk_clk_0.FCLK_CLK_0_BUFG/O
+                         net (fo=11850, routed)       1.374     2.453    axi_gpio_4/U0/gpio_core_1/s_axi_aclk
+    SLICE_X48Y70         FDRE                                         r  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[30]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X48Y70         FDRE (Prop_fdre_C_Q)         0.379     2.832 f  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[30]/Q
+                         net (fo=4, routed)           0.655     3.487    emg_pl_export_0/inst/control_command[1]
+    SLICE_X52Y71         LUT2 (Prop_lut2_I0_O)        0.105     3.592 r  emg_pl_export_0/inst/shift[2]_i_1/O
+                         net (fo=1, routed)           0.000     3.592    emg_pl_export_0/inst/shift[2]_i_1_n_0
+    SLICE_X52Y71         FDRE                                         r  emg_pl_export_0/inst/shift_reg[2]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock pl_clk rise edge)     0.000     0.000 r  
+    U18                                               0.000     0.000 r  pl_clk_0 (IN)
+                         net (fo=0)                   0.000     0.000    pl_clk_0
+    U18                  IBUF (Prop_ibuf_I_O)         1.363     1.363 r  pl_clk_0_IBUF_inst/O
+                         net (fo=1, routed)           1.701     3.064    pl_clk_0_IBUF
+    BUFGCTRL_X0Y29       BUFG (Prop_bufg_I_O)         0.077     3.141 r  pl_clk_0_IBUF_BUFG_inst/O
+                         net (fo=29781, routed)       1.213     4.355    emg_pl_export_0/inst/pl_clk
+    SLICE_X52Y71         FDRE                                         r  emg_pl_export_0/inst/shift_reg[2]/C
+
+Slack:                    inf
+  Source:                 axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[30]/C
+                            (rising edge-triggered cell FDRE clocked by clk_fpga_0  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            emg_pl_export_0/inst/shift_reg[2]/D
+                            (rising edge-triggered cell FDRE clocked by pl_clk  {rise@0.000ns fall@20.000ns period=40.000ns})
+  Path Group:             (none)
+  Path Type:              Setup (Max at Slow Process Corner)
+  Data Path Delay:        1.139ns  (logic 0.484ns (42.490%)  route 0.655ns (57.510%))
+  Logic Levels:           1  (LUT2=1)
+  Clock Path Skew:        1.902ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    4.355ns
+    Source Clock Delay      (SCD):    2.453ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.154ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.300ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+  Timing Exception:       Asynchronous Clock Groups
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk_fpga_0 rise edge)
+                                                      0.000     0.000 r  
+    PS7_X0Y0             PS7                          0.000     0.000 r  processing_system7_0/inst/PS7_i/FCLKCLK[0]
+                         net (fo=1, routed)           0.994     0.994    processing_system7_0/inst/FCLK_CLK_unbuffered[0]
+    BUFGCTRL_X0Y30       BUFG (Prop_bufg_I_O)         0.085     1.079 r  processing_system7_0/inst/buffer_fclk_clk_0.FCLK_CLK_0_BUFG/O
+                         net (fo=11850, routed)       1.374     2.453    axi_gpio_4/U0/gpio_core_1/s_axi_aclk
+    SLICE_X48Y70         FDRE                                         r  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[30]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X48Y70         FDRE (Prop_fdre_C_Q)         0.379     2.832 r  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[30]/Q
+                         net (fo=4, routed)           0.655     3.487    emg_pl_export_0/inst/control_command[1]
+    SLICE_X52Y71         LUT2 (Prop_lut2_I0_O)        0.105     3.592 f  emg_pl_export_0/inst/shift[2]_i_1/O
+                         net (fo=1, routed)           0.000     3.592    emg_pl_export_0/inst/shift[2]_i_1_n_0
+    SLICE_X52Y71         FDRE                                         f  emg_pl_export_0/inst/shift_reg[2]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock pl_clk rise edge)     0.000     0.000 r  
+    U18                                               0.000     0.000 r  pl_clk_0 (IN)
+                         net (fo=0)                   0.000     0.000    pl_clk_0
+    U18                  IBUF (Prop_ibuf_I_O)         1.363     1.363 r  pl_clk_0_IBUF_inst/O
+                         net (fo=1, routed)           1.701     3.064    pl_clk_0_IBUF
+    BUFGCTRL_X0Y29       BUFG (Prop_bufg_I_O)         0.077     3.141 r  pl_clk_0_IBUF_BUFG_inst/O
+                         net (fo=29781, routed)       1.213     4.355    emg_pl_export_0/inst/pl_clk
+    SLICE_X52Y71         FDRE                                         r  emg_pl_export_0/inst/shift_reg[2]/C
+
+Slack:                    inf
+  Source:                 axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[29]/C
+                            (rising edge-triggered cell FDRE clocked by clk_fpga_0  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            emg_pl_export_0/inst/shift_reg[1]/D
+                            (rising edge-triggered cell FDRE clocked by pl_clk  {rise@0.000ns fall@20.000ns period=40.000ns})
+  Path Group:             (none)
+  Path Type:              Setup (Max at Slow Process Corner)
+  Data Path Delay:        1.128ns  (logic 0.505ns (44.770%)  route 0.623ns (55.230%))
+  Logic Levels:           1  (LUT2=1)
+  Clock Path Skew:        1.914ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    4.355ns
+    Source Clock Delay      (SCD):    2.441ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.154ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.300ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+  Timing Exception:       Asynchronous Clock Groups
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk_fpga_0 rise edge)
+                                                      0.000     0.000 r  
+    PS7_X0Y0             PS7                          0.000     0.000 r  processing_system7_0/inst/PS7_i/FCLKCLK[0]
+                         net (fo=1, routed)           0.994     0.994    processing_system7_0/inst/FCLK_CLK_unbuffered[0]
+    BUFGCTRL_X0Y30       BUFG (Prop_bufg_I_O)         0.085     1.079 r  processing_system7_0/inst/buffer_fclk_clk_0.FCLK_CLK_0_BUFG/O
+                         net (fo=11850, routed)       1.362     2.441    axi_gpio_4/U0/gpio_core_1/s_axi_aclk
+    SLICE_X53Y72         FDRE                                         r  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[29]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X53Y72         FDRE (Prop_fdre_C_Q)         0.379     2.820 f  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[29]/Q
+                         net (fo=4, routed)           0.623     3.443    emg_pl_export_0/inst/control_command[2]
+    SLICE_X52Y71         LUT2 (Prop_lut2_I0_O)        0.126     3.569 r  emg_pl_export_0/inst/shift[1]_i_1/O
+                         net (fo=1, routed)           0.000     3.569    emg_pl_export_0/inst/shift[1]_i_1_n_0
+    SLICE_X52Y71         FDRE                                         r  emg_pl_export_0/inst/shift_reg[1]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock pl_clk rise edge)     0.000     0.000 r  
+    U18                                               0.000     0.000 r  pl_clk_0 (IN)
+                         net (fo=0)                   0.000     0.000    pl_clk_0
+    U18                  IBUF (Prop_ibuf_I_O)         1.363     1.363 r  pl_clk_0_IBUF_inst/O
+                         net (fo=1, routed)           1.701     3.064    pl_clk_0_IBUF
+    BUFGCTRL_X0Y29       BUFG (Prop_bufg_I_O)         0.077     3.141 r  pl_clk_0_IBUF_BUFG_inst/O
+                         net (fo=29781, routed)       1.213     4.355    emg_pl_export_0/inst/pl_clk
+    SLICE_X52Y71         FDRE                                         r  emg_pl_export_0/inst/shift_reg[1]/C
+
+Slack:                    inf
+  Source:                 axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[29]/C
+                            (rising edge-triggered cell FDRE clocked by clk_fpga_0  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            emg_pl_export_0/inst/shift_reg[1]/D
+                            (rising edge-triggered cell FDRE clocked by pl_clk  {rise@0.000ns fall@20.000ns period=40.000ns})
+  Path Group:             (none)
+  Path Type:              Setup (Max at Slow Process Corner)
+  Data Path Delay:        1.128ns  (logic 0.505ns (44.770%)  route 0.623ns (55.230%))
+  Logic Levels:           1  (LUT2=1)
+  Clock Path Skew:        1.914ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    4.355ns
+    Source Clock Delay      (SCD):    2.441ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.154ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.300ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+  Timing Exception:       Asynchronous Clock Groups
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk_fpga_0 rise edge)
+                                                      0.000     0.000 r  
+    PS7_X0Y0             PS7                          0.000     0.000 r  processing_system7_0/inst/PS7_i/FCLKCLK[0]
+                         net (fo=1, routed)           0.994     0.994    processing_system7_0/inst/FCLK_CLK_unbuffered[0]
+    BUFGCTRL_X0Y30       BUFG (Prop_bufg_I_O)         0.085     1.079 r  processing_system7_0/inst/buffer_fclk_clk_0.FCLK_CLK_0_BUFG/O
+                         net (fo=11850, routed)       1.362     2.441    axi_gpio_4/U0/gpio_core_1/s_axi_aclk
+    SLICE_X53Y72         FDRE                                         r  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[29]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X53Y72         FDRE (Prop_fdre_C_Q)         0.379     2.820 r  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[29]/Q
+                         net (fo=4, routed)           0.623     3.443    emg_pl_export_0/inst/control_command[2]
+    SLICE_X52Y71         LUT2 (Prop_lut2_I0_O)        0.126     3.569 f  emg_pl_export_0/inst/shift[1]_i_1/O
+                         net (fo=1, routed)           0.000     3.569    emg_pl_export_0/inst/shift[1]_i_1_n_0
+    SLICE_X52Y71         FDRE                                         f  emg_pl_export_0/inst/shift_reg[1]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock pl_clk rise edge)     0.000     0.000 r  
+    U18                                               0.000     0.000 r  pl_clk_0 (IN)
+                         net (fo=0)                   0.000     0.000    pl_clk_0
+    U18                  IBUF (Prop_ibuf_I_O)         1.363     1.363 r  pl_clk_0_IBUF_inst/O
+                         net (fo=1, routed)           1.701     3.064    pl_clk_0_IBUF
+    BUFGCTRL_X0Y29       BUFG (Prop_bufg_I_O)         0.077     3.141 r  pl_clk_0_IBUF_BUFG_inst/O
+                         net (fo=29781, routed)       1.213     4.355    emg_pl_export_0/inst/pl_clk
+    SLICE_X52Y71         FDRE                                         r  emg_pl_export_0/inst/shift_reg[1]/C
+
+Slack:                    inf
+  Source:                 axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[25]/C
+                            (rising edge-triggered cell FDRE clocked by clk_fpga_0  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            emg_pl_export_0/inst/epoch_reg[2]/D
+                            (rising edge-triggered cell FDRE clocked by pl_clk  {rise@0.000ns fall@20.000ns period=40.000ns})
+  Path Group:             (none)
+  Path Type:              Setup (Max at Slow Process Corner)
+  Data Path Delay:        0.915ns  (logic 0.379ns (41.436%)  route 0.536ns (58.565%))
+  Logic Levels:           0  
+  Clock Path Skew:        1.906ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    4.413ns
+    Source Clock Delay      (SCD):    2.507ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.154ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.300ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+  Timing Exception:       Asynchronous Clock Groups
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk_fpga_0 rise edge)
+                                                      0.000     0.000 r  
+    PS7_X0Y0             PS7                          0.000     0.000 r  processing_system7_0/inst/PS7_i/FCLKCLK[0]
+                         net (fo=1, routed)           0.994     0.994    processing_system7_0/inst/FCLK_CLK_unbuffered[0]
+    BUFGCTRL_X0Y30       BUFG (Prop_bufg_I_O)         0.085     1.079 r  processing_system7_0/inst/buffer_fclk_clk_0.FCLK_CLK_0_BUFG/O
+                         net (fo=11850, routed)       1.428     2.507    axi_gpio_4/U0/gpio_core_1/s_axi_aclk
+    SLICE_X60Y72         FDRE                                         r  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[25]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X60Y72         FDRE (Prop_fdre_C_Q)         0.379     2.886 r  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[25]/Q
+                         net (fo=2, routed)           0.536     3.422    emg_pl_export_0/inst/control_command[6]
+    SLICE_X60Y74         FDRE                                         r  emg_pl_export_0/inst/epoch_reg[2]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock pl_clk rise edge)     0.000     0.000 r  
+    U18                                               0.000     0.000 r  pl_clk_0 (IN)
+                         net (fo=0)                   0.000     0.000    pl_clk_0
+    U18                  IBUF (Prop_ibuf_I_O)         1.363     1.363 r  pl_clk_0_IBUF_inst/O
+                         net (fo=1, routed)           1.701     3.064    pl_clk_0_IBUF
+    BUFGCTRL_X0Y29       BUFG (Prop_bufg_I_O)         0.077     3.141 r  pl_clk_0_IBUF_BUFG_inst/O
+                         net (fo=29781, routed)       1.271     4.413    emg_pl_export_0/inst/pl_clk
+    SLICE_X60Y74         FDRE                                         r  emg_pl_export_0/inst/epoch_reg[2]/C
+
+Slack:                    inf
+  Source:                 axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[25]/C
+                            (rising edge-triggered cell FDRE clocked by clk_fpga_0  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            emg_pl_export_0/inst/epoch_reg[2]/D
+                            (rising edge-triggered cell FDRE clocked by pl_clk  {rise@0.000ns fall@20.000ns period=40.000ns})
+  Path Group:             (none)
+  Path Type:              Setup (Max at Slow Process Corner)
+  Data Path Delay:        0.915ns  (logic 0.379ns (41.436%)  route 0.536ns (58.565%))
+  Logic Levels:           0  
+  Clock Path Skew:        1.906ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    4.413ns
+    Source Clock Delay      (SCD):    2.507ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.154ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.300ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+  Timing Exception:       Asynchronous Clock Groups
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk_fpga_0 rise edge)
+                                                      0.000     0.000 r  
+    PS7_X0Y0             PS7                          0.000     0.000 r  processing_system7_0/inst/PS7_i/FCLKCLK[0]
+                         net (fo=1, routed)           0.994     0.994    processing_system7_0/inst/FCLK_CLK_unbuffered[0]
+    BUFGCTRL_X0Y30       BUFG (Prop_bufg_I_O)         0.085     1.079 r  processing_system7_0/inst/buffer_fclk_clk_0.FCLK_CLK_0_BUFG/O
+                         net (fo=11850, routed)       1.428     2.507    axi_gpio_4/U0/gpio_core_1/s_axi_aclk
+    SLICE_X60Y72         FDRE                                         r  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[25]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X60Y72         FDRE (Prop_fdre_C_Q)         0.379     2.886 f  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[25]/Q
+                         net (fo=2, routed)           0.536     3.422    emg_pl_export_0/inst/control_command[6]
+    SLICE_X60Y74         FDRE                                         f  emg_pl_export_0/inst/epoch_reg[2]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock pl_clk rise edge)     0.000     0.000 r  
+    U18                                               0.000     0.000 r  pl_clk_0 (IN)
+                         net (fo=0)                   0.000     0.000    pl_clk_0
+    U18                  IBUF (Prop_ibuf_I_O)         1.363     1.363 r  pl_clk_0_IBUF_inst/O
+                         net (fo=1, routed)           1.701     3.064    pl_clk_0_IBUF
+    BUFGCTRL_X0Y29       BUFG (Prop_bufg_I_O)         0.077     3.141 r  pl_clk_0_IBUF_BUFG_inst/O
+                         net (fo=29781, routed)       1.271     4.413    emg_pl_export_0/inst/pl_clk
+    SLICE_X60Y74         FDRE                                         r  emg_pl_export_0/inst/epoch_reg[2]/C
+
+Slack:                    inf
+  Source:                 axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[24]/C
+                            (rising edge-triggered cell FDRE clocked by clk_fpga_0  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            emg_pl_export_0/inst/epoch_reg[3]/D
+                            (rising edge-triggered cell FDRE clocked by pl_clk  {rise@0.000ns fall@20.000ns period=40.000ns})
+  Path Group:             (none)
+  Path Type:              Setup (Max at Slow Process Corner)
+  Data Path Delay:        0.970ns  (logic 0.379ns (39.052%)  route 0.591ns (60.948%))
+  Logic Levels:           0  
+  Clock Path Skew:        1.974ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    4.415ns
+    Source Clock Delay      (SCD):    2.441ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.154ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.300ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+  Timing Exception:       Asynchronous Clock Groups
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk_fpga_0 rise edge)
+                                                      0.000     0.000 r  
+    PS7_X0Y0             PS7                          0.000     0.000 r  processing_system7_0/inst/PS7_i/FCLKCLK[0]
+                         net (fo=1, routed)           0.994     0.994    processing_system7_0/inst/FCLK_CLK_unbuffered[0]
+    BUFGCTRL_X0Y30       BUFG (Prop_bufg_I_O)         0.085     1.079 r  processing_system7_0/inst/buffer_fclk_clk_0.FCLK_CLK_0_BUFG/O
+                         net (fo=11850, routed)       1.362     2.441    axi_gpio_4/U0/gpio_core_1/s_axi_aclk
+    SLICE_X53Y72         FDRE                                         r  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[24]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X53Y72         FDRE (Prop_fdre_C_Q)         0.379     2.820 r  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[24]/Q
+                         net (fo=2, routed)           0.591     3.411    emg_pl_export_0/inst/control_command[7]
+    SLICE_X59Y72         FDRE                                         r  emg_pl_export_0/inst/epoch_reg[3]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock pl_clk rise edge)     0.000     0.000 r  
+    U18                                               0.000     0.000 r  pl_clk_0 (IN)
+                         net (fo=0)                   0.000     0.000    pl_clk_0
+    U18                  IBUF (Prop_ibuf_I_O)         1.363     1.363 r  pl_clk_0_IBUF_inst/O
+                         net (fo=1, routed)           1.701     3.064    pl_clk_0_IBUF
+    BUFGCTRL_X0Y29       BUFG (Prop_bufg_I_O)         0.077     3.141 r  pl_clk_0_IBUF_BUFG_inst/O
+                         net (fo=29781, routed)       1.273     4.415    emg_pl_export_0/inst/pl_clk
+    SLICE_X59Y72         FDRE                                         r  emg_pl_export_0/inst/epoch_reg[3]/C
+
+Slack:                    inf
+  Source:                 axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[24]/C
+                            (rising edge-triggered cell FDRE clocked by clk_fpga_0  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            emg_pl_export_0/inst/epoch_reg[3]/D
+                            (rising edge-triggered cell FDRE clocked by pl_clk  {rise@0.000ns fall@20.000ns period=40.000ns})
+  Path Group:             (none)
+  Path Type:              Setup (Max at Slow Process Corner)
+  Data Path Delay:        0.970ns  (logic 0.379ns (39.052%)  route 0.591ns (60.948%))
+  Logic Levels:           0  
+  Clock Path Skew:        1.974ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    4.415ns
+    Source Clock Delay      (SCD):    2.441ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.154ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.300ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+  Timing Exception:       Asynchronous Clock Groups
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk_fpga_0 rise edge)
+                                                      0.000     0.000 r  
+    PS7_X0Y0             PS7                          0.000     0.000 r  processing_system7_0/inst/PS7_i/FCLKCLK[0]
+                         net (fo=1, routed)           0.994     0.994    processing_system7_0/inst/FCLK_CLK_unbuffered[0]
+    BUFGCTRL_X0Y30       BUFG (Prop_bufg_I_O)         0.085     1.079 r  processing_system7_0/inst/buffer_fclk_clk_0.FCLK_CLK_0_BUFG/O
+                         net (fo=11850, routed)       1.362     2.441    axi_gpio_4/U0/gpio_core_1/s_axi_aclk
+    SLICE_X53Y72         FDRE                                         r  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[24]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X53Y72         FDRE (Prop_fdre_C_Q)         0.379     2.820 f  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[24]/Q
+                         net (fo=2, routed)           0.591     3.411    emg_pl_export_0/inst/control_command[7]
+    SLICE_X59Y72         FDRE                                         f  emg_pl_export_0/inst/epoch_reg[3]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock pl_clk rise edge)     0.000     0.000 r  
+    U18                                               0.000     0.000 r  pl_clk_0 (IN)
+                         net (fo=0)                   0.000     0.000    pl_clk_0
+    U18                  IBUF (Prop_ibuf_I_O)         1.363     1.363 r  pl_clk_0_IBUF_inst/O
+                         net (fo=1, routed)           1.701     3.064    pl_clk_0_IBUF
+    BUFGCTRL_X0Y29       BUFG (Prop_bufg_I_O)         0.077     3.141 r  pl_clk_0_IBUF_BUFG_inst/O
+                         net (fo=29781, routed)       1.273     4.415    emg_pl_export_0/inst/pl_clk
+    SLICE_X59Y72         FDRE                                         r  emg_pl_export_0/inst/epoch_reg[3]/C
+
+Slack:                    inf
+  Source:                 axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[27]/C
+                            (rising edge-triggered cell FDRE clocked by clk_fpga_0  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            emg_pl_export_0/inst/epoch_reg[0]/D
+                            (rising edge-triggered cell FDRE clocked by pl_clk  {rise@0.000ns fall@20.000ns period=40.000ns})
+  Path Group:             (none)
+  Path Type:              Setup (Max at Slow Process Corner)
+  Data Path Delay:        0.891ns  (logic 0.379ns (42.542%)  route 0.512ns (57.458%))
+  Logic Levels:           0  
+  Clock Path Skew:        1.902ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    4.355ns
+    Source Clock Delay      (SCD):    2.453ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.154ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.300ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+  Timing Exception:       Asynchronous Clock Groups
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk_fpga_0 rise edge)
+                                                      0.000     0.000 r  
+    PS7_X0Y0             PS7                          0.000     0.000 r  processing_system7_0/inst/PS7_i/FCLKCLK[0]
+                         net (fo=1, routed)           0.994     0.994    processing_system7_0/inst/FCLK_CLK_unbuffered[0]
+    BUFGCTRL_X0Y30       BUFG (Prop_bufg_I_O)         0.085     1.079 r  processing_system7_0/inst/buffer_fclk_clk_0.FCLK_CLK_0_BUFG/O
+                         net (fo=11850, routed)       1.374     2.453    axi_gpio_4/U0/gpio_core_1/s_axi_aclk
+    SLICE_X48Y70         FDRE                                         r  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[27]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X48Y70         FDRE (Prop_fdre_C_Q)         0.379     2.832 r  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[27]/Q
+                         net (fo=2, routed)           0.512     3.344    emg_pl_export_0/inst/control_command[4]
+    SLICE_X52Y71         FDRE                                         r  emg_pl_export_0/inst/epoch_reg[0]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock pl_clk rise edge)     0.000     0.000 r  
+    U18                                               0.000     0.000 r  pl_clk_0 (IN)
+                         net (fo=0)                   0.000     0.000    pl_clk_0
+    U18                  IBUF (Prop_ibuf_I_O)         1.363     1.363 r  pl_clk_0_IBUF_inst/O
+                         net (fo=1, routed)           1.701     3.064    pl_clk_0_IBUF
+    BUFGCTRL_X0Y29       BUFG (Prop_bufg_I_O)         0.077     3.141 r  pl_clk_0_IBUF_BUFG_inst/O
+                         net (fo=29781, routed)       1.213     4.355    emg_pl_export_0/inst/pl_clk
+    SLICE_X52Y71         FDRE                                         r  emg_pl_export_0/inst/epoch_reg[0]/C
+
+Slack:                    inf
+  Source:                 axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[27]/C
+                            (rising edge-triggered cell FDRE clocked by clk_fpga_0  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            emg_pl_export_0/inst/epoch_reg[0]/D
+                            (rising edge-triggered cell FDRE clocked by pl_clk  {rise@0.000ns fall@20.000ns period=40.000ns})
+  Path Group:             (none)
+  Path Type:              Setup (Max at Slow Process Corner)
+  Data Path Delay:        0.891ns  (logic 0.379ns (42.542%)  route 0.512ns (57.458%))
+  Logic Levels:           0  
+  Clock Path Skew:        1.902ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    4.355ns
+    Source Clock Delay      (SCD):    2.453ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.154ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.300ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+  Timing Exception:       Asynchronous Clock Groups
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk_fpga_0 rise edge)
+                                                      0.000     0.000 r  
+    PS7_X0Y0             PS7                          0.000     0.000 r  processing_system7_0/inst/PS7_i/FCLKCLK[0]
+                         net (fo=1, routed)           0.994     0.994    processing_system7_0/inst/FCLK_CLK_unbuffered[0]
+    BUFGCTRL_X0Y30       BUFG (Prop_bufg_I_O)         0.085     1.079 r  processing_system7_0/inst/buffer_fclk_clk_0.FCLK_CLK_0_BUFG/O
+                         net (fo=11850, routed)       1.374     2.453    axi_gpio_4/U0/gpio_core_1/s_axi_aclk
+    SLICE_X48Y70         FDRE                                         r  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[27]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X48Y70         FDRE (Prop_fdre_C_Q)         0.379     2.832 f  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[27]/Q
+                         net (fo=2, routed)           0.512     3.344    emg_pl_export_0/inst/control_command[4]
+    SLICE_X52Y71         FDRE                                         f  emg_pl_export_0/inst/epoch_reg[0]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock pl_clk rise edge)     0.000     0.000 r  
+    U18                                               0.000     0.000 r  pl_clk_0 (IN)
+                         net (fo=0)                   0.000     0.000    pl_clk_0
+    U18                  IBUF (Prop_ibuf_I_O)         1.363     1.363 r  pl_clk_0_IBUF_inst/O
+                         net (fo=1, routed)           1.701     3.064    pl_clk_0_IBUF
+    BUFGCTRL_X0Y29       BUFG (Prop_bufg_I_O)         0.077     3.141 r  pl_clk_0_IBUF_BUFG_inst/O
+                         net (fo=29781, routed)       1.213     4.355    emg_pl_export_0/inst/pl_clk
+    SLICE_X52Y71         FDRE                                         r  emg_pl_export_0/inst/epoch_reg[0]/C
+
+Slack:                    inf
+  Source:                 axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[29]/C
+                            (rising edge-triggered cell FDRE clocked by clk_fpga_0  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            emg_pl_export_0/inst/shift_reg[2]/D
+                            (rising edge-triggered cell FDRE clocked by pl_clk  {rise@0.000ns fall@20.000ns period=40.000ns})
+  Path Group:             (none)
+  Path Type:              Setup (Max at Slow Process Corner)
+  Data Path Delay:        0.731ns  (logic 0.484ns (66.251%)  route 0.247ns (33.749%))
+  Logic Levels:           1  (LUT2=1)
+  Clock Path Skew:        1.914ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    4.355ns
+    Source Clock Delay      (SCD):    2.441ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.154ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.300ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+  Timing Exception:       Asynchronous Clock Groups
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk_fpga_0 rise edge)
+                                                      0.000     0.000 r  
+    PS7_X0Y0             PS7                          0.000     0.000 r  processing_system7_0/inst/PS7_i/FCLKCLK[0]
+                         net (fo=1, routed)           0.994     0.994    processing_system7_0/inst/FCLK_CLK_unbuffered[0]
+    BUFGCTRL_X0Y30       BUFG (Prop_bufg_I_O)         0.085     1.079 r  processing_system7_0/inst/buffer_fclk_clk_0.FCLK_CLK_0_BUFG/O
+                         net (fo=11850, routed)       1.362     2.441    axi_gpio_4/U0/gpio_core_1/s_axi_aclk
+    SLICE_X53Y72         FDRE                                         r  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[29]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X53Y72         FDRE (Prop_fdre_C_Q)         0.379     2.820 r  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[29]/Q
+                         net (fo=4, routed)           0.247     3.067    emg_pl_export_0/inst/control_command[2]
+    SLICE_X52Y71         LUT2 (Prop_lut2_I1_O)        0.105     3.172 r  emg_pl_export_0/inst/shift[2]_i_1/O
+                         net (fo=1, routed)           0.000     3.172    emg_pl_export_0/inst/shift[2]_i_1_n_0
+    SLICE_X52Y71         FDRE                                         r  emg_pl_export_0/inst/shift_reg[2]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock pl_clk rise edge)     0.000     0.000 r  
+    U18                                               0.000     0.000 r  pl_clk_0 (IN)
+                         net (fo=0)                   0.000     0.000    pl_clk_0
+    U18                  IBUF (Prop_ibuf_I_O)         1.363     1.363 r  pl_clk_0_IBUF_inst/O
+                         net (fo=1, routed)           1.701     3.064    pl_clk_0_IBUF
+    BUFGCTRL_X0Y29       BUFG (Prop_bufg_I_O)         0.077     3.141 r  pl_clk_0_IBUF_BUFG_inst/O
+                         net (fo=29781, routed)       1.213     4.355    emg_pl_export_0/inst/pl_clk
+    SLICE_X52Y71         FDRE                                         r  emg_pl_export_0/inst/shift_reg[2]/C
+
+Slack:                    inf
+  Source:                 axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[29]/C
+                            (rising edge-triggered cell FDRE clocked by clk_fpga_0  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            emg_pl_export_0/inst/shift_reg[2]/D
+                            (rising edge-triggered cell FDRE clocked by pl_clk  {rise@0.000ns fall@20.000ns period=40.000ns})
+  Path Group:             (none)
+  Path Type:              Setup (Max at Slow Process Corner)
+  Data Path Delay:        0.731ns  (logic 0.484ns (66.251%)  route 0.247ns (33.749%))
+  Logic Levels:           1  (LUT2=1)
+  Clock Path Skew:        1.914ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    4.355ns
+    Source Clock Delay      (SCD):    2.441ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.154ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.300ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+  Timing Exception:       Asynchronous Clock Groups
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk_fpga_0 rise edge)
+                                                      0.000     0.000 r  
+    PS7_X0Y0             PS7                          0.000     0.000 r  processing_system7_0/inst/PS7_i/FCLKCLK[0]
+                         net (fo=1, routed)           0.994     0.994    processing_system7_0/inst/FCLK_CLK_unbuffered[0]
+    BUFGCTRL_X0Y30       BUFG (Prop_bufg_I_O)         0.085     1.079 r  processing_system7_0/inst/buffer_fclk_clk_0.FCLK_CLK_0_BUFG/O
+                         net (fo=11850, routed)       1.362     2.441    axi_gpio_4/U0/gpio_core_1/s_axi_aclk
+    SLICE_X53Y72         FDRE                                         r  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[29]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X53Y72         FDRE (Prop_fdre_C_Q)         0.379     2.820 f  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[29]/Q
+                         net (fo=4, routed)           0.247     3.067    emg_pl_export_0/inst/control_command[2]
+    SLICE_X52Y71         LUT2 (Prop_lut2_I1_O)        0.105     3.172 f  emg_pl_export_0/inst/shift[2]_i_1/O
+                         net (fo=1, routed)           0.000     3.172    emg_pl_export_0/inst/shift[2]_i_1_n_0
+    SLICE_X52Y71         FDRE                                         f  emg_pl_export_0/inst/shift_reg[2]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock pl_clk rise edge)     0.000     0.000 r  
+    U18                                               0.000     0.000 r  pl_clk_0 (IN)
+                         net (fo=0)                   0.000     0.000    pl_clk_0
+    U18                  IBUF (Prop_ibuf_I_O)         1.363     1.363 r  pl_clk_0_IBUF_inst/O
+                         net (fo=1, routed)           1.701     3.064    pl_clk_0_IBUF
+    BUFGCTRL_X0Y29       BUFG (Prop_bufg_I_O)         0.077     3.141 r  pl_clk_0_IBUF_BUFG_inst/O
+                         net (fo=29781, routed)       1.213     4.355    emg_pl_export_0/inst/pl_clk
+    SLICE_X52Y71         FDRE                                         r  emg_pl_export_0/inst/shift_reg[2]/C
+
+Slack:                    inf
+  Source:                 axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[26]/C
+                            (rising edge-triggered cell FDRE clocked by clk_fpga_0  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            emg_pl_export_0/inst/epoch_reg[1]/D
+                            (rising edge-triggered cell FDRE clocked by pl_clk  {rise@0.000ns fall@20.000ns period=40.000ns})
+  Path Group:             (none)
+  Path Type:              Setup (Max at Fast Process Corner)
+  Data Path Delay:        0.689ns  (logic 0.175ns (25.416%)  route 0.514ns (74.584%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.335ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    1.508ns
+    Source Clock Delay      (SCD):    1.173ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.154ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.300ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+  Timing Exception:       Asynchronous Clock Groups
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk_fpga_0 rise edge)
+                                                      0.000     0.000 r  
+    PS7_X0Y0             PS7                          0.000     0.000 r  processing_system7_0/inst/PS7_i/FCLKCLK[0]
+                         net (fo=1, routed)           0.337     0.337    processing_system7_0/inst/FCLK_CLK_unbuffered[0]
+    BUFGCTRL_X0Y30       BUFG (Prop_bufg_I_O)         0.029     0.366 r  processing_system7_0/inst/buffer_fclk_clk_0.FCLK_CLK_0_BUFG/O
+                         net (fo=11850, routed)       0.807     1.173    axi_gpio_4/U0/gpio_core_1/s_axi_aclk
+    SLICE_X53Y72         FDRE                                         r  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[26]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X53Y72         FDRE (Prop_fdre_C_Q)         0.175     1.348 r  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[26]/Q
+                         net (fo=2, routed)           0.514     1.862    emg_pl_export_0/inst/control_command[5]
+    SLICE_X52Y71         FDRE                                         r  emg_pl_export_0/inst/epoch_reg[1]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock pl_clk rise edge)     0.000     0.000 r  
+    U18                                               0.000     0.000 r  pl_clk_0 (IN)
+                         net (fo=0)                   0.000     0.000    pl_clk_0
+    U18                  IBUF (Prop_ibuf_I_O)         0.266     0.266 r  pl_clk_0_IBUF_inst/O
+                         net (fo=1, routed)           0.674     0.940    pl_clk_0_IBUF
+    BUFGCTRL_X0Y29       BUFG (Prop_bufg_I_O)         0.026     0.966 r  pl_clk_0_IBUF_BUFG_inst/O
+                         net (fo=29781, routed)       0.542     1.508    emg_pl_export_0/inst/pl_clk
+    SLICE_X52Y71         FDRE                                         r  emg_pl_export_0/inst/epoch_reg[1]/C
+
+Slack:                    inf
+  Source:                 axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[26]/C
+                            (rising edge-triggered cell FDRE clocked by clk_fpga_0  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            emg_pl_export_0/inst/epoch_reg[1]/D
+                            (rising edge-triggered cell FDRE clocked by pl_clk  {rise@0.000ns fall@20.000ns period=40.000ns})
+  Path Group:             (none)
+  Path Type:              Setup (Max at Fast Process Corner)
+  Data Path Delay:        0.689ns  (logic 0.175ns (25.416%)  route 0.514ns (74.584%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.335ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    1.508ns
+    Source Clock Delay      (SCD):    1.173ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.154ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.300ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+  Timing Exception:       Asynchronous Clock Groups
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk_fpga_0 rise edge)
+                                                      0.000     0.000 r  
+    PS7_X0Y0             PS7                          0.000     0.000 r  processing_system7_0/inst/PS7_i/FCLKCLK[0]
+                         net (fo=1, routed)           0.337     0.337    processing_system7_0/inst/FCLK_CLK_unbuffered[0]
+    BUFGCTRL_X0Y30       BUFG (Prop_bufg_I_O)         0.029     0.366 r  processing_system7_0/inst/buffer_fclk_clk_0.FCLK_CLK_0_BUFG/O
+                         net (fo=11850, routed)       0.807     1.173    axi_gpio_4/U0/gpio_core_1/s_axi_aclk
+    SLICE_X53Y72         FDRE                                         r  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[26]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X53Y72         FDRE (Prop_fdre_C_Q)         0.175     1.348 f  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[26]/Q
+                         net (fo=2, routed)           0.514     1.862    emg_pl_export_0/inst/control_command[5]
+    SLICE_X52Y71         FDRE                                         f  emg_pl_export_0/inst/epoch_reg[1]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock pl_clk rise edge)     0.000     0.000 r  
+    U18                                               0.000     0.000 r  pl_clk_0 (IN)
+                         net (fo=0)                   0.000     0.000    pl_clk_0
+    U18                  IBUF (Prop_ibuf_I_O)         0.266     0.266 r  pl_clk_0_IBUF_inst/O
+                         net (fo=1, routed)           0.674     0.940    pl_clk_0_IBUF
+    BUFGCTRL_X0Y29       BUFG (Prop_bufg_I_O)         0.026     0.966 r  pl_clk_0_IBUF_BUFG_inst/O
+                         net (fo=29781, routed)       0.542     1.508    emg_pl_export_0/inst/pl_clk
+    SLICE_X52Y71         FDRE                                         r  emg_pl_export_0/inst/epoch_reg[1]/C
+
+Slack:                    inf
+  Source:                 axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[28]/C
+                            (rising edge-triggered cell FDRE clocked by clk_fpga_0  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            emg_pl_export_0/inst/recalibrate_reg/D
+                            (rising edge-triggered cell FDRE clocked by pl_clk  {rise@0.000ns fall@20.000ns period=40.000ns})
+  Path Group:             (none)
+  Path Type:              Setup (Max at Fast Process Corner)
+  Data Path Delay:        0.627ns  (logic 0.231ns (36.851%)  route 0.396ns (63.149%))
+  Logic Levels:           1  (LUT3=1)
+  Clock Path Skew:        0.331ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    1.510ns
+    Source Clock Delay      (SCD):    1.179ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.154ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.300ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+  Timing Exception:       Asynchronous Clock Groups
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk_fpga_0 rise edge)
+                                                      0.000     0.000 r  
+    PS7_X0Y0             PS7                          0.000     0.000 r  processing_system7_0/inst/PS7_i/FCLKCLK[0]
+                         net (fo=1, routed)           0.337     0.337    processing_system7_0/inst/FCLK_CLK_unbuffered[0]
+    BUFGCTRL_X0Y30       BUFG (Prop_bufg_I_O)         0.029     0.366 r  processing_system7_0/inst/buffer_fclk_clk_0.FCLK_CLK_0_BUFG/O
+                         net (fo=11850, routed)       0.813     1.179    axi_gpio_4/U0/gpio_core_1/s_axi_aclk
+    SLICE_X48Y70         FDRE                                         r  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[28]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X48Y70         FDRE (Prop_fdre_C_Q)         0.175     1.354 r  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[28]/Q
+                         net (fo=2, routed)           0.396     1.750    emg_pl_export_0/inst/control_command[3]
+    SLICE_X51Y69         LUT3 (Prop_lut3_I2_O)        0.056     1.806 r  emg_pl_export_0/inst/recalibrate_i_1/O
+                         net (fo=1, routed)           0.000     1.806    emg_pl_export_0/inst/recalibrate
+    SLICE_X51Y69         FDRE                                         r  emg_pl_export_0/inst/recalibrate_reg/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock pl_clk rise edge)     0.000     0.000 r  
+    U18                                               0.000     0.000 r  pl_clk_0 (IN)
+                         net (fo=0)                   0.000     0.000    pl_clk_0
+    U18                  IBUF (Prop_ibuf_I_O)         0.266     0.266 r  pl_clk_0_IBUF_inst/O
+                         net (fo=1, routed)           0.674     0.940    pl_clk_0_IBUF
+    BUFGCTRL_X0Y29       BUFG (Prop_bufg_I_O)         0.026     0.966 r  pl_clk_0_IBUF_BUFG_inst/O
+                         net (fo=29781, routed)       0.544     1.510    emg_pl_export_0/inst/pl_clk
+    SLICE_X51Y69         FDRE                                         r  emg_pl_export_0/inst/recalibrate_reg/C
+
+Slack:                    inf
+  Source:                 axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[28]/C
+                            (rising edge-triggered cell FDRE clocked by clk_fpga_0  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            emg_pl_export_0/inst/recalibrate_reg/D
+                            (rising edge-triggered cell FDRE clocked by pl_clk  {rise@0.000ns fall@20.000ns period=40.000ns})
+  Path Group:             (none)
+  Path Type:              Setup (Max at Fast Process Corner)
+  Data Path Delay:        0.627ns  (logic 0.231ns (36.851%)  route 0.396ns (63.149%))
+  Logic Levels:           1  (LUT3=1)
+  Clock Path Skew:        0.331ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    1.510ns
+    Source Clock Delay      (SCD):    1.179ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.154ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.300ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+  Timing Exception:       Asynchronous Clock Groups
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk_fpga_0 rise edge)
+                                                      0.000     0.000 r  
+    PS7_X0Y0             PS7                          0.000     0.000 r  processing_system7_0/inst/PS7_i/FCLKCLK[0]
+                         net (fo=1, routed)           0.337     0.337    processing_system7_0/inst/FCLK_CLK_unbuffered[0]
+    BUFGCTRL_X0Y30       BUFG (Prop_bufg_I_O)         0.029     0.366 r  processing_system7_0/inst/buffer_fclk_clk_0.FCLK_CLK_0_BUFG/O
+                         net (fo=11850, routed)       0.813     1.179    axi_gpio_4/U0/gpio_core_1/s_axi_aclk
+    SLICE_X48Y70         FDRE                                         r  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[28]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X48Y70         FDRE (Prop_fdre_C_Q)         0.175     1.354 f  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[28]/Q
+                         net (fo=2, routed)           0.396     1.750    emg_pl_export_0/inst/control_command[3]
+    SLICE_X51Y69         LUT3 (Prop_lut3_I2_O)        0.056     1.806 f  emg_pl_export_0/inst/recalibrate_i_1/O
+                         net (fo=1, routed)           0.000     1.806    emg_pl_export_0/inst/recalibrate
+    SLICE_X51Y69         FDRE                                         f  emg_pl_export_0/inst/recalibrate_reg/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock pl_clk rise edge)     0.000     0.000 r  
+    U18                                               0.000     0.000 r  pl_clk_0 (IN)
+                         net (fo=0)                   0.000     0.000    pl_clk_0
+    U18                  IBUF (Prop_ibuf_I_O)         0.266     0.266 r  pl_clk_0_IBUF_inst/O
+                         net (fo=1, routed)           0.674     0.940    pl_clk_0_IBUF
+    BUFGCTRL_X0Y29       BUFG (Prop_bufg_I_O)         0.026     0.966 r  pl_clk_0_IBUF_BUFG_inst/O
+                         net (fo=29781, routed)       0.544     1.510    emg_pl_export_0/inst/pl_clk
+    SLICE_X51Y69         FDRE                                         r  emg_pl_export_0/inst/recalibrate_reg/C
+
+Slack:                    inf
+  Source:                 axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[24]/C
+                            (rising edge-triggered cell FDRE clocked by clk_fpga_0  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            emg_pl_export_0/inst/epoch_reg[3]/D
+                            (rising edge-triggered cell FDRE clocked by pl_clk  {rise@0.000ns fall@20.000ns period=40.000ns})
+  Path Group:             (none)
+  Path Type:              Setup (Max at Fast Process Corner)
+  Data Path Delay:        0.510ns  (logic 0.175ns (34.281%)  route 0.335ns (65.720%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.360ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    1.533ns
+    Source Clock Delay      (SCD):    1.173ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.154ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.300ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+  Timing Exception:       Asynchronous Clock Groups
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk_fpga_0 rise edge)
+                                                      0.000     0.000 r  
+    PS7_X0Y0             PS7                          0.000     0.000 r  processing_system7_0/inst/PS7_i/FCLKCLK[0]
+                         net (fo=1, routed)           0.337     0.337    processing_system7_0/inst/FCLK_CLK_unbuffered[0]
+    BUFGCTRL_X0Y30       BUFG (Prop_bufg_I_O)         0.029     0.366 r  processing_system7_0/inst/buffer_fclk_clk_0.FCLK_CLK_0_BUFG/O
+                         net (fo=11850, routed)       0.807     1.173    axi_gpio_4/U0/gpio_core_1/s_axi_aclk
+    SLICE_X53Y72         FDRE                                         r  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[24]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X53Y72         FDRE (Prop_fdre_C_Q)         0.175     1.348 r  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[24]/Q
+                         net (fo=2, routed)           0.335     1.683    emg_pl_export_0/inst/control_command[7]
+    SLICE_X59Y72         FDRE                                         r  emg_pl_export_0/inst/epoch_reg[3]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock pl_clk rise edge)     0.000     0.000 r  
+    U18                                               0.000     0.000 r  pl_clk_0 (IN)
+                         net (fo=0)                   0.000     0.000    pl_clk_0
+    U18                  IBUF (Prop_ibuf_I_O)         0.266     0.266 r  pl_clk_0_IBUF_inst/O
+                         net (fo=1, routed)           0.674     0.940    pl_clk_0_IBUF
+    BUFGCTRL_X0Y29       BUFG (Prop_bufg_I_O)         0.026     0.966 r  pl_clk_0_IBUF_BUFG_inst/O
+                         net (fo=29781, routed)       0.567     1.533    emg_pl_export_0/inst/pl_clk
+    SLICE_X59Y72         FDRE                                         r  emg_pl_export_0/inst/epoch_reg[3]/C
+
+Slack:                    inf
+  Source:                 axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[24]/C
+                            (rising edge-triggered cell FDRE clocked by clk_fpga_0  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            emg_pl_export_0/inst/epoch_reg[3]/D
+                            (rising edge-triggered cell FDRE clocked by pl_clk  {rise@0.000ns fall@20.000ns period=40.000ns})
+  Path Group:             (none)
+  Path Type:              Setup (Max at Fast Process Corner)
+  Data Path Delay:        0.510ns  (logic 0.175ns (34.281%)  route 0.335ns (65.720%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.360ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    1.533ns
+    Source Clock Delay      (SCD):    1.173ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.154ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.300ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+  Timing Exception:       Asynchronous Clock Groups
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk_fpga_0 rise edge)
+                                                      0.000     0.000 r  
+    PS7_X0Y0             PS7                          0.000     0.000 r  processing_system7_0/inst/PS7_i/FCLKCLK[0]
+                         net (fo=1, routed)           0.337     0.337    processing_system7_0/inst/FCLK_CLK_unbuffered[0]
+    BUFGCTRL_X0Y30       BUFG (Prop_bufg_I_O)         0.029     0.366 r  processing_system7_0/inst/buffer_fclk_clk_0.FCLK_CLK_0_BUFG/O
+                         net (fo=11850, routed)       0.807     1.173    axi_gpio_4/U0/gpio_core_1/s_axi_aclk
+    SLICE_X53Y72         FDRE                                         r  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[24]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X53Y72         FDRE (Prop_fdre_C_Q)         0.175     1.348 f  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[24]/Q
+                         net (fo=2, routed)           0.335     1.683    emg_pl_export_0/inst/control_command[7]
+    SLICE_X59Y72         FDRE                                         f  emg_pl_export_0/inst/epoch_reg[3]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock pl_clk rise edge)     0.000     0.000 r  
+    U18                                               0.000     0.000 r  pl_clk_0 (IN)
+                         net (fo=0)                   0.000     0.000    pl_clk_0
+    U18                  IBUF (Prop_ibuf_I_O)         0.266     0.266 r  pl_clk_0_IBUF_inst/O
+                         net (fo=1, routed)           0.674     0.940    pl_clk_0_IBUF
+    BUFGCTRL_X0Y29       BUFG (Prop_bufg_I_O)         0.026     0.966 r  pl_clk_0_IBUF_BUFG_inst/O
+                         net (fo=29781, routed)       0.567     1.533    emg_pl_export_0/inst/pl_clk
+    SLICE_X59Y72         FDRE                                         r  emg_pl_export_0/inst/epoch_reg[3]/C
+
+Slack:                    inf
+  Source:                 axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[25]/C
+                            (rising edge-triggered cell FDRE clocked by clk_fpga_0  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            emg_pl_export_0/inst/epoch_reg[2]/D
+                            (rising edge-triggered cell FDRE clocked by pl_clk  {rise@0.000ns fall@20.000ns period=40.000ns})
+  Path Group:             (none)
+  Path Type:              Setup (Max at Fast Process Corner)
+  Data Path Delay:        0.455ns  (logic 0.175ns (38.489%)  route 0.280ns (61.511%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.331ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    1.532ns
+    Source Clock Delay      (SCD):    1.201ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.154ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.300ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+  Timing Exception:       Asynchronous Clock Groups
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk_fpga_0 rise edge)
+                                                      0.000     0.000 r  
+    PS7_X0Y0             PS7                          0.000     0.000 r  processing_system7_0/inst/PS7_i/FCLKCLK[0]
+                         net (fo=1, routed)           0.337     0.337    processing_system7_0/inst/FCLK_CLK_unbuffered[0]
+    BUFGCTRL_X0Y30       BUFG (Prop_bufg_I_O)         0.029     0.366 r  processing_system7_0/inst/buffer_fclk_clk_0.FCLK_CLK_0_BUFG/O
+                         net (fo=11850, routed)       0.835     1.201    axi_gpio_4/U0/gpio_core_1/s_axi_aclk
+    SLICE_X60Y72         FDRE                                         r  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[25]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X60Y72         FDRE (Prop_fdre_C_Q)         0.175     1.376 r  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[25]/Q
+                         net (fo=2, routed)           0.280     1.656    emg_pl_export_0/inst/control_command[6]
+    SLICE_X60Y74         FDRE                                         r  emg_pl_export_0/inst/epoch_reg[2]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock pl_clk rise edge)     0.000     0.000 r  
+    U18                                               0.000     0.000 r  pl_clk_0 (IN)
+                         net (fo=0)                   0.000     0.000    pl_clk_0
+    U18                  IBUF (Prop_ibuf_I_O)         0.266     0.266 r  pl_clk_0_IBUF_inst/O
+                         net (fo=1, routed)           0.674     0.940    pl_clk_0_IBUF
+    BUFGCTRL_X0Y29       BUFG (Prop_bufg_I_O)         0.026     0.966 r  pl_clk_0_IBUF_BUFG_inst/O
+                         net (fo=29781, routed)       0.566     1.532    emg_pl_export_0/inst/pl_clk
+    SLICE_X60Y74         FDRE                                         r  emg_pl_export_0/inst/epoch_reg[2]/C
+
+Slack:                    inf
+  Source:                 axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[25]/C
+                            (rising edge-triggered cell FDRE clocked by clk_fpga_0  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            emg_pl_export_0/inst/epoch_reg[2]/D
+                            (rising edge-triggered cell FDRE clocked by pl_clk  {rise@0.000ns fall@20.000ns period=40.000ns})
+  Path Group:             (none)
+  Path Type:              Setup (Max at Fast Process Corner)
+  Data Path Delay:        0.455ns  (logic 0.175ns (38.489%)  route 0.280ns (61.511%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.331ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    1.532ns
+    Source Clock Delay      (SCD):    1.201ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.154ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.300ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+  Timing Exception:       Asynchronous Clock Groups
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk_fpga_0 rise edge)
+                                                      0.000     0.000 r  
+    PS7_X0Y0             PS7                          0.000     0.000 r  processing_system7_0/inst/PS7_i/FCLKCLK[0]
+                         net (fo=1, routed)           0.337     0.337    processing_system7_0/inst/FCLK_CLK_unbuffered[0]
+    BUFGCTRL_X0Y30       BUFG (Prop_bufg_I_O)         0.029     0.366 r  processing_system7_0/inst/buffer_fclk_clk_0.FCLK_CLK_0_BUFG/O
+                         net (fo=11850, routed)       0.835     1.201    axi_gpio_4/U0/gpio_core_1/s_axi_aclk
+    SLICE_X60Y72         FDRE                                         r  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[25]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X60Y72         FDRE (Prop_fdre_C_Q)         0.175     1.376 f  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[25]/Q
+                         net (fo=2, routed)           0.280     1.656    emg_pl_export_0/inst/control_command[6]
+    SLICE_X60Y74         FDRE                                         f  emg_pl_export_0/inst/epoch_reg[2]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock pl_clk rise edge)     0.000     0.000 r  
+    U18                                               0.000     0.000 r  pl_clk_0 (IN)
+                         net (fo=0)                   0.000     0.000    pl_clk_0
+    U18                  IBUF (Prop_ibuf_I_O)         0.266     0.266 r  pl_clk_0_IBUF_inst/O
+                         net (fo=1, routed)           0.674     0.940    pl_clk_0_IBUF
+    BUFGCTRL_X0Y29       BUFG (Prop_bufg_I_O)         0.026     0.966 r  pl_clk_0_IBUF_BUFG_inst/O
+                         net (fo=29781, routed)       0.566     1.532    emg_pl_export_0/inst/pl_clk
+    SLICE_X60Y74         FDRE                                         r  emg_pl_export_0/inst/epoch_reg[2]/C
+
+Slack:                    inf
+  Source:                 axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[27]/C
+                            (rising edge-triggered cell FDRE clocked by clk_fpga_0  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            emg_pl_export_0/inst/epoch_reg[0]/D
+                            (rising edge-triggered cell FDRE clocked by pl_clk  {rise@0.000ns fall@20.000ns period=40.000ns})
+  Path Group:             (none)
+  Path Type:              Setup (Max at Fast Process Corner)
+  Data Path Delay:        0.421ns  (logic 0.175ns (41.579%)  route 0.246ns (58.421%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.329ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    1.508ns
+    Source Clock Delay      (SCD):    1.179ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.154ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.300ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+  Timing Exception:       Asynchronous Clock Groups
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk_fpga_0 rise edge)
+                                                      0.000     0.000 r  
+    PS7_X0Y0             PS7                          0.000     0.000 r  processing_system7_0/inst/PS7_i/FCLKCLK[0]
+                         net (fo=1, routed)           0.337     0.337    processing_system7_0/inst/FCLK_CLK_unbuffered[0]
+    BUFGCTRL_X0Y30       BUFG (Prop_bufg_I_O)         0.029     0.366 r  processing_system7_0/inst/buffer_fclk_clk_0.FCLK_CLK_0_BUFG/O
+                         net (fo=11850, routed)       0.813     1.179    axi_gpio_4/U0/gpio_core_1/s_axi_aclk
+    SLICE_X48Y70         FDRE                                         r  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[27]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X48Y70         FDRE (Prop_fdre_C_Q)         0.175     1.354 r  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[27]/Q
+                         net (fo=2, routed)           0.246     1.600    emg_pl_export_0/inst/control_command[4]
+    SLICE_X52Y71         FDRE                                         r  emg_pl_export_0/inst/epoch_reg[0]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock pl_clk rise edge)     0.000     0.000 r  
+    U18                                               0.000     0.000 r  pl_clk_0 (IN)
+                         net (fo=0)                   0.000     0.000    pl_clk_0
+    U18                  IBUF (Prop_ibuf_I_O)         0.266     0.266 r  pl_clk_0_IBUF_inst/O
+                         net (fo=1, routed)           0.674     0.940    pl_clk_0_IBUF
+    BUFGCTRL_X0Y29       BUFG (Prop_bufg_I_O)         0.026     0.966 r  pl_clk_0_IBUF_BUFG_inst/O
+                         net (fo=29781, routed)       0.542     1.508    emg_pl_export_0/inst/pl_clk
+    SLICE_X52Y71         FDRE                                         r  emg_pl_export_0/inst/epoch_reg[0]/C
+
+Slack:                    inf
+  Source:                 axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[27]/C
+                            (rising edge-triggered cell FDRE clocked by clk_fpga_0  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            emg_pl_export_0/inst/epoch_reg[0]/D
+                            (rising edge-triggered cell FDRE clocked by pl_clk  {rise@0.000ns fall@20.000ns period=40.000ns})
+  Path Group:             (none)
+  Path Type:              Setup (Max at Fast Process Corner)
+  Data Path Delay:        0.421ns  (logic 0.175ns (41.579%)  route 0.246ns (58.421%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.329ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    1.508ns
+    Source Clock Delay      (SCD):    1.179ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.154ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.300ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+  Timing Exception:       Asynchronous Clock Groups
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk_fpga_0 rise edge)
+                                                      0.000     0.000 r  
+    PS7_X0Y0             PS7                          0.000     0.000 r  processing_system7_0/inst/PS7_i/FCLKCLK[0]
+                         net (fo=1, routed)           0.337     0.337    processing_system7_0/inst/FCLK_CLK_unbuffered[0]
+    BUFGCTRL_X0Y30       BUFG (Prop_bufg_I_O)         0.029     0.366 r  processing_system7_0/inst/buffer_fclk_clk_0.FCLK_CLK_0_BUFG/O
+                         net (fo=11850, routed)       0.813     1.179    axi_gpio_4/U0/gpio_core_1/s_axi_aclk
+    SLICE_X48Y70         FDRE                                         r  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[27]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X48Y70         FDRE (Prop_fdre_C_Q)         0.175     1.354 f  axi_gpio_4/U0/gpio_core_1/Dual.gpio_Data_Out_reg[27]/Q
+                         net (fo=2, routed)           0.246     1.600    emg_pl_export_0/inst/control_command[4]
+    SLICE_X52Y71         FDRE                                         f  emg_pl_export_0/inst/epoch_reg[0]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock pl_clk rise edge)     0.000     0.000 r  
+    U18                                               0.000     0.000 r  pl_clk_0 (IN)
+                         net (fo=0)                   0.000     0.000    pl_clk_0
+    U18                  IBUF (Prop_ibuf_I_O)         0.266     0.266 r  pl_clk_0_IBUF_inst/O
+                         net (fo=1, routed)           0.674     0.940    pl_clk_0_IBUF
+    BUFGCTRL_X0Y29       BUFG (Prop_bufg_I_O)         0.026     0.966 r  pl_clk_0_IBUF_BUFG_inst/O
+                         net (fo=29781, routed)       0.542     1.508    emg_pl_export_0/inst/pl_clk
+    SLICE_X52Y71         FDRE                                         r  emg_pl_export_0/inst/epoch_reg[0]/C
+
+
+
+

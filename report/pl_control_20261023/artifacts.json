@@ -1,0 +1,82 @@
+{
+  "date": "2026-10-23",
+  "tag": "20261023_PL_CONTROL_V1",
+  "hardware_verified": false,
+  "pwm_connected": false,
+  "pl_partition": {
+    "transform": "wordrev",
+    "header": 120,
+    "offset": 134656,
+    "bytes": 4045564
+  },
+  "application_load_checks": [
+    {
+      "load_address": "0x10000000",
+      "elf_file_bytes": 721228,
+      "boot_offset": "0x3fc900",
+      "match": true
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "build\\vivado\\hand_motion_reconstruction.runs\\impl_1\\design_1.bit",
+      "bytes": 4045684,
+      "sha256": "4e0e388eb0c4f7adfcbdb1eedbfd15aa9b701a05d503cf50fef138541270dfc3"
+    },
+    {
+      "path": "sw\\ps_uart_print\\ps_uart_print_pl_control.elf",
+      "bytes": 760432,
+      "sha256": "c83adfe576288a832d0b4c5d44073da1390236be25c4286898da77229e60045e"
+    },
+    {
+      "path": "build\\boot\\BOOT_20261023_PL_CONTROL_V1.BIN",
+      "bytes": 4901452,
+      "sha256": "9865de200eb8dbedf5838b9d5c85ec749d6d68027425423e48d7ca8ede678f31"
+    },
+    {
+      "path": "build\\export\\design_1.xsa",
+      "bytes": 1665614,
+      "sha256": "9340cbb478d07f5931c23aca38b3dbab195c34670585ec40081ddc84d691aaf2"
+    },
+    {
+      "path": "src\\rtl\\emg_control_policy.v",
+      "bytes": 9642,
+      "sha256": "668809c41be5b91d75c7036b3cc97b9833f533e58a55220cef1737d699465ccb"
+    },
+    {
+      "path": "src\\rtl\\emg_control_inference.v",
+      "bytes": 5351,
+      "sha256": "7f4c983232ab211e3bc1382a14308bead4e54819acb2f3671c939853f8365cd4"
+    },
+    {
+      "path": "src\\rtl\\emg_control_constants.vh",
+      "bytes": 8881,
+      "sha256": "cf077f7e7e2a98848b1e725313e2d99ac8eaee67cc762fa4e14896faef2cded9"
+    },
+    {
+      "path": "src\\rtl\\emg_pl_control.v",
+      "bytes": 4041,
+      "sha256": "a5138927d8e1e204daf0c665922d3fc536b9b55076e2002acd1e48ee5047df58"
+    },
+    {
+      "path": "src\\rtl\\emg_pl_export.v",
+      "bytes": 17119,
+      "sha256": "bf12ca026c075c8835d3d8dcc1846ddfb9650b10889d02ca066ea7594c26902d"
+    },
+    {
+      "path": "src\\rtl\\hand_servo_pwm.v",
+      "bytes": 3498,
+      "sha256": "6fea2331f016fbc2086b984ca0494724b706da587806a1fc3301069a56e580e6"
+    },
+    {
+      "path": "sw\\ps_uart_print\\main.c",
+      "bytes": 150495,
+      "sha256": "f820bbb255b1bf83bf5c3f622cdaa9bf9e544aa8d0b23a80f68e8f1e13c1499f"
+    },
+    {
+      "path": "sw\\ps_uart_print\\pl_control.h",
+      "bytes": 2476,
+      "sha256": "39e0860d2c7b2896094e76e503adad4071330a6a74d3a0b8901e372d660aaaff"
+    }
+  ]
+}

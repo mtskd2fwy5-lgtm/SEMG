@@ -1,0 +1,32 @@
+[
+  {
+    "path": "D:\\电脑管家迁移文件\\xwechat_files\\wxid_ait3nzfjnd1g22_ae1e\\msg\\file\\2026-10\\jixb\\jixb\\1.使用手册\\Yhand Mini仿生机械手掌Arduino主控版本开发手册 .pdf",
+    "bytes": 3301857,
+    "sha256": "d8185f09d90d66c3b795a24fad7fad2b5d27f51330ed322f56cf91151c993685"
+  },
+  {
+    "path": "D:\\电脑管家迁移文件\\xwechat_files\\wxid_ait3nzfjnd1g22_ae1e\\msg\\file\\2026-10\\jixb\\jixb\\2.原理图及引脚说明\\SCH_OpenC328_2026-03-18.pdf",
+    "bytes": 482290,
+    "sha256": "6ee5f027b64b8d7e2274d097b635b23a6334320afc52de13299e6bd4a2fd86d5"
+  },
+  {
+    "path": "D:\\电脑管家迁移文件\\xwechat_files\\wxid_ait3nzfjnd1g22_ae1e\\msg\\file\\2026-10\\jixb\\jixb\\YhandMini仿生机械手掌代码\\arduino mini手掌v1.6\\Arduino\\Arduino.ino",
+    "bytes": 4645,
+    "sha256": "d09a53d9fa20e96a6c00df583b36f5731c2d9b2dd4bcd6ba2017aaf855e660b4"
+  },
+  {
+    "path": "D:\\电脑管家迁移文件\\xwechat_files\\wxid_ait3nzfjnd1g22_ae1e\\msg\\file\\2026-10\\jixb\\jixb\\YhandMini仿生机械手掌代码\\arduino mini手掌v1.6\\Arduino\\setup.ino",
+    "bytes": 1584,
+    "sha256": "c7544dc41a61c6eec67d20dc8241f8377290f398f78674555f3fd0a8f9df3e33"
+  },
+  {
+    "path": "D:\\电脑管家迁移文件\\xwechat_files\\wxid_ait3nzfjnd1g22_ae1e\\msg\\file\\2026-10\\jixb\\jixb\\YhandMini仿生机械手掌代码\\arduino mini手掌v1.6\\Arduino\\loop.ino",
+    "bytes": 5961,
+    "sha256": "1522e1b7cd839b6580666e921fe2457bb1a950197988c2f0154af12ed12b8084"
+  },
+  {
+    "path": "D:\\电脑管家迁移文件\\xwechat_files\\wxid_ait3nzfjnd1g22_ae1e\\msg\\file\\2026-10\\jixb\\jixb\\YhandMini仿生机械手掌代码\\arduino mini手掌v1.6\\Arduino\\serialEvent.ino",
+    "bytes": 12573,
+    "sha256": "9f7c97b42c1e6476493365e31acd706ccba520c80d7fc7409e34a739f56c6fd1"
+  }
+]

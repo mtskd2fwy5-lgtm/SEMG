@@ -1,0 +1,5 @@
+D:\FPGA\VIVADO\2025.2\data\embeddedsw\lib\sw_services\xilffs_v5_5\src\ff.c: In function 'get_ldnumber':
+D:\FPGA\VIVADO\2025.2\data\embeddedsw\lib\sw_services\xilffs_v5_5\src\ff.c:4000:13: warning: unused variable 'vol' [-Wunused-variable]
+ 4000 |         int vol = -1;
+      |             ^~~
+BUILD OK: ps_uart_print.elf

@@ -1,0 +1,47 @@
+{
+  "firmware": "20261014_LCD_TRACK_V4",
+  "app_segments": [
+    {
+      "address": "0x10000000",
+      "file_bytes": 41088,
+      "boot_offset": "0x3fc900"
+    },
+    {
+      "address": "0x1000c000",
+      "file_bytes": 32768,
+      "boot_offset": "0x406980"
+    },
+    {
+      "address": "0x10014000",
+      "file_bytes": 196,
+      "boot_offset": "0x40e980"
+    }
+  ],
+  "files": [
+    {
+      "path": "build\\boot\\BOOT.BIN",
+      "bytes": 4254276,
+      "sha256": "0C96C311F399CF6A95C55172285C4D75032792ED34D1EE02D3FE7998D03330DA",
+      "modified_local": "2026-10-14T17:35:20"
+    },
+    {
+      "path": "sw\\ps_uart_print\\ps_uart_print.elf",
+      "bytes": 92688,
+      "sha256": "52054A4F9F36494121C388342AB221D527AB6E68281C90935CE4E971061B4A8F",
+      "modified_local": "2026-10-14T17:33:56"
+    },
+    {
+      "path": "build\\vivado\\hand_motion_reconstruction.runs\\impl_1\\design_1.bit",
+      "bytes": 4045684,
+      "sha256": "3CD29FA3DFC356BB3931BD65F059E30E243EFF01E20840DF3810B9C559871E6A",
+      "modified_local": "2026-10-14T17:08:49"
+    }
+  ],
+  "host_test": "TEST_PASS STARTUP / IMU / WRIST / LCD",
+  "rtl_test": "TEST_PASS LCD_INPUT (unchanged RTL from V3)",
+  "timing_ns": {
+    "WNS": 0.609,
+    "WHS": 0.035
+  },
+  "hardware_tested": false
+}

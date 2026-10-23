@@ -1,0 +1,65 @@
+{
+  "build_tag": "20261018_LCD_UI_V2",
+  "date": "2026-10-18",
+  "panels": [
+    [
+      800,
+      480
+    ],
+    [
+      1024,
+      600
+    ]
+  ],
+  "validation": {
+    "lcd_firmware": "PASS",
+    "uart_record": "PASS",
+    "arm_build": "PASS",
+    "boot_gates": "G1-G5 PASS",
+    "pl_rebuilt": false,
+    "hardware_tested": false,
+    "warning": "Vendor FatFs ff.c unused variable vol"
+  },
+  "files": [
+    {
+      "path": "sw/ps_uart_print/main.c",
+      "bytes": 135427,
+      "sha256": "180081d59c1c2787990fe4abd9b9ad37db964b87737b86c7b595e8d415ed6cf9"
+    },
+    {
+      "path": "sw/ps_uart_print/lcd_ui.h",
+      "bytes": 2252,
+      "sha256": "3e47b2ee952eda5b7c03efb773d2cc13837ccb7d36362d432fdb8a27209a27b1"
+    },
+    {
+      "path": "sw/ps_uart_print/lcd_settings.h",
+      "bytes": 3672,
+      "sha256": "8d5cd4589ae09c75b65e5cd1f05aad28a2a1fae74f303c1c5aa33834e9aa4ec1"
+    },
+    {
+      "path": "sw/ps_uart_print/lcd_waveform.h",
+      "bytes": 11595,
+      "sha256": "e5e5ce48e12bf63447f6225cfb38b676934a9a2a855da90d60d50c0b47d9ff1d"
+    },
+    {
+      "path": "sim/lcd_firmware_test.c",
+      "bytes": 41858,
+      "sha256": "d6888fb0197f12ed8cc3f697493567e11ddfb01a8b2ffdfb49dcf7e36949e3e9"
+    },
+    {
+      "path": "sw/ps_uart_print/ps_uart_print.elf",
+      "bytes": 167728,
+      "sha256": "6812a10c6cb7ed3cf7fb077327e795134d8094582213ba23b765f93aeaa7436d"
+    },
+    {
+      "path": "build/boot/BOOT.BIN",
+      "bytes": 4311604,
+      "sha256": "f171a6171f292cafbf04d709cd944d766e4c5702e8db81bc2b7bf5062cb77d16"
+    },
+    {
+      "path": "build/vivado/hand_motion_reconstruction.runs/impl_1/design_1.bit",
+      "bytes": 4045684,
+      "sha256": "64cb07ca9a224d503e142c231474a75b5875c1e7bb59b6e3f5595d2dd74054f0"
+    }
+  ]
+}

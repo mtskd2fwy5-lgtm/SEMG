@@ -30,9 +30,10 @@ Usage:
   python tools/train_baseline.py --resample 20 --win-samples 400 \
          --hop-samples 100 --pl-filter
          # exact RTL integer bandpass after the 4 kSPS sample-and-hold stream
-  python tools/train_baseline.py --data-dir data/raw/board --fs 4000 \
-         --win-samples 400 --hop-samples 100
-         # own 4 kSPS board raw data at the native feature pace
+  python tools/train_baseline.py --data-dir data/raw/board --input-mode waveform --fs 4000 \
+         --win-samples 400 --hop-samples 100 --notch50 --pl-filter
+         # raw input: notch then bandpass; verified notch50 CSV: bandpass only
+         # use continuous captures (--keep-all) to retain filter state
 """
 
 import argparse
@@ -51,7 +52,7 @@ from sklearn.preprocessing import StandardScaler
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from emg_reference import Bandpass
+from emg_reference import Bandpass, Notch50, NotchComb, ProcessedSignal
 
 RAW_DIR = os.path.join(ROOT, "data", "raw", "ninapro_db5")
 MODEL_PATH = os.path.join(ROOT, "data", "models", "baseline_mlp.joblib")
@@ -83,7 +84,7 @@ DATASET = {
 }
 
 
-def load_session_csv(path):
+def load_session_csv(path, keep_unknown=False):
     """Read one contract CSV -> (x int32 (N,8), y int8 (N,))."""
     act_idx = {a: i for i, a in enumerate(CLASSES)}
     xs, ys = [], []
@@ -92,8 +93,8 @@ def load_session_csv(path):
         for line in fh:
             p = line.rstrip("\n").split(",")
             a = p[9]
-            k = act_idx.get(a)
-            if k is not None:
+            k = act_idx.get(a, -1)
+            if k >= 0 or keep_unknown:
                 xs.append(p[1:9])
                 ys.append(k)
     return np.asarray(xs, dtype=np.int32), np.asarray(ys, dtype=np.int8)
@@ -112,14 +113,29 @@ def load_full_session_csv(path):
     return np.asarray(xs, dtype=np.int32), np.asarray(ys, dtype=np.int8)
 
 
-def load_training_session(data_dir, subject, session, input_mode):
+def load_training_session(data_dir, subject, session, input_mode,
+                          with_metadata=False, keep_unknown=False):
     """Load one session from the selected dataset representation."""
-    suffix = "full" if input_mode == "full" else "baseline"
+    if input_mode not in ("baseline", "full", "waveform"):
+        raise ValueError("unsupported input mode: %s" % input_mode)
+    suffix = input_mode
     path = os.path.join(
         data_dir, subject, "%s_E%d_A1_%s.csv" %
         (subject.upper(), session, suffix))
-    loader = load_full_session_csv if input_mode == "full" else load_session_csv
-    return loader(path)
+    if input_mode == "full":
+        x, y = load_full_session_csv(path)
+    else:
+        x, y = load_session_csv(path, keep_unknown=keep_unknown)
+    if not with_metadata:
+        return x, y
+    sidecar = os.path.splitext(path)[0] + ".json"
+    meta = {}
+    if os.path.exists(sidecar):
+        with open(sidecar, encoding="utf-8") as fh:
+            meta = json.load(fh)
+        if not isinstance(meta, dict):
+            raise ValueError("%s: expected a metadata object" % sidecar)
+    return x, y, meta
 
 
 def apply_pl_bandpass(x):
@@ -133,18 +149,103 @@ def apply_pl_bandpass(x):
     return out
 
 
-def prepare_samples(x, y, decim=1, resample=1, pl_filter=False):
-    """Apply the shared sample-rate contract before feature extraction."""
+def notch_model(notch50):
+    if notch50 == "processed":
+        return ProcessedSignal
+    return NotchComb if notch50 == "notchcomb" else Notch50
+
+
+def apply_pl_notch50(x, notch50=True):
+    """Apply the tested RTL integer notch with independent channel states."""
+    x = np.asarray(x, dtype=np.int32)
+    out = np.empty(x.shape, dtype=np.int32)
+    for ch in range(x.shape[1]):
+        filt = notch_model(notch50)()
+        for i, sample in enumerate(x[:, ch]):
+            out[i, ch] = filt.step(int(sample))
+    return out
+
+
+def check_sample_contract(fs, decim, resample, pl_filter=False, notch50=False,
+                          metadata=None):
+    """Check rates and provenance; return whether input already has this notch.
+
+    Missing signal/filter fields retain the historical dataset contract.
+    An explicitly filtered recording must identify the exact filter, so it
+    cannot silently enter a legacy model or be notched a second time.
+    """
+    if min(fs, decim, resample) < 1 or (fs * resample) % decim:
+        raise ValueError("fs/decim/resample must give a positive integer sample rate")
+    if pl_filter and fs * resample // decim != 4000:
+        raise ValueError("the PL bandpass requires an effective sample rate of 4000 Hz")
+    if notch50 and fs * resample != 4000:
+        raise ValueError("notch50 requires 4000 Hz before decimation (fs * resample)")
+    meta = metadata or {}
+    if meta.get("sample_rate_hz", fs) != fs:
+        raise ValueError("CSV metadata sample_rate_hz disagrees with --fs")
+    signal = meta.get("signal")
+    filt = meta.get("filter")
+    if signal not in (None, "raw", "notch50", "notchcomb", "processed"):
+        raise ValueError("unsupported input signal: %s" % signal)
+    already = signal in ("notch50", "notchcomb", "processed")
+    if already:
+        if not notch50:
+            raise ValueError("notch50 CSV requires --notch50 to record the model contract")
+        expected_signal = notch50 if isinstance(notch50, str) else "notch50"
+        if signal != expected_signal:
+            raise ValueError("CSV signal does not match the selected --notch50/--notch-comb contract")
+        if not isinstance(filt, dict) or filt.get("id") != notch_model(notch50).FILTER_ID:
+            raise ValueError("notch50 CSV has a missing or incompatible filter id")
+        if fs != 4000 or resample != 1 or filt.get("sample_rate_hz") != 4000:
+            raise ValueError("pre-filtered notch50 CSV must be native 4000 Hz")
+    elif filt is not None:
+        raise ValueError("input filter metadata conflicts with the raw/legacy signal")
+    if notch50 and (meta.get("keep_all") is False or
+                    meta.get("dropped_non_baseline", 0) > 0):
+        raise ValueError("notch50 training requires a continuous CSV; retain all rows")
+    if notch50 and any(meta.get(k, 0) for k in
+                       ("sequence_gaps", "sequence_backwards", "sequence_duplicates",
+                        "frames_backward_uart", "frames_duplicate_uart", "frames_dropped_uart")):
+        raise ValueError("SD recording has sequence discontinuities; split into continuous segments first")
+    return already
+
+
+def filter_contract(pl_filter=False, notch50=False):
+    if notch50 == "processed":
+        return ("sample-hold to 4000 Hz; exact RTL notch50 Q10 -> comb50 BW1 -> "
+                "HP20/LP215 unless verified processed CSV; decimate; no second bandpass")
+    if notch50:
+        return ("sample-hold to 4000 Hz; exact RTL " + notch_model(notch50).FILTER_ID + " unless the CSV "
+                "identifies that filter; decimate; " +
+                ("exact RTL integer bandpass" if pl_filter else "no bandpass"))
+    return ("decimate; sample-hold to effective rate; exact RTL integer bandpass"
+            if pl_filter else "decimate; sample-hold to effective rate; no filter")
+
+
+def prepare_samples(x, y, decim=1, resample=1, pl_filter=False,
+                    notch50=False, fs=200, metadata=None):
+    """Shared training/export preprocessing, preserving the legacy default.
+
+    In the new chain the 4 kHz notch precedes the export decimation gate,
+    just as in emg_pl_export.v. The old decimate/repeat ordering is kept
+    when --notch50 is absent. All states reset at a session boundary.
+    """
+    already = check_sample_contract(fs, decim, resample, pl_filter, notch50,
+                                    metadata)
     x = np.asarray(x, dtype=np.int32)
     y = np.asarray(y, dtype=np.int8)
-    if decim > 1:
+    if not notch50 and decim > 1:
         x, y = x[::decim], y[::decim]
     if resample > 1:
         # Sample-and-hold upsample: the RTL feature sums see each source
         # sample for the same number of native-rate cycles.
         x = np.repeat(x, resample, axis=0)
         y = np.repeat(y, resample, axis=0)
-    if pl_filter:
+    if notch50:
+        if not already:
+            x = apply_pl_notch50(x, notch50)
+        x, y = x[::decim], y[::decim]
+    if pl_filter and notch50 != "processed":
         x = apply_pl_bandpass(x)
     return x, y
 
@@ -206,9 +307,9 @@ def main():
     ap.add_argument("--data-dir", default=None,
                     help="dataset root with s*/ subdirs (default: NinaPro "
                          "%s)" % os.path.relpath(RAW_DIR, ROOT))
-    ap.add_argument("--input-mode", choices=("baseline", "full"),
+    ap.add_argument("--input-mode", choices=("baseline", "full", "waveform"),
                     default="baseline",
-                    help="baseline rows or continuous *_full.csv stream")
+                    help="baseline rows, continuous NinaPro full stream, or board waveform capture")
     ap.add_argument("--fs", type=int, default=200,
                     help="sample rate of the input CSVs in Hz (default 200)")
     ap.add_argument("--win-samples", type=int, default=0,
@@ -225,6 +326,14 @@ def main():
     ap.add_argument("--pl-filter", action="store_true",
                     help="apply the exact integer PL bandpass after "
                          "resampling and before feature windowing")
+    line_filter = ap.add_mutually_exclusive_group()
+    line_filter.add_argument("--notch-comb", dest="notch50", action="store_const", const="notchcomb",
+                            help="use the deployed 50 Hz notch + 1 Hz comb contract")
+    line_filter.add_argument("--notch50", dest="notch50", action="store_const", const="processed",
+                            help="current final signed waveform: notch + comb + bandpass; never apply bandpass twice")
+    line_filter.add_argument("--legacy-notch50", dest="notch50", action="store_true",
+                    help="use the 4 kHz PL notch contract; automatically skip "
+                         "a second notch for verified notch50 CSVs")
     ap.add_argument("--subjects", nargs="+", default=None,
                     help="subject directory names to include (default: all)")
     ap.add_argument("--hidden", type=int, nargs="+", default=[64, 32])
@@ -236,6 +345,11 @@ def main():
     ap.add_argument("--metrics-path", default=None,
                     help="override the output metrics path")
     args = ap.parse_args()
+    try:
+        check_sample_contract(args.fs, args.decim, args.resample,
+                              args.pl_filter, args.notch50)
+    except ValueError as exc:
+        ap.error(str(exc))
 
     global FS, WINDOW, HOP
     FS = args.fs
@@ -244,7 +358,7 @@ def main():
     eff_fs = FS * args.resample // args.decim   # rate the windowed stream represents
     data_dir = args.data_dir or RAW_DIR
 
-    input_suffix = "full" if args.input_mode == "full" else "baseline"
+    input_suffix = args.input_mode
     paths = sorted(glob.glob(os.path.join(
         data_dir, "s*", "*_E*_A1_%s.csv" % input_suffix)))
     # subject key from the s*/ directory name (filename prefixes collide,
@@ -261,9 +375,12 @@ def main():
     for subj in subjects:
         xs, ys = [], []
         for e in args.sessions:
-            x, y = load_training_session(data_dir, subj, e, args.input_mode)
+            x, y, meta = load_training_session(
+                data_dir, subj, e, args.input_mode, with_metadata=True,
+                keep_unknown=args.notch50)
             x, y = prepare_samples(x, y, args.decim, args.resample,
-                                    args.pl_filter)
+                                    args.pl_filter, notch50=args.notch50,
+                                    fs=FS, metadata=meta)
             f, wy = make_windows(x, y)
             xs.append(f)
             ys.append(wy)
@@ -310,10 +427,13 @@ def main():
         all_x, all_y = balance_downsample(all_x, all_y, rng)
     final = new_model(args.hidden, args.seed)
     final.fit(all_x, all_y)
+    suffix = ("_processed" if args.notch50 == "processed" else "_notchcomb" if args.notch50 == "notchcomb" else "_notch50") + ("_pl_filter" if args.pl_filter else "")
     model_path = args.model_path or (
-        PL_FILTER_MODEL_PATH if args.pl_filter else MODEL_PATH)
+        MODEL_PATH.replace(".joblib", suffix + ".joblib") if args.notch50
+        else PL_FILTER_MODEL_PATH if args.pl_filter else MODEL_PATH)
     metrics_path = args.metrics_path or (
-        PL_FILTER_METRICS_PATH if args.pl_filter else METRICS_PATH)
+        METRICS_PATH.replace(".json", suffix + ".json") if args.notch50
+        else PL_FILTER_METRICS_PATH if args.pl_filter else METRICS_PATH)
     os.makedirs(os.path.dirname(model_path), exist_ok=True)
     joblib.dump(final, model_path)
 
@@ -327,11 +447,10 @@ def main():
             "features": ["mav_sum", "wl_sum", "energy_sum", "zc_count", "ssc_count"],
             "zc_th": ZC_TH, "ssc_th": SSC_TH,
             "pl_filter": args.pl_filter,
+            "notch50": args.notch50,
+            "notch_filter_id": notch_model(args.notch50).FILTER_ID if args.notch50 else None,
             "input_mode": args.input_mode,
-            "filter_contract": (
-                "sample-hold to effective rate, then exact RTL integer "
-                "bandpass"
-            ) if args.pl_filter else "none",
+            "filter_contract": filter_contract(args.pl_filter, args.notch50),
             "model": "StandardScaler + MLP(%s)" % ",".join(map(str, args.hidden)),
             "balance": "rest downsampled to median class size" if not args.no_balance else "none",
             "sessions": args.sessions, "subjects": subjects, "seed": args.seed,

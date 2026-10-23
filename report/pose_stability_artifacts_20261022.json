@@ -1,0 +1,42 @@
+{
+  "tag": "20261022_POSE_STABLE_V2",
+  "all_build_gates": "PASS",
+  "elf_load_segments_byte_exact": [
+    {
+      "index": 1,
+      "address": "0x10000000",
+      "bytes": 475444,
+      "boot_offset": "0x3fc900"
+    }
+  ],
+  "files": {
+    "build/boot/BOOT.BIN": {
+      "size": 4655668,
+      "sha256": "9cbe13d509b5f9ae07052e92ec967eb9e607355ee41af8158a857e907f0dd4cd"
+    },
+    "sw/ps_uart_print/ps_uart_print.elf": {
+      "size": 511944,
+      "sha256": "3ca858620af47f2de3a9ef03fab25b5d5bcdb3a0de639bb3bb8eecad739a36d3"
+    },
+    "sw/ps_uart_print/nn_confidence.h": {
+      "size": 2021,
+      "sha256": "47a40a1fa9422850244009e8860916731e5dffdaac9defb035da8d01a42d25ff"
+    },
+    "sw/ps_uart_print/pose_contract.h": {
+      "size": 2213,
+      "sha256": "a3ef9ec8aeb682d6bd2c211ce97401b5de6e51bba2df8ea6a1e830aa33e667af"
+    },
+    "data/models/nn_int8_board_multiwear/quant_params.json": {
+      "size": 69515,
+      "sha256": "8ca80b14ecd48907a55c6fe983b472f0382b6beeff3b2a4f4e36e1aeea4819ef"
+    },
+    "data/models/nn_int8_board_multiwear/nn_int8_weights.mem": {
+      "size": 22362,
+      "sha256": "5bb2c512365bc8af6b57835f8d678694fa78427999b085814225f968d66bbe62"
+    },
+    "build/vivado/hand_motion_reconstruction.runs/impl_1/design_1.bit": {
+      "size": 4045684,
+      "sha256": "30a424a82e23a2650c6d8a93a7d2e4d13178950b570a6b6177325bd944174b91"
+    }
+  }
+}

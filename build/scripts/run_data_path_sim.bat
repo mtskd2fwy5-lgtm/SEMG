@@ -10,8 +10,7 @@ if not exist "%VIVADO_ROOT%\bin\xvlog.bat" (
     exit /b 1
 )
 
-if exist "%RESULT_DIR%" rmdir /s /q "%RESULT_DIR%"
-mkdir "%RESULT_DIR%"
+if not exist "%RESULT_DIR%" mkdir "%RESULT_DIR%"
 cd /d "%RESULT_DIR%"
 
 call "%VIVADO_ROOT%\bin\xvlog.bat" -work work ^
@@ -24,5 +23,8 @@ if errorlevel 1 exit /b 1
 call "%VIVADO_ROOT%\bin\xelab.bat" emg_data_path_tb -s emg_data_path_sim
 if errorlevel 1 exit /b 1
 
-call "%VIVADO_ROOT%\bin\xsim.bat" emg_data_path_sim -runall
-exit /b %errorlevel%
+call "%VIVADO_ROOT%\bin\xsim.bat" emg_data_path_sim -runall -log data_path_sim.log
+if errorlevel 1 exit /b 1
+findstr /c:"TEST_PASS data_path:" data_path_sim.log >nul
+if errorlevel 1 exit /b 1
+exit /b 0

@@ -1,0 +1,105 @@
+#-----------------------------------------------------------
+# Vivado v2025.2 (64-bit)
+# SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025
+# IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025
+# SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025
+# Start of session at: Fri Oct 16 00:05:41 2026
+# Process ID         : 11616
+# Current directory  : D:/FPGA/sEMG-HMRS
+# Command line       : vivado.exe -mode batch -source tmp/adc_module_probe.tcl -log report/bias_module_probe_20261015.log -journal report/bias_module_probe_20261015.jou
+# Log file           : D:/FPGA/sEMG-HMRS/report/bias_module_probe_20261015.log
+# Journal file       : D:/FPGA/sEMG-HMRS\report/bias_module_probe_20261015.jou
+# Running On         : LAPTOP-VCCV41QO
+# Platform           : Windows Server 2016 or Windows 10
+# Operating System   : 26200
+# Processor Detail   : AMD Ryzen 9 7945HX with Radeon Graphics        
+# CPU Frequency      : 2495 MHz
+# CPU Physical cores : 16
+# CPU Logical cores  : 32
+# Host memory        : 16844 MB
+# Swap memory        : 17302 MB
+# Total Virtual      : 34147 MB
+# Available Virtual  : 15416 MB
+#-----------------------------------------------------------
+INFO: [Common 17-1239] XILINX_LOCAL_USER_DATA is set to 'no'.
+source tmp/adc_module_probe.tcl
+# open_project D:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.xpr
+CRITICAL WARNING: [Project 1-19] Could not find the file 'D:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.runs/design_1_emg_pl_export_0_4_synth_1/design_1_emg_pl_export_0_4.dcp'.
+WARNING: [Project 1-865] Could not find the file D:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.runs/design_1_emg_pl_export_0_4_synth_1/design_1_emg_pl_export_0_4.dcp
+Scanning sources...
+Finished scanning sources
+WARNING: [Project 1-865] Could not find the file D:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.runs/design_1_emg_pl_export_0_4_synth_1/design_1_emg_pl_export_0_4.dcp
+WARNING: [Project 1-865] Could not find the file D:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.runs/design_1_emg_pl_export_0_4_synth_1/design_1_emg_pl_export_0_4.dcp
+WARNING: [Project 1-5713] Board part '' set for the project  is not found. BoardPart property will be unset. Please select board from latest repo build 
+INFO: [IP_Flow 19-234] Refreshing IP repositories
+INFO: [IP_Flow 19-1704] No user IP repositories specified
+INFO: [IP_Flow 19-2313] Loaded Vivado IP repository 'D:/FPGA/VIVADO/2025.2/Vivado/data/ip'.
+open_project: Time (s): cpu = 00:00:05 ; elapsed = 00:00:13 . Memory (MB): peak = 377.223 ; gain = 71.738
+# foreach f [get_files -of_objects [get_filesets sources_1]] {
+#     if {[string match *.v $f] || [string match *.sv $f]} {set_property IS_ENABLED true $f}
+# }
+CRITICAL WARNING: [filemgmt 20-1379] Cannot change read-only property 'IS_ENABLED' on the file "d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_processing_system7_0_0/design_1_processing_system7_0_0_stub.v".
+CRITICAL WARNING: [filemgmt 20-1379] Cannot change read-only property 'IS_ENABLED' on the file "d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_processing_system7_0_0/design_1_processing_system7_0_0_sim_netlist.v".
+CRITICAL WARNING: [filemgmt 20-1379] Cannot change read-only property 'IS_ENABLED' on the file "d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_proc_sys_reset_0_0/design_1_proc_sys_reset_0_0_sim_netlist.v".
+CRITICAL WARNING: [filemgmt 20-1379] Cannot change read-only property 'IS_ENABLED' on the file "d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_proc_sys_reset_0_0/design_1_proc_sys_reset_0_0_stub.v".
+CRITICAL WARNING: [filemgmt 20-1379] Cannot change read-only property 'IS_ENABLED' on the file "d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_smartconnect_0_0/design_1_smartconnect_0_0_stub.v".
+CRITICAL WARNING: [filemgmt 20-1379] Cannot change read-only property 'IS_ENABLED' on the file "d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_axi_dma_0_0/design_1_axi_dma_0_0_sim_netlist.v".
+CRITICAL WARNING: [filemgmt 20-1379] Cannot change read-only property 'IS_ENABLED' on the file "d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_axi_dma_0_0/design_1_axi_dma_0_0_stub.v".
+CRITICAL WARNING: [filemgmt 20-1379] Cannot change read-only property 'IS_ENABLED' on the file "d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_smartconnect_1_0/design_1_smartconnect_1_0_stub.v".
+CRITICAL WARNING: [filemgmt 20-1379] Cannot change read-only property 'IS_ENABLED' on the file "d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_emg_pl_export_0_4/design_1_emg_pl_export_0_4_stub.v".
+CRITICAL WARNING: [filemgmt 20-1379] Cannot change read-only property 'IS_ENABLED' on the file "d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_emg_pl_export_0_4/design_1_emg_pl_export_0_4_sim_netlist.v".
+CRITICAL WARNING: [filemgmt 20-1379] Cannot change read-only property 'IS_ENABLED' on the file "d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_proc_sys_reset_1_0/design_1_proc_sys_reset_1_0_sim_netlist.v".
+CRITICAL WARNING: [filemgmt 20-1379] Cannot change read-only property 'IS_ENABLED' on the file "d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_proc_sys_reset_1_0/design_1_proc_sys_reset_1_0_stub.v".
+CRITICAL WARNING: [filemgmt 20-1379] Cannot change read-only property 'IS_ENABLED' on the file "d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_axi_vdma_0_0/design_1_axi_vdma_0_0_stub.v".
+CRITICAL WARNING: [filemgmt 20-1379] Cannot change read-only property 'IS_ENABLED' on the file "d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_axi_vdma_0_0/design_1_axi_vdma_0_0_sim_netlist.v".
+CRITICAL WARNING: [filemgmt 20-1379] Cannot change read-only property 'IS_ENABLED' on the file "d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_v_axi4s_vid_out_0_0/design_1_v_axi4s_vid_out_0_0_sim_netlist.v".
+CRITICAL WARNING: [filemgmt 20-1379] Cannot change read-only property 'IS_ENABLED' on the file "d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_v_axi4s_vid_out_0_0/design_1_v_axi4s_vid_out_0_0_stub.v".
+CRITICAL WARNING: [filemgmt 20-1379] Cannot change read-only property 'IS_ENABLED' on the file "d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_axi_gpio_0_0/design_1_axi_gpio_0_0_sim_netlist.v".
+CRITICAL WARNING: [filemgmt 20-1379] Cannot change read-only property 'IS_ENABLED' on the file "d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_axi_gpio_0_0/design_1_axi_gpio_0_0_stub.v".
+CRITICAL WARNING: [filemgmt 20-1379] Cannot change read-only property 'IS_ENABLED' on the file "d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_lcd_clk_fwd_0_0/design_1_lcd_clk_fwd_0_0_stub.v".
+CRITICAL WARNING: [filemgmt 20-1379] Cannot change read-only property 'IS_ENABLED' on the file "d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_lcd_clk_fwd_0_0/design_1_lcd_clk_fwd_0_0_sim_netlist.v".
+CRITICAL WARNING: [filemgmt 20-1379] Cannot change read-only property 'IS_ENABLED' on the file "d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_lcd_panel_adapter_0_1/design_1_lcd_panel_adapter_0_1_stub.v".
+CRITICAL WARNING: [filemgmt 20-1379] Cannot change read-only property 'IS_ENABLED' on the file "d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_lcd_panel_adapter_0_1/design_1_lcd_panel_adapter_0_1_sim_netlist.v".
+CRITICAL WARNING: [filemgmt 20-1379] Cannot change read-only property 'IS_ENABLED' on the file "d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_touch_gt911_0_0/design_1_touch_gt911_0_0_stub.v".
+CRITICAL WARNING: [filemgmt 20-1379] Cannot change read-only property 'IS_ENABLED' on the file "d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_touch_gt911_0_0/design_1_touch_gt911_0_0_sim_netlist.v".
+CRITICAL WARNING: [filemgmt 20-1379] Cannot change read-only property 'IS_ENABLED' on the file "d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_axi_gpio_1_0/design_1_axi_gpio_1_0_sim_netlist.v".
+CRITICAL WARNING: [filemgmt 20-1379] Cannot change read-only property 'IS_ENABLED' on the file "d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_axi_gpio_1_0/design_1_axi_gpio_1_0_stub.v".
+CRITICAL WARNING: [filemgmt 20-1379] Cannot change read-only property 'IS_ENABLED' on the file "d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_axi_gpio_2_0/design_1_axi_gpio_2_0_stub.v".
+CRITICAL WARNING: [filemgmt 20-1379] Cannot change read-only property 'IS_ENABLED' on the file "d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_axi_gpio_2_0/design_1_axi_gpio_2_0_sim_netlist.v".
+CRITICAL WARNING: [filemgmt 20-1379] Cannot change read-only property 'IS_ENABLED' on the file "d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_mpu6050_tilt_0_1/design_1_mpu6050_tilt_0_1_stub.v".
+CRITICAL WARNING: [filemgmt 20-1379] Cannot change read-only property 'IS_ENABLED' on the file "d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_mpu6050_tilt_0_1/design_1_mpu6050_tilt_0_1_sim_netlist.v".
+CRITICAL WARNING: [filemgmt 20-1379] Cannot change read-only property 'IS_ENABLED' on the file "d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_axi_gpio_3_0/design_1_axi_gpio_3_0_stub.v".
+CRITICAL WARNING: [filemgmt 20-1379] Cannot change read-only property 'IS_ENABLED' on the file "d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_axi_gpio_3_0/design_1_axi_gpio_3_0_sim_netlist.v".
+CRITICAL WARNING: [filemgmt 20-1379] Cannot change read-only property 'IS_ENABLED' on the file "d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/synth/design_1.v".
+CRITICAL WARNING: [filemgmt 20-1379] Cannot change read-only property 'IS_ENABLED' on the file "d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/sim/design_1.v".
+# update_compile_order -fileset sources_1
+# open_bd_design D:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.srcs/sources_1/bd/design_1/design_1.bd
+Reading block design file <D:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.srcs/sources_1/bd/design_1/design_1.bd>...
+Adding component instance block -- xilinx.com:ip:processing_system7:5.5 - processing_system7_0
+Adding component instance block -- xilinx.com:ip:proc_sys_reset:5.0 - proc_sys_reset_0
+Adding component instance block -- xilinx.com:ip:smartconnect:1.0 - smartconnect_0
+Adding component instance block -- xilinx.com:ip:axi_dma:7.1 - axi_dma_0
+Adding component instance block -- xilinx.com:ip:smartconnect:1.0 - smartconnect_1
+Adding component instance block -- xilinx.com:module_ref:emg_pl_export:1.0 - emg_pl_export_0
+Adding component instance block -- xilinx.com:ip:proc_sys_reset:5.0 - proc_sys_reset_1
+Adding component instance block -- xilinx.com:ip:axi_vdma:6.3 - axi_vdma_0
+Adding component instance block -- xilinx.com:ip:v_axi4s_vid_out:4.0 - v_axi4s_vid_out_0
+Adding component instance block -- xilinx.com:ip:axi_gpio:2.0 - axi_gpio_0
+Adding component instance block -- xilinx.com:module_ref:lcd_clk_fwd:1.0 - lcd_clk_fwd_0
+Adding component instance block -- xilinx.com:module_ref:lcd_panel_adapter:1.0 - lcd_panel_adapter_0
+Adding component instance block -- xilinx.com:module_ref:touch_gt911:1.0 - touch_gt911_0
+Adding component instance block -- xilinx.com:ip:axi_gpio:2.0 - axi_gpio_1
+Adding component instance block -- xilinx.com:ip:axi_gpio:2.0 - axi_gpio_2
+Adding component instance block -- xilinx.com:module_ref:mpu6050_motion:1.0 - mpu6050_tilt_0
+Adding component instance block -- xilinx.com:ip:axi_gpio:2.0 - axi_gpio_3
+Successfully read diagram <design_1> from block design file <D:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.srcs/sources_1/bd/design_1/design_1.bd>
+# help update_module_reference
+# puts "PROBE UPDATE [catch {update_module_reference emg_pl_export_0} msg] MSG=$msg"
+PROBE UPDATE 1 MSG=
+# puts "PROBE PORTS [get_bd_pins -of_objects [get_bd_cells emg_pl_export_0]]"
+PROBE PORTS /emg_pl_export_0/adc_cs_n /emg_pl_export_0/adc_din /emg_pl_export_0/adc_dout /emg_pl_export_0/adc_drdy_n /emg_pl_export_0/adc_pwdn_n /emg_pl_export_0/adc_reset_n /emg_pl_export_0/adc_sclk /emg_pl_export_0/adc_start /emg_pl_export_0/axis_clk /emg_pl_export_0/axis_rst_n /emg_pl_export_0/feature_overflow /emg_pl_export_0/m_axis_tdata /emg_pl_export_0/m_axis_tlast /emg_pl_export_0/m_axis_tready /emg_pl_export_0/m_axis_tvalid /emg_pl_export_0/pl_clk /emg_pl_export_0/pl_rst_n /emg_pl_export_0/raw_overflow /emg_pl_export_0/reconfig_n /emg_pl_export_0/result_overflow /emg_pl_export_0/status_led
+# puts "PROBE REFERENCES [get_files -all *emg_pl_export*]"
+PROBE REFERENCES D:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.runs/design_1_emg_pl_export_0_4_synth_1/design_1_emg_pl_export_0_4.dcp D:/FPGA/sEMG-HMRS/src/rtl/emg_pl_export.v D:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.srcs/sources_1/bd/design_1/ip/design_1_emg_pl_export_0_4/design_1_emg_pl_export_0_4.xci d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_emg_pl_export_0_4/sim/design_1_emg_pl_export_0_4.v d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_emg_pl_export_0_4/design_1_emg_pl_export_0_4.dcp d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_emg_pl_export_0_4/design_1_emg_pl_export_0_4_stub.v d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_emg_pl_export_0_4/design_1_emg_pl_export_0_4_stub.vhdl d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_emg_pl_export_0_4/design_1_emg_pl_export_0_4_sim_netlist.v d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_emg_pl_export_0_4/design_1_emg_pl_export_0_4_sim_netlist.vhdl d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_emg_pl_export_0_4/synth/design_1_emg_pl_export_0_4.v d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_emg_pl_export_0_4/design_1_emg_pl_export_0_4.xml D:/FPGA/sEMG-HMRS/sim/emg_pl_export_tb.v D:/FPGA/sEMG-HMRS/sim/emg_pl_export_tb_gate.v
+# if {[llength [get_bd_pins -quiet emg_pl_export_0/adc_config_status]]} {save_bd_design;puts PROBE_REFRESHED}
+# close_project
+INFO: [Common 17-206] Exiting Vivado at Fri Oct 16 00:06:05 2026...

@@ -98,7 +98,7 @@ def load_full_session(data_dir, subject, session, fs, decim, resample,
         data_dir, subject, "%s_E%d_A1_full.csv" % (subject.upper(), session))
     x, y = train_baseline.load_full_session_csv(path)
     x, y = train_baseline.prepare_samples(
-        x, y, decim=decim, resample=resample, pl_filter=pl_filter)
+        x, y, decim=decim, resample=resample, pl_filter=pl_filter, fs=fs)
     feat, labels, starts, pure = window_records(x, y, window, hop)
     return stack_records(feat, labels, starts, pure, stack, hop)
 

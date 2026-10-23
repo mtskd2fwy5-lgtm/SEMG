@@ -1,0 +1,32 @@
+{
+  "format": "SEMGSD1",
+  "version": 1,
+  "sample_rate_hz": 4000,
+  "channels": 8,
+  "frames": 690150,
+  "sequence_gaps": 0,
+  "sequence_backwards": 1,
+  "sequence_duplicates": 0,
+  "sequence_wraps": 10,
+  "sequence_events": [
+    {
+      "row": 339,
+      "previous": 31570,
+      "sequence": 31059,
+      "kind": "backward"
+    }
+  ],
+  "sequence_direction_limit": "modulo half-range; gaps >=32768 frames are ambiguous",
+  "timestamp_alignment": "forward sequence steps; backwards/duplicate advances one row and is flagged",
+  "keep_all": true,
+  "hardware_filter_warm_start": true,
+  "signal": "notch50",
+  "filter": {
+    "id": "notch50_q10_q24_v1",
+    "frequency_hz": 50,
+    "q": 10,
+    "sample_rate_hz": 4000,
+    "location": "PL"
+  },
+  "frames_written": 690150
+}
