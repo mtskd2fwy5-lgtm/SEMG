@@ -5,6 +5,7 @@
 #define SD_RECORD_HOST_TEST 1
 #include "../sw/ps_uart_print/sd_record.c"
 static BYTE file_data[300000];
+static UINT read_pos;
 static UINT file_size, open_calls, close_calls, sync_calls, service_calls;
 static int open_error, write_error, sync_error, close_error, short_write;
 static uint32_t card_address,card_count;
@@ -21,11 +22,14 @@ int XSdPs_WritePolled(XSdPs *s,uint32_t a,UINT n,const BYTE *b)
 FRESULT f_mount(FATFS *f,const char *p,BYTE m)
 { (void)f;(void)p;(void)m;return 0; }
 FRESULT f_open(FIL *f,const char *p,BYTE m)
-{ (void)f;(void)m;open_calls++;if(open_error)return open_error;
-  if(!strcmp(p,"EMG000.BIN") || !strcmp(p,"RH000.CSV"))return FR_EXIST;file_size=0;return FR_OK; }
+{ (void)f;open_calls++;if(open_error)return open_error;
+  if(m==FA_READ){read_pos=0;return FR_OK;}
+  if(!strcmp(p,"EMG000.BIN") || !strcmp(p,"RH000.CSV") || !strcmp(p,"HD000.CSV"))return FR_EXIST;file_size=0;return FR_OK; }
 FRESULT f_write(FIL *f,const void *p,UINT n,UINT *w)
 { (void)f;*w=write_error?0:short_write?n/2:n;assert(file_size+*w<sizeof file_data);
   memcpy(file_data+file_size,p,*w);file_size+=*w;return write_error; }
+FRESULT f_read(FIL *f,void *p,UINT n,UINT *r)
+{(void)f;*r=file_size-read_pos<n?file_size-read_pos:n;memcpy(p,file_data+read_pos,*r);read_pos+=*r;return 0;}
 FRESULT f_sync(FIL *f) { (void)f;sync_calls++;return sync_error; }
 FRESULT f_close(FIL *f) { (void)f;close_calls++;return close_error; }
 static int decode24(const BYTE *p)
@@ -71,8 +75,11 @@ int main(void)
         char name[13];const char csv[]="kind,index,target,success\r\ntrial,1,2,1\r\n";
         assert(sd_training_save(csv,sizeof csv-1,name)==0u && !strcmp(name,"RH001.CSV"));
         assert(file_size==sizeof csv-1 && !memcmp(file_data,csv,sizeof csv-1));
+        assert(sd_hdc_save(csv,sizeof csv-1,name)==0u && !strcmp(name,"HD001.CSV"));
+        assert(file_size==sizeof csv-1 && !memcmp(file_data,csv,sizeof csv-1));
         assert(sd_record_start());i=open_calls;
         assert(sd_training_save(csv,sizeof csv-1,name)==0x301u && open_calls==i && sd_record_active());
+        assert(sd_hdc_save(csv,sizeof csv-1,name)==0x301u && open_calls==i);
         assert(sd_record_stop());
         short_write=1;closes=close_calls;
         assert(sd_training_save(csv,sizeof csv-1,name)==0x304u && close_calls==closes+1u);short_write=0;
@@ -80,7 +87,22 @@ int main(void)
         close_error=FR_DISK_ERR;assert(sd_training_save(csv,sizeof csv-1,name)!=0u);close_error=0;
         open_error=FR_DENIED;assert(sd_training_save(csv,sizeof csv-1,name)!=0u);open_error=0;
         assert(sd_training_save(0,1,name)==0x302u);
+        assert(sd_hdc_save(0,1,name)==0x302u);
         puts("TEST_PASS training CSV: no overwrite, exact bytes, waveform exclusion, short write/sync/close/open errors.");
+    }
+    {
+        BYTE expected[264],got[264];memset(expected,0x5c,sizeof expected);
+        assert(sd_hand_write(0,expected,sizeof expected)==0u);
+        assert(sd_hand_read(0,got,sizeof got)==0u && !memcmp(got,expected,sizeof got));
+        file_size--;assert(sd_hand_read(0,got,sizeof got)==0x304u);
+        file_size+=2;assert(sd_hand_read(0,got,sizeof got)==0x304u);
+        short_write=1;assert(sd_hand_write(1,expected,sizeof expected)==0x304u);short_write=0;
+        sync_error=1;assert(sd_hand_write(1,expected,sizeof expected)!=0u);sync_error=0;
+        close_error=1;assert(sd_hand_write(1,expected,sizeof expected)!=0u);close_error=0;
+        open_error=1;assert(sd_hand_read(1,got,sizeof got)!=0u);open_error=0;
+        assert(sd_record_start());assert(sd_hand_write(0,expected,sizeof expected)==0x301u);
+        assert(sd_hand_read(0,got,sizeof got)==0x301u);assert(sd_record_stop());
+        puts("TEST_PASS hand SD: exact length, truncated/extra data, short write, sync/close/open errors, recording exclusion");
     }
     puts("TEST_PASS sd_record: signed paired frames, wrap, tail flush, periodic sync, no overwrite, IO errors, aligned bounce, SDSC addressing.");
     return 0;

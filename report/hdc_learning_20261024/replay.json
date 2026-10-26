@@ -1,0 +1,16 @@
+{
+  "synthetic_parity": {
+    "encoding_prototype_prediction_parity": true,
+    "classes": 8,
+    "test_windows": 257,
+    "hdc_accuracy": 0.01556420233463035,
+    "centroid_accuracy": 0.007782101167315175
+  },
+  "dynamic_parity": {
+    "encoding_prototype_prediction_parity": true,
+    "classes": 23,
+    "test_windows": 257,
+    "hdc_accuracy": 0.0,
+    "centroid_accuracy": 0.0
+  }
+}

@@ -112,7 +112,7 @@ static int sd_mount(void)
     return f_mount(&sd_fs, "0:/", 1u) == FR_OK;
 }
 
-uint32_t sd_training_save(const char *data,uint32_t bytes,char name[13])
+static uint32_t sd_report_save(const char *data,uint32_t bytes,char name[13],const char prefix[2])
 {
     FIL report_file;
     UINT written=0u;
@@ -121,7 +121,7 @@ uint32_t sd_training_save(const char *data,uint32_t bytes,char name[13])
     if(sd_active || sd_file_open)return 0x301u;
     if(!data || !bytes || bytes>16384u || !name)return 0x302u;
     if(!sd_mount())return 0x300u;
-    memcpy(name,"RH000.CSV",10u);
+    memcpy(name,"RH000.CSV",10u);name[0]=prefix[0];name[1]=prefix[1];
     for(n=0u;n<1000u;n++) {
         name[2]=(char)('0'+n/100u);
         name[3]=(char)('0'+(n/10u)%10u);
@@ -137,6 +137,44 @@ uint32_t sd_training_save(const char *data,uint32_t bytes,char name[13])
     close_rc=f_close(&report_file);
     if(rc==FR_OK)rc=close_rc;
     return rc==FR_OK?0u:(uint32_t)rc+1u;
+}
+
+uint32_t sd_training_save(const char *data,uint32_t bytes,char name[13])
+{ return sd_report_save(data,bytes,name,"RH"); }
+
+uint32_t sd_hdc_save(const char *data,uint32_t bytes,char name[13])
+{ return sd_report_save(data,bytes,name,"HD"); }
+
+uint32_t sd_hand_read(uint32_t slot,void *data,uint32_t bytes)
+{
+    FIL f;UINT got=0u,extra=0u;BYTE tail;FRESULT rc,close_rc;
+    if(sd_active || sd_file_open)return 0x301u;
+    if(slot>1u || !data || !bytes || bytes>512u)return 0x302u;
+    if(!sd_mount())return 0x300u;
+    rc=f_open(&f,slot?"HAND1.CFG":"HAND0.CFG",FA_READ);
+    if(rc!=FR_OK)return (uint32_t)rc+1u;
+    rc=f_read(&f,data,bytes,&got);
+    if(rc==FR_OK && got==bytes)rc=f_read(&f,&tail,1u,&extra);
+    close_rc=f_close(&f);
+    if(rc==FR_OK)rc=close_rc;
+    if(rc!=FR_OK)return (uint32_t)rc+1u;
+    return got==bytes && extra==0u?0u:0x304u;
+}
+
+uint32_t sd_hand_write(uint32_t slot,const void *data,uint32_t bytes)
+{
+    FIL f;UINT wrote=0u;FRESULT rc,close_rc;
+    if(sd_active || sd_file_open)return 0x301u;
+    if(slot>1u || !data || !bytes || bytes>512u)return 0x302u;
+    if(!sd_mount())return 0x300u;
+    rc=f_open(&f,slot?"HAND1.CFG":"HAND0.CFG",FA_CREATE_ALWAYS|FA_WRITE);
+    if(rc!=FR_OK)return (uint32_t)rc+1u;
+    rc=f_write(&f,data,bytes,&wrote);
+    if(rc==FR_OK && wrote==bytes)rc=f_sync(&f);
+    close_rc=f_close(&f);
+    if(rc==FR_OK)rc=close_rc;
+    if(rc!=FR_OK)return (uint32_t)rc+1u;
+    return wrote==bytes?0u:0x304u;
 }
 
 static int sd_flush(void)
@@ -199,6 +237,7 @@ int sd_record_start(void)
     sd_put32(header+24u,1u);            /* int24 little endian */
     sd_put32(header+28u,2u);            /* raw and filtered */
     sd_put32(header+32u,3u);            /* 3 = notch + comb + HP20/LP215 */
+    sd_put32(header+36u,SD_ACTION_SCHEMA); /* manual action vocabulary */
     if (f_write(&sd_file,header,sizeof header,&written)!=FR_OK ||
         written!=sizeof header) {
         sd_record_abort(0x102u);

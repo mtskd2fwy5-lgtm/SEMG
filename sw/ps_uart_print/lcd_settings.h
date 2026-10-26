@@ -5,21 +5,16 @@
 static const char *const ui_pages[]={"手势","波形","数据","频谱","SD卡"};
 static const u32 ui_refresh_choices[]={20u,50u,100u};
 
-static void ui_open_page(u32 page)
-{
-    lcd_settings_view=0u;
-    lcd_rehab_view=0u;
-    lcd_synergy_view=0u;
-    lcd_wave_view=page==1u;lcd_data_view=page==2u;
-    lcd_spectrum_view=page==3u;lcd_sd_view=page==4u;
-    ui_preview_cls=-1;ui_generation++;lcd_input_status_changed();
-}
-
 static void lcd_settings_touch(u32 x,u32 y)
 {
     u32 i;
+    if(lcd_wave_hit(x,y,LCD_X(500),LCD_Y(98),LCD_X(220),LCD_Y(40))) {lcd_virtual_open();return;}
+    if(lcd_wave_hit(x,y,LCD_X(750),LCD_Y(98),LCD_X(245),LCD_Y(40))) {lcd_hand_open();return;}
     if(lcd_wave_hit(x,y,LCD_X(28),LCD_Y(522),LCD_X(300),LCD_Y(54))) {
-        lcd_rehab_open();return;
+        lcd_selfcal_open();return;
+    }
+    if(lcd_wave_hit(x,y,LCD_X(350),LCD_Y(522),LCD_X(320),LCD_Y(54))) {
+        lcd_hdc_open();return;
     }
     for(i=0u;i<5u;i++)
         if(lcd_wave_hit(x,y,LCD_X(28)+(i32)i*LCD_X(198),LCD_Y(145),LCD_X(180),LCD_Y(52))) {
@@ -50,8 +45,9 @@ static void lcd_settings_render(void)
     static const char *const refresh[]={"20 ms","50 ms","100 ms"};
     static const char *const times[]={"50 ms","100 ms","200 ms"};
     u32 i;
-    ui_label(LCD_X(28),LCD_Y(106),LCD_X(450),2,238,243,250,"显示设置");
-    ui_label(LCD_X(570),LCD_Y(106),LCD_X(420),2,140,153,170,"即时生效 / 重启恢复");
+    ui_label(LCD_X(28),LCD_Y(106),LCD_X(450),2,31,49,58,"显示与设备设置");
+    ui_button(LCD_X(500),LCD_Y(98),LCD_X(220),LCD_Y(40),"虚拟手映射",0u);
+    ui_button(LCD_X(750),LCD_Y(98),LCD_X(245),LCD_Y(40),"机械手",0u);
     for(i=0;i<5u;i++)
         ui_button(LCD_X(28)+(i32)i*LCD_X(198),LCD_Y(145),LCD_X(180),LCD_Y(52),ui_pages[i],0u);
     for(i=0;i<4u;i++) {
@@ -69,7 +65,8 @@ static void lcd_settings_render(void)
     ui_button(LCD_X(700),LCD_Y(296),LCD_X(270),LCD_Y(54),wave_notch?"全处理":"原始",wave_notch);
     ui_button(LCD_X(410),LCD_Y(440),LCD_X(270),LCD_Y(54),wave_dc_auto?"自动居中":"零点居中",wave_dc_auto);
     ui_button(LCD_X(700),LCD_Y(440),LCD_X(270),LCD_Y(54),"自动量程",!wave_scale_sel);
-    ui_button(LCD_X(28),LCD_Y(522),LCD_X(300),LCD_Y(54),"康复训练",0u);
+    ui_button(LCD_X(28),LCD_Y(522),LCD_X(300),LCD_Y(54),"佩戴适配",0u);
+    ui_button(LCD_X(350),LCD_Y(522),LCD_X(320),LCD_Y(54),"HDC 自学习",0u);
     ui_button(LCD_X(700),LCD_Y(522),LCD_X(270),LCD_Y(54),"恢复默认",0u);
 }
 #endif

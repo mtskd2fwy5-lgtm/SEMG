@@ -3,14 +3,7 @@
 
 #include <stdint.h>
 
-enum {
-    SD_ACTION_NONE = 0,
-    SD_ACTION_REST = 1,
-    SD_ACTION_OPEN = 2,
-    SD_ACTION_FIST = 3,
-    SD_ACTION_FLEX = 4,
-    SD_ACTION_EXTEND = 5
-};
+#include "capture_actions.h"
 
 int sd_record_start(void);
 int sd_record_stop(void);
@@ -25,5 +18,11 @@ const char *sd_record_filename(void);
 /* Save a completed training summary, never during an active waveform file.
  * CREATE_NEW preserves earlier reports. Returns zero on success. */
 uint32_t sd_training_save(const char *data,uint32_t bytes,char name[13]);
+
+/* HDC independent validation report, same no-overwrite policy. */
+uint32_t sd_hdc_save(const char *data,uint32_t bytes,char name[13]);
+/* Fixed-size, two-bank mechanical calibration journal. No output-enable state. */
+uint32_t sd_hand_read(uint32_t slot,void *data,uint32_t bytes);
+uint32_t sd_hand_write(uint32_t slot,const void *data,uint32_t bytes);
 
 #endif

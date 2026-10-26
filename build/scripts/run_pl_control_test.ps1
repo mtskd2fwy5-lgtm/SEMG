@@ -36,7 +36,7 @@ try {
   & "$bin/xsim.bat" $test[1] -runall -log "$($test[1]).log"
   if($LASTEXITCODE -ne 0 -or !(Select-String -Path "$($test[1]).log" -SimpleMatch $test[2])){throw "$($test[0]) failed"}
  }
- $sources=@('ads1299_spi','emg_notch50','emg_comb50','emg_line_filter','emg_bandpass','emg_window_features','emg_feature_bank','emg_fatigue','axis_async_fifo','axis_packet_mux','emg_data_path','emg_pl_export','emg_pl_control') | ForEach-Object {"$root/src/rtl/$_.v"}
+ $sources=@('ads1299_spi','emg_notch50','emg_comb50','emg_line_filter','emg_bandpass','emg_window_features','emg_feature_bank','emg_fatigue','axis_async_fifo','axis_packet_mux','emg_data_path','hand_control','emg_pl_export','emg_pl_control') | ForEach-Object {"$root/src/rtl/$_.v"}
  & "$bin/xvlog.bat" -sv -i "$root/src/rtl" @sources "$root/sim/emg_pl_control_tb.sv"
  if($LASTEXITCODE -ne 0){throw 'PL shell compile failed'}
  & "$bin/xelab.bat" emg_pl_control_tb -s shell_sim -debug typical

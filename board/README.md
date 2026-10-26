@@ -27,3 +27,10 @@ status_led  H15  PL_LED0 / B35_L19P
 ```
 
 The mapping assumes the ADS1299 board is wired to carrier header J4 pins 17..24 (plus the nearest J4 GND, pins 37/39) and that banks B13/B34/B35 keep their default 3.3 V VCCO (the core-board doc "B13 B34 B35 changed to 1.8V operation guide" only applies after re-soldering L20/L21/L23). Ball numbers were verified against the Vivado package file `xc7z020_clg400.pkg`; the vendor pin-description xlsx has shifted rows and must not be used for ball mapping. The physical top level is `hand_motion_top`, and the XDC is `constraints/hz_zynq_ads1299.xdc`.
+
+
+## 2026-10-24 机械手 PWM
+
+新增 J4-5..10 六路 LVCMOS33 PWM，轴顺序为旋转、拇、食、中、无名、小指。
+完整接线、电源、标定和验证边界见[接入记录](../report/hand_integration_20261024/README.md)。
+默认无输出，不可与原 Arduino PWM 输出并接；马达电源独立、信号地共地。

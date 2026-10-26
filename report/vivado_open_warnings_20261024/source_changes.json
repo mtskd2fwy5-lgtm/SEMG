@@ -1,0 +1,7 @@
+[
+  {
+    "path": "sw\\ps_uart_print\\main.c",
+    "before": "466567e90cbc64278c98b570959ce3a61c35bb20096ba180e8985ebee8ea5926",
+    "after": "58b01a2451e048ae71fd8e5350d5e7939e3b157da57409fa1b5990e2d45696f9"
+  }
+]

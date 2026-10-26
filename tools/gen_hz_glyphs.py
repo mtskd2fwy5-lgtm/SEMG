@@ -6,7 +6,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 ROOT = Path(__file__).resolve().parents[1]
 FONT = ROOT / 'third_party/fonts/source-han-sans/SourceHanSansCN-Regular.otf'
-SOURCES = ['main.c', 'lcd_ui.h', 'lcd_settings.h', 'lcd_waveform.h', 'lcd_rehab.h', 'lcd_channel_quality.h']
+SOURCES = ['main.c', 'lcd_ui.h', 'lcd_home.h', 'lcd_settings.h', 'lcd_waveform.h', 'lcd_rehab.h', 'lcd_channel_quality.h', 'capture_actions.h', 'lcd_hdc.h', 'lcd_hand.h', 'lcd_virtual.h']
 SIZES = (16, 20, 24, 32)
 
 

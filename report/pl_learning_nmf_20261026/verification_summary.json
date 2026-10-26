@@ -1,0 +1,50 @@
+{
+  "learning_test.log": {
+    "pass_markers": 11,
+    "last_line": "INFO: [Common 17-206] Exiting xsim at Mon Oct 26 15:51:39 2026..."
+  },
+  "learning_netlist_test.log": {
+    "pass_markers": 8,
+    "last_line": "INFO: [Common 17-206] Exiting xsim at Mon Oct 26 16:09:21 2026..."
+  },
+  "fifo_test.log": {
+    "pass_markers": 4,
+    "last_line": "INFO: [Common 17-206] Exiting xsim at Mon Oct 26 15:44:00 2026..."
+  },
+  "control_test.log": {
+    "pass_markers": 8,
+    "last_line": "INFO: [Common 17-206] Exiting xsim at Mon Oct 26 15:42:12 2026..."
+  },
+  "lcd_test.log": {
+    "pass_markers": 34,
+    "last_line": "          quaternion XYZ rotation/flip/rezero, perspective, depth-order independence, animation wrap."
+  },
+  "hand_test.log": {
+    "pass_markers": 6,
+    "last_line": "INFO: [Common 17-206] Exiting xsim at Mon Oct 26 15:44:09 2026..."
+  },
+  "sd_test.log": {
+    "pass_markers": 3,
+    "last_line": "TEST_PASS sd_record: signed paired frames, wrap, tail flush, periodic sync, no overwrite, IO errors, aligned bounce, SDSC addressing."
+  },
+  "hdc_golden_test.log": {
+    "pass_markers": 2,
+    "last_line": "TEST_PASS C/NumPy exact packed-query, all prototypes, predictions, margins and centroid parity; frozen model."
+  },
+  "full_build.log": {
+    "pass_markers": 0,
+    "last_line": "  bitstream : D:\\FPGA\\sEMG-HMRS\\build\\vivado\\hand_motion_reconstruction.runs\\impl_1\\design_1.bit  (4,045,684 bytes, 2026/10/26 15:58:39)"
+  },
+  "platform_build.log": {
+    "pass_markers": 0,
+    "last_line": "Shutting down Vitis server running on port '53756'"
+  },
+  "arm_build.log": {
+    "pass_markers": 0,
+    "last_line": "BUILD OK: ps_uart_print_pl_control.elf"
+  },
+  "boot_build.log": {
+    "pass_markers": 3,
+    "last_line": "TEST_PASS matched control BOOT: XSA hardware + full bitstream + 1 application PT_LOAD segments + 3 FSBL PT_LOAD segments"
+  }
+}

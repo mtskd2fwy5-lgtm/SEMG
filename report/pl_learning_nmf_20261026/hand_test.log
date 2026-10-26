@@ -1,0 +1,44 @@
+hand_firmware_test.c
+TEST_PASS LIVE SLIDER: touch drag/release, ACK/coalescing, axis isolation, fine step/no-repeat, heartbeat, cancel/fault, limit upload, live base/custom mapping with calibrated clamp and explicit save, zero-width range
+TEST_PASS LIVE SLIDER: touch drag/release, ACK/coalescing, axis isolation, fine step/no-repeat, heartbeat, cancel/fault, limit upload, live base/custom mapping with calibrated clamp and explicit save, zero-width range
+TEST_PASS BOOT HOME: SD latest-valid/CRC fallback, saved rest + exact 833us zero, six disabled stages/one atomic commit/continuous hold, no synthetic classifier/MPU or later target overwrite, time wrap, no repeat, header STOP/ACK timeout/fault cancel, legacy PL and lost group refusal, invalid configuration refusal
+TEST_PASS hand firmware: ACK, STOP priority, manual expiry, CRC recovery, MPU quaternion/range/loss, validated HDC/queue/debounce, live mapping, boot homing, both panels
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/src/rtl/hand_servo_pwm.v" into library work
+INFO: [VRFC 10-311] analyzing module hand_servo_pwm
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/src/rtl/hand_control.v" into library work
+INFO: [VRFC 10-311] analyzing module hand_control
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/sim/hand_control_tb.sv" into library work
+INFO: [VRFC 10-311] analyzing module hand_control_tb
+Vivado Simulator v2025.2
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+Running: D:/FPGA/VIVADO/2025.2/Vivado/bin/unwrapped/win64.o/xelab.exe hand_control_tb -s hand_sim -debug typical 
+Multi-threading is on. Using 30 slave threads.
+Starting static elaboration
+Pass Through NonSizing Optimizer
+Completed static elaboration
+Starting simulation data flow analysis
+Completed simulation data flow analysis
+Time Resolution for simulation is 1ps
+Compiling module work.hand_servo_pwm(CLOCK_HZ=1000000,...
+Compiling module work.hand_control(CLOCK_HZ=1000000,TI...
+Compiling module work.hand_control_tb
+Built simulation snapshot hand_sim
+
+****** xsim v2025.2 (64-bit)
+  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025
+  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025
+  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025
+  **** Start of session at: Mon Oct 26 15:44:04 2026
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+
+source xsim.dir/hand_sim/xsim_script.tcl
+# xsim {hand_sim} -autoloadwcfg -runall
+Time resolution is 1 ps
+run -all
+TEST_PASS atomic home: no partial pulses, six same-frame rising edges, exact independent widths, ring/little hold beyond 1 second, STOP/calibration/reset invalidation, single-axis isolation, host watchdog and estop
+TEST_PASS hand control: ACK CDC, boot off, manual isolation, wrist hold, MPU rotation, legacy and direct HDC, atomic five-finger commit, source isolation, four watchdogs, estop
+$finish called at time : 2270265 us : File "D:/FPGA/sEMG-HMRS/sim/hand_control_tb.sv" Line 209
+exit
+INFO: [Common 17-206] Exiting xsim at Mon Oct 26 15:44:09 2026...

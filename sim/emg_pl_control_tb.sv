@@ -7,7 +7,7 @@ reg pr=0,ar=0,ready=0;reg[31:0] command=0;
 wire[31:0] status;wire[63:0] out_data;wire ov,fo,ro,last;
 reg fv=0;reg[2:0] fc=0;reg[3:0] fi=0;reg[15:0] fs=0;reg[31:0] fd=0;
 emg_pl_control dut(.pl_clk(pc),.pl_rst_n(pr),.axis_clk(ac),.axis_rst_n(ar),
- .adc_drdy_n(1'b1),.adc_dout(1'b0),.reconfig_n(1'b1),.control_command(command),.control_status(status),
+ .adc_drdy_n(1'b1),.adc_dout(1'b0),.reconfig_n(1'b1),.control_command(command),.control_status(status),.hand_command(32'd0),
  .m_axis_tdata(out_data),.m_axis_tvalid(ov),.m_axis_tready(ready),.m_axis_tlast(last),
  .feature_overflow(fo),.result_overflow(ro));
 integer i,n,count=0,observed=0,waited;

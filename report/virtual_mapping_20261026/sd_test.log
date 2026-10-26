@@ -1,0 +1,4 @@
+sd_record_test.c
+TEST_PASS training CSV: no overwrite, exact bytes, waveform exclusion, short write/sync/close/open errors.
+TEST_PASS hand SD: exact length, truncated/extra data, short write, sync/close/open errors, recording exclusion
+TEST_PASS sd_record: signed paired frames, wrap, tail flush, periodic sync, no overwrite, IO errors, aligned bounce, SDSC addressing.

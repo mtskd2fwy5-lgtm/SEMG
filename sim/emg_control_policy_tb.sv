@@ -6,7 +6,7 @@ reg [15:0] window_seq=0,logit_seq=0;
 reg [255:0] window_mav=0;
 reg [2:0] logit_id=0;
 reg [31:0] logit_data=0;
-wire decision_valid,gated,stale,fault;
+wire decision_valid,gated,stale,fault,muscle_active;
 wire [15:0] decision_seq;
 wire [2:0] active,candidate;
 wire [6:0] ac,cc;
@@ -16,7 +16,7 @@ emg_control_policy dut(.clk(clk),.rst_n(rst_n),.recalibrate(recalibrate),
  .logit_valid(logit_valid),.logit_id(logit_id),.logit_data(logit_data),.logit_seq(logit_seq),
  .decision_valid(decision_valid),.decision_seq(decision_seq),.active_class(active),
  .candidate_class(candidate),.active_conf(ac),.candidate_conf(cc),.gated(gated),
- .cal_stage(stage),.stale(stale),.protocol_fault(fault));
+ .cal_stage(stage),.stale(stale),.protocol_fault(fault),.muscle_active(muscle_active));
 integer f,n,r,s,j,k,count=0,waited;
 reg [31:0] m[0:7];reg signed [31:0] l[0:4];integer e[0:8];
 initial begin
@@ -38,6 +38,7 @@ initial begin
   if(e[1])begin
    waited=0;while(!decision_valid && waited<200)begin @(negedge clk);waited=waited+1;end
    if(!decision_valid)$fatal(1,"no decision row %0d",count);
+   if(muscle_active!==!dut.frame_gate)$fatal(1,"calibrated muscle gate row %0d",count);
    if({active,ac,gated,candidate,cc} !== {3'(e[2]),7'(e[3]),1'(e[4]),3'(e[5]),7'(e[6])} ||
       dut.pending_count!=e[7] || dut.uncertain_count!=e[8] || decision_seq!=s)
     $fatal(1,"row %0d actual active=%0d conf=%0d gate=%0d cand=%0d cc=%0d pend=%0d uncertain=%0d expected=%0d %0d %0d %0d %0d %0d %0d",

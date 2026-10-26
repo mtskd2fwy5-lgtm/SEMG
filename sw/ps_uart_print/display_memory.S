@@ -1,6 +1,7 @@
 /* Cortex-A9 identity mapping for the existing freestanding application.
  * Attribute encodings follow AMD standalone_v9_4 cortexa9/xil_mmu.h:
- * DDR is normal noncacheable; only APP and the 6 MB framebuffer reserve
+ * DDR (including PL-owned HDC and learning scratch) is normal noncacheable;
+ * APP and the 6 MB framebuffer reserve
  * use INNER write-back, OUTER noncacheable (0x14de6). Thus no L2 cache
  * maintenance is needed, and EMG DMA @ 0x11000000 stays noncacheable.
  */

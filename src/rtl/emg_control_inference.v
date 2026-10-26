@@ -24,6 +24,7 @@ module emg_control_inference #(
     output wire [1:0] cal_stage,
     output wire stale,
     output wire fault,
+    output wire muscle_active,
     output wire [2:0] active_class
 );
     localparam IDLE=0,CAPTURE=1,FEED=2,INFER=3,DECIDE=4;
@@ -70,7 +71,7 @@ module emg_control_inference #(
         .logit_valid(nn_valid),.logit_id(nn_id),.logit_data(nn_data),.logit_seq(nn_seq),
         .decision_valid(decision_valid),.decision_seq(decision_seq),
         .active_class(active_class),.active_conf(active_conf),
-        .candidate_class(candidate_class),.candidate_conf(candidate_conf),.gated(gated),
+        .candidate_class(candidate_class),.candidate_conf(candidate_conf),.gated(gated),.muscle_active(muscle_active),
         .cal_stage(cal_stage),.stale(stale),.protocol_fault(policy_fault)
     );
     assign fault=capture_fault || policy_fault;

@@ -19,7 +19,10 @@ module axis_async_fifo #(
 );
     localparam integer DEPTH = (1 << ADDR_WIDTH);
 
-    reg [DATA_WIDTH-1:0] mem [0:DEPTH-1];
+    // Synchronous prefetch permits true dual-clock block RAM. Read pointer
+    // still advances only on downstream acceptance: exact DEPTH capacity.
+    (* ram_style="block" *) reg [DATA_WIDTH-1:0] mem [0:DEPTH-1];
+    reg [DATA_WIDTH-1:0] read_data;
     reg [ADDR_WIDTH:0] s_bin, s_gray;
     reg [ADDR_WIDTH:0] m_bin, m_gray;
     // Gray-pointer double synchronizers across the two clock domains.
@@ -42,7 +45,11 @@ module axis_async_fifo #(
 
     assign s_ready = s_rst_n && !s_full;
     assign m_valid = m_rst_n && !m_empty;
-    assign m_data = mem[m_bin[ADDR_WIDTH-1:0]];
+    assign m_data = read_data;
+
+    always @(posedge m_clk)begin
+        if(m_empty || m_ready)read_data<=mem[m_bin_next[ADDR_WIDTH-1:0]];
+    end
 
     always @(posedge s_clk) begin
         if (!s_rst_n) begin
@@ -74,7 +81,7 @@ module axis_async_fifo #(
             s_gray_sync2 <= s_gray_sync1;
             m_bin <= m_bin_next;
             m_gray <= m_gray_next;
-            m_empty <= m_empty_next;
+            if(m_empty || m_ready)m_empty <= m_empty_next;
         end
     end
 endmodule

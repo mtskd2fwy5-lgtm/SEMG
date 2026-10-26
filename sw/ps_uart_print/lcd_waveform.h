@@ -35,12 +35,7 @@ static void lcd_wave_changed(void)
 
 static void lcd_wave_toggle(void)
 {
-    lcd_rehab_view=0u;
-    lcd_settings_view=0u;
-    lcd_synergy_view=0u;
-    lcd_wave_view = !lcd_wave_view;
-    ui_preview_cls = -1;
-    lcd_wave_changed();
+    ui_open_page(lcd_wave_view?UI_MONITOR:UI_WAVE);
 }
 
 static void lcd_wave_select(u32 channel, u32 notch)

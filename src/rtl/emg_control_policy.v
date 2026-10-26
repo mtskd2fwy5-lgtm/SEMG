@@ -22,6 +22,7 @@ module emg_control_policy #(
     output reg [2:0] active_class,candidate_class,
     output reg [6:0] active_conf,candidate_conf,
     output reg gated,
+    output reg muscle_active,
     output reg [1:0] cal_stage,
     output reg stale,
     output reg protocol_fault
@@ -63,7 +64,7 @@ module emg_control_policy #(
         decision_valid<=0;
         if(!rst_n || recalibrate) begin
             cal_stage<=0;discard_count<=0;collect_count<=0;
-            active_class<=0;active_conf<=0;candidate_class<=0;candidate_conf<=0;gated<=0;
+            active_class<=0;active_conf<=0;candidate_class<=0;candidate_conf<=0;gated<=0;muscle_active<=0;
             pending_class<=0;pending_count<=0;uncertain_count<=0;
             frame_seen<=0;seq_seen<=0;expected_logit<=0;
             state<=IDLE;age<=0;stale<=1;protocol_fault<=0;
@@ -177,6 +178,8 @@ module emg_control_policy #(
                         end
                     end
                     active_class<=next_active;active_conf<=confidence[next_active];
+                    // Actual calibrated amplitude gate, independent of MLP confidence.
+                    muscle_active<=!frame_gate;
                     candidate_class<=target;candidate_conf<=confidence[target];gated<=frame_gate && best!=0;
                     pending_class<=next_pending;pending_count<=next_pending_count;uncertain_count<=next_uncertain;
                     age<=0;stale<=0;decision_valid<=1;state<=IDLE;
@@ -186,7 +189,7 @@ module emg_control_policy #(
             // Last assignment wins: an in-flight calculation cannot publish
             // a fresh decision after its watchdog has expired.
             if(age>=STALE_CYCLES && !window_valid)begin
-                stale<=1;frame_seen<=0;state<=IDLE;expected_logit<=0;decision_valid<=0;
+                stale<=1;muscle_active<=0;frame_seen<=0;state<=IDLE;expected_logit<=0;decision_valid<=0;
             end
         end
     end

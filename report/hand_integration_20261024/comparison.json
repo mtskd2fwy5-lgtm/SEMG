@@ -1,0 +1,92 @@
+{
+  "resources": {
+    "Slice LUTs": {
+      "before": 38368,
+      "after": 39927.0,
+      "delta": 1559.0,
+      "available": 53200.0,
+      "percent": 75.05
+    },
+    "Slice Registers": {
+      "before": 34002,
+      "after": 35998.0,
+      "delta": 1996.0,
+      "available": 106400.0,
+      "percent": 33.83
+    },
+    "Slice": {
+      "before": 12467,
+      "after": 12901.0,
+      "delta": 434.0,
+      "available": 13300.0,
+      "percent": 97.0
+    },
+    "Block RAM Tile": {
+      "before": 29.5,
+      "after": 29.5,
+      "delta": 0.0,
+      "available": 140.0,
+      "percent": 21.07
+    },
+    "DSPs": {
+      "before": 95,
+      "after": 101.0,
+      "delta": 6.0,
+      "available": 220.0,
+      "percent": 45.91
+    },
+    "Bonded IOB": {
+      "before": 47,
+      "after": 53.0,
+      "delta": 6.0,
+      "available": 125.0,
+      "percent": 42.4
+    }
+  },
+  "timing_before_ns": {
+    "wns": 0.32,
+    "tns": 0.0,
+    "whs": 0.002,
+    "ths": 0.0
+  },
+  "timing_after_ns": {
+    "wns": 0.392,
+    "tns": 0.0,
+    "whs": 0.051,
+    "ths": 0.0
+  },
+  "hand_hierarchy": {
+    "axi_gpio_5": {
+      "lut": 97,
+      "logic_lut": 97,
+      "lutram": 0,
+      "srl": 0,
+      "ff": 382,
+      "ramb36": 0,
+      "ramb18": 0,
+      "dsp": 0
+    },
+    "hand": {
+      "lut": 1396,
+      "logic_lut": 1396,
+      "lutram": 0,
+      "srl": 0,
+      "ff": 1551,
+      "ramb36": 0,
+      "ramb18": 0,
+      "dsp": 6
+    },
+    "generator": {
+      "lut": 1064,
+      "logic_lut": 1064,
+      "lutram": 0,
+      "srl": 0,
+      "ff": 256,
+      "ramb36": 0,
+      "ramb18": 0,
+      "dsp": 6
+    }
+  },
+  "optimization_performed": false,
+  "board_motion_verified": false
+}

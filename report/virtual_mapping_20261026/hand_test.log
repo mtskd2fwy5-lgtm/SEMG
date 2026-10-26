@@ -1,0 +1,36 @@
+TEST_PASS LIVE SLIDER: touch drag/release, ACK/coalescing, axis isolation, fine step/no-repeat, heartbeat, cancel/fault, limit upload, live base/custom mapping with calibrated clamp and explicit save, zero-width range
+TEST_PASS LIVE SLIDER: touch drag/release, ACK/coalescing, axis isolation, fine step/no-repeat, heartbeat, cancel/fault, limit upload, live base/custom mapping with calibrated clamp and explicit save, zero-width range
+TEST_PASS BOOT HOME: SD latest-valid/CRC fallback, saved rest + exact 833us zero, six disabled stages/one atomic commit/continuous hold, no synthetic classifier/MPU or later target overwrite, time wrap, no repeat, header STOP/ACK timeout/fault cancel, legacy PL and lost group refusal, invalid configuration refusal
+TEST_PASS hand firmware: ACK, STOP priority, manual expiry, CRC recovery, MPU quaternion/range/loss, validated HDC/queue/debounce, live mapping, boot homing, both panels
+#-----------------------------------------------------------
+# xsim v2025.2 (64-bit)
+# SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025
+# IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025
+# SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025
+# Start of session at: Mon Oct 26 17:04:09 2026
+# Process ID         : 9460
+# Current directory  : D:/FPGA/sEMG-HMRS/sim/results_hand
+# Command line       : xsim.exe -log hand.log -mode tcl -source {xsim.dir/hand_sim/xsim_script.tcl}
+# Log file           : D:/FPGA/sEMG-HMRS/sim/results_hand/hand.log
+# Journal file       : D:/FPGA/sEMG-HMRS/sim/results_hand\xsim.jou
+# Running On         : LAPTOP-VCCV41QO
+# Platform           : Windows Server 2016 or Windows 10
+# Operating System   : 26200
+# Processor Detail   : AMD Ryzen 9 7945HX with Radeon Graphics        
+# CPU Frequency      : 2495 MHz
+# CPU Physical cores : 16
+# CPU Logical cores  : 32
+# Host memory        : 16844 MB
+# Swap memory        : 16844 MB
+# Total Virtual      : 33689 MB
+# Available Virtual  : 14900 MB
+#-----------------------------------------------------------
+source xsim.dir/hand_sim/xsim_script.tcl
+# xsim {hand_sim} -autoloadwcfg -runall
+Time resolution is 1 ps
+run -all
+TEST_PASS atomic home: no partial pulses, six same-frame rising edges, exact independent widths, ring/little hold beyond 1 second, STOP/calibration/reset invalidation, single-axis isolation, host watchdog and estop
+TEST_PASS hand control: ACK CDC, boot off, manual isolation, wrist hold, MPU rotation, legacy and direct HDC, atomic five-finger commit, source isolation, four watchdogs, estop
+$finish called at time : 2270265 us : File "D:/FPGA/sEMG-HMRS/sim/hand_control_tb.sv" Line 209
+exit
+INFO: [Common 17-206] Exiting xsim at Mon Oct 26 17:04:14 2026...

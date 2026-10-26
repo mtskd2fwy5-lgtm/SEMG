@@ -1,0 +1,20 @@
+hdc_learning_test.c
+D:\FPGA\sEMG-HMRS\sim\hdc_learning_test.c(117): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+TEST_PASS HDC: dynamic growth beyond 3 custom slots, retained data/mappings, atomic OOM, 23-class held-out prediction, original encoding, immutable live models.
+{
+  "synthetic_parity": {
+    "encoding_prototype_prediction_parity": true,
+    "classes": 8,
+    "test_windows": 257,
+    "hdc_accuracy": 0.01556420233463035,
+    "centroid_accuracy": 0.007782101167315175
+  },
+  "dynamic_parity": {
+    "encoding_prototype_prediction_parity": true,
+    "classes": 23,
+    "test_windows": 257,
+    "hdc_accuracy": 0.0,
+    "centroid_accuracy": 0.0
+  }
+}
+TEST_PASS C/NumPy exact packed-query, all prototypes, predictions, margins and centroid parity; frozen model.

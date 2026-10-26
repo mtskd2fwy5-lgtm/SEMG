@@ -232,6 +232,24 @@
             },
             "V5": {
                 "VT": "AC",
+                "BA": "0x00000000",
+                "HA": "0x1FFFFFFF",
+                "BP": "C_BASEADDR",
+                "HP": "C_HIGHADDR",
+                "MA": "m_axi",
+                "MX": "/emg_learning_0",
+                "MI": "m_axi",
+                "MS": "SEG_processing_system7_0_HP1_DDR_LOWOCM",
+                "MV": "xilinx.com:module_ref:emg_learning_accel:1.0",
+                "SX": "/processing_system7_0",
+                "SI": "S_AXI_HP1",
+                "SS": "HP1_DDR_LOWOCM",
+                "SV": "xilinx.com:ip:processing_system7:5.5",
+                "TM": "both",
+                "TU": "memory"
+            },
+            "V6": {
+                "VT": "AC",
                 "BA": "0x40400000",
                 "HA": "0x4040FFFF",
                 "BP": "C_BASEADDR",
@@ -248,7 +266,7 @@
                 "TM": "both",
                 "TU": "register"
             },
-            "V6": {
+            "V7": {
                 "VT": "AC",
                 "BA": "0x41200000",
                 "HA": "0x4120FFFF",
@@ -266,7 +284,7 @@
                 "TM": "both",
                 "TU": "register"
             },
-            "V7": {
+            "V8": {
                 "VT": "AC",
                 "BA": "0x41210000",
                 "HA": "0x4121FFFF",
@@ -284,7 +302,7 @@
                 "TM": "both",
                 "TU": "register"
             },
-            "V8": {
+            "V9": {
                 "VT": "AC",
                 "BA": "0x41220000",
                 "HA": "0x4122FFFF",
@@ -302,7 +320,7 @@
                 "TM": "both",
                 "TU": "register"
             },
-            "V9": {
+            "V10": {
                 "VT": "AC",
                 "BA": "0x41230000",
                 "HA": "0x4123FFFF",
@@ -320,7 +338,7 @@
                 "TM": "both",
                 "TU": "register"
             },
-            "V10": {
+            "V11": {
                 "VT": "AC",
                 "BA": "0x41240000",
                 "HA": "0x4124FFFF",
@@ -338,7 +356,43 @@
                 "TM": "both",
                 "TU": "register"
             },
-            "V11": {
+            "V12": {
+                "VT": "AC",
+                "BA": "0x41250000",
+                "HA": "0x4125FFFF",
+                "BP": "C_BASEADDR",
+                "HP": "C_HIGHADDR",
+                "MA": "Data",
+                "MX": "/processing_system7_0",
+                "MI": "M_AXI_GP0",
+                "MS": "SEG_axi_gpio_5_Reg",
+                "MV": "xilinx.com:ip:processing_system7:5.5",
+                "SX": "/axi_gpio_5",
+                "SI": "S_AXI",
+                "SS": "Reg",
+                "SV": "xilinx.com:ip:axi_gpio:2.0",
+                "TM": "both",
+                "TU": "register"
+            },
+            "V13": {
+                "VT": "AC",
+                "BA": "0x41260000",
+                "HA": "0x4126FFFF",
+                "BP": "C_BASEADDR",
+                "HP": "C_HIGHADDR",
+                "MA": "Data",
+                "MX": "/processing_system7_0",
+                "MI": "M_AXI_GP0",
+                "MS": "SEG_axi_gpio_6_Reg",
+                "MV": "xilinx.com:ip:processing_system7:5.5",
+                "SX": "/axi_gpio_6",
+                "SI": "S_AXI",
+                "SS": "Reg",
+                "SV": "xilinx.com:ip:axi_gpio:2.0",
+                "TM": "both",
+                "TU": "register"
+            },
+            "V14": {
                 "VT": "AC",
                 "BA": "0x43000000",
                 "HA": "0x4300FFFF",
@@ -408,6 +462,21 @@
             },
             {
                 "src": "V11",
+                "trg": "V2",
+                "EH": "2"
+            },
+            {
+                "src": "V12",
+                "trg": "V2",
+                "EH": "2"
+            },
+            {
+                "src": "V13",
+                "trg": "V2",
+                "EH": "2"
+            },
+            {
+                "src": "V14",
                 "trg": "V2",
                 "EH": "2"
             }

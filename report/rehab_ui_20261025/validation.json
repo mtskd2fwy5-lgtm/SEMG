@@ -1,0 +1,78 @@
+{
+  "tag": "20261025_HAND_CONTROL_REHAB_V3",
+  "scope": "research_demo_healthy_volunteers",
+  "tests": {
+    "hand_firmware.log": {
+      "passed": true,
+      "pass_messages": 1,
+      "sha256": "b6f247f25b51d455e9333e832902e50e7ff71e68533abcc7d66ccfb7168fccda"
+    },
+    "lcd_firmware.log": {
+      "passed": true,
+      "pass_messages": 30,
+      "sha256": "aabe725ffdecf6c602ed44ab11b2f4ad22c3959115b2f5d322d9e7f4bd078878"
+    },
+    "pl_firmware.log": {
+      "passed": true,
+      "pass_messages": 3,
+      "sha256": "e46d7d3a60599d9c7363e7583e744ed36c842bf4100b5f374752fca51bb1a1a8"
+    },
+    "rehab_engine.log": {
+      "passed": true,
+      "pass_messages": 2,
+      "sha256": "3489b0b4fd29840b54515f3c98ad7472d4d1b014eeb08ace0aaa6c5d81e1186a"
+    },
+    "sd_record.log": {
+      "passed": true,
+      "pass_messages": 3,
+      "sha256": "2e1f08fd5f81b4dabbe1f86982e473082fb53f4783931319cff72c582ea89a19"
+    },
+    "uart_record.log": {
+      "passed": true,
+      "pass_messages": 1,
+      "sha256": "a6bd900f7387cf610d72083d878b54cf13d2b01f244cc1de453b55de525b2e83"
+    }
+  },
+  "lcd_panels": [
+    [
+      800,
+      480
+    ],
+    [
+      1024,
+      600
+    ]
+  ],
+  "route_pairs_per_panel": 121,
+  "arm_build_passed": true,
+  "build_warning": "Existing third-party ff.c unused variable vol",
+  "pl_rebuilt": false,
+  "unchanged_v2_hardware_artifacts": [
+    "build\\vivado\\hand_motion_reconstruction.runs\\impl_1\\design_1.bit",
+    "build\\export\\design_1.xsa",
+    "board\\constraints\\hz_zynq_lcd.xdc",
+    "board\\constraints\\hz_zynq_lcd_timing.xdc",
+    "src\\rtl\\emg_control_policy.v",
+    "src\\rtl\\emg_control_inference.v",
+    "src\\rtl\\emg_control_constants.vh",
+    "src\\rtl\\emg_pl_control.v",
+    "src\\rtl\\emg_pl_export.v",
+    "src\\rtl\\hand_servo_pwm.v",
+    "src\\rtl\\hand_control.v",
+    "board\\constraints\\hz_zynq_hand.xdc"
+  ],
+  "reused_pl_gates": {
+    "coefficient_bind": true,
+    "netlist_decode": true,
+    "literal_b_scan": true,
+    "routed_timing": true,
+    "wns_ns": 0.293,
+    "whs_ns": 0.065
+  },
+  "boot_matches_bit_and_application": true,
+  "boot_bytes": 5066772,
+  "boot_sha256": "c187c3372db8f5a58e2a7d6f896bf0c50f50baa8d5e47fb595dcec3e4246cfe3",
+  "v2_boot_preserved": true,
+  "physical_board_tested": false,
+  "clinical_validation": false
+}

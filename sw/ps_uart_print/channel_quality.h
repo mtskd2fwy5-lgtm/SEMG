@@ -16,15 +16,49 @@ typedef struct {
     int32_t min_sample,max_sample;
     uint64_t energy;
     uint32_t rms,cf10,line10,rail10,clipped,window_peak,base,base_n,base_sum;
+    uint32_t activity_score,mains_score,spike_score,rail_score,total_score,grade,grade_cap;
 } channel_quality_t;
 static channel_quality_t channel_quality[8];
 static uint32_t cq_reference,cq_ref_failed;
+enum { CQ_GRADE_A,CQ_GRADE_B,CQ_GRADE_C,CQ_GRADE_D,CQ_GRADE_UNKNOWN=4u };
+typedef struct {uint32_t total,activity,mains,spike,rail,grade,cap;} cq_score_t;
 static uint32_t cq_sqrt(uint64_t x)
 {
     uint64_t bit=(uint64_t)1<<62,r=0;
     while(bit>x)bit>>=2;
     while(bit){if(x>=r+bit){x-=r+bit;r=(r>>1)+bit;}else r>>=1;bit>>=2;}
     return (uint32_t)r;
+}
+/* LCD adaptation of EMG Lab's 4-way equal-weight score + weakest-component
+ * grade cap. Uses only final-signal amplitude, narrowband share, peak factor
+ * and processed output rail flags; this differs from website metrics. */
+static cq_score_t cq_assess_score(uint32_t valid,uint32_t rms,uint32_t cf10,
+                                  uint32_t line10,uint32_t rail10,uint32_t baseline)
+{
+    cq_score_t s;uint32_t activity,main,spike,rail,cap=0u;
+    if(!valid || !rms) {
+        s.total=0u;s.activity=s.mains=s.spike=s.rail=0u;s.grade=CQ_GRADE_UNKNOWN;s.cap=0u;return s;
+    }
+    if(!baseline) {s.total=0u;s.activity=s.mains=s.spike=s.rail=0u;s.grade=CQ_GRADE_UNKNOWN;s.cap=0u;return s;}
+    activity=(uint64_t)rms*4u<(uint64_t)baseline?0u:(uint64_t)rms*2u<(uint64_t)baseline?80u:
+             (uint64_t)rms>=(uint64_t)baseline*2u?80u:100u;
+    main=line10>=200u?0u:line10>=20u?100u-(line10-20u)*100u/180u:100u;
+    spike=cf10<=100u?100u:cf10>=300u?0u:100u-(cf10-100u)/2u;
+    rail=rail10?0u:100u;
+    s.total=(activity+main+spike+rail+2u)/4u;s.activity=activity;s.mains=main;s.spike=spike;s.rail=rail;
+    s.grade=s.total>=80u?CQ_GRADE_A:s.total>=60u?CQ_GRADE_B:s.total>=40u?CQ_GRADE_C:CQ_GRADE_D;
+    if(activity<80u || main<80u || spike<80u || rail<80u)
+        cap=(activity<30u || main<30u || spike<30u || rail<30u)?CQ_GRADE_D:
+            (activity<60u || main<60u || spike<60u || rail<60u)?CQ_GRADE_C:CQ_GRADE_B;
+    if(rail==0u)cap=CQ_GRADE_D;
+    if(cap>s.grade)s.grade=cap;
+    s.cap=cap;return s;
+}
+static void cq_score_channel(channel_quality_t *q)
+{
+    cq_score_t s=cq_assess_score(q->valid,q->rms,q->cf10,q->line10,q->rail10,q->base);
+    q->activity_score=s.activity;q->mains_score=s.mains;q->spike_score=s.spike;q->rail_score=s.rail;
+    q->total_score=s.total;q->grade=s.grade;q->grade_cap=s.cap;
 }
 static void cq_clear_window(channel_quality_t *q)
 {
@@ -107,10 +141,14 @@ static int cq_ingest(uint32_t payload,uint32_t hdr,uint32_t now)
             uint32_t ready=1;
             for(i=0;i<8;i++)if(channel_quality[i].base_n<3)ready=0;
             if(ready){
-                for(i=0;i<8;i++)channel_quality[i].base=channel_quality[i].base_sum/3u;
+                for(i=0;i<8;i++) {
+                    channel_quality[i].base=channel_quality[i].base_sum/3u;
+                    cq_score_channel(&channel_quality[i]);
+                }
                 cq_reference=0;
             }
         }
+        cq_score_channel(q);
     }
     cq_clear_window(q);
     return 1;

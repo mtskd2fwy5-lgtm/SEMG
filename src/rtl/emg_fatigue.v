@@ -5,7 +5,9 @@
 // -> 512 ms window, 1.95 Hz bins, 1/2 scaling per stage = 1/N total),
 // median frequency (MDF) from the power spectrum, and - across the eight
 // channels averaged - a 16-window least-squares MDF slope plus a 4-level
-// fatigue state.  Eight words ride the existing result lane each window:
+// fatigue trend. Only complete, unclipped, same-gesture activity windows
+// may update fatigue; the activity gate comes from calibrated MAV in PL.
+// Eight words ride the existing result lane each window:
 //   id 8 : { num2_sat[15:0] signed, mdf_mean[15:0] }
 //   id 9 : { level[1:0], hist_full, 6'b0, grand_total[45:23] }
 //   id 10..14 : five packets, each carrying six 5-bit logarithmic
@@ -21,15 +23,18 @@ module emg_fatigue #(
     // NOTE: 17 bits — 63570 does NOT fit in signed 16 bits (16'sd63570
     // wraps to -1976 and silently turns the HP into an attenuator)
     parameter signed [16:0] HP_ALPHA_Q16 = 17'sd63570, // ~20 Hz @ 4 kSPS
-    parameter integer INPUT_SHIFT = 8,
-    parameter signed [15:0] T_MILD    = -16'sd100,     // slope ~ -0.037 bin/win
-    parameter signed [15:0] T_FATIGUE = -16'sd300,     // slope ~ -0.110 bin/win
-    parameter signed [15:0] T_REST    = -16'sd600,     // slope ~ -0.220 bin/win
-    parameter [31:0] MIN_ENERGY = 32'd0,               // window energy gate
+    // Retain fractional precision for the final processed ADC-count stream.
+    // Old >>8 reduced real EMG (tens of counts) to mostly 0/-1. Saturated
+    // FFT input windows still export spectrum but cannot assess fatigue.
+    parameter integer INPUT_SHIFT = -4,
+    parameter [31:0] MIN_ENERGY = 32'd0,               // optional additional energy floor
     parameter integer LEVEL_CONFIRM_WINDOWS = 3        // suppress one-window level jumps
 ) (
     input  wire                  clk,
     input  wire                  rst_n,
+    input  wire                  activity_valid,
+    input  wire                  muscle_active,
+    input  wire [2:0]            activity_class,
     input  wire                  sample_valid,
     input  wire [2:0]            sample_channel,
     input  wire signed [23:0]    sample_data,
@@ -57,15 +62,6 @@ module emg_fatigue #(
             if (v > 35'sd131071)       sat18 = 18'sd131071;
             else if (v < -35'sd131072) sat18 = -18'sd131072;
             else                       sat18 = v[17:0];
-        end
-    endfunction
-
-    function signed [15:0] sat16_27;
-        input signed [26:0] v;
-        begin
-            if (v > 27'sd32767)       sat16_27 = 16'sd32767;
-            else if (v < -27'sd32768) sat16_27 = -16'sd32768;
-            else                      sat16_27 = v[15:0];
         end
     endfunction
 
@@ -128,7 +124,14 @@ module emg_fatigue #(
     wire signed [43:0] hp_prod = hp_yd[sample_channel] * HP_ALPHA_Q16;
     wire signed [26:0] hp_hp   = hp_prod >>> 16;
     wire signed [26:0] hp_y    = (sample_data - hp_xd[sample_channel]) + hp_hp;
-    wire signed [15:0] fft_in  = sat16_27(hp_y >>> INPUT_SHIFT);
+    wire signed [31:0] hp_extended = {{5{hp_y[26]}},hp_y};
+    wire signed [31:0] fft_scaled = (INPUT_SHIFT >= 0) ?
+        (hp_extended >>> INPUT_SHIFT) : (hp_extended <<< (-INPUT_SHIFT));
+    wire signed [15:0] fft_in = sat16_32(fft_scaled);
+    wire fft_clipped = fft_scaled > 32'sd32767 || fft_scaled < -32'sd32768;
+    wire current_activity = activity_valid && muscle_active && activity_class != 0;
+    reg window_activity, window_activity_done;
+    reg [2:0] window_class, window_class_done;
 
     reg signed [15:0] sbuf [0:32767];  // 2 x 8 x 2048 ping-pong window RAM
     reg [14:0]        sbuf_raddr;
@@ -139,11 +142,18 @@ module emg_fatigue #(
         if (!rst_n) begin
             wr_sel <= 1'b0; fill_cnt <= 14'd0;
             proc_buf_valid <= 1'b0; wr_sel_done <= 1'b0; win_seq <= 16'd0;
+            window_activity <= 1'b0; window_activity_done <= 1'b0;
+            window_class <= 3'd0; window_class_done <= 3'd0;
             for (i = 0; i < 8; i = i + 1) begin
                 hp_xd[i] <= 24'sd0;
                 hp_yd[i] <= 27'sd0;
             end
         end else if (sample_valid) begin
+            if(fill_cnt==0) begin
+                window_activity <= current_activity && !fft_clipped;
+                window_class <= activity_class;
+            end else if (!current_activity || activity_class!=window_class || fft_clipped)
+                window_activity <= 1'b0;
             hp_xd[sample_channel] <= sample_data;
             hp_yd[sample_channel] <= hp_y;
             // interleaved stream: sample n = frame (n>>3), channel (n&7);
@@ -154,6 +164,9 @@ module emg_fatigue #(
                 wr_sel <= ~wr_sel;
                 wr_sel_done <= wr_sel;
                 win_seq_done <= win_seq + 16'd1;
+                window_activity_done <= window_activity && current_activity &&
+                                        activity_class==window_class && !fft_clipped;
+                window_class_done <= window_class;
                 proc_buf_valid <= 1'b1;
                 win_seq <= win_seq + 16'd1;
             end else begin
@@ -213,9 +226,10 @@ module emg_fatigue #(
     reg [3:0]  slope_i;
     reg signed [31:0] num2_acc;
     reg signed [15:0] num2_sat;
-    reg [1:0]  level_q;
-    reg [1:0]  level_pending_q;
-    reg [1:0]  level_pending_count;
+    wire [1:0] level_q;
+    wire fatigue_ready;
+    reg activity_q;
+    reg [2:0] activity_class_q, hist_class;
 
     // butterfly operand registers
     reg signed [17:0] a_re, a_im, b_re, b_im;
@@ -272,13 +286,14 @@ module emg_fatigue #(
     wire signed [21:0] sc_term = sc_coef * hist[hidx];
 
     wire        hist_full = (hist_cnt == 5'd16);
-    wire        energy_ok = (grand_total >= {19'd0, MIN_ENERGY});
+    wire        energy_ok = activity_q && (grand_total > {19'd0, MIN_ENERGY});
     wire signed [15:0] num2_next = sat16_32(num2_acc);
     wire signed [15:0] num2_rpt  = hist_full ? num2_next : 16'sd0;
-    wire [1:0] level_candidate = !hist_full ? 2'd0 :
-                                 (num2_next <= T_REST) ? 2'd3 :
-                                 (num2_next <= T_FATIGUE) ? 2'd2 :
-                                 (num2_next <= T_MILD) ? 2'd1 : 2'd0;
+    emg_fatigue_state #(.LEVEL_CONFIRM_WINDOWS(LEVEL_CONFIRM_WINDOWS)) fatigue_state (
+        .clk(clk), .rst_n(rst_n), .window_valid(state==P_OUT1),
+        .activity_ok(energy_ok), .activity_class(activity_class_q),
+        .mdf(mdf_mean_q), .level(level_q), .ready(fatigue_ready)
+    );
 
     always @(posedge clk) begin
         if (!rst_n) begin
@@ -294,9 +309,7 @@ module emg_fatigue #(
             peak_bin <= 11'd0;
             mdf_mean_q <= 16'd0; hist_ptr <= 4'd0; hist_cnt <= 5'd0;
             slope_i <= 4'd0; num2_acc <= 32'sd0; num2_sat <= 16'sd0;
-            level_q <= 2'd0;
-            level_pending_q <= 2'd0;
-            level_pending_count <= 2'd0;
+            activity_q <= 1'b0; activity_class_q <= 3'd0; hist_class <= 3'd0;
             out_valid <= 1'b0; out_id <= 4'd0; out_data <= 32'd0;
             out_sequence <= 16'd0;
         end else begin
@@ -309,6 +322,8 @@ module emg_fatigue #(
                 if (proc_buf_valid && (win_seq_done != seq_q)) begin
                     src_sel    <= wr_sel_done;
                     seq_q      <= win_seq_done;
+                    activity_q <= window_activity_done;
+                    activity_class_q <= window_class_done;
                     ch_cnt     <= 3'd0;
                     mdf_sum    <= 14'd0;
                     grand_total<= 51'd0;
@@ -392,7 +407,10 @@ module emg_fatigue #(
                 end
                 2'd1: pwr_ph <= 2'd2;   // re/im_rd latch this edge
                 default: begin
-                    total_acc <= total_acc + pwr_incr;
+                    // MDF and its energy gate use the physiological band,
+                    // not DC/quantization offsets or out-of-band noise.
+                    if (pwr_idx >= 11'd11 && pwr_idx <= 11'd230)
+                        total_acc <= total_acc + pwr_incr;
                     // One-sided FFT bins at 4 kSPS / 2048.  Exclude DC and
                     // the low-frequency motion baseline.  Bins 11..230 are
                     // mapped uniformly to 30 narrow bands (~14.3 Hz each).
@@ -423,11 +441,14 @@ module emg_fatigue #(
                 end
                 2'd1: pwr_ph <= 2'd2;   // re/im_rd latch this edge
                 default: begin
-                    cum_acc <= cum_acc + pwr_incr;
+                    if (pwr_idx >= 11'd11 && pwr_idx <= 11'd230)
+                        cum_acc <= cum_acc + pwr_incr;
                     pwr_ph <= 2'd0;
-                    if (!crossed && (cum_acc + pwr_incr) >= (total_acc >>> 1))
+                    if (pwr_idx >= 11'd11 && pwr_idx <= 11'd230 &&
+                        !crossed && (cum_acc + pwr_incr) >= (total_acc >>> 1))
                         mdf_ch <= pwr_idx;
-                    if ((cum_acc + pwr_incr) >= (total_acc >>> 1))
+                    if (pwr_idx >= 11'd11 && pwr_idx <= 11'd230 &&
+                        (cum_acc + pwr_incr) >= (total_acc >>> 1))
                         crossed <= 1'b1;
                     if (pwr_idx == 11'd1024) begin
                         mdf_sum     <= mdf_sum + {3'b0, mdf_ch};
@@ -455,10 +476,19 @@ module emg_fatigue #(
             P_UPD: begin
                 mdf_mean_q <= mdf_sum[13:3];
                 if (energy_ok) begin
-                    hist[hist_ptr] <= mdf_sum[13:3];
-                    hist_ptr <= hist_ptr + 4'd1;
-                    if (hist_cnt != 5'd16)
+                    if (activity_class_q != hist_class) begin
+                        hist[0] <= mdf_sum[13:3];
+                        hist_ptr <= 4'd1; hist_cnt <= 5'd1;
+                    end else begin
+                        hist[hist_ptr] <= mdf_sum[13:3];
+                        hist_ptr <= hist_ptr + 4'd1;
+                        if (hist_cnt != 5'd16)
                         hist_cnt <= hist_cnt + 5'd1;
+                    end
+                    hist_class <= activity_class_q;
+                end else begin
+                    // Quiet/transition/invalid windows invalidate stale trend.
+                    hist_ptr <= 4'd0; hist_cnt <= 5'd0; hist_class <= 3'd0;
                 end
                 slope_i  <= 4'd0;
                 num2_acc <= 32'sd0;
@@ -475,20 +505,6 @@ module emg_fatigue #(
             end
             P_OUT1: begin
                 num2_sat <= num2_next;
-                if (level_candidate == level_q) begin
-                    level_pending_q <= level_candidate;
-                    level_pending_count <= 2'd0;
-                end else if (level_candidate == level_pending_q) begin
-                    if (level_pending_count >= LEVEL_CONFIRM_WINDOWS - 1) begin
-                        level_q <= level_candidate;
-                        level_pending_count <= 2'd0;
-                    end else begin
-                        level_pending_count <= level_pending_count + 2'd1;
-                    end
-                end else begin
-                    level_pending_q <= level_candidate;
-                    level_pending_count <= 2'd1;
-                end
                 out_valid    <= 1'b1;
                 out_id       <= 4'd8;
                 out_data     <= {num2_rpt, mdf_mean_q};
@@ -499,7 +515,7 @@ module emg_fatigue #(
                 if (out_valid && out_ready) begin
                     if (out_id == 4'd8) begin
                         out_id   <= 4'd9;
-                        out_data <= {level_q, hist_full, 6'd0,
+                        out_data <= {level_q, fatigue_ready, 6'd0,
                                      grand_total[45:23]};
                     end else if (out_id == 4'd9) begin
                         out_id   <= 4'd10;
@@ -555,4 +571,74 @@ module emg_fatigue #(
         end
     end
 
+endmodule
+
+// Nonclinical spectral fatigue trend, evaluated only within one uninterrupted
+// same-gesture contraction. Reference: mean of its first 8 windows (4.096 s).
+// Current MDF: 4-window trimmed mean (discard highest/lowest). This rejects
+// a single frequency outlier without stretching it into several candidates.
+// Warm-up: 16 windows (8.192 s).
+// Thresholds are engineering defaults (10/20/30% MDF decrease), not measured
+// clinical severity limits. Hold confirmed level through a frequency plateau;
+// rest, invalid input or gesture change clears it and rebuilds the reference.
+module emg_fatigue_state #(
+    parameter integer LEVEL_CONFIRM_WINDOWS=3,
+    parameter integer DROP_MILD_PERCENT=10,
+    parameter integer DROP_FATIGUE_PERCENT=20,
+    parameter integer DROP_SEVERE_PERCENT=30
+)(
+    input wire clk,rst_n,window_valid,activity_ok,
+    input wire [2:0] activity_class,
+    input wire [15:0] mdf,
+    output reg [1:0] level,
+    output wire ready
+);
+    localparam integer COUNT_W=(LEVEL_CONFIRM_WINDOWS<2)?1:$clog2(LEVEL_CONFIRM_WINDOWS+1);
+    reg [2:0] bout_class;
+    reg [4:0] count;
+    reg [18:0] baseline_sum;
+    reg [15:0] previous1,previous2,previous3;
+    reg [1:0] pending;
+    reg [COUNT_W-1:0] pending_count;
+    wire [17:0] smooth_sum={2'd0,mdf}+{2'd0,previous1}+{2'd0,previous2}+{2'd0,previous3};
+    wire [15:0] min01=(mdf<previous1)?mdf:previous1;
+    wire [15:0] min23=(previous2<previous3)?previous2:previous3;
+    wire [15:0] max01=(mdf>previous1)?mdf:previous1;
+    wire [15:0] max23=(previous2>previous3)?previous2:previous3;
+    wire [15:0] smooth_min=(min01<min23)?min01:min23;
+    wire [15:0] smooth_max=(max01>max23)?max01:max23;
+    wire [17:0] trimmed_sum=smooth_sum-smooth_min-smooth_max;
+    wire [31:0] current_scaled=trimmed_sum*32'd400;
+    wire [1:0] candidate=(current_scaled<=baseline_sum*(100-DROP_SEVERE_PERCENT))?3:
+                         (current_scaled<=baseline_sum*(100-DROP_FATIGUE_PERCENT))?2:
+                         (current_scaled<=baseline_sum*(100-DROP_MILD_PERCENT))?1:0;
+    assign ready=(count==16);
+    always @(posedge clk) begin
+        if(!rst_n) begin
+            bout_class<=0;count<=0;baseline_sum<=0;
+            previous1<=0;previous2<=0;previous3<=0;
+            level<=0;pending<=0;pending_count<=0;
+        end else if(window_valid) begin
+            if(!activity_ok || activity_class==0 || mdf<11 || mdf>230) begin
+                bout_class<=0;count<=0;baseline_sum<=0;
+                previous1<=0;previous2<=0;previous3<=0;
+                level<=0;pending<=0;pending_count<=0;
+            end else if(!count || activity_class!=bout_class) begin
+                bout_class<=activity_class;count<=1;baseline_sum<={3'd0,mdf};
+                previous1<=mdf;previous2<=mdf;previous3<=mdf;
+                level<=0;pending<=0;pending_count<=0;
+            end else begin
+                previous1<=mdf;previous2<=previous1;previous3<=previous2;
+                if(count<8)baseline_sum<=baseline_sum+mdf;
+                if(count<16)count<=count+1'b1;
+                if(count==16 && baseline_sum!=0 && candidate>level) begin
+                    if(LEVEL_CONFIRM_WINDOWS<=1 ||
+                       (candidate==pending && pending_count>=LEVEL_CONFIRM_WINDOWS-1)) begin
+                        level<=candidate;pending<=candidate;pending_count<=0;
+                    end else if(candidate==pending) pending_count<=pending_count+1'b1;
+                    else begin pending<=candidate;pending_count<=1;end
+                end else begin pending<=0;pending_count<=0;end
+            end
+        end
+    end
 endmodule

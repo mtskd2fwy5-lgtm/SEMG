@@ -8,7 +8,7 @@
 #define REHAB_MAX_TRIALS 40u
 #define REHAB_SUPPORT_MIN 50u
 #define REHAB_STALE_MS 250u
-enum { RH_IDLE, RH_CALIBRATE, RH_RELAX, RH_CUE, RH_HOLD, RH_RECOVER, RH_PAUSED, RH_DONE };
+enum { RH_IDLE, RH_CALIBRATE, RH_RELAX, RH_CUE, RH_HOLD, RH_RECOVER, RH_PAUSED, RH_DONE, RH_GROUP_REST };
 enum { RH_REASON_NONE, RH_REASON_USER, RH_REASON_DATA, RH_REASON_CAL, RH_REASON_RELAX };
 typedef struct {
     uint32_t target, success, response_ms, hold_ms, breaks, duration_ms;
@@ -21,11 +21,12 @@ typedef struct {
     uint32_t changed, save_state;
     uint32_t effort_enabled, effort_reference, effort_valid, effort_c2;
     uint32_t effort_samples, effort_in_band;
+    uint32_t group_every, group_rest_ms, group_pending, groups_completed, pause_count;
     rehab_trial_t trials[REHAB_MAX_TRIALS];
 } rehab_training_t;
 
 static uint32_t rehab_running(const rehab_training_t *r)
-{ return r->state>=RH_CALIBRATE && r->state<=RH_PAUSED; }
+{ return (r->state>=RH_CALIBRATE && r->state<=RH_PAUSED) || r->state==RH_GROUP_REST; }
 
 static void rehab_phase(rehab_training_t *r,uint32_t phase,uint32_t now)
 {
@@ -35,6 +36,7 @@ static void rehab_phase(rehab_training_t *r,uint32_t phase,uint32_t now)
 static void rehab_pause(rehab_training_t *r,uint32_t reason,uint32_t now)
 {
     if (!rehab_running(r) || r->state==RH_PAUSED) return;
+    r->pause_count++;
     r->elapsed_ms+=now-r->started_at;
     rehab_phase(r,RH_PAUSED,now);r->reason=reason;
     r->response_ms=0u;r->breaks=0u; /* interrupted trial restarts after relaxation */
@@ -76,7 +78,20 @@ static void rehab_complete_trial(rehab_training_t *r,uint32_t success,uint32_t n
     t->hold_ms=success?r->hold_ms:r->segment_ms;t->breaks=r->breaks;
     t->duration_ms=now-r->cue_at;
     if(success)r->successes++;else r->failures++;
+    if(r->attempted<r->total && r->group_every && r->attempted%r->group_every==0u)
+        r->group_pending=1u;
     rehab_phase(r,RH_RECOVER,now);
+}
+
+/* A group is a pacing boundary, not a performance score. Recovery must finish
+ * first; a rest timer alone cannot start the next target without user input. */
+static void rehab_continue_group(rehab_training_t *r,uint32_t now)
+{
+    if(r->state!=RH_GROUP_REST || now-r->phase_at<r->group_rest_ms)return;
+    if(!r->seen || now-r->last_observation>REHAB_STALE_MS) {
+        rehab_pause(r,RH_REASON_DATA,now);return;
+    }
+    r->group_pending=0u;r->groups_completed++;rehab_phase(r,RH_RELAX,now);
 }
 
 /* Wall-clock service never completes a hold: only contiguous new evidence can.
@@ -87,7 +102,7 @@ static void rehab_tick(rehab_training_t *r,uint32_t now,uint32_t calibrated)
     if(!rehab_running(r) || r->state==RH_PAUSED)return;
     if(r->state==RH_CALIBRATE) {
         if(calibrated && r->seen && now-r->last_observation<=REHAB_STALE_MS)
-            rehab_phase(r,RH_RELAX,now);
+            rehab_phase(r,r->group_pending?RH_GROUP_REST:RH_RELAX,now);
         else if(now-r->phase_at>=10000u)rehab_pause(r,RH_REASON_CAL,now);
         return;
     }
@@ -131,6 +146,9 @@ static void rehab_observe(rehab_training_t *r,uint32_t now,uint32_t seq,
         } else {r->segment_ms=0u;r->matching=0u;}
         if(r->segment_ms>=r->rest_ms) {
             if(r->attempted==r->total) {rehab_finish(r,now,0u);return;}
+            if(r->group_pending) {
+                rehab_phase(r,RH_GROUP_REST,now);return;
+            }
             r->target=r->combination?1u+r->attempted%4u:r->action;
             r->response_ms=0u;r->breaks=0u;r->cue_at=now;
             rehab_phase(r,RH_CUE,now);

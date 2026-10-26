@@ -6,6 +6,7 @@ are never overwritten; sequence gaps and 16-bit wrap are reported in JSON.
 """
 import argparse, csv, json, os, struct
 from emg_reference import line_filter_metadata
+from capture_actions import ACTION_BY_ID, SCHEMA
 
 ACTION = {0: "none", 1: "rest", 2: "open_hand", 3: "fist",
           4: "wrist_flex", 5: "wrist_extend"}
@@ -31,6 +32,9 @@ def decode(src, outdir=None):
         if version not in (1, 2) or fs == 0 or chans != 8 or frame_bytes != FRAME or encoding != 1 or sources != 2:
             raise ValueError("unsupported header fields")
         filter_code = 1 if version == 1 else struct.unpack_from("<I", h, 32)[0]
+        action_schema = 0 if version == 1 else struct.unpack_from("<I", h, 36)[0]
+        if action_schema not in (0, SCHEMA): raise ValueError("unsupported action schema")
+        actions = ACTION if action_schema == 0 else ACTION_BY_ID
         if filter_code not in (1, 2, 3): raise ValueError("unsupported filter code")
         filtered_signal = {1:"notch50", 2:"notchcomb", 3:"processed"}[filter_code]
         body = f.read()
@@ -40,11 +44,11 @@ def decode(src, outdir=None):
     for off in range(0, len(body), FRAME):
         p = body[off:off+FRAME]
         seq, action = struct.unpack_from("<HB", p, 0)
-        if action not in ACTION: invalid_actions.append(off // FRAME)
+        if action not in actions: invalid_actions.append(off // FRAME)
         if p[3] != 0: invalid_reserved.append(off // FRAME)
         raw = [s24(p[4+i*3:7+i*3]) for i in range(8)]
         notch = [s24(p[28+i*3:31+i*3]) for i in range(8)]
-        rows.append((seq, ACTION.get(action, f"unknown_{action}"), raw, notch))
+        rows.append((seq, actions.get(action, f"unknown_{action}"), raw, notch))
     if outdir is None: outdir = os.path.dirname(os.path.abspath(src)) or "."
     os.makedirs(outdir, exist_ok=True)
     stem = os.path.splitext(os.path.basename(src))[0]
@@ -81,6 +85,7 @@ def decode(src, outdir=None):
             nw.writerow([t] + notch + [action, filtered_signal, seq])
     meta = fresh(os.path.join(outdir, stem + "_decode.json"))
     common = {"format": "SEMGSD1", "version": version, "sample_rate_hz": fs,
+              "action_schema": action_schema, "manual_action_labels": actions,
               "channels": 8, "frames": len(rows), "sequence_gaps": gaps,
               "sequence_backwards": backwards, "sequence_duplicates": duplicates,
               "sequence_wraps": wraps, "sequence_events": events,

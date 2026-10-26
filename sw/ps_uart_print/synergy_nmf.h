@@ -9,6 +9,7 @@
 #define SYNERGY_C_Q 8u
 
 #include "synergy_nmf_model.h"
+#include "pl_learning_api.h"
 
 typedef struct {
     u32 c[SYNERGY_N];            /* mean-ADC-count coefficients, Q8 */
@@ -29,6 +30,14 @@ static void synergy_nmf_reset(synergy_nmf_state_t *s)
  * c is bounded to INT32_MAX; all products below fit uint64_t. */
 static void synergy_nmf_step(synergy_nmf_state_t *s,const u32 e[8])
 {
+#if PL_LEARNING_ENABLE
+    uint32_t out[8],input[8],j;
+    s->valid=0u;
+    for(j=0;j<8;j++)input[j]=e[j];
+    if(!pl_learning_nmf(input,out))return;
+    for(j=0;j<3;j++){s->c[j]=out[j];s->percent[j]=out[j+3];}
+    s->residual_percent=out[6];s->valid=out[7]==1u;
+#else
     u32 i,j,k,it;
     uint64_t wte[SYNERGY_N], gram[SYNERGY_N][SYNERGY_N], den, num;
     u32 next[SYNERGY_N];
@@ -84,6 +93,7 @@ static void synergy_nmf_step(synergy_nmf_state_t *s,const u32 e[8])
         s->residual_percent=total?(u32)(error*100u/total):0u;
     }
     s->valid=1u;
+#endif
 }
 
 #endif

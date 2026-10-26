@@ -19,14 +19,16 @@ and on quit writes a NinaPro-contract CSV plus a sidecar JSON:
 
 Interactive commands (type + Enter in this console):
   m     put the board back into monitor mode and quit without writing
-  1..5  label from now on: 1=rest 2=open_hand 3=fist 4=wrist_flex
-        5=wrist_extend
+  1..14 manual action labels; 1..5 keep rest/open/fist/flex/extend
+        6..8 thumb/index/middle alone, 9..10 fist+flex/extend,
+        11..14 thumb+index/thumb+middle/index+middle/all three
+  a..e  single-key aliases for labels 10..14 (also in console)
   0     stop labelling (frames marked "none"; saved with --keep-all)
   q     quit and write the CSV
 
 With --plot the recorder opens a pygame rolling-waveform window (8
 channel strips + a colour-coded label band, 3 s window) and the same
-commands become keyboard keys in that window: 1..5 label, 0 unlabeled,
+commands become keyboard keys in that window: 1..9/a..e label, 0 unlabeled,
 q save & quit, m back to monitor & quit without writing.  Closing the
 window saves (treated like q).  The serial reader and the CSV writer
 are identical in both modes.
@@ -52,9 +54,9 @@ import time
 
 import serial  # pyserial
 from emg_reference import line_filter_metadata
+from capture_actions import ACTIONS, KEYS, LABELS, SCHEMA, label_for_command
 
 FS_DEFAULT = 4000
-LABELS = ["rest", "open_hand", "fist", "wrist_flex", "wrist_extend"]
 SYNC = b"\xAA\x55"
 SIGNAL_SYNC = {"raw": SYNC, "notch50": b"\xAA\x56", "notchcomb": b"\xAA\x57", "processed":b"\xAA\x58"}
 SIGNAL_COMMAND = {"raw": b"u", "notch50": b"n", "notchcomb": b"n", "processed":b"n"}
@@ -184,6 +186,9 @@ def plot_loop(ser, frames, state, fs):
     LAB_COL = {"rest": (108, 116, 112), "open_hand": (66, 128, 238),
                "fist": (226, 88, 60), "wrist_flex": (235, 178, 46),
                "wrist_extend": (92, 198, 122)}
+    import colorsys
+    for i, lab in enumerate(LABELS[5:]):
+        LAB_COL[lab] = tuple(int(c*255) for c in colorsys.hsv_to_rgb(i/9, .55, .9))
 
     D = max(1, fs // 100)                  # ~100 display samples/s
     n_bins = max(60, int(3.0 * fs / D))    # ~3 s rolling window
@@ -204,12 +209,10 @@ def plot_loop(ser, frames, state, fs):
             if ev.type == pygame.QUIT:
                 running = False                       # window X = save
             elif ev.type == pygame.KEYDOWN:
-                if pygame.K_1 <= ev.key <= pygame.K_1 + len(LABELS) - 1:
-                    state["label"] = LABELS[ev.key - pygame.K_1]
+                selected = label_for_command(ev.unicode)
+                if selected is not None:
+                    state["label"] = selected
                     print("  label -> %s" % state["label"])
-                elif ev.key == pygame.K_0:
-                    state["label"] = "none"
-                    print("  label -> none")
                 elif ev.key in (pygame.K_q, pygame.K_ESCAPE):
                     running = False
                 elif ev.key == pygame.K_m:
@@ -276,7 +279,7 @@ def plot_loop(ser, frames, state, fs):
                                  (int(i * step), H - BAND_H,
                                   int(step) + 1, BAND_H))
         screen.blit(font.render(
-            "[%ds | %s | drop %d | bad %d]  1-5 label  q save  m discard+monitor" %
+            "[%ds | %s | drop %d | bad %d]  1-9/A-E labels  0 clear  Q save  M discard" %
             (state["count"] // fs, state["label"], state["dropped"],
              state.get("boundary_rejects", 0)),
             True, TXT), (6, 7))
@@ -358,6 +361,8 @@ def save_capture(frames, state, args, csv_path, json_path):
         "trim_seconds": 0.0 if args.keep_all else args.trim,
         "timestamp_source": "unwrapped uint16 frame sequence, relative to first accepted frame",
         "runs": runs,
+        "action_schema": SCHEMA,
+        "manual_action_labels": {str(i): a[1] for i,a in enumerate(ACTIONS)},
     }
     with open(json_path, "x") as fh:
         json.dump(meta, fh, indent=2)
@@ -392,7 +397,7 @@ def main():
                          "switch it into record mode, then reopen at --baud")
     ap.add_argument("--plot", action="store_true",
                     help="pygame rolling-waveform window with in-window "
-                         "labelling (keys 1..5/0/q/m) instead of console input")
+                         "labelling (keys 1..9/a..e/0/q/m) instead of console input")
     args = ap.parse_args()
     args.signal = {"notch50":"processed", "legacy-notch50":"notch50"}.get(args.signal, args.signal)
     if args.fs <= 0 or args.trim < 0:
@@ -444,8 +449,10 @@ def main():
     print("save target: %s" % csv_path)
     print("retention: %s" % ("ALL accepted samples (no trimming)" if args.keep_all
                               else "labelled samples only, trimmed at boundaries"))
-    print("commands: m = DISCARD & return to monitor | 1..5 = %s |" %
-          "/".join("%d=%s" % (i + 1, l) for i, l in enumerate(LABELS)))
+    print("manual action labels (number in console, shortcut key in plot):")
+    for i, label in enumerate(LABELS):
+        print("  %2d / %s = %s" % (i+1, KEYS[i], label))
+    print("commands: m = DISCARD & return to monitor")
     print("          0 = unlabeled | q = quit & write")
     use_plot = args.plot
     if use_plot:
@@ -470,14 +477,13 @@ def main():
                     ser.write(b"r")    # board toggles back to monitor mode
                     print("  -> sent 'r': board switched to monitor mode (115200)")
                     break
-                if cmd == "0":
-                    state["label"] = "none"
-                elif cmd.isdigit() and 1 <= int(cmd) <= len(LABELS):
-                    state["label"] = LABELS[int(cmd) - 1]
+                selected = label_for_command(cmd)
+                if selected is not None:
+                    state["label"] = selected
                 elif cmd == "":
                     continue
                 else:
-                    print("  ? (m, 1..5, 0, q)")
+                    print("  ? (m, 1..14 / a..e, 0, q)")
     finally:
         state["quit"] = True
         th.join(timeout=2)

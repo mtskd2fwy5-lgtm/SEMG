@@ -22,6 +22,22 @@ if {![file exists $project_file]} {
 
 open_project $project_file
 
+# A relocated simulation view and a removed module_ref revision were left
+# as direct project inputs. Remove only missing views and the known retired
+# checkpoint; current generated IP checkpoints remain Vivado-managed.
+foreach f [get_files -all -quiet] {
+    if {![file exists $f] &&
+        ([file extension $f] eq ".wcfg" ||
+         [file tail $f] eq "design_1_emg_pl_export_0_4.dcp")} {
+        puts "Removing obsolete project reference: $f"
+        remove_files [list $f]
+    }
+}
+set sim_view [get_property XSIM.VIEW [get_filesets sim_1]]
+if {$sim_view ne "" && ![file exists $sim_view]} {
+    set_property XSIM.VIEW {} [get_filesets sim_1]
+}
+
 # Drop the stale incremental-synthesis checkpoint inherited from the
 # original project (utils_1/imports/synth_1/ads1299_spi.dcp): it no
 # longer matches this design and only triggers Synth 8-6895 while
@@ -34,14 +50,12 @@ set_property include_dirs [list [file join $project_root src rtl]] [get_filesets
 set sim_files [glob -nocomplain -directory [file join $project_root sim] -types f *.v *.sv]
 set xdc_files [glob -nocomplain -directory [file join $project_root board constraints] -types f *.xdc]
 
-if {[llength $rtl_files] > 0} {
-    add_files -norecurse -fileset sources_1 $rtl_files
-}
-if {[llength $sim_files] > 0} {
-    add_files -norecurse -fileset sim_1 $sim_files
-}
-if {[llength $xdc_files] > 0} {
-    add_files -norecurse -fileset constrs_1 $xdc_files
+foreach {fileset candidates} [list sources_1 $rtl_files sim_1 $sim_files constrs_1 $xdc_files] {
+    foreach candidate $candidates {
+        if {![llength [get_files -quiet -of_objects [get_filesets $fileset] $candidate]]} {
+            add_files -norecurse -fileset $fileset [list $candidate]
+        }
+    }
 }
 
 # The clock-group declaration references clk_fpga_0, which is created by
@@ -52,6 +66,10 @@ set cg_files [get_files -quiet -of [get_filesets constrs_1] *clock_groups*.xdc]
 if {[llength $cg_files] > 0} {
     set_property USED_IN_SYNTHESIS false $cg_files
 }
+set lcd_timing [get_files -quiet *hz_zynq_lcd_timing.xdc]
+set_property USED_IN_SYNTHESIS false $lcd_timing
+set_property USED_IN_IMPLEMENTATION true $lcd_timing
+set_property PROCESSING_ORDER LATE $lcd_timing
 
 # Keep exactly one BD in the project: the canonical in-project copy.
 set canonical_bd [file normalize [file join $project_root build vivado \

@@ -1,0 +1,10 @@
+{
+  "unit_tests_passed": 6,
+  "original_experiment_replication_checks": 16,
+  "maximum_accuracy_error_vs_four_decimal_archive": 4.256316749151612e-05,
+  "code_and_input_hashes_match": true,
+  "full_audit_captures": 8,
+  "guided_eligible_captures": 5,
+  "hardware_validated": false,
+  "firmware_changed": false
+}

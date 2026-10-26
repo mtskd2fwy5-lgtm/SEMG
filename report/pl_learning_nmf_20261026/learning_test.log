@@ -1,0 +1,55 @@
+TEST_PASS generated independent golden: 64 NMF, 720 training, 26 HDC predictions
+pl_learning_workflow_test.c
+TEST_PASS PL backend workflow: labels, committed scale, 120/class, frozen validation, dynamic append
+TEST_PASS PL backend failures invalidate model and NMF without software fallback
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/src/rtl/learning_div64.v" into library work
+INFO: [VRFC 10-311] analyzing module learning_div64
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/src/rtl/emg_learning_accel.v" into library work
+INFO: [VRFC 10-311] analyzing module emg_learning_accel
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/sim/emg_learning_accel_tb.sv" into library work
+INFO: [VRFC 10-311] analyzing module emg_learning_accel_tb
+Vivado Simulator v2025.2
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+Running: D:/FPGA/VIVADO/2025.2/Vivado/bin/unwrapped/win64.o/xelab.exe emg_learning_accel_tb -s learning_sim -debug typical 
+Multi-threading is on. Using 30 slave threads.
+Starting static elaboration
+Pass Through NonSizing Optimizer
+Completed static elaboration
+Starting simulation data flow analysis
+Completed simulation data flow analysis
+Time Resolution for simulation is 1ps
+Compiling module work.learning_div64
+Compiling module work.emg_learning_accel(WATCHDOG=2000...
+Compiling module work.emg_learning_accel_tb
+Built simulation snapshot learning_sim
+
+****** xsim v2025.2 (64-bit)
+  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025
+  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025
+  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025
+  **** Start of session at: Mon Oct 26 15:51:15 2026
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+
+source xsim.dir/learning_sim/xsim_script.tcl
+# xsim {learning_sim} -autoloadwcfg -runall
+Time resolution is 1 ps
+run -all
+TEST_PASS NMF bit-exact 64 windows
+TEST_PASS HDC normalization majority encoding and prototype learning
+TEST_PASS HDC prediction margin clipping tie handling and frozen prototype
+TEST_PASS zero scale and exact first-class ties
+TEST_PASS HDC saturating prototype update
+TEST_PASS address bounds AXI response fault and retry
+TEST_PASS timeout quarantine drains late read without restarting
+LEARNING_CYCLES job1 max=3958 clock=100MHz AXI with variable stalls
+LEARNING_CYCLES job2 max=776 clock=100MHz AXI with variable stalls
+LEARNING_CYCLES job3 max=23863 clock=100MHz AXI with variable stalls
+LEARNING_CYCLES job4 max=77188 clock=100MHz AXI with variable stalls
+TEST_PASS learning accelerator complete
+$finish called at time : 198193250 ns : File "D:/FPGA/sEMG-HMRS/sim/emg_learning_accel_tb.sv" Line 126
+run: Time (s): cpu = 00:00:00 ; elapsed = 00:00:22 . Memory (MB): peak = 226.254 ; gain = 0.000
+exit
+INFO: xsimkernel Simulation Memory Usage: 12144 KB (Peak: 12144 KB), Simulation CPU Usage: 21842 ms
+INFO: [Common 17-206] Exiting xsim at Mon Oct 26 15:51:39 2026...

@@ -1,0 +1,8 @@
+{
+  "reopen": true,
+  "routed": true,
+  "gates": true,
+  "clean_final_log": true,
+  "clean_reopen_log": true,
+  "v1_preserved": true
+}

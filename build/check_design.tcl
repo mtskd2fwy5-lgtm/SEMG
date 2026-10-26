@@ -74,6 +74,11 @@ puts "CHECK impl_1   PROGRESS: [get_property PROGRESS [get_runs impl_1]]"
 # be opened in memory first: without open_run the export fails with
 # "No IPI block design hardware handoff files present".
 open_run impl_1
+foreach name {c31_raw c50_raw lcd_dclk31 lcd_dclk50} {
+    if {[llength [get_clocks -quiet $name]] != 1} {
+        error "LCD timing requires generated clock $name"
+    }
+}
 write_hw_platform -fixed -include_bit -force \
     [file join $export_dir design_1.xsa]
 

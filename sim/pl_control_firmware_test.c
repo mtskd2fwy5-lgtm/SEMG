@@ -83,6 +83,36 @@ int main(void)
         pl_control_result(1040u,word);assert(!rehab.matching && !rehab.effort_valid);
     }
     puts("TEST_PASS PL firmware mailbox/epoch/authority/no-double-filter/stale/binary-silence/grip-feature-join");
+    /* HDC learns user targets from the same feature telemetry. It cannot
+       overwrite accepted PL output, request a mapping or change SD labels. */
+    {
+        u32 i,features[40]={0},saved_pose=pose_active_cls,saved_rows=res_rows;
+        u32 saved_command=control_command_reg,saved_label=lcd_action_label;
+        rehab.state=RH_IDLE;lcd_hdc_open();hdc_begin(&hdc,1u);
+        hdc_mlp_shift=pl_control_sent_shift;assert(hdc_available());
+        assert(hdc_arm(&hdc,5u));
+        for(i=0;i<80u;i++) {
+            time_ticks+=25u*GT_TICKS_PER_MS;features[2]=1000u;
+            hdc_on_window(features,(u16)(i*40u));
+        }
+        assert(hdc.fit_n[5]==40u && !hdc.armed);
+        assert(pose_active_cls==saved_pose && res_rows==saved_rows);
+        assert(control_command_reg==saved_command && lcd_action_label==saved_label);
+        assert(hdc_arm(&hdc,5u));pl_control_inflight=1u;hdc_service();
+        assert(!hdc.armed && hdc.interruptions==1u);pl_control_inflight=0u;
+        lcd_hdc_view=0u;
+    }
+    puts("TEST_PASS HDC PL firmware: custom-slot learning consumes features, PL output/mailbox/manual labels unchanged, unready interrupts trial");
+    /* Navigation and backend changes must cancel queued mechanical motion,
+       even before the periodic hand lease service gets another turn. */
+    hand_run=2u;hand_qwrite=2u;hand_qread=0u;hand_stop_pending=0u;
+    lcd_hand_view=1u;ui_open_page(UI_REHAB);
+    assert(!hand_run && hand_qread==hand_qwrite && hand_stop_pending);
+    hand_run=2u;hand_stop_pending=0u;hand_qwrite=3u;
+    fake_reg=UART_SR_TXEMPTY;mode_set(MODE_RECORD);
+    assert(!hand_run && hand_stop_pending && !hand_qwrite);
+    fake_reg=UART_SR_TXEMPTY;mode_set(MODE_MONITOR);
+    puts("TEST_PASS PL NAV: immediate hand stop on route/backend change, queue canceled, no implicit restart");
     preview();
     return 0;
 }

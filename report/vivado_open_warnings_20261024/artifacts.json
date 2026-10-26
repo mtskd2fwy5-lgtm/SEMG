@@ -1,0 +1,269 @@
+{
+  "date": "2026-10-24",
+  "tag": "20261024_HAND_CONTROL_V2",
+  "hardware_verified": false,
+  "pwm_connected": false,
+  "pl_pwm_ports_present": true,
+  "physical_wiring_verified": false,
+  "pl_partition": {
+    "transform": "wordrev",
+    "header": 120,
+    "offset": 134656,
+    "bytes": 4045564
+  },
+  "application_load_checks": [
+    {
+      "load_address": "0x10000000",
+      "elf_file_bytes": 835924,
+      "boot_offset": "0x3fc900",
+      "match": true
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "build\\vivado\\hand_motion_reconstruction.runs\\impl_1\\design_1.bit",
+      "bytes": 4045684,
+      "sha256": "a49d80e9e07e45c6179aee6d4c9fae08ceae9aaadd2c814b6cfa2a6a2a34657c"
+    },
+    {
+      "path": "sw\\ps_uart_print\\ps_uart_print_pl_control.elf",
+      "bytes": 877304,
+      "sha256": "7607c4ac2c6e1cbe5fb9e687552ec7a6a3c025809d4bfcd7d64d1c988cb9a76c"
+    },
+    {
+      "path": "build\\boot\\BOOT_20261024_HAND_CONTROL_V2.BIN",
+      "bytes": 5016148,
+      "sha256": "0a620aedb2c7516a467067677e583da001a49cf39925316ef3661ddef28ca156"
+    },
+    {
+      "path": "build\\export\\design_1.xsa",
+      "bytes": 1714382,
+      "sha256": "a20430b1e5e78f3dce2c6df800eb849a96f0eab08809e66668d5c345f996470f"
+    },
+    {
+      "path": "board\\constraints\\hz_zynq_lcd.xdc",
+      "bytes": 8347,
+      "sha256": "0a78bd4b0de1735e6f8a238252a676fbd10c3a86ba7f551a9bbd7e711ed1e81b"
+    },
+    {
+      "path": "board\\constraints\\hz_zynq_lcd_timing.xdc",
+      "bytes": 1677,
+      "sha256": "b16419ade3e42fd0ca4ac3bff2103b5a0edd0269500238c81076d337e6a8e0bb"
+    },
+    {
+      "path": "build\\update_project.tcl",
+      "bytes": 4749,
+      "sha256": "49a32f94e4afb60e08235fcd6d596e4bd1937e395b5f57e5e5314bf5df38e961"
+    },
+    {
+      "path": "build\\check_design.tcl",
+      "bytes": 4086,
+      "sha256": "afe2a67b1921989ec141fe056d470b210985a65cdcecfd7dfc259e1828a9d7d2"
+    },
+    {
+      "path": "build\\open_project.tcl",
+      "bytes": 468,
+      "sha256": "dae1d48b6454ea5d3f778c2894de38100c9383b2283fc30582fc8eb3907f1883"
+    },
+    {
+      "path": "src\\rtl\\emg_control_policy.v",
+      "bytes": 9642,
+      "sha256": "668809c41be5b91d75c7036b3cc97b9833f533e58a55220cef1737d699465ccb"
+    },
+    {
+      "path": "src\\rtl\\emg_control_inference.v",
+      "bytes": 5351,
+      "sha256": "7f4c983232ab211e3bc1382a14308bead4e54819acb2f3671c939853f8365cd4"
+    },
+    {
+      "path": "src\\rtl\\emg_control_constants.vh",
+      "bytes": 8881,
+      "sha256": "cf077f7e7e2a98848b1e725313e2d99ac8eaee67cc762fa4e14896faef2cded9"
+    },
+    {
+      "path": "src\\rtl\\emg_pl_control.v",
+      "bytes": 4536,
+      "sha256": "cf67a00daad7c55cd4124a269a6370f629a45dd2a338846c6c3d41ce37883b43"
+    },
+    {
+      "path": "src\\rtl\\emg_pl_export.v",
+      "bytes": 17227,
+      "sha256": "f9eeb9ddf30c89f869fd3673e0d8d2bc88f50f87b099730eafa41e9ad4af9330"
+    },
+    {
+      "path": "src\\rtl\\hand_servo_pwm.v",
+      "bytes": 3498,
+      "sha256": "6fea2331f016fbc2086b984ca0494724b706da587806a1fc3301069a56e580e6"
+    },
+    {
+      "path": "sw\\ps_uart_print\\main.c",
+      "bytes": 154465,
+      "sha256": "58b01a2451e048ae71fd8e5350d5e7939e3b157da57409fa1b5990e2d45696f9"
+    },
+    {
+      "path": "sw\\ps_uart_print\\pl_control.h",
+      "bytes": 2476,
+      "sha256": "39e0860d2c7b2896094e76e503adad4071330a6a74d3a0b8901e372d660aaaff"
+    },
+    {
+      "path": "sw\\ps_uart_print\\synergy_feedback.h",
+      "bytes": 2704,
+      "sha256": "a47794b75a8b504fa6a84e70e0a03acc18eae7c38eb7d8752fa2d20e29a0f90a"
+    },
+    {
+      "path": "sw\\ps_uart_print\\lcd_rehab.h",
+      "bytes": 18098,
+      "sha256": "86a16a82fb0dc48c82002a564336aafa6c70608ce22ea1e97f1a9f5e3b3833f0"
+    },
+    {
+      "path": "sw\\ps_uart_print\\rehab_training.h",
+      "bytes": 7248,
+      "sha256": "cc4dee7a12d8caf6424f15ac3b28f144740269c36959c79756962b0a24a4a855"
+    },
+    {
+      "path": "sw\\ps_uart_print\\synergy_nmf.h",
+      "bytes": 3214,
+      "sha256": "eba345f25aa7f1be9f916c1c9519573b3fca601689bf35f51c125814e45b0f0b"
+    },
+    {
+      "path": "sw\\ps_uart_print\\synergy_nmf_model.h",
+      "bytes": 526,
+      "sha256": "fcc2e3e365d025ee4e73a50b8c9d78ddc5b81314f59daf2a10ab310bde3e5839"
+    },
+    {
+      "path": "sw\\ps_uart_print\\lcd_font_zh.h",
+      "bytes": 3360241,
+      "sha256": "6521e60f1346f71623bdd1007e7105992e36e06652b8f929ae28085818e65c4f"
+    },
+    {
+      "path": "sw\\ps_uart_print\\capture_actions.h",
+      "bytes": 1181,
+      "sha256": "a63e1ed31ba11c01afe50593425e1731ad36019d161b5551256fbaada0473f67"
+    },
+    {
+      "path": "sw\\ps_uart_print\\sd_record.c",
+      "bytes": 12013,
+      "sha256": "6b588447c362d5e1758cfdca6cd6362808d3a6f38d55cc3b7f93eba1d95e99b6"
+    },
+    {
+      "path": "sw\\ps_uart_print\\sd_record.h",
+      "bytes": 1062,
+      "sha256": "05f3f0c474c5430f83bc6d69b2ab51c71c59c03c87b49acebb35051ffae4d0fc"
+    },
+    {
+      "path": "tools\\capture_actions.py",
+      "bytes": 3820,
+      "sha256": "3329fc0ab0b23905f9361f75978a8868a5579854f035e4ce55445ffd0ef1873d"
+    },
+    {
+      "path": "tools\\record_uart.py",
+      "bytes": 23790,
+      "sha256": "59be5821762961a890da4b80cb333d73d5b30127df74d10033a229c71391bf02"
+    },
+    {
+      "path": "tools\\train_gesture_model.py",
+      "bytes": 8594,
+      "sha256": "d6e20398e661fca57ebc542221bee8ad6a6a32207d2b8dbad4c69a5ef7247222"
+    },
+    {
+      "path": "sw\\ps_uart_print\\hdc_learning.h",
+      "bytes": 7893,
+      "sha256": "6d51f58e623383fa56034d3a934f272be66037eb18f6cc60fe9fa083a89335f4"
+    },
+    {
+      "path": "sw\\ps_uart_print\\hdc_memory.h",
+      "bytes": 18839,
+      "sha256": "ebfcae26e0681c93b0b96a3494acad16b59e2243138f95010934626945cf1e3c"
+    },
+    {
+      "path": "sw\\ps_uart_print\\lcd_hdc.h",
+      "bytes": 12155,
+      "sha256": "8cc1dba0c2a3e9c05c5f5338ef631559035a8a15caf5f417f38f3bf4f98faf89"
+    },
+    {
+      "path": "sw\\ps_uart_print\\lcd_settings.h",
+      "bytes": 4201,
+      "sha256": "c48002d60331c806de490a0ed6ea5a383e3161b4089d269e0bc6c64e2c255092"
+    },
+    {
+      "path": "tools\\gen_hdc_memory.py",
+      "bytes": 1239,
+      "sha256": "0e67c49d7d55333447029b21772146d1e80211d8106f2da7a3e89ed6f8967bb9"
+    },
+    {
+      "path": "sim\\hdc_learning_test.c",
+      "bytes": 4600,
+      "sha256": "177f707b9d531c2968a5a2787ed5576662a95bf9d83f21e548540c8531c55e04"
+    },
+    {
+      "path": "sim\\test_hdc_learning.py",
+      "bytes": 6051,
+      "sha256": "1de665377c92e5b7e080bbf77d472fbb279f23da475c8fb72e1db580700752cb"
+    },
+    {
+      "path": "sim\\lcd_firmware_test.c",
+      "bytes": 65910,
+      "sha256": "d74a9555800171ae14861103ecff5870d4fd9b68ee77116719f8ed4652f80670"
+    },
+    {
+      "path": "sim\\pl_control_firmware_test.c",
+      "bytes": 6220,
+      "sha256": "a39570770a5f2d114ccbfea97efbe0add64d270890b07e23f4f98ccec984a8c0"
+    },
+    {
+      "path": "sim\\sd_record_test.c",
+      "bytes": 7275,
+      "sha256": "c90a91027c0cc431c540a5effca02bffb8a69705b0d76a05e2f24bc28427978e"
+    },
+    {
+      "path": "src\\rtl\\hand_control.v",
+      "bytes": 7332,
+      "sha256": "950dd38ef77dddba9a516a74cae369d5f24cd13ac9f7e6f1163563d70076595b"
+    },
+    {
+      "path": "board\\constraints\\hz_zynq_hand.xdc",
+      "bytes": 1159,
+      "sha256": "665d5bf0096ca656fdae4826de1e53746e9e19e527ee6fe3719a8a43fbb693e1"
+    },
+    {
+      "path": "sw\\ps_uart_print\\hand_control.h",
+      "bytes": 4895,
+      "sha256": "cf3874153ed8169db2ee5a2de2de6f3187b8a647e9f43e47db1fe708ecc59a23"
+    },
+    {
+      "path": "sw\\ps_uart_print\\lcd_hand.h",
+      "bytes": 8045,
+      "sha256": "73d86b4d99a8204f6bd149ae8c8eda7cfde006e18020e8aa2982bb13a6d94e3f"
+    },
+    {
+      "path": "sim\\hand_control_tb.sv",
+      "bytes": 3030,
+      "sha256": "d722c74efe3212ac18f061aad3f1d503394f93252f27e7aafad16f6b96b51287"
+    },
+    {
+      "path": "sim\\hand_firmware_test.c",
+      "bytes": 4441,
+      "sha256": "8248513176c8733f7044a2a953ab3c750114c8b0ca81b1ca3e6f6db70f751541"
+    },
+    {
+      "path": "build\\scripts\\add_hand_control.tcl",
+      "bytes": 5383,
+      "sha256": "a88bc301d15170af5705b5c580438af3847321c3d99516d39880c4d9d92903a8"
+    },
+    {
+      "path": "build\\scripts\\run_hand_control_test.ps1",
+      "bytes": 1205,
+      "sha256": "26ea94235e9a84a59432eb425c0535312c77f4b916f26d5f23afd92604a41eb7"
+    },
+    {
+      "path": "tools\\scan_literal_b.py",
+      "bytes": 5218,
+      "sha256": "2bf12ca7d5648b3ff52072305afca24526a01c1dc2765a4e66fa06da393c8f36"
+    },
+    {
+      "path": "sim\\test_hand_netlist_gate.py",
+      "bytes": 845,
+      "sha256": "9f39699e9cfa60e796c1109b4790da72174dcb814a0ba1b83d054f03e6ac8602"
+    }
+  ]
+}

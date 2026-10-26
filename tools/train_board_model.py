@@ -21,21 +21,25 @@ WINDOW = 400
 HOP = 100
 
 
-def read_capture(path):
+def read_capture(path, classes=None, allow_unlabeled=False, source_if_missing=None):
+    class_to_id = CLASS_TO_ID if classes is None else {name:i for i,name in enumerate(classes)}
     with open(path, newline="", encoding="utf-8") as fh:
         reader = csv.DictReader(fh)
-        required = set(CHANNELS + ["action", "source"])
+        required = set(CHANNELS + ["action"])
+        if "source" not in (reader.fieldnames or []) and source_if_missing is None:
+            required.add("source")
         if not required.issubset(reader.fieldnames or []):
             raise ValueError(f"{path}: missing required columns")
         signals, labels = [], []
         for row in reader:
-            if row["source"] != "processed":
-                raise ValueError(f"{path}: expected processed signal, got {row['source']!r}")
+            source = row.get("source", source_if_missing)
+            if source != "processed":
+                raise ValueError(f"{path}: expected processed signal, got {source!r}")
             label = row["action"]
-            if label not in CLASS_TO_ID:
+            if label not in class_to_id and not (allow_unlabeled and label == "none"):
                 raise ValueError(f"{path}: unsupported action label {label!r}")
             signals.append([int(row[c]) for c in CHANNELS])
-            labels.append(CLASS_TO_ID[label])
+            labels.append(class_to_id.get(label, -1))
     x = np.asarray(signals, dtype=np.int32)
     y = np.asarray(labels, dtype=np.int8)
     if len(x) == 0:
@@ -50,6 +54,8 @@ def feature_windows(x, y, trim=FS):
     for bout_id, (start, end) in enumerate(zip(edges[:-1], edges[1:])):
         start, end = int(start + trim), int(end - trim)
         label = int(y[int(edges[bout_id])])
+        if label < 0:  # never bridge or relabel an unlabeled/transition bout
+            continue
         if end - start < WINDOW:
             continue
         for offset in range(start, end - WINDOW + 1, HOP):
@@ -69,10 +75,10 @@ def feature_windows(x, y, trim=FS):
     return np.asarray(features, dtype=np.float64), np.asarray(labels), np.asarray(bouts)
 
 
-def balance_rest(x, y, seed):
+def balance_rest(x, y, seed, classes=CLASSES):
     rng = np.random.default_rng(seed)
     rest = np.flatnonzero(y == CLASS_TO_ID["rest"])
-    moving_counts = [int(np.count_nonzero(y == c)) for c in range(1, len(CLASSES))]
+    moving_counts = [int(np.count_nonzero(y == c)) for c in range(1, len(classes))]
     if not rest.size or not any(moving_counts):
         raise ValueError("training data must include rest and movement classes")
     cap = int(np.median(moving_counts))
@@ -82,7 +88,7 @@ def balance_rest(x, y, seed):
     return x[keep], y[keep]
 
 
-def remove_spike_windows(x, y, ratio=12.0):
+def remove_spike_windows(x, y, ratio=12.0, classes=CLASSES):
     """Drop isolated windows whose per-channel MAV is an extreme class outlier."""
     amplitude = x[:, :8] / WINDOW
     keep = np.ones(len(y), dtype=bool)
@@ -94,7 +100,7 @@ def remove_spike_windows(x, y, ratio=12.0):
             np.abs(amplitude[idx] - med), axis=0))
         bad = np.any(amplitude[idx] > limit, axis=1)
         keep[idx[bad]] = False
-        limits[CLASSES[int(cls)]] = limit.tolist()
+        limits[classes[int(cls)]] = limit.tolist()
     return x[keep], y[keep], int((~keep).sum()), limits
 
 

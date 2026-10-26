@@ -1,0 +1,65 @@
+[
+  {
+    "source": "D:\\FPGA\\VIVADO\\2025.2\\Vivado\\data\\ip\\xilinx\\processing_system7_v5_5\\component.xml",
+    "name": "PCW_USE_S_AXI_HP1",
+    "display_name": "PCW USE S AXI HP1",
+    "default": "0",
+    "description_available": false
+  },
+  {
+    "source": "D:\\FPGA\\VIVADO\\2025.2\\Vivado\\data\\ip\\xilinx\\processing_system7_v5_5\\component.xml",
+    "name": "PCW_S_AXI_HP1_DATA_WIDTH",
+    "display_name": "PCW S AXI HP1 DATA WIDTH",
+    "default": "-1",
+    "description_available": false
+  },
+  {
+    "source": "D:\\FPGA\\VIVADO\\2025.2\\Vivado\\data\\ip\\xilinx\\smartconnect_v1_0\\component.xml",
+    "name": "NUM_MI",
+    "display_name": "Number of Master Interfaces",
+    "default": "1",
+    "description_available": false
+  },
+  {
+    "source": "D:\\FPGA\\VIVADO\\2025.2\\Vivado\\data\\ip\\xilinx\\smartconnect_v1_0\\component.xml",
+    "name": "NUM_SI",
+    "display_name": "Number of Slave Interfaces",
+    "default": "2",
+    "description_available": false
+  },
+  {
+    "source": "D:\\FPGA\\VIVADO\\2025.2\\Vivado\\data\\ip\\xilinx\\axi_gpio_v2_0\\component.xml",
+    "name": "C_GPIO_WIDTH",
+    "display_name": "GPIO Width",
+    "default": "32",
+    "description_available": false
+  },
+  {
+    "source": "D:\\FPGA\\VIVADO\\2025.2\\Vivado\\data\\ip\\xilinx\\axi_gpio_v2_0\\component.xml",
+    "name": "C_GPIO2_WIDTH",
+    "display_name": "GPIO Width",
+    "default": "32",
+    "description_available": false
+  },
+  {
+    "source": "D:\\FPGA\\VIVADO\\2025.2\\Vivado\\data\\ip\\xilinx\\axi_gpio_v2_0\\component.xml",
+    "name": "C_IS_DUAL",
+    "display_name": "Enable Dual Channel",
+    "default": "0",
+    "description_available": false
+  },
+  {
+    "source": "D:\\FPGA\\VIVADO\\2025.2\\Vivado\\data\\ip\\xilinx\\axi_gpio_v2_0\\component.xml",
+    "name": "C_ALL_INPUTS_2",
+    "display_name": "All Inputs",
+    "default": "0",
+    "description_available": false
+  },
+  {
+    "source": "D:\\FPGA\\VIVADO\\2025.2\\Vivado\\data\\ip\\xilinx\\axi_gpio_v2_0\\component.xml",
+    "name": "C_ALL_OUTPUTS",
+    "display_name": "All Outputs",
+    "default": "0",
+    "description_available": false
+  }
+]

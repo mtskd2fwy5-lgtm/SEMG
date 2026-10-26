@@ -14,6 +14,38 @@ static hand_v3 imu_up={0,0,4096},imu_forward={0,-4096,0},imu_right={-4096,0,0};
 static u32 imu_last_seq,imu_last_t,imu_time_valid,imu_previous_valid;
 static u32 imu_still_ticks,imu_stationary,imu_gap_count,imu_clip_count;
 static u32 imu_zero_filter_valid,imu_zero_restarts,imu_zero_reason,imu_sample_count,imu_last_dt_ms;
+static i32 imu_hand_rotation_deg,imu_hand_rotation_raw,imu_hand_rotation_unwrapped;
+static u32 imu_hand_rotation_valid,imu_hand_rotation_seen;
+/* Swing/twist decomposition about sensor Y (towards elbow). Reuse the
+ * attitude quaternion, rather than the legacy pitch that folds at 90 deg.
+ * Integer sine lookup/bisection avoids adding libm to the bare-metal image. */
+static void imu_hand_rotation_update(imu_quat rel)
+{
+    float w=rel.w,y=rel.y,s=2.0f*w*y,c=w*w-y*y;
+    i32 lo=0,hi=180,raw,delta;
+    imu_hand_rotation_valid=0u;
+    if(!mpu_zero_valid || w*w+y*y<0.01f)return;
+    if(s<0)s=-s;
+    while(lo<hi) {
+        i32 mid=(lo+hi)/2;
+        if(s*lcd_cos_q12(mid)-c*lcd_sin_q12(mid)>0)lo=mid+1;
+        else hi=mid;
+    }
+    raw=(w*y>0)?-lo:lo; /* left forearm; sensor Y points to elbow */
+    if(!imu_hand_rotation_seen) {
+        imu_hand_rotation_unwrapped=raw;imu_hand_rotation_seen=1u;
+    } else {
+        delta=raw-imu_hand_rotation_raw;
+        if(delta>180)delta-=360;
+        if(delta< -180)delta+=360;
+        imu_hand_rotation_unwrapped+=delta;
+    }
+    imu_hand_rotation_raw=raw;
+    imu_hand_rotation_deg=imu_hand_rotation_unwrapped;
+    if(imu_hand_rotation_deg>225)imu_hand_rotation_deg=225;
+    if(imu_hand_rotation_deg< -45)imu_hand_rotation_deg=-45;
+    imu_hand_rotation_valid=1u;
+}
 static float imu_absf(float v) { return v<0 ? -v : v; }
 static float imu_inv_sqrt(float a)
 {
@@ -74,6 +106,8 @@ static void lcd_imu_reset(void)
     mpu_zero_valid=mpu_zero_cnt=0;
     mpu_zero_acc_r=mpu_zero_acc_p=0;
     mpu_tilt_q=mpu_shift_q=0;
+    imu_hand_rotation_deg=imu_hand_rotation_raw=imu_hand_rotation_unwrapped=0;
+    imu_hand_rotation_valid=imu_hand_rotation_seen=0u;
     lcd_state_tilt=lcd_state_shift=0;
     lcd_imu_valid=imu_time_valid=imu_previous_valid=imu_zero_filter_valid=0;
     imu_zero_reason=imu_last_dt_ms=0;
@@ -202,6 +236,7 @@ static void lcd_imu_ingest(u32 a,u32 b,u32 c,u32 word)
     /* Provisional attitude is usable from the first valid sample. Bias
      * calibration may wait/restart without ever freezing live tracking. */
     rel=imu_norm(imu_mul(imu_conj(imu_zero),imu_q));
+    imu_hand_rotation_update(rel);
     /* X little-finger, Y elbow imply sensor Z is dorsal. Model Z points
      * into the palm, so sensor_from_model = diag(-1,-1,-1), NOT the old
      * diag(-1,-1,+1). Project onto fixed right/forward/down after rotation.

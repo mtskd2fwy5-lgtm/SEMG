@@ -1,0 +1,20 @@
+{
+  "firmware_tag": "20261024_HDC_LEARN_V1",
+  "arm_build": true,
+  "packed_c_numpy_parity": true,
+  "hdc_guarded_atomic_trials": true,
+  "held_out_validation_frozen": true,
+  "rewear_retest_frozen": true,
+  "lcd_800_1024": true,
+  "pl_control_authority": true,
+  "sd_csv": true,
+  "uart_recording": true,
+  "font": true,
+  "hardware_gates": true,
+  "boot_partition_and_loads": true,
+  "artifact_hashes": 34,
+  "board_executed": false,
+  "custom_gesture_accuracy_measured": false,
+  "boot_bytes": 4970256,
+  "boot_sha256": "873ec66c367dfae26f59eb046c54b06ad599e5686199c50bb5446e5204131d0a"
+}

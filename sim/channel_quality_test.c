@@ -14,7 +14,7 @@ static void signal(double amplitude,double hz,int offset,uint16_t seq)
 }
 int main(int argc,char **argv)
 {
-    unsigned i,n;int v[8];
+    unsigned i,n;int v[8];cq_score_t sc;
     if(argc>1 && !strcmp(argv[1],"--stream")) {
         n=0;while(scanf("%d %d %d %d %d %d %d %d",&v[0],&v[1],&v[2],&v[3],&v[4],&v[5],&v[6],&v[7])==8){
             for(i=0;i<8;i++) if(cq_ingest((uint32_t)v[i],0x50000000u|(i<<24)|(uint16_t)n,n)) {
@@ -50,6 +50,17 @@ int main(int argc,char **argv)
     assert(channel_quality[0].gaps==1 && channel_quality[0].n==1);
     reset();cq_ingest(50,0x50000000u,0xfffffff0u);
     cq_ingest(50,0x50000001u,20u);assert(!channel_quality[0].gaps);
+    sc=cq_assess_score(0,100,0,0,0,100);assert(sc.grade==CQ_GRADE_UNKNOWN);
+    sc=cq_assess_score(1,0,0,0,0,100);assert(sc.grade==CQ_GRADE_UNKNOWN);
+    sc=cq_assess_score(1,100,100,0,0,100);assert(sc.total==100 && sc.grade==CQ_GRADE_A);
+    sc=cq_assess_score(1,100,100,300,0,100);
+    assert(sc.mains==0 && sc.grade==CQ_GRADE_D && sc.cap==CQ_GRADE_D);
+    sc=cq_assess_score(1,10,100,0,0,100);assert(sc.activity==0 && sc.grade==CQ_GRADE_D);
+    /* Website grade boundaries are inclusive: an 80-point subscore does not cap A. */
+    sc=cq_assess_score(1,25,100,0,0,100);assert(sc.activity==80 && sc.grade==CQ_GRADE_A && sc.cap==CQ_GRADE_A);
+    sc=cq_assess_score(1,50,100,0,0,100);assert(sc.activity==100);
+    sc=cq_assess_score(1,200,100,0,0,100);assert(sc.activity==80);
+    sc=cq_assess_score(1,100,3000,0,1,100);assert(sc.rail==0 && sc.grade==CQ_GRADE_D);
     puts("TEST_PASS quality: AC RMS, offset, four mains harmonics, fullscale, silence, sequence wrap/gap/duplicates, missing baseline channel, source/header rejection.");
     return 0;
 }

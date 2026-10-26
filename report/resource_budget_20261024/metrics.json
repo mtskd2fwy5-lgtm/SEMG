@@ -1,0 +1,209 @@
+{
+  "baseline": {
+    "Slice LUTs": {
+      "used": 38368,
+      "available": 53200,
+      "remaining": 14832,
+      "percent": 72.12
+    },
+    "Slice Registers": {
+      "used": 34002,
+      "available": 106400,
+      "remaining": 72398,
+      "percent": 31.96
+    },
+    "Slice": {
+      "used": 12467,
+      "available": 13300,
+      "remaining": 833,
+      "percent": 93.74
+    },
+    "Block RAM Tile": {
+      "used": 29.5,
+      "available": 140,
+      "remaining": 110.5,
+      "percent": 21.07
+    },
+    "DSPs": {
+      "used": 95,
+      "available": 220,
+      "remaining": 125,
+      "percent": 43.18
+    },
+    "Bonded IOB": {
+      "used": 47,
+      "available": 125,
+      "remaining": 78,
+      "percent": 37.6
+    }
+  },
+  "module_resources": {
+    "raw_fifo": {
+      "lut": 4548,
+      "logic_lut": 836,
+      "lutram": 3712,
+      "srl": 0,
+      "ff": 344,
+      "ramb36": 0,
+      "ramb18": 0,
+      "dsp": 0
+    },
+    "notch_fifo": {
+      "lut": 4550,
+      "logic_lut": 838,
+      "lutram": 3712,
+      "srl": 0,
+      "ff": 345,
+      "ramb36": 0,
+      "ramb18": 0,
+      "dsp": 0
+    },
+    "u_feature_bank": {
+      "lut": 10194,
+      "logic_lut": 10194,
+      "lutram": 0,
+      "srl": 0,
+      "ff": 12562,
+      "ramb36": 0,
+      "ramb18": 0,
+      "dsp": 16
+    },
+    "u_notch50": {
+      "lut": 3760,
+      "logic_lut": 3760,
+      "lutram": 0,
+      "srl": 0,
+      "ff": 2725,
+      "ramb36": 2,
+      "ramb18": 0,
+      "dsp": 55
+    },
+    "g_control.u_control": {
+      "lut": 4113,
+      "logic_lut": 4113,
+      "lutram": 0,
+      "srl": 0,
+      "ff": 3768,
+      "ramb36": 2,
+      "ramb18": 0,
+      "dsp": 9
+    },
+    "nn": {
+      "lut": 2122,
+      "logic_lut": 2122,
+      "lutram": 0,
+      "srl": 0,
+      "ff": 1335,
+      "ramb36": 2,
+      "ramb18": 0,
+      "dsp": 6
+    },
+    "policy": {
+      "lut": 1947,
+      "logic_lut": 1947,
+      "lutram": 0,
+      "srl": 0,
+      "ff": 1098,
+      "ramb36": 0,
+      "ramb18": 0,
+      "dsp": 3
+    },
+    "u_emg_fatigue": {
+      "lut": 3256,
+      "logic_lut": 3248,
+      "lutram": 8,
+      "srl": 0,
+      "ff": 2433,
+      "ramb36": 19,
+      "ramb18": 0,
+      "dsp": 8
+    },
+    "axi_dma_0": {
+      "lut": 986,
+      "logic_lut": 919,
+      "lutram": 8,
+      "srl": 59,
+      "ff": 1521,
+      "ramb36": 1,
+      "ramb18": 1,
+      "dsp": 0
+    },
+    "axi_vdma_0": {
+      "lut": 1111,
+      "logic_lut": 1041,
+      "lutram": 0,
+      "srl": 70,
+      "ff": 1707,
+      "ramb36": 3,
+      "ramb18": 2,
+      "dsp": 0
+    },
+    "smartconnect_0": {
+      "lut": 1378,
+      "logic_lut": 1362,
+      "lutram": 2,
+      "srl": 14,
+      "ff": 1394,
+      "ramb36": 0,
+      "ramb18": 0,
+      "dsp": 0
+    },
+    "smartconnect_1": {
+      "lut": 2162,
+      "logic_lut": 1732,
+      "lutram": 410,
+      "srl": 20,
+      "ff": 3090,
+      "ramb36": 0,
+      "ramb18": 0,
+      "dsp": 0
+    }
+  },
+  "routed_timing_ns": {
+    "wns": 0.32,
+    "tns": 0.0,
+    "whs": 0.002,
+    "ths": 0.0
+  },
+  "artifact_sha256": {
+    "design_1.bit": "4e0e388eb0c4f7adfcbdb1eedbfd15aa9b701a05d503cf50fef138541270dfc3",
+    "ps_uart_print_pl_control.elf": "989bf44e0fdd63ed051aa8e11470447257e5fd8a7c2618c3d18f80562be204a6",
+    "design_1_routed.dcp": "eb193f3d0c7efd1f3f58e29dba3b304b27e30f0d759ddc8230a4e1e8887f2559"
+  },
+  "ps_memory": {
+    "sections": {
+      ".vectors": 32,
+      ".text": 150652,
+      ".rodata": 638976,
+      ".ARM.exidx": 8,
+      ".data": 328,
+      ".bss": 1530312,
+      ".dma_buffer": 1048576,
+      ".comment": 18,
+      ".ARM.attributes": 49
+    },
+    "app_static_bytes": 2320300,
+    "app_region_bytes": 4194304,
+    "app_region_remaining_before_stack": 1874004,
+    "dma_reserved_bytes": 1048576,
+    "hdc_object_bytes": 66880,
+    "framebuffers_800x480_bytes": 3456000,
+    "framebuffers_1024x600_bytes": 5529600
+  },
+  "hdc_payload_bytes": {
+    "classes": 8,
+    "dimensions": 2048,
+    "prototype_bits": 16,
+    "training_features": 30720,
+    "item_memory": 6144,
+    "trial_buffer": 1280,
+    "query": 256,
+    "one_model_one_prototype": 32768,
+    "two_models_one_prototype": 65536,
+    "one_model_three_prototypes": 98304,
+    "two_models_three_prototypes": 196608,
+    "two_models_three_prototypes_int8": 98304,
+    "two_models_centroid_three_prototypes_uint16": 768
+  },
+  "estimate_status": "Future LUT/FF/BRAM budgets in README are planning estimates, not synthesis results."
+}

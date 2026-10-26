@@ -8,6 +8,15 @@ static const u32 rehab_rests[]={2000u,3000u,5000u};
 static u32 rehab_clock_seen,rehab_clock_last,rehab_clock_remainder,rehab_clock_ms;
 static u32 rehab_refresh_ms,rehab_save_error,rehab_autosave=1u;
 static char rehab_report_name[13];
+static u32 rehab_setup_stage,rehab_contact_checked,rehab_comfort_checked,rehab_group_rest_sel;
+static const u32 rehab_group_rests[]={15000u,30000u,60000u};
+
+static u32 rehab_prepared(void)
+{
+    return lcd_rehab_view && !ui_menu_open && rehab_setup_stage &&
+        rehab_contact_checked && rehab_comfort_checked &&
+        g_mode==MODE_MONITOR && !sd_record_active() && cal_stage==2u && pl_control_ready();
+}
 
 static u32 rehab_milliseconds(void)
 {
@@ -24,9 +33,7 @@ static u32 rehab_milliseconds(void)
 
 static void lcd_rehab_open(void)
 {
-    lcd_rehab_view=1u;
-    lcd_settings_view=lcd_wave_view=lcd_data_view=lcd_spectrum_view=lcd_synergy_view=lcd_sd_view=lcd_selfcal_view=0u;
-    ui_preview_cls=-1;ui_generation++;lcd_input_status_changed();
+    ui_open_page(UI_REHAB);
 }
 
 static void rehab_service(void)
@@ -48,7 +55,7 @@ static void rehab_service(void)
 }
 
 /* CSV builder is bounded; numeric fields do not need libc printf on ARM. */
-static char rehab_csv[8192];
+static char rehab_csv[16384];
 static u32 rehab_csv_n,rehab_csv_overflow;
 static void rehab_csv_text(const char *s)
 {
@@ -89,6 +96,12 @@ static void rehab_save_report(void)
     rehab_csv_meta("successes",rehab.successes);rehab_csv_meta("timeouts",rehab.failures);
     rehab_csv_meta("aborted",rehab.aborted);rehab_csv_meta("active_elapsed_ms",rehab.elapsed_ms);
     rehab_csv_meta("hold_required_ms",rehab.hold_ms);rehab_csv_meta("rest_required_ms",rehab.rest_ms);
+    rehab_csv_text("meta,,,,,,,,,use_scope,research_healthy_volunteers\r\n");
+    rehab_csv_meta("group_every_trials",rehab.group_every);
+    rehab_csv_meta("group_rest_ms",rehab.group_rest_ms);
+    rehab_csv_meta("group_breaks",rehab.groups_completed);rehab_csv_meta("pause_count",rehab.pause_count);
+    rehab_csv_meta("contact_review_confirmed",rehab_contact_checked);
+    rehab_csv_meta("comfort_confirmed",rehab_comfort_checked);
     rehab_csv_meta("support_threshold",REHAB_SUPPORT_MIN);
     rehab_csv_meta("grip_effort_enabled",rehab.effort_enabled);
     rehab_csv_meta("grip_reference_c2_q8",rehab.effort_reference);
@@ -118,22 +131,27 @@ static void rehab_apply_action(u32 action)
 {
     u32 now=rehab_milliseconds();
     if(action==1u && !rehab_running(&rehab)) {
-        if(g_mode!=MODE_MONITOR || sd_record_active())return;
+        if(rehab.state!=RH_IDLE || !rehab_prepared())return;
         if(synergy_feedback.capture==1u || synergy_feedback.capture==2u)return;
         if(rehab_effort_enabled && (rehab_combo || rehab_action==2u) && !synergy_feedback.reference)return;
         rehab_start(&rehab,rehab_combo,rehab_action,rehab_reps[rehab_reps_sel],
                     rehab_holds[rehab_hold_sel],rehab_rests[rehab_rest_sel],now);
         rehab.effort_enabled=rehab_effort_enabled && (rehab_combo || rehab_action==2u);
         rehab.effort_reference=synergy_feedback.reference;
+        rehab.group_every=rehab_combo?4u:3u;
+        rehab.group_rest_ms=rehab_group_rests[rehab_group_rest_sel];
+        hand_stop();hdc_interrupt(&hdc);
         rehab_report_name[0]=0;rehab_save_error=0u;cal_start();
     } else if(action==2u) {
+        if(!lcd_rehab_view || ui_menu_open)return;
         if(rehab.state==RH_PAUSED) {
             if(g_mode!=MODE_MONITOR || sd_record_active())return;
             rehab_resume(&rehab,now);cal_start();
         } else rehab_pause(&rehab,RH_REASON_USER,now);
     } else if(action==3u)rehab_finish(&rehab,now,1u);
     else if(action==4u)rehab_save_report();
-    else if(action==5u && rehab.state==RH_IDLE && g_mode==MODE_MONITOR && !sd_record_active())
+    else if(action==6u && lcd_rehab_view && !ui_menu_open)rehab_continue_group(&rehab,now);
+    else if(action==5u && lcd_rehab_view && !ui_menu_open && rehab.state==RH_IDLE && g_mode==MODE_MONITOR && !sd_record_active())
         synergy_feedback_capture(&synergy_feedback,now);
     ui_generation++;lcd_input_status_changed();
 }
@@ -142,15 +160,32 @@ static void lcd_rehab_touch(u32 x,u32 y)
 {
     u32 i;
     if(rehab_running(&rehab)) {
-        if(lcd_wave_hit(x,y,LCD_X(28),LCD_Y(516),LCD_X(300),LCD_Y(62)))ui_rehab_action=2u;
+        if(lcd_wave_hit(x,y,LCD_X(28),LCD_Y(516),LCD_X(300),LCD_Y(62)))
+            ui_rehab_action=rehab.state==RH_GROUP_REST?6u:2u;
         else if(lcd_wave_hit(x,y,LCD_X(356),LCD_Y(516),LCD_X(300),LCD_Y(62)))ui_rehab_action=3u;
         return;
     }
     if(rehab.state==RH_DONE) {
         if(lcd_wave_hit(x,y,LCD_X(28),LCD_Y(516),LCD_X(300),LCD_Y(62))) {
-            rehab.state=RH_IDLE;rehab.changed=1u;ui_generation++;lcd_input_status_changed();
+            rehab.state=RH_IDLE;rehab_setup_stage=rehab_contact_checked=rehab_comfort_checked=0u;
+            rehab.changed=1u;ui_generation++;lcd_input_status_changed();
         } else if(lcd_wave_hit(x,y,LCD_X(356),LCD_Y(516),LCD_X(300),LCD_Y(62)) && rehab.save_state!=2u)
             ui_rehab_action=4u;
+        return;
+    }
+    if(rehab_setup_stage) {
+        if(lcd_wave_hit(x,y,LCD_X(28),LCD_Y(205),LCD_X(968),LCD_Y(58))) {
+            rehab_contact_checked=!rehab_contact_checked;goto changed;
+        }
+        if(lcd_wave_hit(x,y,LCD_X(28),LCD_Y(279),LCD_X(968),LCD_Y(58))) {
+            rehab_comfort_checked=!rehab_comfort_checked;goto changed;
+        }
+        for(i=0u;i<3u;i++)if(lcd_wave_hit(x,y,LCD_X(230)+(i32)i*LCD_X(250),LCD_Y(383),LCD_X(224),LCD_Y(54))) {
+            rehab_group_rest_sel=i;goto changed;
+        }
+        if(lcd_wave_hit(x,y,LCD_X(28),LCD_Y(516),LCD_X(300),LCD_Y(62)))ui_rehab_action=1u;
+        else if(lcd_wave_hit(x,y,LCD_X(356),LCD_Y(516),LCD_X(300),LCD_Y(62))) {rehab_setup_stage=0u;goto changed;}
+        else if(lcd_wave_hit(x,y,LCD_X(690),LCD_Y(516),LCD_X(306),LCD_Y(62)))ui_action=3u;
         return;
     }
     if(lcd_wave_hit(x,y,LCD_X(28),LCD_Y(474),LCD_X(240),LCD_Y(34))) {
@@ -164,22 +199,24 @@ static void lcd_rehab_touch(u32 x,u32 y)
             rehab_combo=i;goto changed;
         }
     for(i=0u;i<4u;i++)
-        if(lcd_wave_hit(x,y,LCD_X(230)+(i32)i*LCD_X(190),LCD_Y(216),LCD_X(174),LCD_Y(54))) {
+        if(lcd_wave_hit(x,y,LCD_X(230)+(i32)i*LCD_X(190),LCD_Y(212),LCD_X(174),LCD_Y(50))) {
             rehab_action=i+1u;goto changed;
         }
     for(i=0u;i<3u;i++) {
-        if(lcd_wave_hit(x,y,LCD_X(230)+(i32)i*LCD_X(250),LCD_Y(286),LCD_X(224),LCD_Y(54))) {
+        if(lcd_wave_hit(x,y,LCD_X(230)+(i32)i*LCD_X(250),LCD_Y(278),LCD_X(224),LCD_Y(50))) {
             rehab_reps_sel=i;goto changed;
         }
-        if(lcd_wave_hit(x,y,LCD_X(230)+(i32)i*LCD_X(250),LCD_Y(426),LCD_X(224),LCD_Y(54))) {
+        if(lcd_wave_hit(x,y,LCD_X(230)+(i32)i*LCD_X(250),LCD_Y(410),LCD_X(224),LCD_Y(50))) {
             rehab_rest_sel=i;goto changed;
         }
     }
     for(i=0u;i<4u;i++)
-        if(lcd_wave_hit(x,y,LCD_X(230)+(i32)i*LCD_X(190),LCD_Y(356),LCD_X(174),LCD_Y(54))) {
+        if(lcd_wave_hit(x,y,LCD_X(230)+(i32)i*LCD_X(190),LCD_Y(344),LCD_X(174),LCD_Y(50))) {
             rehab_hold_sel=i;goto changed;
         }
-    if(lcd_wave_hit(x,y,LCD_X(28),LCD_Y(516),LCD_X(300),LCD_Y(62)))ui_rehab_action=1u;
+    if(lcd_wave_hit(x,y,LCD_X(28),LCD_Y(516),LCD_X(300),LCD_Y(62))) {
+        rehab_setup_stage=1u;rehab_contact_checked=rehab_comfort_checked=0u;goto changed;
+    }
     else if(lcd_wave_hit(x,y,LCD_X(690),LCD_Y(516),LCD_X(306),LCD_Y(62))) {
         rehab_autosave=!rehab_autosave;goto changed;
     }
@@ -211,21 +248,42 @@ static void lcd_rehab_render(void)
     ui_label(LCD_X(28),LCD_Y(105),LCD_X(600),2,31,49,58,"康复训练 / 动作与保持");
     ui_label(LCD_X(680),LCD_Y(108),LCD_X(316),1,94,112,119,"按舒适幅度完成动作");
     if(state==RH_IDLE) {
+        if(rehab_setup_stage) {
+            static const char *const group_names[]={"15 秒","30 秒","60 秒"};
+            ui_label(LCD_X(28),LCD_Y(157),LCD_X(968),2,25,120,111,"第二步 / 训练前检查");
+            ui_button(LCD_X(28),LCD_Y(205),LCD_X(968),LCD_Y(58),
+                rehab_contact_checked?"已确认电极接触与通道波形":"检查通道后，确认电极接触",rehab_contact_checked);
+            ui_button(LCD_X(28),LCD_Y(279),LCD_X(968),LCD_Y(58),
+                rehab_comfort_checked?"已确认姿势舒适、无不适":"确认姿势舒适，无疼痛不适",rehab_comfort_checked);
+            ui_label(LCD_X(28),LCD_Y(353),LCD_X(968),1,94,112,119,
+                rehab_combo?"每轮四动作后组间休息":"每三次动作后组间休息");
+            ui_label(LCD_X(28),LCD_Y(397),LCD_X(190),2,94,112,119,"组间休息");
+            for(i=0u;i<3u;i++)ui_button(LCD_X(230)+(i32)i*LCD_X(250),LCD_Y(383),LCD_X(224),LCD_Y(54),group_names[i],rehab_group_rest_sel==i);
+            ui_label(LCD_X(28),LCD_Y(457),LCD_X(968),1,162,101,24,
+                sd_record_active()?"请先停止SD波形记录":g_mode!=MODE_MONITOR?"请从首页选择监测模式":
+                !pl_control_ready()?"等待PL识别就绪":cal_stage!=2u?"请保持放松，完成静息校准":
+                !rehab_contact_checked || !rehab_comfort_checked?"完成以上两项确认后开始":"准备就绪 / 开始后再次静息校准");
+            ui_label(LCD_X(28),LCD_Y(484),LCD_X(968),1,94,112,119,"舒适幅度；不适时暂停");
+            ui_button(LCD_X(28),LCD_Y(516),LCD_X(300),LCD_Y(62),"开始训练",rehab_prepared());
+            ui_button(LCD_X(356),LCD_Y(516),LCD_X(300),LCD_Y(62),"返回计划",0u);
+            ui_button(LCD_X(690),LCD_Y(516),LCD_X(306),LCD_Y(62),"重新静息校准",0u);
+            return;
+        }
         static const char *const titles[]={"训练模式","目标动作","重复次数","保持时间","休息时间"};
-        for(i=0u;i<5u;i++)ui_label(LCD_X(28),LCD_Y(160)+(i32)i*LCD_Y(70),LCD_X(190),2,94,112,119,
+        for(i=0u;i<5u;i++)ui_label(LCD_X(28),LCD_Y(160)+(i32)i*LCD_Y(66),LCD_X(190),2,94,112,119,
                                  i==2u && rehab_combo?"每动作次数":titles[i]);
-        ui_button(LCD_X(230),LCD_Y(146),LCD_X(340),LCD_Y(54),"单动作训练",!rehab_combo);
-        ui_button(LCD_X(600),LCD_Y(146),LCD_X(340),LCD_Y(54),"四动作组合",rehab_combo);
+        ui_button(LCD_X(230),LCD_Y(146),LCD_X(340),LCD_Y(50),"单动作训练",!rehab_combo);
+        ui_button(LCD_X(600),LCD_Y(146),LCD_X(340),LCD_Y(50),"四动作组合",rehab_combo);
         for(i=0u;i<4u;i++) {
-            ui_button(LCD_X(230)+(i32)i*LCD_X(190),LCD_Y(216),LCD_X(174),LCD_Y(54),lcd_pose_names[i+1u],rehab_combo || rehab_action==i+1u);
-            ui_button(LCD_X(230)+(i32)i*LCD_X(190),LCD_Y(356),LCD_X(174),LCD_Y(54),hold_names[i],rehab_hold_sel==i);
+            ui_button(LCD_X(230)+(i32)i*LCD_X(190),LCD_Y(212),LCD_X(174),LCD_Y(50),lcd_pose_names[i+1u],rehab_combo || rehab_action==i+1u);
+            ui_button(LCD_X(230)+(i32)i*LCD_X(190),LCD_Y(344),LCD_X(174),LCD_Y(50),hold_names[i],rehab_hold_sel==i);
         }
         for(i=0u;i<3u;i++) {
-            ui_button(LCD_X(230)+(i32)i*LCD_X(250),LCD_Y(286),LCD_X(224),LCD_Y(54),rep_names[i],rehab_reps_sel==i);
-            ui_button(LCD_X(230)+(i32)i*LCD_X(250),LCD_Y(426),LCD_X(224),LCD_Y(54),rest_names[i],rehab_rest_sel==i);
+            ui_button(LCD_X(230)+(i32)i*LCD_X(250),LCD_Y(278),LCD_X(224),LCD_Y(50),rep_names[i],rehab_reps_sel==i);
+            ui_button(LCD_X(230)+(i32)i*LCD_X(250),LCD_Y(410),LCD_X(224),LCD_Y(50),rest_names[i],rehab_rest_sel==i);
         }
         ui_button(LCD_X(28),LCD_Y(474),LCD_X(240),LCD_Y(34),
-                  rehab_effort_enabled?"握拳强度 开":"握拳强度 关",rehab_effort_enabled);
+                  rehab_effort_enabled?"握拳活动范围 开":"握拳活动范围 关",rehab_effort_enabled);
         ui_button(LCD_X(280),LCD_Y(474),LCD_X(210),LCD_Y(34),"采舒适参考",0u);
         {
             char label[64];const char *text=label;
@@ -239,11 +297,11 @@ static void lcd_rehab_render(void)
             else text="请先舒适抓握采参考";
             ui_label(LCD_X(510),LCD_Y(480),LCD_X(480),1,94,112,119,text);
         }
-        ui_button(LCD_X(28),LCD_Y(516),LCD_X(300),LCD_Y(62),"开始训练",0u);
+        ui_button(LCD_X(28),LCD_Y(516),LCD_X(300),LCD_Y(62),"下一步 / 检查",0u);
         ui_label(LCD_X(350),LCD_Y(531),LCD_X(330),1,94,112,119,
                  sd_record_active()?"请先停止波形记录":g_mode!=MODE_MONITOR?"请切换监测模式":
                  rehab_effort_enabled && (rehab_combo || rehab_action==2u) && !synergy_feedback.reference?
-                 "强度训练需先采参考":"开始后请保持放松");
+                 "强度训练需先采参考":"第一步 / 设置训练计划");
         ui_button(LCD_X(690),LCD_Y(516),LCD_X(306),LCD_Y(62),rehab_autosave?"SD自动保存 开":"SD自动保存 关",rehab_autosave);
         return;
     }
@@ -271,13 +329,24 @@ static void lcd_rehab_render(void)
              label[n]=0;}
             ui_label(LCD_X(28)+(i32)(i-1u)*LCD_X(246),LCD_Y(403),LCD_X(226),2,31,49,58,label);
         }
-        ui_label(LCD_X(28),LCD_Y(456),LCD_X(968),1,94,112,119,"完成率依据肌电识别");
-        ui_label(LCD_X(28),LCD_Y(484),LCD_X(968),1,94,112,119,
-                 rehab.effort_enabled?"握拳需动作正确且 C2 在参考的 80%-120%":"响应为提示到识别稳定");
+        ui_label(LCD_X(28),LCD_Y(456),LCD_X(968),1,94,112,119,"完成率为识别结果；响应时间含算法延迟");
+        if(rehab.effort_enabled)ui_label(LCD_X(28),LCD_Y(484),LCD_X(968),1,94,112,119,"握拳目标：舒适参考的 80%-120%");
         ui_button(LCD_X(28),LCD_Y(516),LCD_X(300),LCD_Y(62),"返回训练设置",0u);
         ui_button(LCD_X(356),LCD_Y(516),LCD_X(300),LCD_Y(62),rehab.save_state==2u?"结果已保存":"保存 / 重试",rehab.save_state==2u);
         if(rehab.save_state==2u)ui_label(LCD_X(690),LCD_Y(535),LCD_X(306),2,25,120,111,rehab_report_name);
         else if(rehab.save_state==3u)rehab_metric(690,535,306,"SD错误 ",rehab_save_error,"");
+        return;
+    }
+    if(state==RH_GROUP_REST) {
+        u32 elapsed=rehab.now-rehab.phase_at;
+        u32 remaining=elapsed>=rehab.group_rest_ms?0u:(rehab.group_rest_ms-elapsed+999u)/1000u;
+        ui_label(LCD_X(28),LCD_Y(172),LCD_X(968),3,25,120,111,"组间休息 / 请放松");
+        rehab_metric(28,250,968,"剩余休息 ",remaining," 秒");
+        rehab_metric(28,310,968,"已完成任务 ",rehab.attempted," 次");
+        ui_label(LCD_X(28),LCD_Y(385),LCD_X(968),2,31,49,58,"休息后，确认舒适再继续");
+        ui_label(LCD_X(28),LCD_Y(452),LCD_X(968),1,94,112,119,"休息结束后点击继续");
+        ui_button(LCD_X(28),LCD_Y(516),LCD_X(300),LCD_Y(62),remaining?"休息中":"我已准备好 / 继续",!remaining);
+        ui_button(LCD_X(356),LCD_Y(516),LCD_X(300),LCD_Y(62),"结束并查看结果",0u);
         return;
     }
     if(rehab.effort_enabled && rehab.target==2u && (state==RH_CUE || state==RH_HOLD)) {

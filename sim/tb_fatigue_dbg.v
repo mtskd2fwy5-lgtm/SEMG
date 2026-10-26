@@ -30,6 +30,7 @@ module tb_fatigue_dbg;
 
     emg_fatigue dut (
         .clk(clk), .rst_n(rst_n),
+        .activity_valid(1'b1),.muscle_active(1'b1),.activity_class(3'd1),
         .sample_valid(sample_valid), .sample_channel(sample_channel),
         .sample_data(sample_data),
         .out_valid(out_valid), .out_ready(out_ready),

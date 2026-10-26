@@ -1,0 +1,380 @@
+{
+  "date": "2026-10-24",
+  "top": "design_1",
+  "device": "xc7z020clg400-2",
+  "bd": "build/vivado/hand_motion_reconstruction.srcs/sources_1/bd/design_1/design_1.bd",
+  "bd_sha256": "87cef0040d0acb540130f60dfb160b39c297ce45713138a6cc82f8099aa92cb7",
+  "xpr_sha256": "418d33b06245d1153ceae9c697fc615dd8d6866fd2ad9fd6adf2fb4cc8d2c11b",
+  "bd_components": {
+    "processing_system7_0": {
+      "vlnv": "xilinx.com:ip:processing_system7:5.5",
+      "ref_name": null
+    },
+    "proc_sys_reset_0": {
+      "vlnv": "xilinx.com:ip:proc_sys_reset:5.0",
+      "ref_name": null
+    },
+    "smartconnect_0": {
+      "vlnv": "xilinx.com:ip:smartconnect:1.0",
+      "ref_name": null
+    },
+    "axi_dma_0": {
+      "vlnv": "xilinx.com:ip:axi_dma:7.1",
+      "ref_name": null
+    },
+    "smartconnect_1": {
+      "vlnv": "xilinx.com:ip:smartconnect:1.0",
+      "ref_name": null
+    },
+    "proc_sys_reset_1": {
+      "vlnv": "xilinx.com:ip:proc_sys_reset:5.0",
+      "ref_name": null
+    },
+    "axi_vdma_0": {
+      "vlnv": "xilinx.com:ip:axi_vdma:6.3",
+      "ref_name": null
+    },
+    "v_axi4s_vid_out_0": {
+      "vlnv": "xilinx.com:ip:v_axi4s_vid_out:4.0",
+      "ref_name": null
+    },
+    "axi_gpio_0": {
+      "vlnv": "xilinx.com:ip:axi_gpio:2.0",
+      "ref_name": null
+    },
+    "lcd_clk_fwd_0": {
+      "vlnv": "xilinx.com:module_ref:lcd_clk_fwd:1.0",
+      "ref_name": "lcd_clk_fwd"
+    },
+    "lcd_panel_adapter_0": {
+      "vlnv": "xilinx.com:module_ref:lcd_panel_adapter:1.0",
+      "ref_name": "lcd_panel_adapter"
+    },
+    "touch_gt911_0": {
+      "vlnv": "xilinx.com:module_ref:touch_gt911:1.0",
+      "ref_name": "touch_gt911"
+    },
+    "axi_gpio_1": {
+      "vlnv": "xilinx.com:ip:axi_gpio:2.0",
+      "ref_name": null
+    },
+    "axi_gpio_2": {
+      "vlnv": "xilinx.com:ip:axi_gpio:2.0",
+      "ref_name": null
+    },
+    "mpu6050_tilt_0": {
+      "vlnv": "xilinx.com:module_ref:mpu6050_motion:1.0",
+      "ref_name": "mpu6050_motion"
+    },
+    "axi_gpio_3": {
+      "vlnv": "xilinx.com:ip:axi_gpio:2.0",
+      "ref_name": null
+    },
+    "emg_pl_export_0": {
+      "vlnv": "xilinx.com:module_ref:emg_pl_control:1.0",
+      "ref_name": "emg_pl_control"
+    },
+    "axi_gpio_4": {
+      "vlnv": "xilinx.com:ip:axi_gpio:2.0",
+      "ref_name": null
+    }
+  },
+  "ps_address_map": {
+    "SEG_axi_dma_0_Reg": {
+      "offset": "0x40400000",
+      "range": "64K"
+    },
+    "SEG_axi_gpio_0_Reg": {
+      "offset": "0x41200000",
+      "range": "64K"
+    },
+    "SEG_axi_gpio_1_Reg": {
+      "offset": "0x41210000",
+      "range": "64K"
+    },
+    "SEG_axi_gpio_2_Reg": {
+      "offset": "0x41220000",
+      "range": "64K"
+    },
+    "SEG_axi_gpio_3_Reg": {
+      "offset": "0x41230000",
+      "range": "64K"
+    },
+    "SEG_axi_gpio_4_Reg": {
+      "offset": "0x41240000",
+      "range": "64K"
+    },
+    "SEG_axi_vdma_0_Reg": {
+      "offset": "0x43000000",
+      "range": "64K"
+    }
+  },
+  "git_head": "58f562c47eb491c05e8f99be9e816cb744f6035b",
+  "git_branch": "main",
+  "git_status": [
+    " M build/boot/build_pl_control_boot.ps1",
+    " M report/electrode-placement-v2/electrode-placement-v2.html",
+    " M report/electrode-placement-v3/electrode-placement-v3.html",
+    " M sim/lcd_firmware_test.c",
+    " M sw/ps_uart_print/lcd_font_zh.h",
+    " M sw/ps_uart_print/main.c",
+    " M sw/ps_uart_print/sd_record.c",
+    " M sw/ps_uart_print/sd_record.h",
+    " M tools/decode_sd_record.py",
+    " M tools/gen_hz_glyphs.py",
+    " M tools/record_uart.py",
+    " M tools/train_board_model.py",
+    " M tools/verify_control_boot.py",
+    "?? data/metrics/nmf_EMG008_processed.png",
+    "?? data/metrics/nmf_EMG009_processed.png",
+    "?? data/metrics/nmf_EMG012_processed.png",
+    "?? data/metrics/nmf_EMG013_processed.png",
+    "?? data/metrics/nmf_EMG014_processed.png",
+    "?? data/metrics/nmf_EMG015_processed.png",
+    "?? data/metrics/nmf_EMG016_processed.png",
+    "?? data/metrics/nmf_EMG017_processed.png",
+    "?? data/metrics/nmf_EMG018_validprefix_processed.png",
+    "?? data/metrics/nmf_validate.png",
+    "?? pose_800_0.png",
+    "?? report/bias_gpio_config_20261015.jou",
+    "?? report/bias_gpio_config_final_20261015.jou",
+    "?? report/bias_gpio_config_retry_20261015.jou",
+    "?? report/bias_module_probe_20261015.jou",
+    "?? report/emg000_20261018/EMG000_notch50.csv",
+    "?? report/emg000_20261018/EMG000_raw.csv",
+    "?? report/emg001_20261018/EMG001_notch50.csv",
+    "?? report/emg001_20261018/EMG001_raw.csv",
+    "?? report/emg004_20261021/EMG004_notch50.csv",
+    "?? report/emg004_20261021/EMG004_raw.csv",
+    "?? report/emg005_20261021/EMG005_notch50.csv",
+    "?? report/emg005_20261021/EMG005_raw.csv",
+    "?? report/emg006_20261021/EMG006_notch50.csv",
+    "?? report/emg006_20261021/EMG006_raw.csv",
+    "?? report/emg007_20261021/EMG007_processed.csv",
+    "?? report/emg007_20261021/EMG007_raw.csv",
+    "?? report/emg008_20261022/EMG008_processed.csv",
+    "?? report/emg008_20261022/EMG008_raw.csv",
+    "?? report/emg009_20261022/EMG009_processed.csv",
+    "?? report/emg009_20261022/EMG009_raw.csv",
+    "?? report/emg010_20261022/EMG010_processed.csv",
+    "?? report/emg010_20261022/EMG010_raw.csv",
+    "?? report/emg011_20261022/EMG011_processed.csv",
+    "?? report/emg011_20261022/EMG011_raw.csv",
+    "?? report/emg012_20261022/EMG012_processed.csv",
+    "?? report/emg012_20261022/EMG012_raw.csv",
+    "?? report/emg013_20261022/EMG013_processed.csv",
+    "?? report/emg013_20261022/EMG013_raw.csv",
+    "?? report/emg014_20261022/EMG014_processed.csv",
+    "?? report/emg014_20261022/EMG014_raw.csv",
+    "?? report/emg015_20261022/EMG015_processed.csv",
+    "?? report/emg015_20261022/EMG015_raw.csv",
+    "?? report/emg016_20261022/EMG016_processed.csv",
+    "?? report/emg016_20261022/EMG016_raw.csv",
+    "?? report/emg017_20261022/EMG017_processed.csv",
+    "?? report/emg017_20261022/EMG017_raw.csv",
+    "?? report/emg018_20261022/EMG018_decode.json",
+    "?? report/emg018_20261022/EMG018_processed.csv",
+    "?? report/emg018_20261022/EMG018_processed.json",
+    "?? report/emg018_20261022/EMG018_raw.csv",
+    "?? report/emg018_20261022/EMG018_raw.json",
+    "?? report/emg018_20261022/EMG018_validprefix_processed.csv",
+    "?? report/emg018_20261022/EMG018_validprefix_processed.json",
+    "?? report/emg018_20261022/EMG018_validprefix_raw.csv",
+    "?? report/gesture_capture_20261023/",
+    "?? report/hdc_audit_20261024/",
+    "?? report/line_filter_20261021/BOOT_before.bin",
+    "?? report/next_model_fingers_20261023.md",
+    "?? report/pl_control_20261023/cdc_audit.jou",
+    "?? report/pl_control_20261023/help_cdc.jou",
+    "?? report/pl_control_20261023/help_cdc_14372.backup.jou",
+    "?? report/pl_control_20261023/help_cdc_46796.backup.jou",
+    "?? report/pl_control_20261023/mailbox_audit.jou",
+    "?? report/pl_control_20261023/status_1024.ppm",
+    "?? report/pl_control_20261023/status_800.ppm",
+    "?? report/pl_control_gpio_20261023.jou",
+    "?? report/project_structure_20261024.md",
+    "?? report/rehab_20261023/rehab_report_1024.csv",
+    "?? report/rehab_20261023/rehab_report_800.csv",
+    "?? report/sal_feasibility_20261023/",
+    "?? report/yhand_pl_20261023/manual.txt",
+    "?? report/yhand_pl_20261023/manual_page_5.png",
+    "?? report/yhand_pl_20261023/manual_page_8.png",
+    "?? report/yhand_pl_20261023/schematic.png",
+    "?? report/yhand_pl_20261023/schematic.txt",
+    "?? sim/results_notch50_synth.log",
+    "?? sim/results_notch50_synth_41604.backup.log",
+    "?? sim/test_gesture_capture.py",
+    "?? sim/test_hdc_audit.py",
+    "?? sw/ps_uart_print/capture_actions.h",
+    "?? tools/audit_hdc.py",
+    "?? tools/capture_actions.py",
+    "?? tools/hdc_validate.py",
+    "?? tools/train_gesture_model.py"
+  ],
+  "artifact_checks": [
+    {
+      "path": "build/vivado/hand_motion_reconstruction.runs/impl_1/design_1.bit",
+      "exists": true,
+      "sha256": "4e0e388eb0c4f7adfcbdb1eedbfd15aa9b701a05d503cf50fef138541270dfc3",
+      "match": true
+    },
+    {
+      "path": "sw/ps_uart_print/ps_uart_print_pl_control.elf",
+      "exists": true,
+      "sha256": "425bb4046c848e3144d1b33bc55484f08a18eeb78cd4bad8bc0f031efb7892a3",
+      "match": true
+    },
+    {
+      "path": "build/boot/BOOT_20261023_GESTURE_CAPTURE_V1.BIN",
+      "exists": true,
+      "sha256": "c7ed8c425b03794d63086b6aedda4ceae48ad72a10ee56accb4b6bd1681b38c4",
+      "match": true
+    },
+    {
+      "path": "build/export/design_1.xsa",
+      "exists": true,
+      "sha256": "9340cbb478d07f5931c23aca38b3dbab195c34670585ec40081ddc84d691aaf2",
+      "match": true
+    },
+    {
+      "path": "src/rtl/emg_control_policy.v",
+      "exists": true,
+      "sha256": "668809c41be5b91d75c7036b3cc97b9833f533e58a55220cef1737d699465ccb",
+      "match": true
+    },
+    {
+      "path": "src/rtl/emg_control_inference.v",
+      "exists": true,
+      "sha256": "7f4c983232ab211e3bc1382a14308bead4e54819acb2f3671c939853f8365cd4",
+      "match": true
+    },
+    {
+      "path": "src/rtl/emg_control_constants.vh",
+      "exists": true,
+      "sha256": "cf077f7e7e2a98848b1e725313e2d99ac8eaee67cc762fa4e14896faef2cded9",
+      "match": true
+    },
+    {
+      "path": "src/rtl/emg_pl_control.v",
+      "exists": true,
+      "sha256": "a5138927d8e1e204daf0c665922d3fc536b9b55076e2002acd1e48ee5047df58",
+      "match": true
+    },
+    {
+      "path": "src/rtl/emg_pl_export.v",
+      "exists": true,
+      "sha256": "bf12ca026c075c8835d3d8dcc1846ddfb9650b10889d02ca066ea7594c26902d",
+      "match": true
+    },
+    {
+      "path": "src/rtl/hand_servo_pwm.v",
+      "exists": true,
+      "sha256": "6fea2331f016fbc2086b984ca0494724b706da587806a1fc3301069a56e580e6",
+      "match": true
+    },
+    {
+      "path": "sw/ps_uart_print/main.c",
+      "exists": true,
+      "sha256": "18605b495acc205c365002cf422966aa916d1398d5a1ec5052dc2c3f57a4cfde",
+      "match": true
+    },
+    {
+      "path": "sw/ps_uart_print/pl_control.h",
+      "exists": true,
+      "sha256": "39e0860d2c7b2896094e76e503adad4071330a6a74d3a0b8901e372d660aaaff",
+      "match": true
+    },
+    {
+      "path": "sw/ps_uart_print/synergy_feedback.h",
+      "exists": true,
+      "sha256": "a47794b75a8b504fa6a84e70e0a03acc18eae7c38eb7d8752fa2d20e29a0f90a",
+      "match": true
+    },
+    {
+      "path": "sw/ps_uart_print/lcd_rehab.h",
+      "exists": true,
+      "sha256": "b2faa2c56b45702809ae895493bf1a3e1456abe5c6cca827ac799b28c8d249f9",
+      "match": true
+    },
+    {
+      "path": "sw/ps_uart_print/rehab_training.h",
+      "exists": true,
+      "sha256": "cc4dee7a12d8caf6424f15ac3b28f144740269c36959c79756962b0a24a4a855",
+      "match": true
+    },
+    {
+      "path": "sw/ps_uart_print/synergy_nmf.h",
+      "exists": true,
+      "sha256": "eba345f25aa7f1be9f916c1c9519573b3fca601689bf35f51c125814e45b0f0b",
+      "match": true
+    },
+    {
+      "path": "sw/ps_uart_print/synergy_nmf_model.h",
+      "exists": true,
+      "sha256": "fcc2e3e365d025ee4e73a50b8c9d78ddc5b81314f59daf2a10ab310bde3e5839",
+      "match": true
+    },
+    {
+      "path": "sw/ps_uart_print/lcd_font_zh.h",
+      "exists": true,
+      "sha256": "2a0083b93511002f34730428befa4da3c22c8165edd2e643e121d39145b6aee5",
+      "match": true
+    },
+    {
+      "path": "sw/ps_uart_print/capture_actions.h",
+      "exists": true,
+      "sha256": "a63e1ed31ba11c01afe50593425e1731ad36019d161b5551256fbaada0473f67",
+      "match": true
+    },
+    {
+      "path": "sw/ps_uart_print/sd_record.c",
+      "exists": true,
+      "sha256": "866de5b0730b589cd40ff804a7789175239b5ffd8236f1ffb86b39e465c3ef5c",
+      "match": true
+    },
+    {
+      "path": "sw/ps_uart_print/sd_record.h",
+      "exists": true,
+      "sha256": "d9417c066b9932151e03d02be6c39c59a08f4545eb0723bb8ea4b06fe417b86f",
+      "match": true
+    },
+    {
+      "path": "tools/capture_actions.py",
+      "exists": true,
+      "sha256": "3329fc0ab0b23905f9361f75978a8868a5579854f035e4ce55445ffd0ef1873d",
+      "match": true
+    },
+    {
+      "path": "tools/record_uart.py",
+      "exists": true,
+      "sha256": "59be5821762961a890da4b80cb333d73d5b30127df74d10033a229c71391bf02",
+      "match": true
+    },
+    {
+      "path": "tools/train_gesture_model.py",
+      "exists": true,
+      "sha256": "d6e20398e661fca57ebc542221bee8ad6a6a32207d2b8dbad4c69a5ef7247222",
+      "match": true
+    }
+  ],
+  "documentation_existing_path_checks": 16,
+  "empty_source_directories": [
+    "src/bd",
+    "src/hls",
+    "src/ps"
+  ],
+  "statuses": {
+    "classifier_classes": 5,
+    "manual_acquisition_classes": 14,
+    "online_new_class_learning": false,
+    "hdc": "PC validation only",
+    "nmf": "PS fixed W, C projection",
+    "servo_pwm": "standalone RTL, absent from BD",
+    "fatigue_fft": "PL",
+    "detailed_lcd_spectrum_fft": "PS",
+    "hardware_verified": false,
+    "pwm_connected": false,
+    "firmware_changed_this_review": false,
+    "build_run_this_review": false
+  }
+}

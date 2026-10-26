@@ -21,6 +21,12 @@ uint32_t sd_record_frames(void) { return 0; }
 const char *sd_record_filename(void) { return "EMG000.BIN"; }
 uint32_t sd_training_save(const char *d,uint32_t b,char n[13])
 {(void)d;(void)b;(void)n;return 0u;}
+uint32_t sd_hand_read(uint32_t slot,void *d,uint32_t b)
+{(void)slot;(void)d;(void)b;return 1u;}
+uint32_t sd_hand_write(uint32_t slot,const void *d,uint32_t b)
+{(void)slot;(void)d;(void)b;return 1u;}
+uint32_t sd_hdc_save(const char *d,uint32_t b,char n[13])
+{(void)d;(void)b;(void)n;return 0u;}
 static unsigned char fb[3][1024*600*3];
 static volatile u32 fake_reg;
 static u32 buffer[BUF_PACKETS*2], time_ticks;
@@ -64,6 +70,7 @@ int main(void)
     unsigned ch,notch,base;
     /* Creating a file must preserve running DMA indices and MMIO state. */
     dma_running=1u;dma_head=17u;dma_tail=16u;dma_fault=0u;
+    lcd_sd_view=1u;ui_menu_open=0u;
     fake_reg=0x12345678u;ui_sd_action=1u;ui_action=0u;
     ui_apply_action();
     assert(dma_running==1u && dma_head==17u && dma_tail==16u && dma_fault==0u);

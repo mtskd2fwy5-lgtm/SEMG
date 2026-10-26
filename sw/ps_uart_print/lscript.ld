@@ -12,6 +12,8 @@ MEMORY
 {
     APP (rwx) : ORIGIN = 0x10000000, LENGTH = 4M
     DMA (rw)  : ORIGIN = 0x11000000, LENGTH = 1M
+    LEARNING (rw) : ORIGIN = 0x11100000, LENGTH = 4K
+    HDC (rw)  : ORIGIN = 0x12000000, LENGTH = 64M
 }
 
 SECTIONS
@@ -48,6 +50,16 @@ SECTIONS
         . += 0x100000;             /* 128 x 8 KB acquisition buffers */
         __dma_buf_end = .;
     } > DMA
+
+    .learning_scratch (NOLOAD) : ALIGN(4096) {
+        __learning_scratch = .; . += 0x1000;
+    } > LEARNING
+
+    .hdc_storage (NOLOAD) : ALIGN(4096) {
+        __hdc_bank0 = .; . += 0x2000000;
+        __hdc_bank1 = .; . += 0x2000000;
+        __hdc_storage_end = .;
+    } > HDC
 
     __stack_top = ORIGIN(APP) + LENGTH(APP) - 16;
     ASSERT(__bss_end + 0x10000 < __stack_top, "APP leaves less than 64 KiB stack")

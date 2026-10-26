@@ -21,12 +21,23 @@ uint32_t sd_record_frames(void) { return 0; }
 const char *sd_record_filename(void) { return "EMG000.BIN"; }
 uint32_t sd_training_save(const char *d,uint32_t b,char n[13])
 {(void)d;(void)b;(void)n;return 0u;}
+static unsigned char hand_banks[2][512];
+static uint32_t hand_bank_size[2],hand_bank_fail;
+uint32_t sd_hand_read(uint32_t slot,void *d,uint32_t b)
+{if(slot>1 || hand_bank_size[slot]!=b)return 1;memcpy(d,hand_banks[slot],b);return 0;}
+uint32_t sd_hand_write(uint32_t slot,const void *d,uint32_t b)
+{assert(slot<2 && b<=512);if(hand_bank_fail)return 1;memcpy(hand_banks[slot],d,b);hand_bank_size[slot]=b;return 0;}
+uint32_t sd_hdc_save(const char *d,uint32_t b,char n[13])
+{(void)d;(void)b;(void)n;return 0u;}
 static unsigned char fb[3][1024*600*3];
 static volatile u32 fake_reg;
 static volatile u32 control_command_reg,control_status_reg;
+static volatile u32 hand_command_reg,hand_status_reg;
 static u32 buffer[BUF_PACKETS*2], time_ticks,uart_char_count;
 
 volatile u32 *lcd_test_mmio(u32 address) {
+    if(address==0x41250000u)return &hand_command_reg;
+    if(address==0x41250008u)return &hand_status_reg;
     if(address==0x41240000u)return &control_command_reg;
     if(address==0x41240008u)return &control_status_reg;
     return &fake_reg;

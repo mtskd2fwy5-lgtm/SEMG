@@ -1,0 +1,116 @@
+
+****** Vivado v2025.2 (64-bit)
+  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025
+  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025
+  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025
+  **** Start of session at: Mon Oct 26 15:57:18 2026
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+
+INFO: [Common 17-1239] XILINX_LOCAL_USER_DATA is set to 'no'.
+source {D:\FPGA\sEMG-HMRS/build/scripts/export_learning_netlist.tcl}
+# set root [file normalize [file join [file dirname [info script]] ../..]]
+# open_checkpoint [file join $root build/vivado/hand_motion_reconstruction.runs/design_1_emg_learning_0_0_synth_1/design_1_emg_learning_0_0.dcp]
+Command: open_checkpoint D:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.runs/design_1_emg_learning_0_0_synth_1/design_1_emg_learning_0_0.dcp
+
+Starting open_checkpoint Task
+
+Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.046 . Memory (MB): peak = 319.121 ; gain = 5.047
+INFO: [Device 21-403] Loading part xc7z020clg400-2
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.025 . Memory (MB): peak = 581.961 ; gain = 0.000
+INFO: [Netlist 29-17] Analyzing 399 Unisim elements for replacement
+INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
+WARNING: [Netlist 29-101] Netlist 'design_1_emg_learning_0_0' is not ideal for floorplanning, since the cellview 'design_1_emg_learning_0_0_emg_learning_accel' contains a large number of primitives.  Please consider enabling hierarchy in synthesis if you want to do floorplanning.
+INFO: [Project 1-479] Netlist was created with Vivado 2025.2
+INFO: [Project 1-570] Preparing netlist for logic optimization
+Read ShapeDB Complete: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.009 . Memory (MB): peak = 683.816 ; gain = 1.129
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.002 . Memory (MB): peak = 684.078 ; gain = 0.000
+INFO: [Project 1-111] Unisim Transformation Summary:
+  A total of 11 instances were transformed.
+  RAM64M => RAM64M (RAMD64E(x4)): 11 instances
+
+INFO: [Project 1-604] Checkpoint was created with Vivado v2025.2 (64-bit) build 6299465
+open_checkpoint: Time (s): cpu = 00:00:04 ; elapsed = 00:00:16 . Memory (MB): peak = 692.152 ; gain = 387.680
+# write_verilog -mode funcsim -force [file join $root sim/results_learning/learning_synth.v]
+# puts "LEARNING_FUNC_NETLIST_EXPORTED"
+LEARNING_FUNC_NETLIST_EXPORTED
+INFO: [Common 17-206] Exiting Vivado at Mon Oct 26 15:57:40 2026...
+TEST_PASS generated independent golden: 64 NMF, 24 training, 26 HDC predictions
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/sim/results_learning/learning_synth.v" into library work
+INFO: [VRFC 10-311] analyzing module design_1_emg_learning_0_0
+INFO: [VRFC 10-311] analyzing module design_1_emg_learning_0_0_emg_learning_accel
+INFO: [VRFC 10-311] analyzing module design_1_emg_learning_0_0_learning_div64
+INFO: [VRFC 10-311] analyzing module glbl
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/sim/emg_learning_accel_tb.sv" into library work
+INFO: [VRFC 10-311] analyzing module emg_learning_accel_tb
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/VIVADO/2025.2/data/verilog/src/glbl.v" into library work
+Vivado Simulator v2025.2
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+Running: D:/FPGA/VIVADO/2025.2/Vivado/bin/unwrapped/win64.o/xelab.exe emg_learning_accel_tb glbl -L unisims_ver -L unimacro_ver -s learning_net_sim -debug typical 
+Multi-threading is on. Using 30 slave threads.
+Starting static elaboration
+Pass Through NonSizing Optimizer
+Completed static elaboration
+Starting simulation data flow analysis
+Completed simulation data flow analysis
+Time Resolution for simulation is 1ps
+Compiling module unisims_ver.GND
+Compiling module unisims_ver.VCC
+Compiling module unisims_ver.LUT4
+Compiling module unisims_ver.LUT5
+Compiling module unisims_ver.LUT6
+Compiling module unisims_ver.x_lut3_mux8
+Compiling module unisims_ver.LUT3
+Compiling module unisims_ver.FDRE_default
+Compiling module unisims_ver.x_lut2_mux4
+Compiling module unisims_ver.LUT2
+Compiling module unisims_ver.CARRY4
+Compiling module unisims_ver.MUXF7
+Compiling module unisims_ver.x_lut1_mux2
+Compiling module unisims_ver.LUT1
+Compiling module work.design_1_emg_learning_0_0_learni...
+Compiling module unisims_ver.DSP48E1(ACASCREG=0,ALUMODEREG=0,...
+Compiling module unisims_ver.DSP48E1(ALUMODEREG=0,CARRYINREG=...
+Compiling module unisims_ver.MUXF8
+Compiling module unisims_ver.DSP48E1(ALUMODEREG=0,CARRYINREG=...
+Compiling module unisims_ver.DSP48E1(ACASCREG=0,ALUMODEREG=0,...
+Compiling module unisims_ver.RAM64M
+Compiling module unisims_ver.RB36_INTERNAL_VLOG(DOA_REG=1,RDA...
+Compiling module unisims_ver.RAMB36E1(DOA_REG=1,INIT_00=256'b...
+Compiling module unisims_ver.RB36_INTERNAL_VLOG(DOA_REG=1,RDA...
+Compiling module unisims_ver.RAMB36E1(DOA_REG=1,INIT_00=256'b...
+Compiling module work.design_1_emg_learning_0_0_emg_le...
+Compiling module work.design_1_emg_learning_0_0
+Compiling module work.emg_learning_accel_tb
+Compiling module work.glbl
+Built simulation snapshot learning_net_sim
+
+****** xsim v2025.2 (64-bit)
+  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025
+  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025
+  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025
+  **** Start of session at: Mon Oct 26 15:57:54 2026
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+
+source xsim.dir/learning_net_sim/xsim_script.tcl
+# xsim {learning_net_sim} -autoloadwcfg -runall
+Time resolution is 1 ps
+run -all
+TEST_PASS NMF bit-exact 64 windows
+TEST_PASS HDC normalization majority encoding and prototype learning
+TEST_PASS HDC prediction margin clipping tie handling and frozen prototype
+TEST_PASS zero scale and exact first-class ties
+TEST_PASS HDC saturating prototype update
+TEST_PASS address bounds AXI response fault and retry
+LEARNING_CYCLES job1 max=3958 clock=100MHz AXI with variable stalls
+LEARNING_CYCLES job2 max=782 clock=100MHz AXI with variable stalls
+LEARNING_CYCLES job3 max=23863 clock=100MHz AXI with variable stalls
+LEARNING_CYCLES job4 max=77188 clock=100MHz AXI with variable stalls
+TEST_PASS learning accelerator complete
+$finish called at time : 30127810 ns : File "D:/FPGA/sEMG-HMRS/sim/emg_learning_accel_tb.sv" Line 137
+run: Time (s): cpu = 00:00:00 ; elapsed = 00:11:25 . Memory (MB): peak = 231.125 ; gain = 0.000
+exit
+INFO: xsimkernel Simulation Memory Usage: 44540 KB (Peak: 44540 KB), Simulation CPU Usage: 683296 ms
+INFO: [Common 17-206] Exiting xsim at Mon Oct 26 16:09:21 2026...

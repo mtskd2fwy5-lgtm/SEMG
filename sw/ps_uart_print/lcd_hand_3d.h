@@ -10,7 +10,7 @@ typedef struct { i32 x,y,d; } hand_screen;
 static u16 lcd_depth[1024u*600u];
 static i32 lcd_draw_matrix[9] = {-4096,0,0,0,4096,0,0,0,-4096};
 static i32 lcd_draw_angles[22];
-static i32 lcd_pose_cur[22], lcd_pose_from[22];
+static i32 lcd_pose_cur[22], lcd_pose_from[22], lcd_pose_target[22];
 static u32 lcd_pose_cls, lcd_pose_t0, lcd_pose_initialized, lcd_animation_busy;
 
 static i32 hand_abs(i32 v) { return v<0 ? -v : v; }
@@ -235,28 +235,35 @@ static void lcd_draw_hand(u32 cls,u32 fatigue)
       rad[0]=17;rad[1]=16;rad[2]=13;rad[3]=8;hand_tube(p,rad,4,1,skin);
     }
 }
-static void lcd_pose_sample(u32 cls)
+/* Snapshot arbitrary joint targets before building the immutable draw list. */
+static void lcd_pose_sample_target(u32 cls,const i32 target[22])
 {
-    u32 i,t=gt_stamp(),elapsed=(t-lcd_pose_t0)/GT_TICKS_PER_MS;
-    if(cls>=POSE_MODEL_CLASSES)cls=0;
+    u32 i,changed=0u,t=gt_stamp(),elapsed=(t-lcd_pose_t0)/GT_TICKS_PER_MS;
     if(!lcd_pose_initialized) {
-        lcd_pose_initialized=1; lcd_pose_cls=cls;
-        for(i=0;i<22;i++)lcd_pose_cur[i]=lcd_pose_from[i]=pose_table[cls][i]*256;
-        lcd_pose_t0=t;lcd_animation_busy=0;
+        lcd_pose_initialized=1u;
+        for(i=0;i<22;i++)lcd_pose_cur[i]=lcd_pose_from[i]=lcd_pose_target[i]=target[i]*256;
+        lcd_pose_t0=t;lcd_animation_busy=0u;
     } else if(lcd_animation_busy) {
         if(elapsed>POSE_SMOOTH_MS)elapsed=POSE_SMOOTH_MS;
         for(i=0;i<22;i++)lcd_pose_cur[i]=lcd_pose_from[i]+
-            (pose_table[lcd_pose_cls][i]*256-lcd_pose_from[i])*(i32)elapsed/(i32)POSE_SMOOTH_MS;
-        if(elapsed==POSE_SMOOTH_MS)lcd_animation_busy=0;
+            (lcd_pose_target[i]-lcd_pose_from[i])*(i32)elapsed/(i32)POSE_SMOOTH_MS;
+        if(elapsed==POSE_SMOOTH_MS)lcd_animation_busy=0u;
     }
-    if(cls!=lcd_pose_cls) {
-        for(i=0;i<22;i++)lcd_pose_from[i]=lcd_pose_cur[i];
-        lcd_pose_t0=t;lcd_pose_cls=cls;lcd_animation_busy=1;
+    for(i=0;i<22;i++)if(lcd_pose_target[i]!=target[i]*256)changed=1u;
+    if(changed) {
+        for(i=0;i<22;i++) {lcd_pose_from[i]=lcd_pose_cur[i];lcd_pose_target[i]=target[i]*256;}
+        lcd_pose_t0=t;lcd_animation_busy=1u;
     }
+    lcd_pose_cls=cls;
     for(i=0;i<22;i++) {
         i32 v=lcd_pose_cur[i];
         lcd_draw_angles[i]=(v+(v>=0?128:-128))/256;
     }
+}
+static void lcd_pose_sample(u32 cls)
+{
+    if(cls>=POSE_MODEL_CLASSES)cls=0u;
+    lcd_pose_sample_target(cls,pose_table[cls]);
 }
 static void lcd_hand_snapshot(void)
 {

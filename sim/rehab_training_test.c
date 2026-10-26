@@ -74,6 +74,29 @@ int main(void)
     rest_to_cue();hold_success();rest_to_cue();assert(r.state==RH_DONE);
     rehab_start(&r,1,99,99,99999,99999,time_ms);
     assert(r.total==40 && r.action==1 && r.hold_ms==5000 && r.rest_ms==10000);
+    /* A group requires actual relaxed evidence, timed rest, and an explicit
+     * continue; pausing during rest cannot bypass the group on resume. */
+    rehab_start(&r,0,2,5,1000,1000,time_ms);r.group_every=3u;r.group_rest_ms=15000u;
+    for(n=0u;n<3u;n++){rest_to_cue();hold_success();}
+    /* Pausing at the group boundary during recovery cannot skip the break. */
+    assert(r.group_pending);rehab_pause(&r,RH_REASON_USER,time_ms);rehab_resume(&r,time_ms);
+    observe(0,0,80,1);
+    assert(r.state==RH_GROUP_REST && r.group_pending && r.groups_completed==0u);
+    rehab_continue_group(&r,time_ms);assert(r.state==RH_GROUP_REST);
+    for(n=0;n<600u;n++)observe(2,2,90,0);
+    assert(r.state==RH_GROUP_REST && r.attempted==3u);
+    rehab_pause(&r,RH_REASON_USER,time_ms);assert(r.pause_count==2u);
+    rehab_resume(&r,time_ms);observe(0,0,80,1);
+    assert(r.state==RH_GROUP_REST && r.group_pending);
+    for(n=0;n<600u;n++)observe(0,0,80,1);
+    rehab_continue_group(&r,time_ms);assert(r.state==RH_RELAX && !r.group_pending && r.groups_completed==1u);
+    rest_to_cue();hold_success();rest_to_cue();hold_success();rest_to_cue();
+    assert(r.state==RH_DONE && r.successes==5u);
+    /* Timer completion with stale input must pause, never release a group. */
+    rehab_start(&r,0,1,3,1000,1000,time_ms);r.group_pending=1u;r.group_rest_ms=15000u;
+    observe(0,0,80,1);assert(r.state==RH_GROUP_REST);
+    time_ms+=251u;rehab_tick(&r,time_ms,1u);assert(r.state==RH_PAUSED && r.reason==RH_REASON_DATA);
+    puts("TEST_PASS REHAB GROUPS: relaxed recovery, explicit continuation, minimum rest, pause/resume, stale stream.");
     puts("TEST_PASS REHAB: single/combined tasks, continuous hold/rest, candidate evidence, timeout, stale data, pause, sequence gaps, duplicate, clock wrap, settings bounds.");
     return 0;
 }

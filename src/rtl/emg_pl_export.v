@@ -62,6 +62,7 @@ module emg_pl_export #(
     output wire                  adc_pwdn_n,
     output wire                  status_led,
     output reg [31:0]            adc_config_status,
+    output wire                 control_decision_valid,
     output wire [63:0]           m_axis_tdata,
     output wire                  m_axis_tvalid,
     input  wire                  m_axis_tready,
@@ -215,7 +216,9 @@ module emg_pl_export #(
     wire [31:0] nn_out_data;
     wire [15:0] nn_seq,decision_seq;
     wire decision_valid;
+    assign control_decision_valid=decision_valid;
     wire [31:0] decision_data;
+    wire fatigue_muscle_active;
     generate if(CONTROL_ENABLE)begin:g_control
         emg_control_inference u_control(
             .clk(pl_clk),.rst_n(pl_rst_n),.recalibrate(control_recalibrate),
@@ -225,7 +228,7 @@ module emg_pl_export #(
             .nn_valid(nn_out_valid),.nn_id(nn_out_id),.nn_data(nn_out_data),.nn_seq(nn_seq),
             .decision_valid(decision_valid),.decision_data(decision_data),.decision_seq(decision_seq),
             .cal_stage(control_cal_stage),.stale(control_stale),.fault(control_fault),
-            .active_class(control_class));
+            .active_class(control_class),.muscle_active(fatigue_muscle_active));
     end else begin:g_legacy
         assign decision_valid=0;
         assign decision_data=0;
@@ -234,6 +237,9 @@ module emg_pl_export #(
         assign control_stale=1;
         assign control_fault=0;
         assign control_class=0;
+        // Legacy builds have no calibrated PL gate. Fail closed for fatigue;
+        // spectrum/MDF telemetry remains available in both build modes.
+        assign fatigue_muscle_active=0;
         assign nn_seq=legacy_seq;
     localparam [1:0] NN_IDLE = 2'd0,   // waiting for a window-start word
                      NN_CAP  = 2'd1,   // capturing the remaining 39 words
@@ -319,6 +325,9 @@ module emg_pl_export #(
 
     emg_fatigue u_emg_fatigue (
         .clk(pl_clk), .rst_n(pl_rst_n),
+        .activity_valid(CONTROL_ENABLE && control_cal_stage==2 &&
+                        !control_stale && !control_fault && !control_recalibrate),
+        .muscle_active(fatigue_muscle_active),.activity_class(control_class),
         .sample_valid(gate_sample_valid), .sample_channel(notch_channel),
         .sample_data(notch_data),
         .out_valid(fat_out_valid), .out_ready(fat_out_ready),

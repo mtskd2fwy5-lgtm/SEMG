@@ -1,4 +1,29 @@
-# sEMG 手部运动重建与康复训练系统
+# 自学习肌电意图解码康复训练系统
+
+作品简介：本作品面向上肢康复训练与肌电人机交互，基于 XC7Z020 SoC 构建表面肌电意图解码与康复训练平台。系统通过ADS1299采集八通道肌电，在PL端完成SPI驱动、工频及谐波抑制、数字滤波、整流、滑窗分段、时域特征、FFT频谱分析、轻量神经网络推理、超维计算个体化在线学习及NMF肌肉协同系数求解，识别常见及自定义手势，计算中值频率并评估疲劳趋势。PS端负责静息校准、佩戴适配、学习引导、模型存储及任务管理，并以触控 RGB LCD 为交互平台，显示动作置信度、波形、频谱、通道质量、肌肉协同及疲劳反馈，支持SD卡记录、动作标注和自定义手势映射。康复训练支持单动作与组合任务，设置次数、保持及休息时间，利用肌肉协同反馈相对用力变化，结合完成率、稳定性及识别响应评估训练表现。识别结果与MPU姿态驱动虚拟三维手；PS生成映射目标，PL输出六路PWM驱动五指与掌部机械手，实现抓握、掌部旋转及复位。PL承担实时处理、在线学习与机械手驱动，PS统筹交互、分析与训练管理，构建肌电采集、边缘推理、虚实运动及康复反馈闭环，体现FPGA 在低延迟生物信号处理、边缘智能和康复人机交互中的应用价值。
+
+当前版本 `20261026_HAND_CONTROL_HDC_DYNAMIC_V13`：补齐 HDC 自定义手势的虚拟三维手映射，提供 22 关节姿态编辑、预设/滑块/微调、MLP/HDC 共享来源选择与稳定类别跟随；保留 V12 的 PL NMF/HDC 运算与六轴机械手驱动。虚拟关节角度与机械手 PWM 独立映射，模型及自定义映射仍为本次上电 RAM 数据。操作、测试与匹配 BOOT 见 [虚拟手映射 V13](report/virtual_mapping_20261026/README.md)，PL 资源与时序见 [NMF/HDC 迁入 PL — V12](report/pl_learning_nmf_20261026/README.md)。
+
+2026-10-25 V7 `20261025_HAND_CONTROL_HDC_DYNAMIC_V7`：自定义手势可追加、翻页管理，
+学习和识别独立于机械手映射；只有学完的自定义类别进入映射列表，未映射类别仅识别。
+新 BOOT、操作和验证见 [可追加手势 V7](report/hdc_dynamic_20261025/README.md)。学习库及新增映射仍为 RAM 保存。
+
+2026-10-25 LCD与康复流程更新为 `20261025_HAND_CONTROL_REHAB_V3`：上电首页、固定导航、统一页面互斥和退出处理，
+训练增加接触/舒适确认、组间休息及本人确认继续。当前面向科研演示与健康人验证；治疗师计划、主观量表和历史复评为后续范围。
+操作、测试及康复方案见 [LCD与康复 V3](report/rehab_ui_20261025/README.md)。以下保留历史迭代记录，最新 BOOT 入口以上述 V13 为准。
+
+2026-10-24 历史框架（当前计算分工以 V12 记录为准）：以 [工程总体框架 V1](report/system_framework_v1_20261024.md) 为准：
+PL 负责实时信号链和基础五类决策；个体化学习的编码、原型更新、推理与稳定决策最终也迁入 PL。
+PS 负责 LCD、数据分析、康复、学习引导、验证评分和模型存储管理，PC 负责离线训练与验证。
+当前已有 PS 版 HDC/质心学习及 HD000/HD001 实测。本次追加六路 PL PWM、LCD 标定/映射和 SD 标定备份，
+默认关闭输出，尚未实物接线。PL个体化引擎和模型持久化仍待完成。
+接线、操作与验证见 [机械手接入记录](report/hand_integration_20261024/README.md)。下文保留历史功能记录；当前分工、边界和开发顺序见总体框架。
+
+2026-10-24 工程告警修复版使用 `20261024_HAND_CONTROL_V2`，保留 V1 功能；处理旧文件引用、模块解析入口和 LCD 双时钟约束。构建、时序和镜像证据见 [工程修复记录](report/vivado_open_warnings_20261024/README.md)。
+
+后续按“先追加完整功能并留存基线，再优化并对比”推进；自定义手势加入LCD中文拼音命名、
+可配置机械手六路目标映射，并随模型保存。上述均为待实现范围，详见
+[完整功能与优化对比约定](report/full_feature_baseline_20261024.md)。
 
 2026-10-23 首轮康复训练反馈：各动作需明显用力才能识别，尚待区分静息门控、
 模型置信度与训练力度覆盖的影响；本次未调整识别参数。见 [首轮实测记录](report/rehab_20261023/first_round_feedback.md)。
@@ -84,7 +109,7 @@ AXI GPIO 邮箱下发映射；PL 决策不依赖遥测 ready。此结构对应 P
 - 预处理模块：4 kSPS 下进行 50 Hz/Q10 陷波、50 Hz 梳状滤波及 20–215 Hz 带通；带通保存量化余量，抑制整数反馈造成的直流偏置；输出保留正负波形
 - 特征模块：MAV、WL、Energy、ZC、SSC 窗口特征（与 PC 参考模型逐位一致）
 - 推理模块：INT8 MLP（`emg_nn_infer.v`，16-MAC 时分复用阵列，56µs/窗 @100MHz），权重 1377 字 BRAM，与 PC 金模型逐位一致；当前生产基线 LoSo pooled accuracy 为 84.04%，PL 对齐连续流实验为 83.46%；后续可升级 1D-CNN / TCN
-- 疲劳模块：8 通道分时复用 2048 点 radix-2 FFT（`emg_fatigue.v`，自写 RTL 避开 Xilinx FFT IP），512ms 窗计算 MDF 均值，16 点历史线性回归斜率输出 RTL 定义的疲劳等级；PS 已按有符号斜率分子和 0..3 等级解析并输出
+- 疲劳模块：8 通道分时复用 2048 点 radix-2 FFT（`emg_fatigue.v`，自写 RTL 避开 Xilinx FFT IP），512ms 窗计算 20–450 Hz MDF。V5 复用 PL 静息校准活动门控，修复低幅度 FFT 量化，按同一持续动作的 MDF 相对基线下降确认 0..3 级趋势，平台期保持，放松/动作改变后重新评估；16 点斜率仅保留诊断。未就绪显示“待评估”。详见 [疲劳修复与验证](report/fatigue_20261025/README.md)，该趋势不代表临床疲劳严重度。
 - 判决与校准模块（PL-control：`emg_control_policy.v`，PS 兼容实现保留）：上电丢弃 80 窗并平均 16 窗的各通道 MAV，阈值为 max(3×基线,1000)；输出整数 softmax 置信度、静息门控及经 3/6/8 窗规则稳定的最终类别。UART `c` 或 LCD 触发静息重校准；超时/协议异常阻止采用失效决策。PS 仍校验遥测完整性，并执行适配候选评分与独立验证。
 - 数据采集模式：`r` 在 115200 文本监控与 2 Mbaud 二进制采集间切换，`n` 选最终处理波形（默认，帧头 `AA 58`），`u` 选原始 ADC（`AA 55`）；之后均为 `seq u16 LE | 8×int24 LE`，共 28 B。`--signal notch50` 兼容原命令并选择最终 processed 信号；`--signal legacy-notch50` 才选择历史单陷波固件（`AA 56`）。每帧验证来源并保存滤波版本。
 - 重建模块：把模型输出映射为离散手部姿态（rest/张开/握拳/腕屈/伸腕）+ 平滑插值的低维参数
@@ -496,7 +521,9 @@ sEMG-HMRS/
 vivado -mode batch -source build/create_project.tcl
 ```
 
-日常流程：改 RTL → `build/check_design.tcl`（防 XCI 缓存过期）→ 综合/实现 → `build/export_xsa.tcl` → Vitis 切换 XSA 重编固件；板级放跑用 `build/debug/dbg_test_k.tcl`（先跑 `build/debug/pre_debug_stop.bat` 停核防挂死）。
+打开现有工程建议使用 `vivado -source build/open_project.tcl`，该入口会打开 BD 并验证模块引用。Vivado 2025.2 刚打开 XPR、尚未加载 BD 时，`report_ip_status` 可能暂报 module reference unresolved；应先打开 BD 再判断。源码同步入口 `build/update_project.tcl` 会清理缺失的旧波形配置和已退役的 `_0_4` DCP 引用。LCD 引脚约束保留在 `hz_zynq_lcd.xdc`，依赖 MMCM 生成时钟的约束在 `hz_zynq_lcd_timing.xdc` 中按 implementation-only、LATE 加载，同时检查两种面板时钟。
+
+日常流程：改 RTL → `build/build_all.ps1 -SkipBoot`（同步源码、验证 BD、综合实现和验收门禁）→ `build/boot/build_pl_control_boot.ps1`（构建并核对配套 PS/PL BOOT）；板级放跑用 `build/debug/dbg_test_k.tcl`（先跑 `build/debug/pre_debug_stop.bat` 停核防挂死）。
 
 最终脱离 PC 的启动流程：完成实现、生成 PS ELF 后运行
 `build/boot/build_boot_bin.bat`，得到 `build/boot/BOOT.BIN`。将该镜像一次性写入板卡 QSPI 后，板卡上电由 FSBL 自动加载 bitstream 和 PS 裸机程序，LCD 本地显示虚拟手；PC、JTAG 和 UART 仅用于首次烧录、调试或数据采集。QSPI 烧录和断电自启动仍需在目标板上完成实测确认。

@@ -16,6 +16,7 @@ unsigned char __dma_buf[1048576];
 static unsigned char frames[3][1024*600*3+64];
 static volatile u32 regs[16];
 static u32 test_time, clean_count;
+static u32 test_clock_step=100u*333u;
 static u32 test_clean_bytes[3];
 static u32 mock_sd_active,mock_sd_ready,mock_sd_error,mock_sd_frames;
 static u32 mock_sd_last_action;
@@ -36,13 +37,25 @@ int sd_record_error(void) { return (int)mock_sd_error; }
 uint32_t sd_record_frames(void) { return mock_sd_frames; }
 const char *sd_record_filename(void) { return "EMG000.BIN"; }
 static u32 mock_rehab_save_error,mock_rehab_saves;
-static char mock_rehab_csv[8192];
+static char mock_rehab_csv[16384];
 uint32_t sd_training_save(const char *data,uint32_t bytes,char name[13])
 {
     if(mock_sd_active)return 0x301u;
     if(mock_rehab_save_error)return mock_rehab_save_error;
     assert(bytes<sizeof mock_rehab_csv);memcpy(mock_rehab_csv,data,bytes);mock_rehab_csv[bytes]=0;
     strcpy(name,"RH000.CSV");mock_rehab_saves++;return 0;
+}
+
+static u32 mock_hdc_saves;
+uint32_t sd_hand_read(uint32_t slot,void *d,uint32_t b)
+{(void)slot;(void)d;(void)b;return 1u;}
+uint32_t sd_hand_write(uint32_t slot,const void *d,uint32_t b)
+{(void)slot;(void)d;(void)b;return 1u;}
+uint32_t sd_hdc_save(const char *data,uint32_t bytes,char name[13])
+{
+    u32 rc=sd_training_save(data,bytes,name);
+    if(!rc){strcpy(name,"HD000.CSV");mock_hdc_saves++;}
+    return rc;
 }
 
 volatile u32 *lcd_test_mmio(u32 address)
@@ -62,7 +75,7 @@ volatile u32 *lcd_test_mmio(u32 address)
     }
 }
 volatile u8 *lcd_test_fb(u32 index) { assert(index<3); return frames[index]+32; }
-u32 lcd_test_clock(void) { test_time+=100u*333u; return test_time; }
+u32 lcd_test_clock(void) { test_time+=test_clock_step; return test_time; }
 void display_memory_clean(uintptr_t address, u32 bytes)
 {
     u32 i;
@@ -469,7 +482,7 @@ static void test_wave_display(void)
 {
     u32 i,j,before,old_count,old_channel,old_source;char name[100];
     /* Enter through the same touch handler as the device. */
-    press((u32)LCD_X(560),(u32)LCD_Y(45));assert(lcd_wave_view);
+    ui_home_open();press((u32)LCD_X(100),(u32)LCD_Y(280));assert(lcd_wave_view);
     for(j=0;j<8;j++) {
         press((u32)(LCD_X(28)+(i32)j*LCD_X(122)+LCD_X(50)),(u32)LCD_Y(555));
         assert(wave_channel==j);
@@ -492,6 +505,9 @@ static void test_wave_display(void)
     /* Pause freezes samples while acquisition continues. Timebase and DC
      * controls still operate on that frozen 200-ms snapshot. */
     press((u32)LCD_X(900),(u32)LCD_Y(165));assert(wave_paused);
+    drain_frame();expected_frame();
+    /* Compare held samples after the independent tap acknowledgement ends. */
+    test_time+=101u*GT_TICKS_PER_MS;ui_feedback_tick();
     drain_frame();expected_frame();before=hash(regs[2]&31u);old_count=wave_count;
     for(i=800;i<1000;i++)wave_packet(1,2,(65500u+i)&65535u,500000);
     assert(wave_count>old_count && wave_snapshot[0]!=500000);
@@ -542,7 +558,7 @@ static void test_wave_display(void)
      * the hand. Commands already in flight must remain immutable. */
     press((u32)LCD_X(350),(u32)LCD_Y(45));assert(ui_menu_open);
     drain_frame();expected_frame();
-    press((u32)LCD_X(50),(u32)LCD_Y(100));assert(!ui_menu_open && lcd_wave_view);
+    press((u32)LCD_X(100),(u32)LCD_Y(280));assert(!ui_menu_open && lcd_wave_view);
     drain_frame();expected_frame();
     press((u32)LCD_X(560),(u32)LCD_Y(45));assert(!lcd_wave_view);
     drain_frame();expected_frame();guard_check();
@@ -584,7 +600,7 @@ static void test_analysis_display(void)
            spec_band[6] == 18u && spec_band[24] == 8u &&
            spec_band[29] == 1u && pl_spec_peak_bin == 51u);
     before = lcd_present_cnt;
-    press((u32)LCD_X(760), (u32)LCD_Y(60));
+    ui_open_page(UI_DATA);
     assert(lcd_data_view && !lcd_wave_view);
     drain_frame();
     assert(lcd_present_cnt > before && dl_len < LCD_DL_MAX);
@@ -598,11 +614,11 @@ static void test_analysis_display(void)
     assert(lcd_analysis_focus == 6u);
     drain_frame();
     press((u32)LCD_X(560), (u32)LCD_Y(45));
-    assert(!lcd_data_view && !lcd_wave_view);
+    assert(!lcd_data_view && !lcd_wave_view);ui_open_page(UI_MONITOR);
     drain_frame();
-    press((u32)LCD_X(760), (u32)LCD_Y(60));
+    ui_open_page(UI_DATA);
     assert(lcd_data_view && !lcd_spectrum_view);
-    press((u32)LCD_X(760), (u32)LCD_Y(60));
+    ui_open_page(UI_SPECTRUM);
     assert(lcd_spectrum_view && !lcd_data_view && !lcd_wave_view);
     before = lcd_present_cnt;
     drain_frame();
@@ -618,13 +634,30 @@ static void test_analysis_display(void)
     puts("TEST_PASS DATA LCD: live MAV bars, raw values, gate/fatigue/gap status, focus, spectrum and return touch.");
 }
 
+static void test_fatigue_readiness_display(void)
+{
+    u32 before,ready_pixels;
+    ui_open_page(UI_MONITOR);fat_full=1u;
+    lcd_show_state(1u,90u,0u,0u,0,0);drain_frame();expected_frame();
+    ready_pixels=hash(regs[2]&31u);before=lcd_present_cnt;
+    // Level remains zero: readiness alone must refresh the monitor label.
+    fat_full=0u;lcd_show_state(1u,90u,0u,0u,0,0);drain_frame();expected_frame();
+    assert(lcd_present_cnt>before && lcd_state_fatigue_ready==0u);
+    assert(hash(regs[2]&31u)!=ready_pixels);
+    {char name[80];sprintf(name,"fatigue_pending_%u.ppm",(u32)LCD_W);ppm(name);}
+    before=lcd_present_cnt;fat_full=1u;
+    lcd_show_state(1u,90u,0u,0u,0,0);drain_frame();expected_frame();
+    assert(lcd_present_cnt>before && lcd_state_fatigue_ready==1u);
+    puts("TEST_PASS FATIGUE LCD: readiness-only refresh, pending distinct from normal, both panels");
+}
+
 static void test_quality_display(void)
 {
     u32 i,ch,n;char name[80];
     memset(channel_quality,0,sizeof channel_quality);
     cq_reference=cq_ref_failed=0;
     lcd_wave_view=lcd_spectrum_view=lcd_synergy_view=0;
-    lcd_data_view=lcd_quality_view=1;lcd_analysis_focus=0;
+    ui_open_page(UI_DATA);lcd_quality_view=1;lcd_analysis_focus=0;
     /* Actual final waveform packets drive all eight channel diagnostics. */
     for(n=0;n<4000;n++)for(ch=0;ch<8;ch++) {
         i32 v=(i32)(120.0*sin(2.0*3.141592653589793*(ch==2?50:137)*n/4000.0));
@@ -632,6 +665,7 @@ static void test_quality_display(void)
         lcd_spectrum_ingest((u32)v,0x50000000u|(ch<<24)|n);
     }
     for(ch=0;ch<8;ch++)assert(channel_quality[ch].valid);
+    for(ch=0;ch<8;ch++)assert(channel_quality[ch].grade==CQ_GRADE_UNKNOWN);
     assert(channel_quality[2].line10>990);
     assert(channel_quality[0].line10<5);
     assert(channel_quality[5].cf10>100);
@@ -655,6 +689,9 @@ static void test_quality_display(void)
     }
     assert(!cq_reference && !cq_ref_failed);
     for(ch=0;ch<8;ch++)assert(channel_quality[ch].base>80 && channel_quality[ch].base<86);
+    assert(channel_quality[0].grade==CQ_GRADE_A && channel_quality[0].total_score==100u);
+    for(ch=0;ch<8;ch++)assert(channel_quality[ch].grade==CQ_GRADE_A);
+    drain_frame();expected_frame();sprintf(name,"quality_scored_%u.ppm",(u32)LCD_W);ppm(name);
     test_time+=1501u*GT_TICKS_PER_MS;
     lcd_quality_tick(gt_stamp());assert(cq_stale_mask==255);
     assert(strcmp(lcd_quality_status(0,gt_stamp()),"无新数据")==0);
@@ -688,8 +725,8 @@ static void test_synergy_display(void)
     assert(lcd_action_label==saved_label);
     assert(lcd_zh_glyph(0x534Fu) && lcd_zh_glyph(0x540Cu)); /* 协同 */
     ui_open_page(2u);drain_frame();
-    press((u32)LCD_X(760),(u32)LCD_Y(60));assert(lcd_spectrum_view);
-    press((u32)LCD_X(760),(u32)LCD_Y(60));assert(lcd_synergy_view && !lcd_data_view && !lcd_spectrum_view);
+    ui_open_page(UI_SPECTRUM);assert(lcd_spectrum_view);
+    ui_open_page(UI_SYNERGY);assert(lcd_synergy_view && !lcd_data_view && !lcd_spectrum_view);
     drain_frame();expected_frame();guard_check();assert(dl_len<LCD_DL_MAX);
     sprintf(name,"synergy_%u.ppm",(u32)LCD_W);ppm(name);
     /* A missing feature window clears the history rather than joining epochs. */
@@ -713,13 +750,14 @@ static void rehab_test_feed(u32 cls);
 static void test_grip_feedback_ui(void)
 {
     u32 i,n,e[8],base,now;char name[80];
-    g_mode=MODE_MONITOR;mock_sd_active=0u;rehab.state=RH_IDLE;
+    g_mode=MODE_MONITOR;mock_sd_active=0u;rehab.state=RH_IDLE;rehab_setup_stage=0u;
     rehab_effort_enabled=0u;rehab_combo=0u;rehab_action=2u;
     synergy_feedback_reset(&synergy_feedback);synergy_seq_seen=0u;
     lcd_rehab_open();
     press((u32)LCD_X(120),(u32)LCD_Y(490));assert(rehab_effort_enabled);
     press((u32)LCD_X(100),(u32)LCD_Y(545));ui_apply_action();
     assert(rehab.state==RH_IDLE); /* enabled without reference cannot start */
+    press((u32)LCD_X(450),(u32)LCD_Y(545));assert(!rehab_setup_stage);
     press((u32)LCD_X(350),(u32)LCD_Y(490));ui_apply_action();
     assert(synergy_feedback.capture==1u);
     for(i=0u;i<8u;i++)e[i]=(u32)((uint64_t)synergy_w_q15[i][1]*40000u/32768u);
@@ -731,6 +769,9 @@ static void test_grip_feedback_ui(void)
     assert(synergy_feedback.capture==3u && synergy_feedback.reference>=256u);
     drain_frame();expected_frame();sprintf(name,"grip_setup_%u.ppm",(u32)LCD_W);ppm(name);
     press((u32)LCD_X(100),(u32)LCD_Y(545));ui_apply_action();
+    assert(rehab_setup_stage);
+    press((u32)LCD_X(100),(u32)LCD_Y(230));press((u32)LCD_X(100),(u32)LCD_Y(300));
+    cal_stage=2u;press((u32)LCD_X(100),(u32)LCD_Y(545));ui_apply_action();
     assert(rehab.state==RH_CALIBRATE && rehab.effort_enabled && rehab.effort_reference);
     cal_stage=2u;
     for(n=0u;n<120u && rehab.state!=RH_CUE;n++)rehab_test_feed(0u);
@@ -889,13 +930,9 @@ static void test_ui_settings(void)
     }
     mock_sd_active=0u;
     press((u32)LCD_X(920),(u32)LCD_Y(55));assert(!lcd_settings_view);
-    press((u32)LCD_X(760),(u32)LCD_Y(60));assert(lcd_data_view);
-    press((u32)LCD_X(760),(u32)LCD_Y(60));assert(lcd_spectrum_view);
-    press((u32)LCD_X(760),(u32)LCD_Y(60));assert(lcd_synergy_view && !lcd_spectrum_view);
-    press((u32)LCD_X(760),(u32)LCD_Y(60));assert(lcd_data_view && !lcd_synergy_view);
-    press((u32)LCD_X(560),(u32)LCD_Y(45));assert(!lcd_data_view);
-    press((u32)LCD_X(350),(u32)LCD_Y(45));assert(ui_menu_open);
-    press((u32)LCD_X(500),(u32)LCD_Y(155));assert(lcd_settings_view && !ui_menu_open);
+    press((u32)LCD_X(760),(u32)LCD_Y(60));assert(lcd_rehab_view);
+    press((u32)LCD_X(560),(u32)LCD_Y(45));assert(ui_menu_open && !lcd_rehab_view);
+    press((u32)LCD_X(920),(u32)LCD_Y(55));assert(lcd_settings_view && !ui_menu_open);
     drain_frame();expected_frame();guard_check();assert(dl_len<LCD_DL_MAX);
     press((u32)LCD_X(90),(u32)LCD_Y(170));assert(!lcd_settings_view);
     drain_frame();expected_frame();
@@ -907,10 +944,10 @@ static void test_sd_capture_ui(void)
     u32 ch,seq=301u,before=mock_sd_frames;
     ui_action=ui_sd_action=0u;ui_menu_open=0u;ui_mode_sel=0u;
     lcd_sd_view=lcd_wave_view=lcd_data_view=lcd_spectrum_view=0u;
-    lcd_action_label=SD_ACTION_NONE;g_mode=MODE_MONITOR;sd_pair_reset();
+    lcd_action_label=SD_ACTION_NONE;lcd_sd_label_page=0u;g_mode=MODE_MONITOR;sd_pair_reset();
     press((u32)LCD_X(350),(u32)LCD_Y(45));
     assert(ui_menu_open);
-    press((u32)LCD_X(350),(u32)LCD_Y(530));
+    press((u32)LCD_X(100),(u32)LCD_Y(380));
     assert(!ui_menu_open && lcd_sd_view && ui_action==0u);
     press((u32)LCD_X(90),(u32)LCD_Y(400));
     assert(lcd_action_label==SD_ACTION_REST);
@@ -931,12 +968,24 @@ static void test_sd_capture_ui(void)
     assert(mock_sd_frames==before+1u);
     press((u32)LCD_X(22+2*196+90),(u32)LCD_Y(400));
     assert(lcd_action_label==SD_ACTION_FIST);
+    /* Every expanded manual label is reachable on its page and selected IDs persist. */
+    {
+        u32 page,slot,action;
+        for(action=1u;action<=SD_ACTION_COUNT;action++) {
+            page=(action-1u)/SD_LABELS_PER_PAGE;
+            slot=(action-1u)%SD_LABELS_PER_PAGE;
+            press((u32)LCD_X(512+(i32)page*161+76),(u32)LCD_Y(346));
+            assert(lcd_sd_label_page==page);
+            press((u32)LCD_X(22+(i32)slot*196+90),(u32)LCD_Y(400));
+            assert(lcd_action_label==action);
+        }
+    }
     seq++;
     for(ch=0;ch<8u;ch++) {
         parse_packet((u32)(3000+(int)ch),0x10000000u|(ch<<24)|seq);
         parse_packet((u32)(4000+(int)ch),0x50000000u|(ch<<24)|seq);
     }
-    assert(mock_sd_frames==before+2u && mock_sd_last_action==SD_ACTION_FIST);
+    assert(mock_sd_frames==before+2u && mock_sd_last_action==SD_ACTION_THUMB_INDEX_MIDDLE);
     press((u32)LCD_X(500),(u32)LCD_Y(276));
     assert(ui_sd_action==2u);
     ui_apply_action();assert(!mock_sd_active);
@@ -964,10 +1013,10 @@ static void test_rehab_ui(void)
 {
     u32 i,n,old_label=lcd_action_label,saves=mock_rehab_saves;
     char name[80];
-    g_mode=MODE_MONITOR;mock_sd_active=0u;rehab.state=RH_IDLE;
+    g_mode=MODE_MONITOR;mock_sd_active=0u;rehab.state=RH_IDLE;rehab_setup_stage=0u;
     ui_rehab_action=ui_action=ui_sd_action=0u;ui_menu_open=0u;
     press((u32)LCD_X(350),(u32)LCD_Y(45));assert(ui_menu_open);
-    press((u32)LCD_X(600),(u32)LCD_Y(155));assert(lcd_rehab_view && !ui_menu_open);
+    press((u32)LCD_X(450),(u32)LCD_Y(175));assert(lcd_rehab_view && !ui_menu_open);
     assert(ui_preview_cls==-1);
     drain_frame();expected_frame();sprintf(name,"rehab_setup_%u.ppm",(u32)LCD_W);ppm(name);
     press((u32)LCD_X(700),(u32)LCD_Y(170));assert(rehab_combo);
@@ -976,6 +1025,12 @@ static void test_rehab_ui(void)
     press((u32)LCD_X(300),(u32)LCD_Y(310));assert(rehab_reps_sel==0u);
     press((u32)LCD_X(300),(u32)LCD_Y(380));assert(rehab_hold_sel==0u);
     press((u32)LCD_X(300),(u32)LCD_Y(450));assert(rehab_rest_sel==0u);
+    press((u32)LCD_X(100),(u32)LCD_Y(545));assert(rehab_setup_stage);
+    drain_frame();expected_frame();sprintf(name,"rehab_prepare_%u.ppm",(u32)LCD_W);ppm(name);
+    press((u32)LCD_X(100),(u32)LCD_Y(545));ui_apply_action();assert(rehab.state==RH_IDLE);
+    press((u32)LCD_X(100),(u32)LCD_Y(230));assert(rehab_contact_checked);
+    press((u32)LCD_X(100),(u32)LCD_Y(300));assert(rehab_comfort_checked);
+    cal_stage=2u;
     mock_sd_active=1u;press((u32)LCD_X(100),(u32)LCD_Y(545));ui_apply_action();
     assert(rehab.state==RH_IDLE);mock_sd_active=0u;
     press((u32)LCD_X(100),(u32)LCD_Y(545));ui_apply_action();
@@ -1087,8 +1142,259 @@ static void test_pose_stability(void)
     puts("TEST_PASS pose: entry/hold hysteresis, bounded uncertainty, rest debounce, score refresh, accepted P authority.");
 }
 
+static u16 hdc_test_seq;
+static void hdc_test_window(u32 cls)
+{
+    u32 ch,id;
+    test_time+=25u*GT_TICKS_PER_MS;
+    for(ch=0;ch<8;ch++)for(id=0;id<5;id++) {
+        u32 v=id==0u?(ch==cls?10000u:0u):0u;
+        parse_packet(v,0x20000000u|(ch<<24)|(id<<20)|hdc_test_seq);
+        hdc_test_seq++;
+    }
+}
+static void test_virtual_mapping(void)
+{
+    u32 k,old_cls=pose_active_cls,old_row=hand_profile.row_mask;char name[80];
+    uint32_t physical[6];
+    assert(hdc.stage==HDC_DONE && hdc_hand_model_ready());
+    memcpy(physical,hdc.hand_pose[5],sizeof physical);
+    ui_open_page(UI_MONITOR);ui_recognition_source(1u);
+    assert(hand_source_hdc && hdc_available() && !hand_run);
+    assert(virtual_live_class()==UINT32_MAX);
+    for(k=0;k<2u;k++)hdc_test_window(5u);
+    assert(virtual_live_class()==UINT32_MAX);
+    hdc_test_window(5u);assert(virtual_live_class()==5u && !virtual_live_mapped(5u));
+    lcd_virtual_sample();assert(lcd_pose_cls==0u); /* Unmapped is visibly neutral. */
+    press(LCD_X(600),LCD_Y(115));assert(lcd_virtual_view && !hand_run);
+    assert(!hdc_available() && !hdc.virtual_mapped[5]);
+    virtual_load(5u);virtual_group=2u;virtual_joint=2u;
+    press(LCD_X(900),LCD_Y(550));assert(virtual_dirty && !hdc.virtual_mapped[5]);
+    press(LCD_X(800),LCD_Y(120));assert(hdc.virtual_mapped[5] && !virtual_dirty);
+    assert(hdc.virtual_pose[5][4]==pose_table[0][4]+1);
+    assert(!memcmp(physical,hdc.hand_pose[5],sizeof physical) && hand_profile.row_mask==old_row);
+    /* Held slider, clamping, +/- one degree and release/page-exit cancellation. */
+    press(LCD_X(940),LCD_Y(495));assert(virtual_drag);
+    lcd_virtual_contact((u32)LCD_W-1u,LCD_Y(495),1u);assert(virtual_draft[4]==100);
+    lcd_virtual_contact(0u,LCD_Y(495),1u);assert(virtual_draft[4]==0);
+    lcd_virtual_contact(0u,0u,0u);assert(!virtual_drag);
+    press(LCD_X(900),LCD_Y(550));assert(virtual_draft[4]==1);
+    press(LCD_X(800),LCD_Y(120));assert(hdc.virtual_pose[5][4]==1);
+    drain_frame();expected_frame();sprintf(name,"virtual_neutral_%u.ppm",(u32)LCD_W);ppm(name);
+    virtual_group=0u;virtual_joint=0u;virtual_adjust(-70);
+    virtual_joint=1u;virtual_adjust(30);virtual_group=1u;virtual_joint=1u;virtual_adjust(-100);
+    press(LCD_X(800),LCD_Y(120));
+    assert(hdc.virtual_pose[5][0]==-70 && hdc.virtual_pose[5][1]==30 && hdc.virtual_pose[5][19]==-100);
+    drain_frame();expected_frame();sprintf(name,"virtual_editor_%u.ppm",(u32)LCD_W);ppm(name);
+    press(LCD_X(690),LCD_Y(120));assert(virtual_row==6u && !hdc.virtual_mapped[6]);
+    press(LCD_X(100),LCD_Y(165));assert(virtual_dirty);
+    press(LCD_X(800),LCD_Y(120));assert(hdc.virtual_mapped[6]);
+    assert(!memcmp(hdc.virtual_pose[6],pose_table[virtual_preset],sizeof virtual_draft));
+    press(LCD_X(920),LCD_Y(120));assert(!hdc.virtual_mapped[6] && !virtual_dirty);
+    virtual_load(5u);
+    ui_open_page(UI_MONITOR);
+    for(k=0;k<3u;k++)hdc_test_window(5u);
+    assert(virtual_live_class()==5u && virtual_live_mapped(5u));
+    lcd_virtual_sample();assert(lcd_pose_cls==5u);
+    test_time+=POSE_SMOOTH_MS*GT_TICKS_PER_MS;lcd_virtual_sample();
+    for(k=0;k<22u;k++)assert(lcd_draw_angles[k]==hdc.virtual_pose[5][k]);
+    assert(pose_active_cls==old_cls && !hand_run);
+    /* Source/preview are display decisions and never override rehab truth. */
+    ui_preview_cls=2;lcd_virtual_sample();assert(lcd_pose_cls==2u && !hand_run);
+    ui_preview_cls=-1;
+    test_time+=251u*GT_TICKS_PER_MS;hdc_service();
+    assert(virtual_live_class()==UINT32_MAX && !hand_hdc_valid);
+    lcd_virtual_sample();assert(lcd_pose_cls==0u);
+    mock_sd_active=1u;assert(!hdc_available());mock_sd_active=0u;
+    ui_recognition_source(0u);assert(!hand_source_hdc && !hand_run);
+    lcd_state_cls=1u;lcd_virtual_sample();assert(lcd_pose_cls==1u);
+    lcd_hand_open();for(k=0;k<3u;k++)hdc_test_window(5u);
+    assert(hand_hdc_valid && hand_hdc_class==5u && !hand_run);
+    puts("TEST_PASS VIRTUAL MAPPING: independent 22 joint degrees, editor save/clear/preset/drag, shared MLP-HDC source, stable parser classes, unmapped/stale guards, no implicit PWM, basic rehab truth preserved, both panels.");
+}
+
+static void test_hdc_ui(void)
+{
+    u32 c,t,k,pose,rows,label;char name[80];FILE *csv;
+    u32 proto_hash;
+    g_mode=MODE_MONITOR;cal_stage=2u;mock_sd_active=0u;
+    rehab.state=RH_IDLE;hdc.stage=HDC_IDLE;hdc_custom=3u;
+    selfcal_reset(&selfcal);feature_seq_seen=0u;hdc_test_seq=65496u;
+    ui_open_page(UI_SETTINGS);
+    press((u32)LCD_X(400),(u32)LCD_Y(545));assert(lcd_hdc_view);
+    press((u32)LCD_X(220),(u32)LCD_Y(545));assert(hdc.stage==HDC_FIT && hdc.classes==8u);
+    pose=pose_active_cls;rows=res_rows;label=lcd_action_label;
+    /* Page departure discards a partial trial, preserves committed data. */
+    press((u32)LCD_X(60),(u32)LCD_Y(240));assert(hdc.armed);
+    for(k=0;k<44;k++)hdc_test_window(0);
+    assert(hdc.n==4u && !hdc.fit_n[0]);
+    press((u32)LCD_X(560),(u32)LCD_Y(45));hdc_service();
+    assert(!lcd_hdc_view && !hdc.armed && hdc.interruptions==1u);
+    lcd_hdc_open();
+    for(c=0;c<8;c++)for(t=0;t<3;t++) {
+        u32 x=50u+(c%4u)*245u,y=c<4u?240u:320u;
+        press((u32)LCD_X(x),(u32)LCD_Y(y));assert(hdc.armed);
+        for(k=0;k<80;k++)hdc_test_window(c);
+        assert(!hdc.armed && hdc.fit_n[c]==40u*(t+1u));
+    }
+    assert(hdc.stage==HDC_BUILD);
+    for(k=0;k<960u;k++)hdc_service();
+    assert(hdc.stage==HDC_VALIDATE && pose_active_cls==pose && res_rows==rows);
+    proto_hash=0u;for(k=0;k<2048;k++)proto_hash=proto_hash*33u+(u32)hdc.proto[0][k];
+    drain_frame();expected_frame();sprintf(name,"hdc_validate_%u.ppm",(u32)LCD_W);ppm(name);
+    for(c=0;c<8;c++)for(t=0;t<2;t++) {
+        u32 x=50u+(c%4u)*245u,y=c<4u?240u:320u;
+        press((u32)LCD_X(x),(u32)LCD_Y(y));assert(hdc.armed);
+        for(k=0;k<80;k++)hdc_test_window(c);
+        assert(!hdc.armed && hdc.val_n[c]==40u*(t+1u));
+    }
+    assert(hdc.stage==HDC_DONE && hdc.latest==7u && hdc_accuracy(hdc.hdc_cm,8u)==100u);
+    {u32 after=0u;for(k=0;k<2048;k++)after=after*33u+(u32)hdc.proto[0][k];assert(after==proto_hash);}
+    assert(pose_active_cls==pose && res_rows==rows && lcd_action_label==label);
+    drain_frame();expected_frame();sprintf(name,"hdc_result_%u.ppm",(u32)LCD_W);ppm(name);
+    press((u32)LCD_X(800),(u32)LCD_Y(545));assert(ui_hdc_save);ui_apply_action();
+    assert(hdc_saved && !hdc_save_error && mock_hdc_saves && !rehab_csv_overflow);
+    assert(strstr(mock_rehab_csv,"hdc,custom3,custom3,80") && strstr(mock_rehab_csv,"RAM_only_relearn_after_reset"));
+    sprintf(name,"hdc_report_%u.csv",(u32)LCD_W);csv=fopen(name,"wb");assert(csv);
+    fwrite(mock_rehab_csv,1,strlen(mock_rehab_csv),csv);fclose(csv);
+    mock_rehab_save_error=7u;hdc_save_report();assert(!hdc_saved && hdc_save_error==7u);
+    mock_rehab_save_error=0u;
+    /* Keep the actual frozen HDC predictor alive on the hand page. These
+     * labels come from parsed features and model output, not touch labels. */
+    assert(hdc_hand_model_ready());lcd_hand_open();
+    assert(lcd_hand_view && hdc_available() && !hand_hdc_valid);
+    for(c=5u;c<8u;c++) {
+        for(k=0;k<3u;k++)hdc_test_window(c);
+        assert(hand_hdc_valid && hand_hdc_class==c && hdc.latest==c);
+    }
+    {u32 after=0u;for(k=0;k<2048;k++)after=after*33u+(u32)hdc.proto[0][k];assert(after==proto_hash);}
+    test_time+=300u*GT_TICKS_PER_MS;hdc_service();assert(!hdc.latest_valid);
+    assert(!hand_hdc_valid);lcd_hdc_open();
+    test_virtual_mapping();lcd_hdc_open();
+    /* Append beyond three custom gestures without mechanical mappings. */
+    assert(!hdc.hand_mapped[5]);
+    press((u32)LCD_X(500),(u32)LCD_Y(545));
+    assert(hdc.classes==9u && hdc.stage==HDC_FIT && hdc_page==1u);
+    assert(!hdc_save_error && !hdc_saved);
+    assert(hdc.fit_n[5]==HDC_FIT_WINDOWS && !hdc.fit_n[8]);
+    assert(hdc.virtual_mapped[5] && hdc.virtual_pose[5][19]==-100 && !hdc.virtual_mapped[8]);
+    drain_frame();expected_frame();sprintf(name,"hdc_page2_%u.ppm",(u32)LCD_W);ppm(name);
+    press((u32)LCD_X(700),(u32)LCD_Y(170));assert(hdc_page==0u);
+    press((u32)LCD_X(880),(u32)LCD_Y(170));assert(hdc_page==1u);
+    press((u32)LCD_X(60),(u32)LCD_Y(240));assert(hdc.armed && hdc.target==8u);
+    hdc_interrupt(&hdc);
+    /* First packet timeout after arming is handled even before seq_seen. */
+    hdc_begin(&hdc,3u);assert(hdc_arm(&hdc,0u));hdc.last_ms=rehab_milliseconds();
+    test_time+=300u*GT_TICKS_PER_MS;hdc_service();assert(!hdc.armed);
+    ui_open_page(0u);hdc.stage=HDC_IDLE;
+    puts("TEST_PASS HDC LCD: real parser, eight classes, independent validation, frozen custom1/2/3 live hand bridge, timeout abort, CSV/retry, original pose/manual labels untouched, both panels.");
+}
+
+static void test_navigation_lifecycle(void)
+{
+    u32 from,to,flags,backend=g_mode;char name[80];
+    rehab.state=RH_IDLE;hdc.stage=HDC_IDLE;
+    /* All route pairs have exactly one owner and never change the backend
+     * or stop an existing SD recording. This catches overlapping page flags. */
+    mock_sd_active=1u;
+    for(from=0u;from<UI_PAGE_COUNT;from++)for(to=0u;to<UI_PAGE_COUNT;to++) {
+        ui_open_page(from);ui_open_page(to);
+        flags=lcd_wave_view+lcd_data_view+lcd_spectrum_view+lcd_sd_view+lcd_synergy_view+
+            lcd_rehab_view+lcd_settings_view+lcd_hdc_view+lcd_hand_view+lcd_selfcal_view+lcd_virtual_view;
+        assert(flags==(to==UI_MONITOR?0u:1u) && mock_sd_active && g_mode==backend);
+    }
+    mock_sd_active=0u;
+    ui_open_page(UI_DATA);lcd_wave_toggle();assert(lcd_wave_view && !lcd_data_view);
+    ui_open_page(UI_SD);ui_sd_action=1u;ui_home_open();ui_apply_action();assert(!mock_sd_active);
+    ui_open_page(UI_REHAB);rehab_setup_stage=rehab_contact_checked=rehab_comfort_checked=1u;
+    ui_rehab_action=1u;ui_home_open();ui_apply_action();assert(rehab.state==RH_IDLE);
+    selfcal_begin(&selfcal);assert(selfcal.state==1u);
+    ui_open_page(UI_WAVE);assert(selfcal.state!=1u && selfcal.state!=2u);
+    g_mode=MODE_MONITOR;cal_stage=2u;hdc_begin(&hdc,1u);assert(hdc_arm(&hdc,1u));
+    ui_open_page(UI_REHAB);assert(!hdc.armed);
+    /* Leaving is an immediate pause, before the next service tick. */
+    rehab_start(&rehab,0u,2u,5u,1000u,1000u,rehab_milliseconds());
+    ui_home_open();assert(rehab.state==RH_PAUSED);
+    ui_rehab_action=2u;ui_open_page(UI_WAVE);ui_apply_action();assert(rehab.state==RH_PAUSED);
+    rehab_finish(&rehab,rehab_milliseconds(),1u);rehab.state=RH_IDLE;
+    /* Four completed trials in one combination group, then explicit rest. */
+    ui_open_page(UI_REHAB);rehab_start(&rehab,1u,1u,2u,1000u,1000u,rehab_milliseconds());
+    rehab.group_every=4u;rehab.group_rest_ms=15000u;
+    rehab.attempted=4u;rehab.groups_completed=1u;rehab.group_pending=1u;
+    rehab_phase(&rehab,RH_GROUP_REST,rehab_milliseconds());rehab.seen=1u;
+    rehab.last_observation=rehab_milliseconds();
+    press(LCD_X(100),LCD_Y(545));ui_apply_action();assert(rehab.state==RH_GROUP_REST);
+    drain_frame();expected_frame();sprintf(name,"rehab_group_%u.ppm",(u32)LCD_W);ppm(name);
+    {u32 i;for(i=0u;i<600u;i++)rehab_test_feed(0u);}
+    assert(rehab.state==RH_GROUP_REST && rehab.attempted==4u);
+    press(LCD_X(100),LCD_Y(545));ui_apply_action();assert(rehab.state==RH_RELAX);
+    rehab_finish(&rehab,rehab_milliseconds(),1u);rehab.state=RH_IDLE;
+    rehab_setup_stage=rehab_contact_checked=rehab_comfort_checked=0u;
+    hdc.stage=HDC_IDLE;ui_rehab_action=0u;ui_home_open();
+    drain_frame();expected_frame();sprintf(name,"home_%u.ppm",(u32)LCD_W);ppm(name);
+    ui_open_page(UI_MONITOR);guard_check();
+    puts("TEST_PASS NAV LIFECYCLE: 144 routes, unique page, SD continuity, backend unchanged, orphan actions canceled, capture canceled, immediate pause, explicit group continuation.");
+}
+
+static void test_button_feedback(void)
+{
+    u32 i,before,pressed_hash,normal_hash,serial;char name[96];
+    drain_frame();test_clock_step=0u;
+    ui_open_page(UI_SETTINGS);ui_grid_enabled=0u;
+    drain_frame();expected_frame();normal_hash=hash(regs[2]&31u);
+    press(LCD_X(500),LCD_Y(320));
+    assert(ui_grid_enabled && ui_feedback_active && !ui_feedback_presented);
+    assert(ui_button_pressed(LCD_X(410),LCD_Y(296),LCD_X(270),LCD_Y(54)));
+    before=touch_press_cnt;
+    for(i=0u;i<10u;i++)touch_tick();
+    assert(ui_grid_enabled && touch_press_cnt==before);
+    /* Even a slow first render gets a full visible dwell after presentation. */
+    test_time+=500u*GT_TICKS_PER_MS;ui_feedback_tick();assert(ui_feedback_active);
+    drain_frame();expected_frame();assert(ui_feedback_presented);
+    pressed_hash=hash(regs[2]&31u);assert(pressed_hash!=normal_hash);
+    {u32 at=32u+((u32)LCD_Y(306)*(u32)LCD_W+(u32)LCD_X(430))*3u;
+     u32 frame=regs[2]&31u;
+     assert(frames[frame][at]==212u && frames[frame][at+1u]==245u && frames[frame][at+2u]==164u);}
+    sprintf(name,"feedback_selected_%u.ppm",(u32)LCD_W);ppm(name);
+    test_time+=99u*GT_TICKS_PER_MS;ui_feedback_tick();assert(ui_feedback_active);
+    test_time+=GT_TICKS_PER_MS;ui_feedback_tick();assert(!ui_feedback_active);
+    drain_frame();expected_frame();assert(hash(regs[2]&31u)!=pressed_hash && ui_grid_enabled);
+    sprintf(name,"feedback_restored_%u.ppm",(u32)LCD_W);ppm(name);
+    press(LCD_X(500),LCD_Y(320));assert(!ui_grid_enabled);
+    drain_frame();expected_frame();assert(ui_feedback_presented);
+    sprintf(name,"feedback_unselected_%u.ppm",(u32)LCD_W);ppm(name);
+    /* An older in-flight draw-list cannot start a newer tap's dwell. */
+    press(LCD_X(500),LCD_Y(320));serial=ui_feedback_serial;
+    lcd_begin_pending();assert(dl_busy && dl_feedback_serial==serial);
+    press(LCD_X(500),LCD_Y(320));assert(ui_feedback_serial==serial+1u);
+    lcd_slice_tick(gt_stamp());scanout_accept();
+    assert(ui_feedback_active && !ui_feedback_presented);
+    drain_frame();expected_frame();assert(ui_feedback_presented && !ui_grid_enabled);
+    /* Page cards disappear on navigation; the destination retains the tap
+     * ring, but unrelated controls at the same coordinates stay unpressed. */
+    ui_home_open();drain_frame();press(LCD_X(100),LCD_Y(280));
+    assert(lcd_wave_view && ui_feedback_owner==UI_PAGE_COUNT);
+    assert(!ui_button_pressed(LCD_X(28),LCD_Y(246),LCD_X(308),LCD_Y(78)));
+    drain_frame();expected_frame();assert(ui_feedback_presented);
+    sprintf(name,"feedback_navigation_%u.ppm",(u32)LCD_W);ppm(name);
+    serial=ui_feedback_serial;press(LCD_X(900),LCD_Y(55));
+    assert(lcd_settings_view && ui_feedback_serial==serial+1u && !ui_feedback_presented);
+    assert(ui_button_pressed(LCD_X(875),LCD_Y(30),LCD_X(133),LCD_Y(52)));
+    drain_frame();expected_frame();
+    /* Expiration uses unsigned timer subtraction across wrap. */
+    ui_feedback_t=test_time=0xffff0000u;ui_feedback_presented=1u;
+    test_time+=99u*GT_TICKS_PER_MS;ui_feedback_tick();assert(ui_feedback_active);
+    test_time+=GT_TICKS_PER_MS;ui_feedback_tick();assert(!ui_feedback_active);
+    drain_frame();expected_frame();test_clock_step=100u*333u;
+    puts("TEST_PASS BUTTON FEEDBACK: selected/unselected shared controls, no held-repeat, visible dwell after present, navigation ownership, restore, timer wrap, exact full/partial pixels, both panels");
+}
+
 int main(void)
 {
+#ifdef _MSC_VER
+    _set_error_mode(_OUT_TO_STDERR);
+    _set_abort_behavior(0,_WRITE_ABORT_MSG | _CALL_REPORTFAULT);
+#endif
     assert(strcmp(adc_config_label(),"ADC配置等待")==0);
     regs[10]=0xC0EC0101u;adc_status_tick();
     assert(strcmp(adc_config_label(),"ADC配置正常")==0);
@@ -1172,16 +1478,17 @@ int main(void)
         press((u32)LCD_X(350),(u32)LCD_Y(45)); assert(ui_menu_open);
         drain_frame(); expected_frame();
         { char name[80]; sprintf(name,"menu_%u.ppm",(u32)LCD_W); ppm(name); }
-        press((u32)LCD_X(350),(u32)LCD_Y(220)); assert(!ui_menu_open && ui_action==1u);
+        press((u32)LCD_X(100),(u32)LCD_Y(510)); assert(!ui_menu_open && ui_action==1u);
         ui_apply_action(); drain_frame(); expected_frame();
         press((u32)LCD_X(350),(u32)LCD_Y(45)); assert(ui_menu_open);
-        press((u32)LCD_X(350),(u32)LCD_Y(450)); assert(ui_action==4u);
+        press((u32)LCD_X(820),(u32)LCD_Y(510)); assert(ui_action==4u);
         ui_apply_action(); assert(!mpu_zero_valid && mpu_zero_cnt==0u);
         drain_frame(); expected_frame();
         press((u32)LCD_X(350),(u32)LCD_Y(45));
-        press((u32)LCD_X(350),(u32)LCD_Y(375)); assert(lcd_selfcal_view);
+        press((u32)LCD_X(920),(u32)LCD_Y(55));
+        press((u32)LCD_X(100),(u32)LCD_Y(550));assert(lcd_selfcal_view);
         /* Opening the new adaptation page must not restart rest calibration. */
-        press((u32)LCD_X(100),(u32)LCD_Y(545)); assert(!lcd_selfcal_view);
+        press((u32)LCD_X(100),(u32)LCD_Y(545)); assert(!lcd_selfcal_view);ui_open_page(UI_MONITOR);
         drain_frame(); expected_frame();
         press((u32)LCD_X(440),(u32)LCD_Y(555)); assert(ui_preview_cls==2);
         drain_frame(); expected_frame();
@@ -1212,6 +1519,7 @@ int main(void)
         lcd_show_state(1,90,0,0,0,0);drain_frame();expected_frame();
         {char name[80];sprintf(name,"imu_back_%u.ppm",(u32)LCD_W);ppm(name);}
         lcd_imu_reset();
+        test_fatigue_readiness_display();
         test_analysis_display();
         test_quality_display();
         test_spectrum_fft();
@@ -1222,6 +1530,9 @@ int main(void)
         test_synergy_display();
         test_grip_feedback_ui();
         test_text_alignment();
+        test_hdc_ui();
+        test_navigation_lifecycle();
+        test_button_feedback();
         guard_check(); assert(lcd_overflow_cnt==0);
     }
     /* Record mode touch/MPU reports must not contaminate the binary UART. */

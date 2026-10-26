@@ -56,14 +56,29 @@ static void ui_label_baseline(i32 x,i32 baseline,i32 w,i32 scale,
     ui_label(x,baseline-lcd_text_baseline(scale),w,scale,r,g,b,text);
 }
 
+static u32 ui_button_pressed(i32 x,i32 y,i32 w,i32 h)
+{
+    return ui_feedback_active && (y<LCD_Y(92) || ui_feedback_owner==ui_page_owner()) &&
+        (i32)ui_feedback_x>=x && (i32)ui_feedback_x<x+w &&
+        (i32)ui_feedback_y>=y && (i32)ui_feedback_y<y+h;
+}
+static void ui_button_press_border(i32 x,i32 y,i32 w,i32 h)
+{
+    i32 t=LCD_S(3);
+    if(!ui_button_pressed(x,y,w,h))return;
+    p_rect(x,y,w,t,38,204,164);p_rect(x,y+h-t,w,t,38,204,164);
+    p_rect(x,y,t,h,38,204,164);p_rect(x+w-t,y,t,h,38,204,164);
+}
 static void ui_button(i32 x,i32 y,i32 w,i32 h,const char *text,u32 selected)
 {
-    char fitted[48];i32 scale=2,width;
+    char fitted[48];i32 scale=2,width;u32 pressed=ui_button_pressed(x,y,w,h);
     width=ui_fit_label(fitted,text,w-LCD_X(20),scale);
-    p_round_rect(x,y,w,h,LCD_S(7),selected?126:239,selected?210:244,selected?195:244);
+    p_round_rect(x,y,w,h,LCD_S(7),pressed?164:selected?126:239,
+        pressed?245:selected?210:244,pressed?212:selected?195:244);
     p_text(x+(w-width)/2,y+(h-ui_text_height(fitted,scale))/2,scale,
            selected?18:31,selected?75:49,selected?67:58,fitted);
     if(selected) p_rect(x+LCD_X(12),y+h-LCD_Y(5),w-LCD_X(24),LCD_Y(2),25,120,111);
+    ui_button_press_border(x,y,w,h);
 }
 
 #endif

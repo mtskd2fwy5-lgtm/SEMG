@@ -58,37 +58,7 @@ set_property -dict {PACKAGE_PIN P19 IOSTANDARD LVCMOS33 DRIVE 8 SLEW FAST} [get_
 # Backlight enable (GPIO, quasi-static): B35, slow slew is plenty.
 set_property -dict {PACKAGE_PIN M20 IOSTANDARD LVCMOS33 DRIVE 8 SLEW SLOW} [get_ports {lcd_bl}]     ;# LCD_BL   B35
 
-###################### timing ######################
-
-# PS7 FCLKs are auto-constrained by the PS7 IP (verified in
-# design_1_routed.dcp: FCLK_CLK0 appears as auto clock "clk_fpga_0"),
-# so no create_clock is needed for the FCLK_CLK1 pixel clock
-# (50 MHz on 7016, 31.25 MHz on 4384).
-#
-# lcd_clk_fwd_0 uses ODDR D1=0/D2=1 => Q = ~C: the LCD DCLK rising edge
-# coincides with the pixel-clock falling edge, giving vid_data a half
-# period (10 ns on 7016, 16 ns on 4384) to reach the pins (UG471 clock
-# forwarding).
-#
-# The pixel clock is a BUFGMUX between two MMCM outputs (lcd_panel_adapter):
-#   CLKOUT0 = 50.000 MHz (7016) -> net c50_raw
-#   CLKOUT1 = 31.250 MHz (4384) -> net c31_raw
-# ODDR forwards ~C, so the panel latches on the FALLING edge of the
-# launching clock.  Referencing the internal clocks directly with
-# -clock_fall (instead of creating generated clocks on the forwarded
-# port) keeps BOTH modes checked in one build: two create_generated_clock
-# on one port overwrite each other (XDCC-8, -add silently rejected).
-# Not modeling the ODDR delay costs ~1-2 ns of pessimism - safe side.
-set_clock_groups -logically_exclusive \
-    -group c31_raw \
-    -group c50_raw
-
-# The ATK panel spec has no per-pixel tsu/th numbers (bare DE panel);
-# assume 5 ns setup / 5 ns hold against the half period (10/16 ns).
-set_output_delay -clock c50_raw -clock_fall -max 5.0 [get_ports {lcd_data[*] lcd_de lcd_hsync lcd_vsync}]
-set_output_delay -clock c50_raw -clock_fall -min -5.0 [get_ports {lcd_data[*] lcd_de lcd_hsync lcd_vsync}]
-set_output_delay -clock c31_raw -clock_fall -max 5.0 [get_ports {lcd_data[*] lcd_de lcd_hsync lcd_vsync}]
-set_output_delay -clock c31_raw -clock_fall -min -5.0 [get_ports {lcd_data[*] lcd_de lcd_hsync lcd_vsync}]
+# Clock-dependent LCD timing is in hz_zynq_lcd_timing.xdc (implementation only).
 
 # Input direction of the bidirectional RGB pins: only the quasi-static
 # panel ID levels (B7/G7/R7) are sampled, once at boot (~20 ms after

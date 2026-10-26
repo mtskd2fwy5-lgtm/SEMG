@@ -13,6 +13,9 @@ module emg_pl_control #(
     input wire adc_drdy_n,adc_dout,reconfig_n,
     input wire [31:0] control_command,
     output wire [31:0] control_status,
+    input wire [31:0] hand_command,
+    output wire [31:0] hand_status,
+    output wire [5:0] hand_pwm,
     output wire adc_sclk,adc_din,adc_cs_n,adc_reset_n,adc_start,adc_pwdn_n,status_led,
     output wire [31:0] adc_config_status,
     output wire [63:0] m_axis_tdata,
@@ -26,6 +29,11 @@ module emg_pl_control #(
     wire [1:0] stage;
     wire stale,fault;
     wire [2:0] active;
+    wire hand_decision_valid;
+    hand_control hand(.clk(pl_clk),.rst_n(pl_rst_n),.axis_clk(axis_clk),.axis_rst_n(axis_rst_n),
+        .command(hand_command),.status(hand_status),.pwm(hand_pwm),
+        .decision_valid(hand_decision_valid),.decision_ready(stage==2 && !stale && !fault && !recalibrate),
+        .decision_class(active));
     always @(posedge pl_clk)begin
         if(!pl_rst_n)begin req_meta<=0;req_sync<=0;command_ack<=0;recalibrate<=0;shift<=0;epoch<=0;end
         else begin
@@ -66,6 +74,7 @@ module emg_pl_control #(
         .adc_drdy_n(adc_drdy_n),.adc_dout(adc_dout),.reconfig_n(reconfig_n),
         .control_shift(shift),.control_epoch(epoch),.control_recalibrate(recalibrate),
         .control_cal_stage(stage),.control_stale(stale),.control_fault(fault),.control_class(active),
+        .control_decision_valid(hand_decision_valid),
         .adc_sclk(adc_sclk),.adc_din(adc_din),.adc_cs_n(adc_cs_n),.adc_reset_n(adc_reset_n),
         .adc_start(adc_start),.adc_pwdn_n(adc_pwdn_n),.status_led(status_led),.adc_config_status(adc_config_status),
         .m_axis_tdata(m_axis_tdata),.m_axis_tvalid(m_axis_tvalid),.m_axis_tready(m_axis_tready),

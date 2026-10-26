@@ -1,0 +1,38 @@
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/src/rtl/axis_async_fifo.v" into library work
+INFO: [VRFC 10-311] analyzing module axis_async_fifo
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/sim/axis_async_fifo_tb.sv" into library work
+INFO: [VRFC 10-311] analyzing module axis_async_fifo_tb
+Vivado Simulator v2025.2
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+Running: D:/FPGA/VIVADO/2025.2/Vivado/bin/unwrapped/win64.o/xelab.exe axis_async_fifo_tb -s fifo_sim -debug typical 
+Multi-threading is on. Using 30 slave threads.
+Starting static elaboration
+Pass Through NonSizing Optimizer
+Completed static elaboration
+Starting simulation data flow analysis
+Completed simulation data flow analysis
+Time Resolution for simulation is 1ps
+Compiling module work.axis_async_fifo(ADDR_WIDTH=12)
+Compiling module work.axis_async_fifo_tb
+Built simulation snapshot fifo_sim
+
+****** xsim v2025.2 (64-bit)
+  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025
+  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025
+  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025
+  **** Start of session at: Mon Oct 26 15:43:58 2026
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+
+source xsim.dir/fifo_sim/xsim_script.tcl
+# xsim {fifo_sim} -autoloadwcfg -runall
+Time resolution is 1 ps
+run -all
+TEST_PASS BRAM FIFO exact4096 capacity
+TEST_PASS BRAM FIFO full drain no loss duplication
+TEST_PASS BRAM FIFO asynchronous wrap backpressure stable output
+TEST_PASS BRAM FIFO coordinated reset during traffic
+$finish called at time : 784670 ns : File "D:/FPGA/sEMG-HMRS/sim/axis_async_fifo_tb.sv" Line 49
+exit
+INFO: [Common 17-206] Exiting xsim at Mon Oct 26 15:44:00 2026...

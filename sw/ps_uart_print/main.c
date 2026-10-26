@@ -56,20 +56,22 @@ typedef unsigned char u8;
 
 #include "pose_contract.h"
 #include "nn_confidence.h"
+#define SD_CAPTURE_LABEL_UI 1
 #include "sd_record.h"
 #include "rehab_training.h"
 #include "selfcal.h"
 #include "synergy_nmf.h"
 #include "synergy_feedback.h"
 #include "channel_quality.h"
+#include "hdc_learning.h"
 
 #ifndef PL_CONTROL_ENABLE
 #define PL_CONTROL_ENABLE 0
 #endif
 #if PL_CONTROL_ENABLE
-#define BUILD_TAG "20261023_GRIP_FEEDBACK_V1"
+#define BUILD_TAG "20261026_HAND_CONTROL_HDC_DYNAMIC_V13"
 #else
-#define BUILD_TAG "20261023_GRIP_DISPLAY_V1"
+#define BUILD_TAG "20261024_HDC_DISPLAY_V1"
 #endif
 #define GT_TICKS_PER_MS 333333u
 
@@ -84,6 +86,7 @@ extern u32 lcd_test_clock(void);
 
 extern void display_memory_clean(uintptr_t address, u32 bytes);
 #include "pl_control.h"
+#include "hand_control.h"
 static void lcd_memory_barrier(void)
 {
 #if defined(__arm__)
@@ -324,6 +327,7 @@ extern unsigned char __dma_buf[];
 static u32 dma_head, dma_tail, dma_running, dma_fault;
 static u8 dma_labels[DMA_SLOTS];
 static u32 lcd_action_label, sd_parse_label;
+static u32 lcd_sd_label_page;
 static volatile u32 *dma_buffer(u32 index)
 { return (volatile u32 *)(__dma_buf + (index & (DMA_SLOTS-1u))*BUF_BYTES); }
 
@@ -377,6 +381,9 @@ static u32 gt_stamp(void);         /* defined below; used by dma_wait */
 static void lcd_slice_tick(u32 win_t0);   /* deferred redraw, see LCD block */
 static void touch_tick(void);             /* GT911 poll, defined in LCD block */
 static void ui_touch_press(u32 x, u32 y); /* on-screen menu hit-test */
+static void lcd_hand_contact(u32 x,u32 y,u32 down);
+static void lcd_virtual_contact(u32 x,u32 y,u32 down);
+static void ui_feedback_tick(void);
 static void mpu_tick(void);               /* MPU6050 tilt poll, see below */
 static void adc_status_tick(void);
 static void pl_control_tick(void);
@@ -384,6 +391,10 @@ static void ui_apply_action(void);
 static u32 ui_action;                     /* applied outside DMA completion */
 static u32 ui_sd_action;
 static u32 ui_rehab_action;
+static u32 ui_hdc_save;
+static void hdc_service(void);
+static void hdc_on_window(const u32 features[40],u16 seq);
+static void hdc_save_report(void);
 static void rehab_service(void);
 static void sd_pair_reset(void);
 #define DMA_WAIT_UI 0x80000000u
@@ -403,7 +414,8 @@ static u32 dma_wait(void)
         adc_status_tick();               /* also works when ADC verification failed */
         pl_control_tick();
         rehab_service();
-        if (ui_action || ui_sd_action || ui_rehab_action)
+        hdc_service();
+        if (ui_action || ui_sd_action || ui_rehab_action || ui_hdc_save || hand_storage_action)
             return DMA_WAIT_UI;
         acquisition_service();
         if (dma_fault) return dma_fault;
@@ -483,6 +495,8 @@ static u32 gt_stamp(void)
     return lo;                                  /* wraps every 12.9 s: u32 diff is still valid */
 #endif
 }
+
+#include "pl_learning.h"
 
 void usleep(unsigned long microseconds)
 {
@@ -632,6 +646,7 @@ static void touch_tick(void)
         u32 changed=touch_seen || touch_dn;
         touch_seen = 0u;
         touch_dn = 0u;
+        lcd_hand_contact(0u,0u,0u);lcd_virtual_contact(0u,0u,0u);
         if(changed)lcd_input_status_changed();
         return;
     }
@@ -641,6 +656,7 @@ static void touch_tick(void)
     y = TOUCH_TW_Y(w);
     if (x >= (u32)LCD_W || y >= (u32)LCD_H) {
         if(w!=touch_bad_word) {touch_bad_xy++;touch_bad_word=w;}
+        lcd_hand_contact(0u,0u,0u);lcd_virtual_contact(0u,0u,0u);
         return;                    /* bad packet must not click an edge button */
     }
     dn = TOUCH_TW_DOWN(w);
@@ -649,6 +665,7 @@ static void touch_tick(void)
         ui_touch_press(x, y);           /* feed the on-screen mode menu */
     } else if (!dn && touch_dn)
         touch_rel_cnt++;
+    lcd_hand_contact(x,y,dn);lcd_virtual_contact(x,y,dn);
 
     if(dn!=touch_dn)lcd_input_status_changed();
 
@@ -702,6 +719,7 @@ static void touch_tick(void)
 static u32 mpu_seen;            /* link_valid observed at least once */
 static u32 mpu_last_word, mpu_word_seen;
 static u32 mpu_last_row_t;      /* gt_stamp of the last M-row */
+static u32 mpu_last_sample_t;
 static i32 mpu_pitch, mpu_roll; /* 0.1 deg */
 
 static i32 mpu_zero_r, mpu_zero_p;  /* sampled zero pose (0.1 deg) */
@@ -713,6 +731,8 @@ static i32 mpu_shift_q;         /* forearm elevation, degrees (legacy name) */
 static u32 lcd_state_cls;       /* redraw key, shared with lcd_show_state */
 static u32 lcd_state_conf;
 static u32 lcd_state_fatigue;
+static u32 lcd_state_fatigue_ready;
+static u32 fat_level, fat_full, fat_energy;   /* id 9: trend/assessment ready/energy */
 static u32 lcd_state_gated;
 static i32 lcd_state_tilt;
 static i32 lcd_state_shift;
@@ -729,6 +749,26 @@ static u32 lcd_sd_view;
 static u32 lcd_settings_view;
 static u32 lcd_rehab_view;
 static u32 lcd_selfcal_view;
+static u32 lcd_hdc_view;
+static u32 lcd_hand_view,lcd_virtual_view;
+static u32 hand_source_hdc,virtual_hdc_margin;
+static u32 virtual_frame_cls=UINT32_MAX,virtual_frame_mapped,virtual_frame_ready,virtual_frame_margin;
+static u32 lcd_wave_hit(u32 x,u32 y,i32 bx,i32 by,i32 bw,i32 bh);
+static void lcd_virtual_open(void);
+static void lcd_virtual_render(void);
+static void lcd_virtual_touch(u32 x,u32 y);
+static void lcd_virtual_sample(void);
+static u32 virtual_live_class(void);
+static u32 virtual_live_mapped(u32 cls);
+static const char *hdc_name(u32 cls);
+static u32 hdc_hand_model_ready(void);
+static void lcd_hand_open(void);
+static void lcd_hand_render(void);
+static void lcd_hand_touch(u32 x,u32 y);
+static hdc_learning_t hdc;
+static void lcd_hdc_open(void);
+static void lcd_hdc_render(void);
+static void lcd_hdc_touch(u32 x,u32 y);
 static selfcal_state_t selfcal;
 static u16 selfcal_latest_seq;
 static u16 feature_window_start_seq;
@@ -782,6 +822,8 @@ static u32 ui_menu_open;        /* overlay currently shown */
 static u32 ui_mode_sel;         /* last menu action */
 static u32 ui_dirty;            /* menu state moved: next repaint is full */
 static u32 ui_generation;
+static u32 ui_feedback_active,ui_feedback_x,ui_feedback_y,ui_feedback_t,ui_feedback_owner;
+static u32 ui_feedback_presented,ui_feedback_serial,dl_feedback_serial;
 /* Forward declaration: feature packets can request a coalesced LCD refresh
  * before the draw-list scheduler is declared below. */
 static u32 lcd_pending;
@@ -807,62 +849,80 @@ static void lcd_analysis_changed(void)
         lcd_pending = 1u;
 }
 
+/* One route owns page flags and task exit hooks. Page changes preserve an SD
+ * recording; changing the acquisition backend remains an explicit action. */
+enum { UI_MONITOR,UI_WAVE,UI_DATA,UI_SPECTRUM,UI_SD,UI_SYNERGY,
+       UI_REHAB,UI_SETTINGS,UI_HDC,UI_HAND,UI_SELFCAL,UI_VIRTUAL,UI_PAGE_COUNT };
+static u32 rehab_milliseconds(void);
+static u32 ui_page_owner(void)
+{
+    return ui_menu_open?UI_PAGE_COUNT:
+        lcd_virtual_view?UI_VIRTUAL:lcd_hand_view?UI_HAND:lcd_hdc_view?UI_HDC:lcd_selfcal_view?UI_SELFCAL:
+        lcd_settings_view?UI_SETTINGS:lcd_rehab_view?UI_REHAB:lcd_sd_view?UI_SD:
+        lcd_data_view?UI_DATA:lcd_wave_view?UI_WAVE:lcd_spectrum_view?UI_SPECTRUM:
+        lcd_synergy_view?UI_SYNERGY:UI_MONITOR;
+}
+static void ui_feedback_tick(void)
+{
+    if(ui_feedback_active && ui_feedback_presented &&
+       gt_stamp()-ui_feedback_t>=100u*GT_TICKS_PER_MS) {
+        ui_feedback_active=0u;ui_generation++;lcd_pending=1u;lcd_input_status_changed();
+    }
+}
+static void ui_open_page(u32 page)
+{
+    if(page>=UI_PAGE_COUNT)return;
+    if(page!=UI_REHAB) {
+        rehab_pause(&rehab,RH_REASON_USER,rehab_milliseconds());
+        if(ui_rehab_action!=3u && ui_rehab_action!=4u)ui_rehab_action=0u;
+        if(synergy_feedback.capture==1u || synergy_feedback.capture==2u)
+            synergy_feedback.capture=4u;
+    }
+    if(page!=UI_HDC)hdc_interrupt(&hdc);
+    if(page!=UI_SELFCAL && (selfcal.state==1u || selfcal.state==2u))selfcal_reset(&selfcal);
+    /* Pending starts belong to the page on which they were requested. */
+    if(page!=UI_SD && ui_sd_action==1u)ui_sd_action=0u;
+    ui_action=0u;
+    if(lcd_hand_view || hand_busy())hand_stop();
+    lcd_wave_view=page==UI_WAVE;lcd_data_view=page==UI_DATA;
+    lcd_spectrum_view=page==UI_SPECTRUM;lcd_sd_view=page==UI_SD;
+    lcd_synergy_view=page==UI_SYNERGY;lcd_rehab_view=page==UI_REHAB;
+    lcd_settings_view=page==UI_SETTINGS;lcd_hdc_view=page==UI_HDC;
+    lcd_hand_view=page==UI_HAND;lcd_selfcal_view=page==UI_SELFCAL;
+    lcd_virtual_view=page==UI_VIRTUAL;lcd_virtual_contact(0u,0u,0u);
+    ui_menu_open=0u;ui_preview_cls=-1;ui_generation++;lcd_input_status_changed();
+}
+
+/* One source for virtual and physical following; selecting never arms PWM. */
+static void ui_recognition_source(u32 use_hdc)
+{
+    if(hand_busy())hand_stop();
+    hand_hdc_reset();hdc_interrupt(&hdc);
+    hand_source_hdc=use_hdc?1u:0u;virtual_hdc_margin=0u;ui_preview_cls=-1;
+    ui_generation++;lcd_pending=1u;lcd_input_status_changed();
+}
+
+static void ui_home_open(void)
+{
+    ui_open_page(UI_MONITOR);
+    ui_menu_open=1u;ui_generation++;lcd_input_status_changed();
+}
+
 static void lcd_analysis_toggle(void)
 {
-    lcd_rehab_view=0u;
-    lcd_selfcal_view=0u;
-    lcd_settings_view=0u;
-    lcd_data_view = !lcd_data_view;
-    lcd_sd_view = 0u;
-    if (lcd_data_view) {
-        lcd_wave_view = 0u;
-        lcd_spectrum_view = lcd_synergy_view = 0u;
-    }
-    ui_preview_cls = -1;
-    ui_generation++;
-    lcd_input_status_changed();
+    ui_open_page(lcd_data_view?UI_MONITOR:UI_DATA);
 }
 
 static void lcd_spectrum_toggle(void)
 {
-    lcd_rehab_view=0u;
-    lcd_selfcal_view=0u;
-    lcd_settings_view=0u;
-    lcd_spectrum_view = !lcd_spectrum_view;
-    lcd_sd_view = 0u;
-    if (lcd_spectrum_view) {
-        lcd_wave_view = 0u;
-        lcd_data_view = lcd_synergy_view = 0u;
-    }
-    ui_preview_cls = -1;
-    ui_generation++;
-    lcd_input_status_changed();
+    ui_open_page(lcd_spectrum_view?UI_MONITOR:UI_SPECTRUM);
 }
 
 static void lcd_main_view_toggle(void)
 {
-    if (lcd_rehab_view) {
-        lcd_rehab_view=0u;ui_generation++;lcd_input_status_changed();
-    } else if (lcd_selfcal_view) {
-        lcd_selfcal_view=0u;ui_generation++;lcd_input_status_changed();
-    } else if (lcd_settings_view) {
-        lcd_settings_view=0u;
-        ui_generation++; lcd_input_status_changed();
-    } else if (lcd_sd_view) {
-        lcd_sd_view=0u;
-        ui_preview_cls=-1;
-        ui_generation++;
-        lcd_input_status_changed();
-    } else if (lcd_data_view || lcd_spectrum_view || lcd_synergy_view) {
-        lcd_data_view = lcd_spectrum_view = lcd_synergy_view = 0u;
-        lcd_sd_view = 0u;
-        lcd_wave_view = 0u;
-        ui_preview_cls = -1;
-        ui_generation++;
-        lcd_input_status_changed();
-    } else {
-        lcd_wave_toggle();
-    }
+    if(ui_menu_open)ui_open_page(UI_MONITOR);
+    else if(lcd_virtual_view || lcd_hand_view || lcd_hdc_view || lcd_selfcal_view)ui_open_page(UI_SETTINGS);
+    else ui_home_open();
 }
 
 static void adc_status_tick(void)
@@ -873,29 +933,10 @@ static void adc_status_tick(void)
     lcd_input_status_changed();
 }
 
-static void ui_menu_btn_rect(i32 *x, i32 *y, i32 *w, i32 *h)
-{
-    *x = LCD_X(330); *y = LCD_Y(30);
-    *w = LCD_X(150); *h = LCD_Y(52);
-}
-
-static void ui_menu_panel_rect(i32 *x, i32 *y, i32 *w, i32 *h)
-{
-    *x = LCD_X(262); *y = LCD_Y(66);
-    *w = LCD_X(500); *h = LCD_Y(510);
-}
-
-static void ui_menu_entry_rect(i32 i, i32 *x, i32 *y, i32 *w, i32 *h)
-{
-    *x = LCD_X(312);
-    *y = LCD_Y(200) + i * LCD_Y(76);
-    *w = LCD_X(400); *h = LCD_Y(64);
-}
-
 static void ui_set_mode_label(u32 sel)
 {
     static const char pfx[] = "模式:";
-    const char *name = ui_mode_names[sel < UI_MODE_N ? sel : 0u];
+    const char *name = ui_mode_names[sel==1u ? 1u : 0u];
     u32 i, j = 0;
     for (i = 0; pfx[i] != '\0' && j < sizeof ui_mode_label - 1u; i++)
         ui_mode_label[j++] = pfx[i];
@@ -924,83 +965,47 @@ static void ui_touch_press(u32 x, u32 y)
     i32 bx, by, bw, bh;
     u32 i;
 
-    if (ui_menu_open) {
-        if(px>=LCD_X(540) && px<LCD_X(712) && py>=LCD_Y(132) && py<LCD_Y(184)) {
-            ui_menu_open=0u;lcd_rehab_open();return;
+    ui_feedback_x=x;ui_feedback_y=y;ui_feedback_t=gt_stamp();
+    ui_feedback_owner=ui_page_owner();ui_feedback_active=1u;
+    ui_feedback_presented=0u;ui_feedback_serial++;
+    ui_generation++;lcd_pending=1u;lcd_input_status_changed();
+    if (hand_busy() && px>=LCD_X(875) && px<LCD_X(1008) && py>=LCD_Y(30) && py<LCD_Y(82)) {
+        hand_stop();ui_menu_open=0u;ui_generation++;lcd_input_status_changed();return;
+    }
+    if(py>=LCD_Y(30) && py<LCD_Y(82)) {
+        if(px>=LCD_X(330) && px<LCD_X(480)) {ui_home_open();return;}
+        if(px>=LCD_X(520) && px<LCD_X(690)) {lcd_main_view_toggle();return;}
+        if(px>=LCD_X(700) && px<LCD_X(850)) {lcd_rehab_open();return;}
+        if(px>=LCD_X(875) && px<LCD_X(1008)) {
+            ui_open_page(lcd_settings_view?UI_MONITOR:UI_SETTINGS);return;
         }
-        if (px>=LCD_X(312) && px<LCD_X(712) && py>=LCD_Y(132) && py<LCD_Y(184)) {
-            lcd_settings_view=1u;
-            lcd_wave_view=lcd_data_view=lcd_spectrum_view=lcd_synergy_view=lcd_sd_view=lcd_rehab_view=lcd_selfcal_view=0u;
-            ui_menu_open=0u; ui_preview_cls=-1;
-            ui_generation++; lcd_input_status_changed(); return;
-        }
-        for (i = 0; i < UI_MODE_N; i++) {
-            ui_menu_entry_rect((i32)i, &bx, &by, &bw, &bh);
-            if (px >= bx && px < bx + bw && py >= by && py < by + bh) {
-                ui_mode_sel = i;
-                ui_set_mode_label(i);
-                ui_menu_open = 0u;
-                ui_dirty = 1u;
-                ui_generation++;
-                if (i==4u) {
-                    lcd_settings_view=lcd_rehab_view=lcd_selfcal_view=0u;
-                    lcd_sd_view=1u;
-                    lcd_wave_view=lcd_data_view=lcd_spectrum_view=lcd_synergy_view=0u;
-                } else if (i==2u) lcd_selfcal_open();
-                else ui_action = i + 1u;
-                ui_preview_cls = -1;
-                ui_menu_row("[MENU] sel=%u\n", i);
-                lcd_show_state(lcd_state_cls, lcd_state_conf,
-                               lcd_state_fatigue, lcd_state_gated,
-                               lcd_state_tilt, lcd_state_shift);
+    }
+    if(ui_menu_open) {
+        static const u32 routes[]={UI_MONITOR,UI_REHAB,UI_DATA,UI_WAVE,UI_SPECTRUM,
+                                   UI_SYNERGY,UI_SD,UI_HDC,UI_HAND};
+        for(i=0u;i<9u;i++) {
+            bx=LCD_X(28)+(i32)(i%3u)*LCD_X(330);
+            by=LCD_Y(148)+(i32)(i/3u)*LCD_Y(98);
+            if(px>=bx && px<bx+LCD_X(308) && py>=by && py<by+LCD_Y(78)) {
+                if(routes[i]==UI_HAND)lcd_hand_open();
+                else if(routes[i]==UI_HDC)lcd_hdc_open();
+                else if(routes[i]==UI_REHAB)lcd_rehab_open();
+                else {if(routes[i]==UI_DATA)lcd_quality_view=1u;ui_open_page(routes[i]);}
                 return;
             }
         }
-        ui_menu_open = 0u;      /* tap outside the entries: dismiss */
-        ui_dirty = 1u;
-        ui_generation++;
-        ui_menu_row("[MENU] close\n", 0);
-        lcd_show_state(lcd_state_cls, lcd_state_conf,
-                       lcd_state_fatigue, lcd_state_gated,
-                       lcd_state_tilt, lcd_state_shift);
-        return;
-    }
-    ui_menu_btn_rect(&bx, &by, &bw, &bh);
-    if (px >= bx && px < bx + bw && py >= by && py < by + bh) {
-        ui_menu_open = 1u;
-        ui_dirty = 1u;
-        ui_generation++;
-        ui_menu_row("[MENU] open\n", 0);
-        lcd_show_state(lcd_state_cls, lcd_state_conf,
-                       lcd_state_fatigue, lcd_state_gated,
-                       lcd_state_tilt, lcd_state_shift);
-        return;
-    }
-    if (px >= LCD_X(520) && px < LCD_X(690) &&
-        py >= LCD_Y(30) && py < LCD_Y(82)) {
-        lcd_main_view_toggle();
-        return;
-    }
-    if (px >= LCD_X(700) && px < LCD_X(850) &&
-        py >= LCD_Y(30) && py < LCD_Y(82)) {
-        if (lcd_data_view)
-            lcd_spectrum_toggle();
-        else if (lcd_spectrum_view) {
-            lcd_spectrum_view=0u;lcd_synergy_view=1u;
-            ui_generation++;lcd_input_status_changed();
-        } else if (lcd_synergy_view) {
-            lcd_synergy_view=0u;lcd_analysis_toggle();
+        for(i=0u;i<4u;i++) {
+            bx=LCD_X(28)+(i32)i*LCD_X(246);
+            if(px>=bx && px<bx+LCD_X(230) && py>=LCD_Y(486) && py<LCD_Y(538)) {
+                ui_open_page(UI_MONITOR);ui_action=i+1u;return;
+            }
         }
-        else
-            lcd_analysis_toggle();
         return;
     }
-    if (px>=LCD_X(875) && px<LCD_X(1008) && py>=LCD_Y(30) && py<LCD_Y(82)) {
-        lcd_settings_view=!lcd_settings_view;
-        lcd_wave_view=lcd_data_view=lcd_spectrum_view=lcd_synergy_view=lcd_sd_view=lcd_rehab_view=lcd_selfcal_view=0u;
-        ui_preview_cls=-1; ui_generation++; lcd_input_status_changed(); return;
-    }
+    if (lcd_virtual_view) { lcd_virtual_touch(x,y); return; }
+    if (lcd_hand_view) { lcd_hand_touch(x,y); return; }
     if (lcd_settings_view) { lcd_settings_touch(x,y); return; }
+    if (lcd_hdc_view) { lcd_hdc_touch(x,y); return; }
     if (lcd_selfcal_view) { lcd_selfcal_touch(x,y); return; }
     if (lcd_rehab_view) { lcd_rehab_touch(x,y); return; }
     if (lcd_sd_view) {
@@ -1014,11 +1019,20 @@ static void ui_touch_press(u32 x, u32 y)
             ui_sd_action=sd_record_active()?2u:1u;
             return;
         }
-        for (i=0u;i<5u;i++) {
+        for (i=0u;i<SD_LABEL_PAGES;i++) {
+            bx=LCD_X(512)+(i32)i*LCD_X(161);
+            if (px>=bx && px<bx+LCD_X(152) && py>=LCD_Y(328) && py<LCD_Y(364)) {
+                lcd_sd_label_page=i;
+                ui_generation++; lcd_input_status_changed(); return;
+            }
+        }
+        for (i=0u;i<SD_LABELS_PER_PAGE;i++) {
+            u32 action=lcd_sd_label_page*SD_LABELS_PER_PAGE+i+1u;
+            if (action>SD_ACTION_COUNT) continue;
             bx=LCD_X(22)+(i32)i*LCD_X(196);
             by=LCD_Y(370); bw=LCD_X(180); bh=LCD_Y(62);
             if (px>=bx && px<bx+bw && py>=by && py<by+bh) {
-                lcd_action_label=i+SD_ACTION_REST;
+                lcd_action_label=action;
                 ui_generation++;
                 lcd_input_status_changed();
                 return;
@@ -1038,6 +1052,12 @@ static void ui_touch_press(u32 x, u32 y)
     if (lcd_wave_view) {
         lcd_wave_touch(x, y);
         return;
+    }
+    if(lcd_wave_hit(x,y,LCD_X(300),LCD_Y(99),LCD_X(220),LCD_Y(36))) {
+        ui_recognition_source(!hand_source_hdc);return;
+    }
+    if(lcd_wave_hit(x,y,LCD_X(540),LCD_Y(99),LCD_X(210),LCD_Y(36))) {
+        lcd_virtual_open();return;
     }
     for (i = 0; i < POSE_MODEL_CLASSES; i++) {
         bx = LCD_X(24) + (i32)i * LCD_X(190);
@@ -1115,6 +1135,7 @@ static void mpu_tick(void)
         return;                    /* zero capture counts sensor samples */
     mpu_word_seen = 1u;
     mpu_last_word = w;
+    mpu_last_sample_t = gt_stamp();
     p = MPU_TW_PITCH(w);
     r = MPU_TW_ROLL(w);
     mpu_pitch = p;
@@ -1620,6 +1641,7 @@ static void lcd_quad(volatile u8 *fb, const lcd_dl_t *e,
 static void lcd_slice_tick(u32 t0)
 {
     if (LCD_ENABLE != 1u || lcd_frozen) return;
+    ui_feedback_tick();
     lcd_wave_tick();
     lcd_quality_tick(t0);
     if(lcd_synergy_view && synergy_nmf.valid && !synergy_stale_reported &&
@@ -1665,8 +1687,14 @@ static void lcd_slice_tick(u32 t0)
     lcd_buffer_ui[dl_back] = dl_ui_generation;
     lcd_buffer_valid[dl_back] = 1u;
     lcd_present_cnt++;
+    /* Start the visual dwell only after this tap reaches a presented frame.
+     * A completed older frame must not consume a newer tap's feedback. */
+    if(ui_feedback_active && !ui_feedback_presented &&
+       dl_feedback_serial==ui_feedback_serial) {
+        ui_feedback_presented=1u;ui_feedback_t=gt_stamp();
+    }
     dl_busy = 0u;
-    if(lcd_animation_busy && !lcd_wave_view && !lcd_data_view && !lcd_spectrum_view && !lcd_synergy_view && !lcd_sd_view && !lcd_settings_view && !lcd_rehab_view && !lcd_selfcal_view) lcd_pending=1u;
+    if(lcd_animation_busy && !lcd_wave_view && !lcd_data_view && !lcd_spectrum_view && !lcd_synergy_view && !lcd_sd_view && !lcd_settings_view && !lcd_rehab_view && !lcd_selfcal_view && !lcd_hdc_view && !lcd_hand_view) lcd_pending=1u;
     lcd_redraw_last_ms = (gt_stamp() - dl_t_req) / GT_TICKS_PER_MS;
     if (lcd_redraw_last_ms > lcd_redraw_max_ms) lcd_redraw_max_ms=lcd_redraw_last_ms;
 }
@@ -1674,22 +1702,7 @@ static void lcd_slice_tick(u32 t0)
 /* Mode menu replaces the scene with a centered panel. Each entry dispatches
  * an existing mode/calibration action; buffer generations ensure a full
  * repaint when the overlay opens or closes. */
-static void ui_draw_menu(void)
-{
-    i32 px, py, pw, ph, ex, ey, ew, eh, i;
-
-    p_rect(0, 0, LCD_W, LCD_H, 8, 10, 16);
-    ui_menu_panel_rect(&px, &py, &pw, &ph);
-    p_rect(px - 2, py - 2, pw + 4, ph + 4, 70, 84, 106);
-    p_rect(px, py, pw, ph, 30, 40, 56);
-    ui_label(px+LCD_X(35),py+LCD_Y(22),pw-LCD_X(70),2,238,243,250,"模式菜单");
-    ui_button(LCD_X(312),LCD_Y(132),LCD_X(210),LCD_Y(52),"显示设置",0u);
-    ui_button(LCD_X(540),LCD_Y(132),LCD_X(172),LCD_Y(52),"康复训练",0u);
-    for(i=0;i<(i32)UI_MODE_N;i++) {
-        ui_menu_entry_rect(i,&ex,&ey,&ew,&eh);
-        ui_button(ex,ey,ew,eh,ui_mode_names[i],(u32)i==ui_mode_sel);
-    }
-}
+#include "lcd_home.h"
 
 static void lcd_sd_render(void)
 {
@@ -1699,7 +1712,8 @@ static void lcd_sd_render(void)
     char label[48];
     u32 i, active=(u32)sd_record_active(), error=(u32)sd_record_error();
     p_rect(0,LCD_Y(92),LCD_W,LCD_H-LCD_Y(92),18,24,34);
-    ui_label(LCD_X(36),LCD_Y(112),LCD_X(900),2,white[0],white[1],white[2],"SD卡记录");
+    ui_label(LCD_X(36),LCD_Y(112),LCD_X(320),2,white[0],white[1],white[2],"SD卡记录");
+    ui_label(LCD_X(380),LCD_Y(120),LCD_X(610),1,muted[0],muted[1],muted[2],"断电前请停止并保存");
     p_rect(LCD_X(28),LCD_Y(155),LCD_X(968),LCD_Y(56),25,34,48);
     p_text(LCD_X(36),LCD_Y(174),2,muted[0],muted[1],muted[2],
            error?"SD错误":active?"正在记录":
@@ -1710,10 +1724,16 @@ static void lcd_sd_render(void)
            error?warn[2]:(active?green[2]:cyan[2]),
            error?"检查存储卡":"原始 + 全处理");
     ui_button(LCD_X(332),LCD_Y(238),LCD_X(360),LCD_Y(76),active?"停止并保存":"开始记录",active);
-    ui_label(LCD_X(36),LCD_Y(338),LCD_X(900),2,muted[0],muted[1],muted[2],"动作标签 / 后续采样");
-    for(i=0u;i<5u;i++) {
+    ui_label(LCD_X(36),LCD_Y(338),LCD_X(460),2,muted[0],muted[1],muted[2],"动作标签 / 后续采样");
+    if(lcd_sd_label_page>=SD_LABEL_PAGES)lcd_sd_label_page=0u;
+    for(i=0u;i<SD_LABEL_PAGES;i++)
+        ui_button(LCD_X(512)+(i32)i*LCD_X(161),LCD_Y(328),LCD_X(152),LCD_Y(36),
+                  sd_label_page_names[i],i==lcd_sd_label_page);
+    for(i=0u;i<SD_LABELS_PER_PAGE;i++) {
+        u32 action=lcd_sd_label_page*SD_LABELS_PER_PAGE+i+1u;
         i32 bx=LCD_X(22)+(i32)i*LCD_X(196);
-        ui_button(bx,LCD_Y(370),LCD_X(180),LCD_Y(62),lcd_pose_names[i],i+1u==lcd_action_label);
+        if(action<=SD_ACTION_COUNT)
+            ui_button(bx,LCD_Y(370),LCD_X(180),LCD_Y(62),sd_action_names_zh[action],action==lcd_action_label);
     }
     p_rect(LCD_X(28),LCD_Y(452),LCD_X(968),LCD_Y(59),25,34,48);
     lcd_analysis_label(label,sizeof label,"帧数 ",sd_record_frames(),"");
@@ -1726,15 +1746,15 @@ static void lcd_sd_render(void)
         lcd_analysis_label(label,sizeof label,"错误 ",error,"");
         ui_label(LCD_X(500),LCD_Y(487),LCD_X(480),2,warn[0],warn[1],warn[2],label);
     }
-    ui_label(LCD_X(36),LCD_Y(532),LCD_X(675),2,muted[0],muted[1],muted[2],"断电前请停止并保存");
+    ui_label(LCD_X(36),LCD_Y(532),LCD_X(160),2,muted[0],muted[1],muted[2],"当前标签");
+    ui_label(LCD_X(205),LCD_Y(532),LCD_X(510),2,cyan[0],cyan[1],cyan[2],
+             sd_action_names_zh[lcd_action_label<=SD_ACTION_COUNT?lcd_action_label:0u]);
     ui_button(LCD_X(740),LCD_Y(515),LCD_X(250),LCD_Y(63),"清除标签",lcd_action_label==0u);
 }
 
 static void lcd_selfcal_open(void)
 {
-    lcd_selfcal_view=1u;
-    lcd_settings_view=lcd_wave_view=lcd_data_view=lcd_spectrum_view=lcd_synergy_view=lcd_sd_view=lcd_rehab_view=0u;
-    ui_preview_cls=-1;ui_menu_open=0u;ui_generation++;lcd_input_status_changed();
+    ui_open_page(UI_SELFCAL);
 }
 
 static void lcd_selfcal_touch(u32 x,u32 y)
@@ -1742,7 +1762,7 @@ static void lcd_selfcal_touch(u32 x,u32 y)
     u32 i;
     if(lcd_wave_hit(x,y,LCD_X(28),LCD_Y(516),LCD_X(300),LCD_Y(62))) {
         if(selfcal.state==1u || selfcal.state==2u)selfcal_reset(&selfcal);
-        lcd_selfcal_view=0u;ui_generation++;lcd_input_status_changed();return;
+        ui_open_page(UI_SETTINGS);return;
     }
     if(lcd_wave_hit(x,y,LCD_X(356),LCD_Y(516),LCD_X(300),LCD_Y(62))) {
         if(g_mode==MODE_MONITOR && cal_stage==2u && !sd_record_active()) {
@@ -1833,12 +1853,13 @@ static const char *pl_control_status_label(u32 gated)
 /* White clinical dashboard: preserve the existing camera, page routing and
  * touch rectangles. Side summaries are painted after the hand so rotated
  * geometry cannot cover text or controls. */
-static void lcd_render_pose(u32 cls, u32 conf, u32 fatigue, u32 gated,
+static void lcd_render_pose_content(u32 cls, u32 conf, u32 fatigue, u32 gated,
                             u32 full)
 {
     char label[48];
     u32 i, safe_cls=cls<POSE_MODEL_CLASSES?cls:0u;
     u32 safe_fat=fatigue<4u?fatigue:3u;
+    u32 display_cls=ui_preview_cls>=0?(u32)ui_preview_cls:hand_source_hdc?virtual_frame_cls:safe_cls;
     u32 adc_ok=(adc_config_word&0xe0000000u)==0xc0000000u;
     static const u8 fat_colors[4][3]={{25,120,111},{162,101,24},{190,58,58},{148,57,131}};
     (void)full;
@@ -1846,20 +1867,17 @@ static void lcd_render_pose(u32 cls, u32 conf, u32 fatigue, u32 gated,
     if(ui_preview_cls>=0) { safe_cls=(u32)ui_preview_cls;conf=100u;gated=0u; }
     p_rect(0,0,LCD_W,LCD_H,255,255,255);
     p_rect(0,LCD_Y(90),LCD_W,LCD_Y(2),211,222,222);
-    ui_label(LCD_X(28),LCD_Y(12),LCD_X(270),2,31,49,58,"肌电仿生手");
-    ui_label(LCD_X(28),LCD_Y(56),LCD_X(260),1,94,112,119,"肌电监测");
-    {
-        i32 bx,by,bw,bh;
-        ui_menu_btn_rect(&bx,&by,&bw,&bh);
-        ui_button(bx,by,bw,bh,"菜单",0u);
-        ui_button(LCD_X(520),LCD_Y(30),LCD_X(170),LCD_Y(52),
-                  lcd_wave_view||lcd_data_view||lcd_spectrum_view||lcd_synergy_view||lcd_sd_view||lcd_settings_view||lcd_rehab_view||lcd_selfcal_view?"手势":"波形",0u);
-        ui_button(LCD_X(700),LCD_Y(30),LCD_X(150),LCD_Y(52),
-                  lcd_data_view?"频谱":lcd_spectrum_view?"协同":"数据",
-                  lcd_data_view||lcd_spectrum_view||lcd_synergy_view);
-        ui_button(LCD_X(875),LCD_Y(30),LCD_X(133),LCD_Y(52),"设置",lcd_settings_view);
-    }
+    ui_label(LCD_X(28),LCD_Y(12),LCD_X(290),2,31,49,58,"肌电康复实验台");
+    ui_label(LCD_X(28),LCD_Y(56),LCD_X(280),1,94,112,119,
+        lcd_virtual_view?"虚拟手映射":lcd_rehab_view?"康复训练":lcd_hand_view?"机械手控制":lcd_hdc_view?"手势自学习":
+        lcd_selfcal_view?"佩戴适配":lcd_settings_view?"显示与设备设置":lcd_sd_view?"SD记录标注":
+        lcd_data_view?"通道与数据":lcd_wave_view?"波形示波":lcd_spectrum_view?"频谱分析":
+        lcd_synergy_view?"肌肉协同":"实时监测");
+    ui_draw_header();
+    if(lcd_virtual_view) { lcd_virtual_render();return; }
+    if(lcd_hand_view) { lcd_hand_render();return; }
     if(lcd_settings_view) { lcd_settings_render();return; }
+    if(lcd_hdc_view) { lcd_hdc_render();return; }
     if(lcd_selfcal_view) { lcd_selfcal_render();return; }
     if(lcd_rehab_view) { lcd_rehab_render();return; }
     if(lcd_sd_view) { lcd_sd_render();return; }
@@ -1868,10 +1886,10 @@ static void lcd_render_pose(u32 cls, u32 conf, u32 fatigue, u32 gated,
     if(lcd_synergy_view) { lcd_synergy_render();return; }
     if(lcd_wave_view) { lcd_wave_render();return; }
 
-    /* Main hand viewport remains centered at the original camera origin. */
-    ui_label(LCD_X(300),LCD_Y(111),LCD_X(260),1,94,112,119,"手势实时映射");
-    ui_label(LCD_X(590),LCD_Y(111),LCD_X(180),1,25,120,111,
-             ui_preview_cls>=0?"动作预览":"识别跟随");
+    /* The source is shared with physical mapping, but PWM is armed separately. */
+    if(hand_source_hdc && ui_preview_cls<0)conf=display_cls==UINT32_MAX?0u:virtual_frame_margin;
+    ui_button(LCD_X(300),LCD_Y(99),LCD_X(220),LCD_Y(36),hand_source_hdc?"来源 HDC":"来源 MLP",hand_source_hdc);
+    ui_button(LCD_X(540),LCD_Y(99),LCD_X(210),LCD_Y(36),"虚拟手映射",0u);
     if(dl_mode) dl_push(5,LCD_Y(140),LCD_Y(515),0,0,0,0,0);
     else { lcd_clip_top=LCD_Y(140);lcd_clip_bottom=LCD_Y(515); }
     lcd_draw_hand(safe_cls,safe_fat);
@@ -1882,14 +1900,19 @@ static void lcd_render_pose(u32 cls, u32 conf, u32 fatigue, u32 gated,
     p_round_rect(LCD_X(22),LCD_Y(140),LCD_X(242),LCD_Y(375),LCD_S(10),243,247,247);
     p_round_rect(LCD_X(770),LCD_Y(140),LCD_X(232),LCD_Y(375),LCD_S(10),243,247,247);
     ui_label(LCD_X(42),LCD_Y(162),LCD_X(202),1,94,112,119,"当前手势");
-    ui_label(LCD_X(42),LCD_Y(205),LCD_X(202),3,31,49,58,lcd_pose_names[safe_cls]);
-    ui_label(LCD_X(42),LCD_Y(276),LCD_X(202),1,94,112,119,"置信度");
+    ui_label(LCD_X(42),LCD_Y(205),LCD_X(202),3,31,49,58,display_cls==UINT32_MAX?"等待识别":
+        hand_source_hdc && ui_preview_cls<0?hdc_name(display_cls):lcd_pose_names[safe_cls]);
+    ui_label(LCD_X(42),LCD_Y(276),LCD_X(202),1,94,112,119,hand_source_hdc && ui_preview_cls<0?"分离裕量":"置信度");
     lcd_analysis_label(label,sizeof label,"",conf>100u?100u:conf,"%");
     ui_label(LCD_X(42),LCD_Y(307),LCD_X(202),3,31,49,58,label);
     p_rect(LCD_X(42),LCD_Y(352),LCD_X(202),LCD_Y(7),211,222,222);
     if(conf) p_rect(LCD_X(42),LCD_Y(352),(i32)((conf>100u?100u:conf)*LCD_X(202)/100u),LCD_Y(7),57,155,145);
     ui_label(LCD_X(42),LCD_Y(386),LCD_X(202),1,94,112,119,"疲劳状态");
-    ui_label(LCD_X(42),LCD_Y(418),LCD_X(202),2,fat_colors[safe_fat][0],fat_colors[safe_fat][1],fat_colors[safe_fat][2],lcd_fat_names[safe_fat]);
+    ui_label(LCD_X(42),LCD_Y(418),LCD_X(202),2,
+             fat_full?fat_colors[safe_fat][0]:94,
+             fat_full?fat_colors[safe_fat][1]:112,
+             fat_full?fat_colors[safe_fat][2]:119,
+             fat_full?lcd_fat_names[safe_fat]:"待评估");
     ui_label(LCD_X(42),LCD_Y(480),LCD_X(202),1,94,112,119,ui_mode_label);
 
     ui_label(LCD_X(790),LCD_Y(162),LCD_X(192),1,94,112,119,"设备状态");
@@ -1906,11 +1929,24 @@ static void lcd_render_pose(u32 cls, u32 conf, u32 fatigue, u32 gated,
              touch_seen?"触摸已连接":"等待触摸");
     p_rect(LCD_X(790),LCD_Y(432),LCD_X(192),1,211,222,222);
     ui_label(LCD_X(790),LCD_Y(454),LCD_X(192),1,94,112,119,PL_CONTROL_ENABLE?"识别状态":"静息门控");
-    ui_label(LCD_X(790),LCD_Y(481),LCD_X(192),1,31,49,58,pl_control_status_label(gated));
+    ui_label(LCD_X(790),LCD_Y(481),LCD_X(192),1,31,49,58,ui_preview_cls>=0?"动作预览":hand_source_hdc?
+        !virtual_frame_ready?"HDC待验证":display_cls==UINT32_MAX?"等待稳定手势":
+        !virtual_frame_mapped?"虚拟姿态未映射":"HDC识别跟随":pl_control_status_label(gated));
 
     p_rect(0,LCD_Y(526),LCD_W,1,232,239,239);
     for(i=0;i<POSE_MODEL_CLASSES;i++)
-        ui_button(LCD_X(24)+(i32)i*LCD_X(190),LCD_Y(535),LCD_X(160),LCD_Y(40),lcd_pose_names[i],i==safe_cls);
+        ui_button(LCD_X(24)+(i32)i*LCD_X(190),LCD_Y(535),LCD_X(160),LCD_Y(40),lcd_pose_names[i],i==display_cls);
+}
+
+static void lcd_render_pose(u32 cls,u32 conf,u32 fatigue,u32 gated,u32 full)
+{
+    lcd_render_pose_content(cls,conf,fatigue,gated,full);
+    /* Navigation can replace a button immediately. Preserve a short contact
+     * ring on the destination frame as acknowledgement of that tap. */
+    if(ui_feedback_active && ui_feedback_owner!=ui_page_owner()) {
+        lcd_point p={(i32)ui_feedback_x,(i32)ui_feedback_y};
+        p_disc(p,LCD_S(7),38,204,164);p_disc(p,LCD_S(3),255,255,255);
+    }
 }
 
 /* n counts state updates; last/max measure draw-list build to presentation
@@ -1931,9 +1967,10 @@ static void lcd_begin_pending(void)
     dl_back=i;
     full=!lcd_buffer_valid[i] || lcd_buffer_ui[i] != ui_generation;
     dl_ui_generation=ui_generation;
+    dl_feedback_serial=ui_feedback_serial;
     lcd_draw_tilt=lcd_state_tilt; lcd_draw_shift=lcd_state_shift;
-    if (!lcd_wave_view && !lcd_data_view && !lcd_spectrum_view && !lcd_synergy_view && !lcd_sd_view && !lcd_settings_view && !lcd_rehab_view && !lcd_selfcal_view) {
-        lcd_pose_sample(ui_preview_cls>=0 ? (u32)ui_preview_cls : lcd_state_cls);
+    if (!lcd_wave_view && !lcd_data_view && !lcd_spectrum_view && !lcd_synergy_view && !lcd_sd_view && !lcd_settings_view && !lcd_rehab_view && !lcd_selfcal_view && !lcd_hdc_view && !lcd_hand_view) {
+        lcd_virtual_sample();
         lcd_hand_snapshot();
     }
     dl_len=dl_i=dl_trunc=dl_clean_y=0u;
@@ -1958,18 +1995,19 @@ static void lcd_show_state(u32 cls, u32 conf, u32 fatigue, u32 gated,
     u32 i;
     if (LCD_ENABLE == 0u || lcd_frozen) return;
     if (!ui_dirty && lcd_state_valid && cls==lcd_state_cls && conf==lcd_state_conf &&
-        fatigue==lcd_state_fatigue && gated==lcd_state_gated &&
+        fatigue==lcd_state_fatigue && fat_full==lcd_state_fatigue_ready && gated==lcd_state_gated &&
         tilt==lcd_state_tilt && shift==lcd_state_shift &&
         lcd_state_imu_generation==lcd_imu_generation) return;
     lcd_state_cls=cls; lcd_state_conf=conf; lcd_state_fatigue=fatigue;
+    lcd_state_fatigue_ready=fat_full;
     lcd_state_gated=gated; lcd_state_tilt=tilt; lcd_state_shift=shift;
     lcd_state_imu_generation=lcd_imu_generation;
     lcd_state_valid=1u;
     lcd_redraw_cnt++;
     if (!lcd_stream_started) {
         lcd_draw_tilt=tilt; lcd_draw_shift=shift;
-        if (!lcd_wave_view && !lcd_data_view && !lcd_spectrum_view && !lcd_synergy_view && !lcd_sd_view && !lcd_settings_view && !lcd_rehab_view && !lcd_selfcal_view) {
-            lcd_pose_sample(ui_preview_cls>=0 ? (u32)ui_preview_cls : cls);
+        if (!lcd_wave_view && !lcd_data_view && !lcd_spectrum_view && !lcd_synergy_view && !lcd_sd_view && !lcd_settings_view && !lcd_rehab_view && !lcd_selfcal_view && !lcd_hdc_view && !lcd_hand_view) {
+            lcd_virtual_sample();
             lcd_hand_snapshot();
         }
         for (i=0; i<3u; i++) {
@@ -2152,7 +2190,6 @@ static u32 pose_rows;                  /* versioned PoseFrame rows printed */
 static u32 feat_rows;                  /* feature windows seen (print gate) */
 static i32 fat_num2;                   /* id 8: signed MDF slope numerator */
 static u32 fat_mdf;                    /* id 8: mean MDF bin */
-static u32 fat_level, fat_full, fat_energy;   /* id 9 fields */
 #define SPEC_BAND_COUNT 30u
 #define SPEC_LEVEL_MAX  31u
 static u32 spec_band[SPEC_BAND_COUNT]; /* ids 10..14: 30 log-power bands */
@@ -2242,6 +2279,7 @@ static u32 gated_rows;         /* R rows re-classified by the gate */
 static void cal_start(void)
 {
     u32 ch;
+    hdc_interrupt(&hdc);
     pose_pending_count = pose_uncertain_count = pose_observe_seen = 0u;
     pose_active_cls = pose_active_conf = pose_active_gated = 0u;
     cal_stage = 0;
@@ -2365,6 +2403,9 @@ static u32 lcd_analysis_hit(u32 x, u32 y, i32 bx, i32 by, i32 bw, i32 bh)
 }
 
 #include "lcd_channel_quality.h"
+#include "lcd_hdc.h"
+#include "lcd_hand.h"
+#include "lcd_virtual.h"
 
 static u32 lcd_analysis_touch(u32 x, u32 y)
 {
@@ -2451,6 +2492,7 @@ static void lcd_analysis_render(void)
         ui_label(bx+LCD_X(216),by+LCD_Y(40),LCD_X(160),2,muted[0],muted[1],muted[2],label);
         lcd_analysis_label(label, sizeof label, " ", pct, "%");
         ui_label(bx+LCD_X(376),by+LCD_Y(40),LCD_X(84),2,br,bg,bb,label);
+        ui_button_press_border(bx,by,LCD_X(470),LCD_Y(64));
     }
 
     p_rect(LCD_X(28),LCD_Y(454),LCD_X(968),LCD_Y(115),25,34,48);
@@ -2474,10 +2516,10 @@ static void lcd_analysis_render(void)
     }
     lcd_analysis_label(label,sizeof label,"异常值 ",outliers,"");
     ui_label(LCD_X(44),LCD_Y(538),LCD_X(350),2,muted[0],muted[1],muted[2],label);
-    lcd_analysis_label(label,sizeof label,"疲劳等级 ",fat_level,"");
-    ui_label(LCD_X(420),LCD_Y(538),LCD_X(230),2,fat_level>=2u?bad[0]:green[0],
-             fat_level>=2u?bad[1]:green[1],fat_level>=2u?bad[2]:green[2],label);
-    ui_label(LCD_X(690),LCD_Y(538),LCD_X(290),2,muted[0],muted[1],muted[2],fat_full?"疲劳分析就绪":"疲劳分析预热");
+    if(fat_full)lcd_analysis_label(label,sizeof label,"疲劳等级 ",fat_level,"");
+    ui_label(LCD_X(420),LCD_Y(538),LCD_X(230),2,fat_full&&fat_level>=2u?bad[0]:green[0],
+             fat_full&&fat_level>=2u?bad[1]:green[1],fat_full&&fat_level>=2u?bad[2]:green[2],fat_full?label:"疲劳待评估");
+    ui_label(LCD_X(690),LCD_Y(538),LCD_X(290),2,muted[0],muted[1],muted[2],fat_full?"疲劳分析就绪":"保持动作分析");
 }
 
 static void synergy_on_window(const u32 e[8],u16 seq)
@@ -2490,6 +2532,7 @@ static void synergy_on_window(const u32 e[8],u16 seq)
     }
     synergy_seq_seen=1u;synergy_last_seq=seq;synergy_last_t=now;synergy_stale_reported=0u;
     synergy_nmf_step(&synergy_nmf,e);
+    if(!synergy_nmf.valid)return;
     synergy_feedback_step(&synergy_feedback,synergy_nmf.c,seq,rehab_milliseconds());
     if(++synergy_history_hop>=4u) {
         synergy_history_hop=0u;
@@ -2981,6 +3024,12 @@ static void print_result_row(u32 seq)
  * or a second temporal filter. Old firmware keeps the original path. */
 static void pl_control_tick(void)
 {
+    u32 old_hand=hand_status_word,old_home=hand_home_state,old_step=hand_home_step;
+    hand_tick(rehab_milliseconds(),lcd_hand_view && !ui_menu_open && g_mode==MODE_MONITOR,
+              imu_hand_rotation_deg,mpu_seen && mpu_zero_valid && imu_hand_rotation_valid &&
+              (gt_stamp()-mpu_last_sample_t)<(100u*GT_TICKS_PER_MS));
+    if(old_hand!=hand_status_word || old_home!=hand_home_state || old_step!=hand_home_step)
+        lcd_input_status_changed();
 #if PL_CONTROL_ENABLE
     u32 previous_ready=pl_control_ready();
     u32 previous_word=pl_control_word;
@@ -3024,7 +3073,8 @@ static void pl_control_result(u32 seq,u32 word)
 
 /* One line per fatigue window (id 8+9 pair, ~2/s): 'T s=<seq> lv=<0..3>
  * mdf=<mean MDF bin> n2=<signed slope numerator> full=<hist filled> e=<energy>'.
- * lv comes from the 16-point MDF-history slope regression:
+ * lv is confirmed relative MDF decline within one active bout;
+ * n2 remains the 16-point trend diagnostic, not the severity classifier.
  * 0=NORM 1=MILD 2=FATIG, 3=RTL-defined fourth state. */
 static void print_fatigue_row(u32 seq)
 {
@@ -3144,6 +3194,7 @@ static void parse_packet(u32 payload, u32 hdr)
                 for(si=0u;si<40u;si++)
                     selfcal_features[si]=feat_vals[si/8u][si%8u];
                 synergy_on_window(feat_mav,feature_window_start_seq);
+                hdc_on_window(selfcal_features,feature_window_start_seq);
                 if(!PL_CONTROL_ENABLE || selfcal.state!=3u) {
                     if(selfcal_window(&selfcal,selfcal_features)==2u)
                         pl_control_request(selfcal.applied_shift,0u);
@@ -3416,6 +3467,9 @@ static void record_buffer(volatile u32 *buf)
  * the rest calibration (electrode state may have changed meanwhile). */
 static void mode_set(u32 mode)
 {
+    hand_stop();
+    if(selfcal.state==1u || selfcal.state==2u)selfcal_reset(&selfcal);
+    hdc_interrupt(&hdc);
     rehab_pause(&rehab,RH_REASON_DATA,rehab_milliseconds());
     synergy_feedback_reset(&synergy_feedback);rehab_effort_enabled=0u;
     /* Baud changes reset the stream. Finish an SD session before doing so. */
@@ -3451,6 +3505,8 @@ static void mpu_zero_start(void)
 static void ui_apply_action(void)
 {
     u32 action=ui_action;
+    u32 hdc_save_pending=ui_hdc_save;
+    ui_hdc_save=0u;
     u32 sd_action=ui_sd_action;
     u32 rehab_action_pending=ui_rehab_action;
     ui_action=0u;
@@ -3460,18 +3516,20 @@ static void ui_apply_action(void)
         u32 mode=action==2u ? MODE_RECORD : MODE_MONITOR;
         if (mode != g_mode) mode_set(mode);
     } else if (action==3u) {
+        hand_stop();hdc_interrupt(&hdc);
         rehab_pause(&rehab,RH_REASON_CAL,rehab_milliseconds());
         if (g_mode != MODE_MONITOR) mode_set(MODE_MONITOR);
         else cal_start();
     } else if (action==4u) mpu_zero_start();
     if (sd_action) {
-        if (sd_action==1u) {
+        if (sd_action==1u && lcd_sd_view && !ui_menu_open) {
+            hand_stop();hdc_interrupt(&hdc);
             rehab_pause(&rehab,RH_REASON_USER,rehab_milliseconds());
             sd_pair_dropped=0u;
             sd_pair_reset();
             /* Keep the live DMA/FIFO pointers continuous across file creation. */
             sd_record_start();
-        } else {
+        } else if(sd_action==2u) {
             sd_record_stop();
             sd_pair_reset();
         }
@@ -3480,6 +3538,10 @@ static void ui_apply_action(void)
         lcd_input_status_changed();
     }
     if(rehab_action_pending)rehab_apply_action(rehab_action_pending);
+    if(hdc_save_pending)hdc_save_report();
+    if(hand_storage_action) {
+        u32 ha=hand_storage_action;hand_storage_action=0u;hand_storage_apply(ha);
+    }
 }
 
 /* Non-blocking RX poll; 'c' recalibrates rest, 'd' toggles debug text,
@@ -3512,6 +3574,8 @@ static void uart_poll_rx(void)
                 uart_puts(BUILD_TAG);
                 uprintf(" LCD_ENABLE=%u\n", LCD_ENABLE, 0, 0, 0);
             }
+        } else if (c == 'h' && g_mode == MODE_MONITOR) {
+            lcd_hdc_open();
         } else if (c == 'w' && g_mode == MODE_MONITOR) {
             lcd_wave_toggle();
         } else if (c == 'a' && g_mode == MODE_MONITOR) {
@@ -3568,6 +3632,10 @@ static void uart_poll_rx(void)
                     pl_control_epoch,pl_control_sent_shift,pl_control_inflight||pl_control_queued);
             uprintf("[PLCTRL] accepted=%u rejected=%u ready=%u stage=%u\n",pl_control_packets,
                     pl_control_rejected,pl_control_ready(),cal_stage);
+#if PL_LEARNING_ENABLE
+            uprintf("[PLLEARN] status=0x%x jobs=%u failures=%u max_us=%u\n",
+                    pl_learning_status,pl_learning_jobs,pl_learning_failures,pl_learning_max_ticks/333u);
+#endif
 #endif
             g_tx_data=0u;
         } else if (c == 't' && g_mode == MODE_MONITOR) {
@@ -3619,9 +3687,11 @@ int main(void)
 
     gt_init();                /* before lcd_init: the boot triple-render is
                                * measured too (first lcd= row sanity check) */
+    ui_menu_open=1u;           /* predictable entry point with visible STOP */
     lcd_init();               /* local virtual hand + VDMA MM2S + backlight */
     g_uart_debug = 0u;                 /* steady state is LCD-local */
     cal_start();
+    hand_boot_init();          /* one boot-only, saved-profile homing attempt */
     dma_restart();
 
     {

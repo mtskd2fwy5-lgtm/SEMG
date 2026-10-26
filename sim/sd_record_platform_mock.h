@@ -12,7 +12,7 @@ typedef struct { uint32_t HCS, SectorCount; } XSdPs;
 typedef struct { uint32_t v[17]; } XSdPs_Config;
 enum { XST_SUCCESS=0, XST_FAILURE=1, XST_TIMEOUT=2, XSDPS_SLOT_REM=0,
        FR_OK=0, FR_DISK_ERR=1, FR_EXIST=8, FR_DENIED=7,
-       FA_CREATE_NEW=4, FA_WRITE=2, STA_NOINIT=1,
+       FA_CREATE_NEW=4, FA_CREATE_ALWAYS=8, FA_READ=1, FA_WRITE=2, STA_NOINIT=1,
        RES_OK=0, RES_ERROR=1, RES_NOTRDY=3, RES_PARERR=4,
        CTRL_SYNC=0, GET_SECTOR_COUNT=1, GET_SECTOR_SIZE=2, GET_BLOCK_SIZE=3 };
 u32 Xil_In32(UINTPTR address);
@@ -24,6 +24,7 @@ int XSdPs_WritePolled(XSdPs *,uint32_t,UINT,const BYTE *);
 FRESULT f_mount(FATFS *,const char *,BYTE);
 FRESULT f_open(FIL *,const char *,BYTE);
 FRESULT f_write(FIL *,const void *,UINT,UINT *);
+FRESULT f_read(FIL *,void *,UINT,UINT *);
 FRESULT f_sync(FIL *);
 FRESULT f_close(FIL *);
 #endif

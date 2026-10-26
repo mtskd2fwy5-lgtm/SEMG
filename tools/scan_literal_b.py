@@ -24,16 +24,34 @@ BAD_VALUES = ((14646, 'B0/B2 bad'), (-116680, 'A2 bad'), (14642, 'LP bad'))
 # exception narrow and explicit so a new constant-B DSP still fails the gate.
 BENIGN_LITERAL_DSP = {
     ('p_0_out__1', 30),
+    ('p_0_out', 30),  # Same spectrum-index expression after V5 elaboration.
+}
+
+# V5 relative MDF comparisons: baseline_sum * (100 - {30,20,10})
+# and trimmed_sum * 400. These are not filter coefficient paths. Entries
+# verified against the V5 synthesized netlist; wrong scope/leaf/value fails.
+BENIGN_FATIGUE_STATE_DSP = {
+    ('candidate2', 70), ('candidate3', 80), ('candidate4', 90),
+    ('current_scaled', 400),
 }
 
 
 def benign_literal(module, instance, value):
+    # Six PWM comparators convert microseconds to 25 MHz ticks. Confirmed
+    # in the routed-source OOC netlist: A is the dynamic pulse width, B=25.
+    # Limit the exception to the six exact servo leaves, never filter paths.
+    if module.endswith('_hand_servo_pwm') and value == 25 and instance in {
+        'pwm2', 'pwm2__0', 'pwm2__1', 'pwm2__2', 'pwm2__3', 'pwm2__4'
+    }:
+        return 'servo pulse microseconds to 25MHz ticks'
     # Policy's percentage numerator is exps[index] * 100, not an EMG
     # filter coefficient. Scope AND leaf name AND exact value must match.
     if module.endswith('_emg_control_policy') and instance == 'numerator_reg' and value == 100:
         return 'policy confidence percent numerator'
     if module.endswith('_emg_fatigue') and (instance, value) in BENIGN_LITERAL_DSP:
         return 'spectrum-index mapping'
+    if module.endswith('_emg_fatigue_state') and (instance, value) in BENIGN_FATIGUE_STATE_DSP:
+        return 'relative MDF percentage comparison'
     return ''
 
 
