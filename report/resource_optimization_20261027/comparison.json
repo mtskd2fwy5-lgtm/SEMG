@@ -1,0 +1,320 @@
+{
+  "changed_inputs": [
+    "src/rtl/emg_window_features.v"
+  ],
+  "inputs": [
+    {
+      "path": "src/rtl/ads1299_spi.v",
+      "baseline": "2e06afa3376312f0f5edee8f423eaa544628278bb2938e1efccedc1c1aa8a8ca",
+      "candidate": "2e06afa3376312f0f5edee8f423eaa544628278bb2938e1efccedc1c1aa8a8ca"
+    },
+    {
+      "path": "src/rtl/ads8698_spi.v",
+      "baseline": "02d5171872d1821f96599c949a92e8661daa263da54eac680251f0f948dc8896",
+      "candidate": "02d5171872d1821f96599c949a92e8661daa263da54eac680251f0f948dc8896"
+    },
+    {
+      "path": "src/rtl/axis_async_fifo.v",
+      "baseline": "fe24aeaf6b3fc90122f3a9dcce98a659034571b35216e17cc113d88325f36a02",
+      "candidate": "fe24aeaf6b3fc90122f3a9dcce98a659034571b35216e17cc113d88325f36a02"
+    },
+    {
+      "path": "src/rtl/axis_packet_mux.v",
+      "baseline": "e9365f1971635ce92faf8f3c838040a80ef66a190839feb05206171ccc44dd40",
+      "candidate": "e9365f1971635ce92faf8f3c838040a80ef66a190839feb05206171ccc44dd40"
+    },
+    {
+      "path": "src/rtl/emg_bandpass.v",
+      "baseline": "948185ececfa2b4a1158274bda0b56f1280c1d9baab4f350640305dd10d924b5",
+      "candidate": "948185ececfa2b4a1158274bda0b56f1280c1d9baab4f350640305dd10d924b5"
+    },
+    {
+      "path": "src/rtl/emg_comb50.v",
+      "baseline": "d2fadd0829ea93dfc06394d3a1262c5ef19bff6690f2894f16381e0266f3a348",
+      "candidate": "d2fadd0829ea93dfc06394d3a1262c5ef19bff6690f2894f16381e0266f3a348"
+    },
+    {
+      "path": "src/rtl/emg_control_constants.vh",
+      "baseline": "cf077f7e7e2a98848b1e725313e2d99ac8eaee67cc762fa4e14896faef2cded9",
+      "candidate": "cf077f7e7e2a98848b1e725313e2d99ac8eaee67cc762fa4e14896faef2cded9"
+    },
+    {
+      "path": "src/rtl/emg_control_inference.v",
+      "baseline": "f2119b7b771b6697ffd8bd2f703b23e6945a6887b3b3c4584e2d01fdac46d83b",
+      "candidate": "f2119b7b771b6697ffd8bd2f703b23e6945a6887b3b3c4584e2d01fdac46d83b"
+    },
+    {
+      "path": "src/rtl/emg_control_policy.v",
+      "baseline": "d9350f6c7929e2adc755ae9187fa8cc4e7905f74da2c37f19431c71ea84b8278",
+      "candidate": "d9350f6c7929e2adc755ae9187fa8cc4e7905f74da2c37f19431c71ea84b8278"
+    },
+    {
+      "path": "src/rtl/emg_data_path.v",
+      "baseline": "5e07cc2d9f78fc50116398af4c418f2a10cc1aaa1f4e9dcb92a5f7cf265c59b7",
+      "candidate": "5e07cc2d9f78fc50116398af4c418f2a10cc1aaa1f4e9dcb92a5f7cf265c59b7"
+    },
+    {
+      "path": "src/rtl/emg_fatigue.v",
+      "baseline": "09b3b1acf0bef50fc471d662767ebd68df7d831a1f54bd2acfc45d64e5c8e8ac",
+      "candidate": "09b3b1acf0bef50fc471d662767ebd68df7d831a1f54bd2acfc45d64e5c8e8ac"
+    },
+    {
+      "path": "src/rtl/emg_feature_bank.v",
+      "baseline": "2f0dd882f42342299df9a427aec01e6d41fd1480d1205f5f9d906480377bc7a1",
+      "candidate": "2f0dd882f42342299df9a427aec01e6d41fd1480d1205f5f9d906480377bc7a1"
+    },
+    {
+      "path": "src/rtl/emg_learning_accel.v",
+      "baseline": "97a37ef69351637154d7f7790b1ccef03fdc16af7bd10fa18896821b7bd11db8",
+      "candidate": "97a37ef69351637154d7f7790b1ccef03fdc16af7bd10fa18896821b7bd11db8"
+    },
+    {
+      "path": "src/rtl/emg_line_filter.v",
+      "baseline": "56c13d1583c3445a5833f0fba6c04ffca92fdd337c36792d5c4656fd4bf9cdfb",
+      "candidate": "56c13d1583c3445a5833f0fba6c04ffca92fdd337c36792d5c4656fd4bf9cdfb"
+    },
+    {
+      "path": "src/rtl/emg_nn_infer.v",
+      "baseline": "51997f86b52913680c6312e5ae2bd60fbe348bc86d45a7da9001ce3d743f7fd2",
+      "candidate": "51997f86b52913680c6312e5ae2bd60fbe348bc86d45a7da9001ce3d743f7fd2"
+    },
+    {
+      "path": "src/rtl/emg_notch50.v",
+      "baseline": "32285e74b71882f1cb81a7978ace98822661ada8be12f86a68b285449a4f0bed",
+      "candidate": "32285e74b71882f1cb81a7978ace98822661ada8be12f86a68b285449a4f0bed"
+    },
+    {
+      "path": "src/rtl/emg_pl_control.v",
+      "baseline": "cf67a00daad7c55cd4124a269a6370f629a45dd2a338846c6c3d41ce37883b43",
+      "candidate": "cf67a00daad7c55cd4124a269a6370f629a45dd2a338846c6c3d41ce37883b43"
+    },
+    {
+      "path": "src/rtl/emg_pl_export.v",
+      "baseline": "92d25e10bb7d039b9047351aaf82856050abafe21c171e1cfb69b2b2fd12cc8f",
+      "candidate": "92d25e10bb7d039b9047351aaf82856050abafe21c171e1cfb69b2b2fd12cc8f"
+    },
+    {
+      "path": "src/rtl/emg_pl_export_status.v",
+      "baseline": "7c058364aa86a0335317884c218a1263594e13582c80bb7f1ba67b6202878a39",
+      "candidate": "7c058364aa86a0335317884c218a1263594e13582c80bb7f1ba67b6202878a39"
+    },
+    {
+      "path": "src/rtl/emg_preprocess.v",
+      "baseline": "09404f30e67c8475bff256f1a63781289a4d1d0797e85bebe38fc39f042f00d4",
+      "candidate": "09404f30e67c8475bff256f1a63781289a4d1d0797e85bebe38fc39f042f00d4"
+    },
+    {
+      "path": "src/rtl/emg_window_features.v",
+      "baseline": "1c0c2f0e19be3a37c031fbf8143be75b3547d399ac82afc87978ae1b3c7c48cc",
+      "candidate": "4647eac07fdd43ca9b80ebd75d75f15a9db1b574848f04e3b8f55984bc78d67d"
+    },
+    {
+      "path": "src/rtl/hand_control.v",
+      "baseline": "4cf8590d3d959c70ee4b4a7f348a4ec62fe60dc60016e18e777b133c4d9dc4e7",
+      "candidate": "4cf8590d3d959c70ee4b4a7f348a4ec62fe60dc60016e18e777b133c4d9dc4e7"
+    },
+    {
+      "path": "src/rtl/hand_motion_top.v",
+      "baseline": "2126de5cf70db1feeffe14706f132ce7807083fec32298a1b7a84d21b13b9b75",
+      "candidate": "2126de5cf70db1feeffe14706f132ce7807083fec32298a1b7a84d21b13b9b75"
+    },
+    {
+      "path": "src/rtl/hand_servo_pwm.v",
+      "baseline": "6fea2331f016fbc2086b984ca0494724b706da587806a1fc3301069a56e580e6",
+      "candidate": "6fea2331f016fbc2086b984ca0494724b706da587806a1fc3301069a56e580e6"
+    },
+    {
+      "path": "src/rtl/lcd_clk_fwd.v",
+      "baseline": "39a7aaed722bd2b9b8f870f446ebd239b17b7ee5ea241045f69768fc6142b9f5",
+      "candidate": "39a7aaed722bd2b9b8f870f446ebd239b17b7ee5ea241045f69768fc6142b9f5"
+    },
+    {
+      "path": "src/rtl/lcd_panel_adapter.v",
+      "baseline": "683f0dc1f0690142342fa06fab110a6b15dd3af80698d332ada74dc796f28391",
+      "candidate": "683f0dc1f0690142342fa06fab110a6b15dd3af80698d332ada74dc796f28391"
+    },
+    {
+      "path": "src/rtl/learning_div64.v",
+      "baseline": "42ddadc38445d0769b52f1798a8209f5900e8f92022470f57223b829af66a344",
+      "candidate": "42ddadc38445d0769b52f1798a8209f5900e8f92022470f57223b829af66a344"
+    },
+    {
+      "path": "src/rtl/mpu6050_motion.v",
+      "baseline": "62ac8cb47bc78b37e4e38cc2ad7b7e524cd40746dc347a690778d85151e3b605",
+      "candidate": "62ac8cb47bc78b37e4e38cc2ad7b7e524cd40746dc347a690778d85151e3b605"
+    },
+    {
+      "path": "src/rtl/mpu6050_tilt.v",
+      "baseline": "a5a7084c41162f24005066032409cb1ccaa3269904fb65ac64071afa95623bb0",
+      "candidate": "a5a7084c41162f24005066032409cb1ccaa3269904fb65ac64071afa95623bb0"
+    },
+    {
+      "path": "src/rtl/touch_gt911.v",
+      "baseline": "0e01ba47d4aae3411b0a8c1631561280a627c0750f197e2c562d0beafd578276",
+      "candidate": "0e01ba47d4aae3411b0a8c1631561280a627c0750f197e2c562d0beafd578276"
+    },
+    {
+      "path": "board/constraints/hz_zynq_ads1299.xdc",
+      "baseline": "62109953adf4ffde3a535f5b13491b0bbdb4226bed62c30e04c14d92ef656c71",
+      "candidate": "62109953adf4ffde3a535f5b13491b0bbdb4226bed62c30e04c14d92ef656c71"
+    },
+    {
+      "path": "board/constraints/hz_zynq_ads1299_bd.xdc",
+      "baseline": "2c3f59a2a3d727e3483992fd802771a9f679efbffa00660fc304d91001cb9527",
+      "candidate": "2c3f59a2a3d727e3483992fd802771a9f679efbffa00660fc304d91001cb9527"
+    },
+    {
+      "path": "board/constraints/hz_zynq_clock_groups.xdc",
+      "baseline": "533302753e7dbff7f6b7d78442884c323f7071266b980e9af8b60c1f21c4961a",
+      "candidate": "533302753e7dbff7f6b7d78442884c323f7071266b980e9af8b60c1f21c4961a"
+    },
+    {
+      "path": "board/constraints/hz_zynq_hand.xdc",
+      "baseline": "665d5bf0096ca656fdae4826de1e53746e9e19e527ee6fe3719a8a43fbb693e1",
+      "candidate": "665d5bf0096ca656fdae4826de1e53746e9e19e527ee6fe3719a8a43fbb693e1"
+    },
+    {
+      "path": "board/constraints/hz_zynq_lcd.xdc",
+      "baseline": "0a78bd4b0de1735e6f8a238252a676fbd10c3a86ba7f551a9bbd7e711ed1e81b",
+      "candidate": "0a78bd4b0de1735e6f8a238252a676fbd10c3a86ba7f551a9bbd7e711ed1e81b"
+    },
+    {
+      "path": "board/constraints/hz_zynq_lcd_timing.xdc",
+      "baseline": "b16419ade3e42fd0ca4ac3bff2103b5a0edd0269500238c81076d337e6a8e0bb",
+      "candidate": "b16419ade3e42fd0ca4ac3bff2103b5a0edd0269500238c81076d337e6a8e0bb"
+    }
+  ],
+  "hardware_handoff_match_ignoring_timestamp": [
+    "design_1.hwh",
+    "design_1_smartconnect_0_0.hwh",
+    "design_1_smartconnect_1_0.hwh",
+    "design_1_smartconnect_learning_0.hwh",
+    "ps7_init.c",
+    "ps7_init.h"
+  ],
+  "baseline": {
+    "resources": {
+      "LUT": 36417.0,
+      "FF": 40463.0,
+      "Slice": 13008.0,
+      "BRAM": 45.5,
+      "DSP": 111.0
+    },
+    "control_sets": 1326.0,
+    "timing": {
+      "WNS_ns": 0.229,
+      "WHS_ns": 0.036,
+      "clocks": {
+        "pl_clk": {
+          "WNS_ns": 8.624,
+          "WHS_ns": 0.056
+        },
+        "clk_fpga_0": {
+          "WNS_ns": 0.397,
+          "WHS_ns": 0.036
+        }
+      }
+    },
+    "hierarchy": {
+      "emg_learning_0": {
+        "LUT": 3237,
+        "FF": 2943,
+        "BRAM36": 2,
+        "BRAM18": 0,
+        "DSP": 6
+      },
+      "u_feature_bank": {
+        "LUT": 10184,
+        "FF": 12560,
+        "BRAM36": 0,
+        "BRAM18": 0,
+        "DSP": 16
+      },
+      "gen_ch[0].u_features": {
+        "LUT": 1220,
+        "FF": 1405,
+        "BRAM36": 0,
+        "BRAM18": 0,
+        "DSP": 2
+      }
+    }
+  },
+  "candidate": {
+    "resources": {
+      "LUT": 33948.0,
+      "FF": 36991.0,
+      "Slice": 12708.0,
+      "BRAM": 45.5,
+      "DSP": 111.0
+    },
+    "control_sets": 1326.0,
+    "timing": {
+      "WNS_ns": 0.434,
+      "WHS_ns": 0.012,
+      "clocks": {
+        "pl_clk": {
+          "WNS_ns": 8.275,
+          "WHS_ns": 0.063
+        },
+        "clk_fpga_0": {
+          "WNS_ns": 0.539,
+          "WHS_ns": 0.012
+        }
+      }
+    },
+    "hierarchy": {
+      "emg_learning_0": {
+        "LUT": 3245,
+        "FF": 2943,
+        "BRAM36": 2,
+        "BRAM18": 0,
+        "DSP": 6
+      },
+      "u_feature_bank": {
+        "LUT": 7682,
+        "FF": 9088,
+        "BRAM36": 0,
+        "BRAM18": 0,
+        "DSP": 16
+      },
+      "gen_ch[0].u_features": {
+        "LUT": 917,
+        "FF": 1017,
+        "BRAM36": 0,
+        "BRAM18": 0,
+        "DSP": 2
+      }
+    }
+  },
+  "learning_max_cycles": {
+    "baseline": {
+      "1": 3958,
+      "2": 782,
+      "3": 23863,
+      "4": 77188
+    },
+    "candidate": {
+      "1": 3958,
+      "2": 782,
+      "3": 23863,
+      "4": 77188
+    }
+  },
+  "artifact_hashes": {
+    "build/vivado/hand_motion_reconstruction.runs/impl_1/design_1.bit": "23fdd4119ff90ad07f8a140acb32cef21f59dba282ab981473342a43cb4d7707",
+    "build/vivado/hand_motion_reconstruction.runs/impl_1/design_1_routed.dcp": "b477f70b6a94b9729f1661bc5b915b28268ab809909f7aa19b3e659ec1084c0e",
+    "build/export/design_1.xsa": "715107e09be60ac2b92f5e0bb5a66cd8aba1eccce5d7f271ff6b7a27b692e393"
+  },
+  "evidence_hashes": {
+    "sim/emg_feature_width_equiv_tb.sv": "d840b2d4eaa8d1e3445a471d3e0ccf22f3baa7cca9da74eb2fbd9895c162c8d3",
+    "sim/emg_learning_accel_tb.sv": "ae6398f8d3442280bda8e94487d1ff4bc7ff6cbc57842d21026cab9104b829d0",
+    "sim/results_learning/learning_vectors.mem": "9f93bf5eba96613570b53f760d7acd2d6ec6d8ea4f76fc9f5fcfdf4a9d33a0ba",
+    "build/scripts/run_feature_width_equiv_test.ps1": "70e9302ea5cc6b1d86d175e51629f9374aa384919b616754e0ce4a3c9c061e0f",
+    "report/resource_optimization_20261027/feature_rtl_runner.log": "e28d617f8b274bc522aae9a258b2527fc7026ab81591ebace5989dccc4c2a85e",
+    "report/resource_optimization_20261027/feature_netlist_runner.log": "01d76a5c3d4a5e08a117e2818cccfcafde54bd18a03de6bf7faa026277e4625c",
+    "report/resource_optimization_20261027/control_regression.log": "24de51778e41e8e060edb40adc6ab8a816dc39951f23460963ad96d3e0d5626d",
+    "report/resource_optimization_20261027/learning_regression.log": "e340198e71b24f1948923a2a58183226050a50bd71e5f237f20bde4f3d5d2336",
+    "report/resource_optimization_20261027/baseline_learning_regression.log": "d7a0e981b794d164a95f23c421e469cf683d39a3ac20425bc5d261424e94d057",
+    "report/resource_optimization_20261027/full_build.log": "9ebd56629916bbc94d907332a6a1278e4baa356e56956caa9a48f6b020edbe91"
+  }
+}

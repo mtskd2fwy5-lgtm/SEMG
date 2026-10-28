@@ -24,7 +24,14 @@ module hand_servo_pwm #(
     localparam integer TICKS_US=CLOCK_HZ/1000000;
     localparam integer FRAME_TICKS=FRAME_US*TICKS_US;
     localparam integer WD_TICKS=(CLOCK_HZ/1000)*WATCHDOG_MS;
-    reg [31:0] frame_tick,age;
+    localparam integer US_W=(FRAME_US<2)?1:$clog2(FRAME_US);
+    localparam integer SUB_W=(TICKS_US<2)?1:$clog2(TICKS_US);
+    localparam integer AGE_W=(WD_TICKS<2)?1:$clog2(WD_TICKS+1);
+    reg [US_W-1:0] frame_us;
+    reg [SUB_W-1:0] sub_tick;
+    reg [AGE_W-1:0] age;
+    // Kept as a debug alias; unused in the synthesized datapath.
+    wire [31:0] frame_tick=frame_us*TICKS_US+sub_tick;
     reg [15:0] pending[0:CHANNELS-1];
     reg have_target;
     integer i;
@@ -32,10 +39,10 @@ module hand_servo_pwm #(
     reg [15:0] position,target;
     always @(posedge clk) begin
         if(!rst_n)begin
-            pwm<=0;armed<=0;fault<=0;current_us<=0;frame_tick<=0;age<=0;have_target<=0;
+            pwm<=0;armed<=0;fault<=0;current_us<=0;frame_us<=0;sub_tick<=0;age<=0;have_target<=0;
             for(i=0;i<CHANNELS;i=i+1)pending[i]<=0;
         end else if(!enable || estop)begin
-            pwm<=0;armed<=0;frame_tick<=0;age<=0;have_target<=0;
+            pwm<=0;armed<=0;frame_us<=0;sub_tick<=0;age<=0;have_target<=0;
             if(estop)fault<=1;
             else fault<=0; // disabling explicitly clears the latched fault
         end else if(fault)begin pwm<=0;armed<=0;have_target<=0;end
@@ -54,9 +61,12 @@ module hand_servo_pwm #(
             if(age>=WD_TICKS && !command_valid)begin
                 armed<=0;pwm<=0;have_target<=0;fault<=1;
             end else begin
-                if(frame_tick==FRAME_TICKS-1)frame_tick<=0;
-                else frame_tick<=frame_tick+1;
-                if(frame_tick==0)begin
+                if(sub_tick==TICKS_US-1)begin
+                    sub_tick<=0;
+                    if(frame_us==FRAME_US-1)frame_us<=0;
+                    else frame_us<=frame_us+1'b1;
+                end else sub_tick<=sub_tick+1'b1;
+                if(frame_us==0 && sub_tick==0)begin
                     if(have_target)begin
                         armed<=1;
                         for(i=0;i<CHANNELS;i=i+1)begin
@@ -69,7 +79,7 @@ module hand_servo_pwm #(
                         end
                     end else pwm<=0;
                 end else for(i=0;i<CHANNELS;i=i+1)
-                    if(frame_tick>=current_us[i*16+:16]*TICKS_US)pwm[i]<=0;
+                    if(frame_us>=current_us[i*16+:16])pwm[i]<=0;
             end
             // Invalid commands must win even at the atomic frame boundary.
             if(command_valid && !command_ok)begin

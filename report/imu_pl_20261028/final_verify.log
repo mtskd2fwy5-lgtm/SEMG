@@ -1,0 +1,2 @@
+TEST_PASS V17 attitude release gates inherited=44 source_bindings=109 PS_fusion_absent
+TEST_PASS matched control BOOT: XSA hardware + full bitstream + 1 application PT_LOAD segments + 3 FSBL PT_LOAD segments

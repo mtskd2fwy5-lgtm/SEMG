@@ -9,7 +9,7 @@ import re
 from verify_boot_partition import find_partition
 
 ROOT = Path(__file__).resolve().parents[1]
-TAG = '20261026_HAND_CONTROL_HDC_DYNAMIC_V13'
+TAG = '20261028_HAND_CONTROL_HDC_DYNAMIC_IMU_PL_V17'
 
 
 def main():
@@ -17,18 +17,84 @@ def main():
     ap.add_argument('--hardware-only',action='store_true')
     ap.add_argument('--application-only',action='store_true')
     ap.add_argument('--tag',default=TAG)
-    ap.add_argument('--report-dir',default='report/virtual_mapping_20261026')
+    ap.add_argument('--report-dir',default='report/imu_pl_20261028')
     args=ap.parse_args()
     tag=args.tag
     virtual_v13=tag == '20261026_HAND_CONTROL_HDC_DYNAMIC_V13'
-    learning_v12=virtual_v13 or tag == '20261026_HAND_CONTROL_HDC_DYNAMIC_V12'
+    stability_v16=tag == '20261027_HAND_CONTROL_HDC_DYNAMIC_V16'
+    imu_v17=tag == '20261028_HAND_CONTROL_HDC_DYNAMIC_IMU_PL_V17'
+    resource_v15=tag == '20261027_HAND_CONTROL_HDC_DYNAMIC_V15'
+    resource_v14=resource_v15 or tag == '20261027_HAND_CONTROL_HDC_DYNAMIC_V14'
+    learning_v12=imu_v17 or stability_v16 or virtual_v13 or resource_v14 or tag == '20261026_HAND_CONTROL_HDC_DYNAMIC_V12'
     assert tag and all(c.isalnum() or c=='_' for c in tag), 'invalid build tag'
     bit_path = ROOT/'build/vivado/hand_motion_reconstruction.runs/impl_1/design_1.bit'
     elf_path = ROOT/'sw/ps_uart_print/ps_uart_print_pl_control.elf'
     boot_path = ROOT/f'build/boot/BOOT_{tag}.BIN'
     xsa_path = ROOT/'build/export/design_1.xsa'
+    if imu_v17:
+        from verify_imu_release import verify
+        verify(xsa_path)
     bit=bit_path.read_bytes()
     reused=[]
+    inherited=[]
+    reused_v15=[]
+    if stability_v16:
+        previous=json.loads((ROOT/'report/resource_optimization_v15_20261027/artifacts.json').read_text())
+        changed={'sw/ps_uart_print/hand_control.h','sw/ps_uart_print/lcd_hdc.h'}
+        for entry in previous['artifacts']:
+            path=Path(entry['path']);name=path.as_posix()
+            payload=(ROOT/path).read_bytes()
+            if name.startswith('sw/ps_uart_print/') and path.suffix.lower() in ('.c','.h','.ld','.s'):
+                if name in changed:
+                    baseline=ROOT/'report/hdc_stability_20261027/baseline'/path
+                    assert hashlib.sha256(baseline.read_bytes()).hexdigest()==entry['sha256'], f'V15 baseline mismatch: {path}'
+                    continue
+                if path.name=='main.c':
+                    payload=payload.replace(tag.encode(),b'20261027_HAND_CONTROL_HDC_DYNAMIC_V15')
+                assert hashlib.sha256(payload).hexdigest()==entry['sha256'], f'Unexpected V16 application change: {path}'
+                inherited.append(name)
+            if (path.suffix in ('.bit','.xsa','.xdc','.mem') or name.startswith('src/rtl/') or
+                name.endswith('sw/boot/fsbl.elf') or path.name=='ps7_init.c'):
+                assert hashlib.sha256(payload).hexdigest()==entry['sha256'], f'V15 hardware changed: {path}'
+                reused_v15.append(entry)
+        assert len(inherited)>=26 and len(reused_v15)>=20, 'incomplete V15 inheritance checks'
+        report=ROOT/args.report_dir
+        proof=json.loads((report/'regression_sources.json').read_text())
+        for name,digest in proof.items():
+            assert hashlib.sha256((ROOT/name).read_bytes()).hexdigest()==digest, f'Stale regression: {name}'
+        assert {'sw/ps_uart_print/hand_control.h','sw/ps_uart_print/lcd_hdc.h',
+                'sw/ps_uart_print/main.c','sim/hand_firmware_test.c','sim/lcd_firmware_test.c'}<=proof.keys()
+        for name,terminal in (
+            ('lcd_test.log','TEST_PASS HDC STABILITY UI:'),
+            ('lcd_test.log','TEST_PASS VIRTUAL MAPPING:'),
+            ('lcd_test.log','TEST_PASS NAV LIFECYCLE: 144 routes'),
+            ('hand_test.log','TEST_PASS HDC stability:'),
+            ('hand_test.log','TEST_PASS hand firmware:'),
+            ('learning_workflow_test.log','TEST_PASS PL backend failures invalidate model and NMF without software fallback')):
+            assert terminal in (report/name).read_text(encoding='utf-8',errors='replace'), f'V16 regression missing: {name} {terminal}'
+    if resource_v14:
+        # New PL arithmetic must preserve PS interfaces and all V13 behavior.
+        # V13-only hardware reuse checks below remain unchanged for that tag.
+        previous=json.loads((ROOT/'report/virtual_mapping_20261026/artifacts.json').read_text())
+        for entry in previous['artifacts']:
+            path=Path(entry['path'])
+            if path.as_posix().startswith('sw/ps_uart_print/') and path.suffix.lower() in ('.c','.h','.ld','.s'):
+                payload=(ROOT/path).read_bytes()
+                if path.name=='main.c':
+                    payload=payload.replace(tag.encode(),b'20261026_HAND_CONTROL_HDC_DYNAMIC_V13')
+                assert hashlib.sha256(payload).hexdigest()==entry['sha256'], f'V13 application behavior changed: {path}'
+                inherited.append(str(path))
+        # ELF is rebuilt with the new version tag; its loaded bytes are
+        # checked separately against the newly generated BOOT below.
+        assert len(inherited)>=28, 'incomplete inherited PS source checks'
+        with zipfile.ZipFile(ROOT/'report/resource_optimization_20261027/baseline/design_1.xsa') as old, zipfile.ZipFile(xsa_path) as new:
+            for name in old.namelist():
+                if name.endswith(('.hwh','ps7_init.c','ps7_init.h')):
+                    a,b=old.read(name),new.read(name)
+                    if name.endswith('.hwh'):
+                        a=re.sub(rb' TIMESTAMP="[^"]*"',b'',a)
+                        b=re.sub(rb' TIMESTAMP="[^"]*"',b'',b)
+                    assert a==b, f'Unexpected PS/platform interface change: {name}'
     if virtual_v13:
         # UI-only release reuses the accepted V12 implementation and its FSBL.
         # Pin actual files to that release instead of skipping PL checks.
@@ -187,7 +253,7 @@ def main():
             'report/hand_simultaneous_home_20261025/hardware_build.log',
             'report/hand_simultaneous_home_20261025/timing_routed.rpt',
             'report/hand_simultaneous_home_20261025/utilization_placed.rpt')]
-    if virtual_v13:
+    if virtual_v13 or resource_v14:
         paths += [ROOT/p for p in ('sw/ps_uart_print/lcd_virtual.h','sw/ps_uart_print/lcd_hand_3d.h',
             'tools/gen_hz_glyphs.py','report/virtual_mapping_20261026/README.md',
             'report/virtual_mapping_20261026/lcd_test.log','report/virtual_mapping_20261026/hand_test.log',
@@ -195,9 +261,68 @@ def main():
             'report/virtual_mapping_20261026/learning_workflow_test.log',
             'report/virtual_mapping_20261026/control_test.log','report/virtual_mapping_20261026/sd_test.log',
             'report/virtual_mapping_20261026/build_boot.log','report/virtual_mapping_20261026/arm_build.log')]
+    if resource_v14:
+        paths += [ROOT/p for p in ('src/rtl/emg_window_features.v','src/rtl/emg_feature_bank.v',
+            'src/rtl/emg_bandpass.v','src/rtl/emg_line_filter.v',
+            'sim/emg_shared_equiv_tb.sv','sim/emg_shared_netlist_tb.sv','sim/emg_shared_integrated_netlist_tb.sv',
+            'build/scripts/run_shared_equiv_test.ps1','build/scripts/run_shared_netlist_test.ps1',
+            'report/resource_optimization_full_20261027/README.md',
+            'report/resource_optimization_full_20261027/shared_equiv.log',
+            'report/resource_optimization_full_20261027/shared_integrated_netlist.log',
+            'report/resource_optimization_full_20261027/processed_filter.log',
+            'report/resource_optimization_full_20261027/control_regression.log',
+            'report/resource_optimization_full_20261027/comparison.json',
+            'report/resource_optimization_full_20261027/comparison.log',
+            'report/resource_optimization_full_20261027/full_build.log')]
+    if resource_v15:
+        extra = ('src/rtl/emg_nn_infer.v','src/rtl/emg_fatigue.v',
+            'sim/test_fatigue_netlist_gate.py',
+            'sim/emg_v15_equiv_tb.sv','sim/emg_v15_integrated_tb.sv',
+            'tools/gen_v15_test_model.py','build/scripts/run_v15_equiv_test.ps1',
+            'build/scripts/run_v15_fatigue_equiv_test.ps1',
+            'build/scripts/run_v15_netlist_test.ps1','build/scripts/run_v15_integrated_test.ps1')
+        paths += [ROOT/p for p in extra]
+        v15_checks = {'equivalence.log':'TEST_PASS V15 MLP PWM equivalence complete',
+            'fatigue_equivalence.log':'TEST_PASS V15 fatigue cycle-exact 576 words',
+            'netlist_test_complete.log':'TEST_PASS V15 synthesized modules complete',
+            'integrated_test.log':'TEST_PASS V15 integrated OOC MLP FFT',
+            'control_regression.log':'TEST_PASS PL shell',
+            'comparison.log':'V15_RESOURCE_PERFORMANCE_COMPARISON_PASS'}
+        report = ROOT/'report/resource_optimization_v15_20261027'
+        for filename, terminal in v15_checks.items():
+            path=report/filename
+            assert terminal in path.read_text(encoding='utf-8',errors='replace'), f'V15 evidence missing: {filename}'
+            paths.append(path)
+        paths += [report/p for p in ('README.md','comparison.json','compare_resources.py',
+            'netlist_gate_regression.log','final_gates.log','fatigue_regression.log',
+            'resource_table.md','performance_table.md',
+            'candidate/utilization_routed.rpt','candidate/timing_routed.rpt')]
+    if stability_v16:
+        paths += [ROOT/p for p in ('sw/ps_uart_print/lcd_virtual.h','sw/ps_uart_print/lcd_ui.h',
+            'build/scripts/run_hdc_stability_test.ps1','sim/pl_learning_workflow_test.c',
+            'report/resource_optimization_v15_20261027/artifacts.json')]
+        paths += [ROOT/args.report_dir/p for p in ('README.md','lcd_test.log','hand_test.log',
+            'learning_workflow_test.log','regression_sources.json')]
+    if imu_v17:
+        paths += [ROOT/p for p in ('src/rtl/mpu_attitude.v','src/rtl/mpu_attitude_core.v',
+            'src/rtl/mpu_attitude_rom.vh','src/rtl/mpu_attitude_regs.vh','tools/gen_imu_microcode.py',
+            'tools/imu_fixed_model.py','tools/verify_imu_vectors.py','tools/verify_imu_release.py',
+            'build/scripts/add_pl_imu.tcl','build/scripts/run_imu_test.ps1',
+            'board/constraints/hz_zynq_imu_clock_groups.xdc','tools/compare_imu_resources.py',
+            'build/scripts/finalize_imu_timing.tcl','build/scripts/audit_imu_routed.tcl',
+            'sim/mpu_attitude_vectors_tb.sv','sim/mpu_attitude_mailbox_tb.sv','sim/imu_host_model.h')]
+        paths += [ROOT/args.report_dir/p for p in ('README.md','regression_sources.json','float_comparison.json',
+            'rtl_vectors.log','rtl_mailbox.log','netlist_mailbox.log','mailbox_firmware.log',
+            'lcd_test.log','hand_test.log','learning_workflow_test.log','timing_routed.rpt','comparison.json',
+            'utilization_routed.rpt','methodology_routed.rpt','bus_skew.rpt','cdc.rpt','resource_table.md')]
+    paths=list(dict.fromkeys(paths))
     evidence={'date':f'{tag[:4]}-{tag[4:6]}-{tag[6:8]}','tag':tag,'hardware_verified':False,'pwm_connected':False,
         'pl_pwm_ports_present':'HAND_CONTROL' in tag,'physical_wiring_verified':False,
         'hardware_reused_from_v12':reused,
+        'hardware_reused_from_v15':reused_v15,
+        'application_inherited_from_v13':inherited if not stability_v16 else [],
+        'application_inherited_from_v15':inherited if stability_v16 else [],
+        'application_changes_from_v15':sorted(changed) if stability_v16 else [],
         'pl_partition':{'transform':transform,'header':header,'offset':offset,'bytes':length},
         'application_load_checks':checks,'fsbl_load_checks':fsbl_checks,'artifacts':[{'path':str(p.relative_to(ROOT)),
         'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in paths]}

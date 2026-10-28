@@ -33,9 +33,13 @@ static unsigned char fb[3][1024*600*3];
 static volatile u32 fake_reg;
 static volatile u32 control_command_reg,control_status_reg;
 static volatile u32 hand_command_reg,hand_status_reg;
+static volatile u32 imu_command_reg,imu_response_reg,imu_legacy_word;
 static u32 buffer[BUF_PACKETS*2], time_ticks,uart_char_count;
 
 volatile u32 *lcd_test_mmio(u32 address) {
+    if(address==0x41270000u)return &imu_command_reg;
+    if(address==0x41270008u)return &imu_response_reg;
+    if(address==0x41220000u)return &imu_legacy_word;
     if(address==0x41250000u)return &hand_command_reg;
     if(address==0x41250008u)return &hand_status_reg;
     if(address==0x41240000u)return &control_command_reg;

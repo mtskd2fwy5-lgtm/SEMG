@@ -1,0 +1,216 @@
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/report/resource_optimization_v15_20261027/integrated_pl_export.v" into library work
+INFO: [VRFC 10-311] analyzing module design_1_emg_pl_export_0_7
+INFO: [VRFC 10-311] analyzing module design_1_emg_pl_export_0_7_ads1299_spi
+INFO: [VRFC 10-311] analyzing module design_1_emg_pl_export_0_7_axis_async_fifo
+INFO: [VRFC 10-311] analyzing module design_1_emg_pl_export_0_7_axis_async_fifo_0
+INFO: [VRFC 10-311] analyzing module design_1_emg_pl_export_0_7_axis_async_fifo__parameterized0
+INFO: [VRFC 10-311] analyzing module design_1_emg_pl_export_0_7_axis_async_fifo__parameterized0_1
+INFO: [VRFC 10-311] analyzing module design_1_emg_pl_export_0_7_axis_packet_mux
+INFO: [VRFC 10-311] analyzing module design_1_emg_pl_export_0_7_emg_bandpass_shared
+INFO: [VRFC 10-311] analyzing module design_1_emg_pl_export_0_7_emg_comb50
+INFO: [VRFC 10-311] analyzing module design_1_emg_pl_export_0_7_emg_control_inference
+INFO: [VRFC 10-311] analyzing module design_1_emg_pl_export_0_7_emg_control_policy
+INFO: [VRFC 10-311] analyzing module design_1_emg_pl_export_0_7_emg_data_path
+INFO: [VRFC 10-311] analyzing module design_1_emg_pl_export_0_7_emg_fatigue
+INFO: [VRFC 10-311] analyzing module design_1_emg_pl_export_0_7_emg_fatigue_state
+INFO: [VRFC 10-311] analyzing module design_1_emg_pl_export_0_7_emg_feature_bank
+INFO: [VRFC 10-311] analyzing module design_1_emg_pl_export_0_7_emg_line_filter
+INFO: [VRFC 10-311] analyzing module design_1_emg_pl_export_0_7_emg_nn_infer
+INFO: [VRFC 10-311] analyzing module design_1_emg_pl_export_0_7_emg_notch50
+INFO: [VRFC 10-311] analyzing module design_1_emg_pl_export_0_7_emg_pl_control
+INFO: [VRFC 10-311] analyzing module design_1_emg_pl_export_0_7_emg_pl_export
+INFO: [VRFC 10-311] analyzing module design_1_emg_pl_export_0_7_emg_window_features_shared
+INFO: [VRFC 10-311] analyzing module design_1_emg_pl_export_0_7_hand_control
+INFO: [VRFC 10-311] analyzing module design_1_emg_pl_export_0_7_hand_servo_pwm
+INFO: [VRFC 10-311] analyzing module glbl
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/src/rtl/ads1299_spi.v" into library work
+INFO: [VRFC 10-311] analyzing module ads1299_spi
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/src/rtl/emg_notch50.v" into library work
+INFO: [VRFC 10-311] analyzing module emg_notch50
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/src/rtl/emg_comb50.v" into library work
+INFO: [VRFC 10-311] analyzing module emg_comb50
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/src/rtl/emg_line_filter.v" into library work
+INFO: [VRFC 10-311] analyzing module emg_line_filter
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/src/rtl/emg_bandpass.v" into library work
+INFO: [VRFC 10-311] analyzing module emg_bandpass
+INFO: [VRFC 10-311] analyzing module emg_bandpass_shared
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/src/rtl/emg_window_features.v" into library work
+INFO: [VRFC 10-311] analyzing module emg_window_features
+INFO: [VRFC 10-311] analyzing module emg_window_features_shared
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/src/rtl/emg_feature_bank.v" into library work
+INFO: [VRFC 10-311] analyzing module emg_feature_bank
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/src/rtl/emg_fatigue.v" into library work
+INFO: [VRFC 10-311] analyzing module emg_fatigue
+INFO: [VRFC 10-311] analyzing module emg_fatigue_state
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/src/rtl/axis_async_fifo.v" into library work
+INFO: [VRFC 10-311] analyzing module axis_async_fifo
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/src/rtl/axis_packet_mux.v" into library work
+INFO: [VRFC 10-311] analyzing module axis_packet_mux
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/src/rtl/emg_data_path.v" into library work
+INFO: [VRFC 10-311] analyzing module emg_data_path
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/src/rtl/hand_control.v" into library work
+INFO: [VRFC 10-311] analyzing module hand_control
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/src/rtl/hand_servo_pwm.v" into library work
+INFO: [VRFC 10-311] analyzing module hand_servo_pwm
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/src/rtl/emg_nn_infer.v" into library work
+INFO: [VRFC 10-311] analyzing module emg_nn_infer
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/src/rtl/emg_control_inference.v" into library work
+INFO: [VRFC 10-311] analyzing module emg_control_inference
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/src/rtl/emg_control_policy.v" into library work
+INFO: [VRFC 10-311] analyzing module emg_control_policy
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/src/rtl/emg_pl_export.v" into library work
+INFO: [VRFC 10-311] analyzing module emg_pl_export
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/src/rtl/emg_pl_control.v" into library work
+INFO: [VRFC 10-311] analyzing module emg_pl_control
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/sim/emg_v15_integrated_tb.sv" into library work
+INFO: [VRFC 10-311] analyzing module emg_v15_integrated_tb
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/VIVADO/2025.2/data/verilog/src/glbl.v" into library work
+Vivado Simulator v2025.2
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+Running: D:/FPGA/VIVADO/2025.2/Vivado/bin/unwrapped/win64.o/xelab.exe emg_v15_integrated_tb glbl -L unisims_ver -L unimacro_ver -s v15_integrated -debug off 
+Multi-threading is on. Using 30 slave threads.
+Starting static elaboration
+Pass Through NonSizing Optimizer
+WARNING: [VRFC 10-3645] port 'control_status' remains unconnected for this instance [D:/FPGA/sEMG-HMRS/sim/emg_v15_integrated_tb.sv:12]
+WARNING: [VRFC 10-3645] port 'control_status' remains unconnected for this instance [D:/FPGA/sEMG-HMRS/sim/emg_v15_integrated_tb.sv:16]
+Completed static elaboration
+Starting simulation data flow analysis
+Completed simulation data flow analysis
+Time Resolution for simulation is 1ps
+Compiling module unisims_ver.GND
+Compiling module unisims_ver.VCC
+Compiling module unisims_ver.FDRE_default
+Compiling module unisims_ver.x_lut2_mux4
+Compiling module unisims_ver.LUT2
+Compiling module unisims_ver.x_lut1_mux2
+Compiling module unisims_ver.LUT1
+Compiling module unisims_ver.LUT6
+Compiling module unisims_ver.FDSE_default
+Compiling module unisims_ver.CARRY4
+Compiling module unisims_ver.LUT5
+Compiling module unisims_ver.LUT4
+Compiling module unisims_ver.x_lut3_mux8
+Compiling module unisims_ver.LUT3
+Compiling module unisims_ver.MUXF7
+Compiling module work.design_1_emg_pl_export_0_7_hand_...
+Compiling module work.design_1_emg_pl_export_0_7_hand_...
+Compiling module unisims_ver.RB36_INTERNAL_VLOG(DOA_REG=1,RDA...
+Compiling module unisims_ver.RAMB36E1(DOA_REG=1,INIT_00=256'b...
+Compiling module unisims_ver.RB36_INTERNAL_VLOG(DOA_REG=1,RDA...
+Compiling module unisims_ver.RAMB36E1(DOA_REG=1,INIT_00=256'b...
+Compiling module unisims_ver.RAM64M
+Compiling module unisims_ver.RAM64X1D
+Compiling module unisims_ver.RAM32M
+Compiling module unisims_ver.RAM32X1D
+Compiling module unisims_ver.MUXF8
+Compiling module unisims_ver.DSP48E1(ALUMODEREG=0,CARRYINREG=...
+Compiling module unisims_ver.DSP48E1(ALUMODEREG=0,CARRYINREG=...
+Compiling module unisims_ver.DSP48E1(ACASCREG=0,ALUMODEREG=0,...
+Compiling module work.design_1_emg_pl_export_0_7_emg_n...
+Compiling module unisims_ver.DSP48E1(ACASCREG=0,ALUMODEREG=0,...
+Compiling module unisims_ver.DSP48E1(ACASCREG=0,ALUMODEREG=0,...
+Compiling module unisims_ver.DSP48E1(ACASCREG=0,ALUMODEREG=0,...
+Compiling module work.design_1_emg_pl_export_0_7_emg_c...
+Compiling module work.design_1_emg_pl_export_0_7_emg_c...
+Compiling module work.design_1_emg_pl_export_0_7_ads12...
+Compiling module unisims_ver.FDCE_default
+Compiling module unisims_ver.RB36_INTERNAL_VLOG(RAM_MODE="SDP...
+Compiling module unisims_ver.RAMB36E1(RAM_MODE="SDP",READ_WID...
+Compiling module work.design_1_emg_pl_export_0_7_axis_...
+Compiling module work.design_1_emg_pl_export_0_7_axis_...
+Compiling module unisims_ver.RB36_INTERNAL_VLOG(READ_WIDTH_A=...
+Compiling module unisims_ver.RAMB36E1(READ_WIDTH_A=9,READ_WID...
+Compiling module unisims_ver.RB18_INTERNAL_VLOG(READ_WIDTH_A=...
+Compiling module unisims_ver.RAMB18E1(READ_WIDTH_A=4,READ_WID...
+Compiling module work.design_1_emg_pl_export_0_7_axis_...
+Compiling module work.design_1_emg_pl_export_0_7_axis_...
+Compiling module work.design_1_emg_pl_export_0_7_axis_...
+Compiling module work.design_1_emg_pl_export_0_7_emg_d...
+Compiling module work.design_1_emg_pl_export_0_7_emg_f...
+Compiling module unisims_ver.RB36_INTERNAL_VLOG(READ_WIDTH_A=...
+Compiling module unisims_ver.RAMB36E1(READ_WIDTH_A=18,READ_WI...
+Compiling module unisims_ver.DSP48E1(ALUMODEREG=0,BCASCREG=2,...
+Compiling module unisims_ver.RB36_INTERNAL_VLOG(READ_WIDTH_A=...
+Compiling module unisims_ver.RAMB36E1(READ_WIDTH_A=1,READ_WID...
+Compiling module unisims_ver.DSP48E1(ACASCREG=0,ADREG=0,ALUMO...
+Compiling module unisims_ver.RB36_INTERNAL_VLOG(RDADDR_COLLIS...
+Compiling module unisims_ver.RAMB36E1(INIT_00=256'b0111111111...
+Compiling module work.design_1_emg_pl_export_0_7_emg_f...
+Compiling module unisims_ver.RAM32X1S
+Compiling module work.design_1_emg_pl_export_0_7_emg_w...
+Compiling module work.design_1_emg_pl_export_0_7_emg_f...
+Compiling module unisims_ver.RB36_INTERNAL_VLOG(READ_WIDTH_A=...
+Compiling module unisims_ver.RAMB36E1(READ_WIDTH_A=36,READ_WI...
+Compiling module unisims_ver.DSP48E1(ACASCREG=0,ALUMODEREG=0,...
+Compiling module unisims_ver.DSP48E1(ACASCREG=0,ALUMODEREG=0,...
+Compiling module unisims_ver.DSP48E1(ACASCREG=0,ALUMODEREG=0,...
+Compiling module work.design_1_emg_pl_export_0_7_emg_c...
+Compiling module unisims_ver.DSP48E1(ALUMODEREG=0,BCASCREG=0,...
+Compiling module unisims_ver.DSP48E1(ACASCREG=0,ADREG=0,ALUMO...
+Compiling module work.design_1_emg_pl_export_0_7_emg_b...
+Compiling module unisims_ver.DSP48E1(ACASCREG=0,ALUMODEREG=0,...
+Compiling module work.design_1_emg_pl_export_0_7_emg_n...
+Compiling module work.design_1_emg_pl_export_0_7_emg_l...
+Compiling module work.design_1_emg_pl_export_0_7_emg_p...
+Compiling module work.design_1_emg_pl_export_0_7_emg_p...
+Compiling module work.design_1_emg_pl_export_0_7
+Compiling module work.hand_servo_pwm_default
+Compiling module work.hand_control_default
+Compiling module work.ads1299_spi_default
+Compiling module work.emg_notch50
+Compiling module work.emg_comb50
+Compiling module work.emg_bandpass_shared(FRACTION_SAV...
+Compiling module work.emg_line_filter(BANDPASS_ENABLE=...
+Compiling module work.emg_window_features_shared(ZC_TH...
+Compiling module work.emg_feature_bank(BYPASS_BANDPASS...
+Compiling module work.emg_nn_infer
+Compiling module work.emg_control_policy_default
+Compiling module work.emg_control_inference
+Compiling module work.emg_fatigue_state_default
+Compiling module work.emg_fatigue
+Compiling module work.axis_async_fifo(ADDR_WIDTH=12)
+Compiling module work.axis_async_fifo_default
+Compiling module work.axis_packet_mux(PACKET_WORDS=102...
+Compiling module work.emg_data_path(PACKET_WORDS=1024)
+Compiling module work.emg_pl_export(CONTROL_ENABLE=1)
+Compiling module work.emg_pl_control
+Compiling module work.emg_v15_integrated_tb
+Compiling module work.glbl
+Built simulation snapshot v15_integrated
+
+****** xsim v2025.2 (64-bit)
+  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025
+  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025
+  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025
+  **** Start of session at: Tue Oct 27 17:39:20 2026
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+
+source xsim.dir/v15_integrated/xsim_script.tcl
+# xsim {v15_integrated} -autoloadwcfg -runall
+Time resolution is 1 ps
+run -all
+V15 integrated progress cycles=0 nn=0 fft=0
+V15 integrated progress cycles=100000 nn=24 fft=0
+V15 integrated progress cycles=200000 nn=72 fft=0
+V15 integrated progress cycles=300000 nn=120 fft=0
+V15 integrated progress cycles=400000 nn=162 fft=0
+V15 integrated progress cycles=500000 nn=210 fft=0
+V15 integrated progress cycles=600000 nn=258 fft=0
+V15 integrated drain=100000 nn=282 fft=0
+V15 integrated drain=200000 nn=282 fft=0
+V15 integrated drain=300000 nn=282 fft=0
+V15 integrated drain=400000 nn=282 fft=8
+V15 integrated drain=500000 nn=282 fft=8
+V15 integrated drain=600000 nn=282 fft=8
+V15 integrated drain=700000 nn=282 fft=8
+V15 integrated drain=800000 nn=282 fft=8
+V15 integrated drain=900000 nn=282 fft=8
+V15 integrated drain=1000000 nn=282 fft=8
+TEST_PASS V15 integrated OOC MLP FFT cycle-exact nn=282 fft=16
+$finish called at time : 68820200 ns : File "D:/FPGA/sEMG-HMRS/sim/emg_v15_integrated_tb.sv" Line 68
+run: Time (s): cpu = 00:00:00 ; elapsed = 00:43:19 . Memory (MB): peak = 229.824 ; gain = 0.000
+exit
+INFO: xsimkernel Simulation Memory Usage: 154940 KB (Peak: 154940 KB), Simulation CPU Usage: 2581421 ms
+INFO: [Common 17-206] Exiting xsim at Tue Oct 27 18:22:42 2026...

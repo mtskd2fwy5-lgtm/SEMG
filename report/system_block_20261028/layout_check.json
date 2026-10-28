@@ -1,0 +1,274 @@
+{
+  "text_labels": 57,
+  "issues": [],
+  "connections": [
+    {
+      "name": "processed samples to sliding features",
+      "points": [
+        [
+          630,
+          380
+        ],
+        [
+          630,
+          440
+        ]
+      ],
+      "dashed": false
+    },
+    {
+      "name": "processed samples to FFT",
+      "points": [
+        [
+          820,
+          310
+        ],
+        [
+          900,
+          310
+        ]
+      ],
+      "dashed": false
+    },
+    {
+      "name": "40D features to MLP",
+      "points": [
+        [
+          630,
+          575
+        ],
+        [
+          630,
+          640
+        ]
+      ],
+      "dashed": false
+    },
+    {
+      "name": "window MAVs to HDC",
+      "points": [
+        [
+          820,
+          505
+        ],
+        [
+          900,
+          505
+        ]
+      ],
+      "dashed": false
+    },
+    {
+      "name": "window MAVs to NMF",
+      "points": [
+        [
+          820,
+          540
+        ],
+        [
+          860,
+          540
+        ],
+        [
+          860,
+          710
+        ],
+        [
+          900,
+          710
+        ]
+      ],
+      "dashed": false
+    },
+    {
+      "name": "SPI input",
+      "points": [
+        [
+          330,
+          310
+        ],
+        [
+          400,
+          310
+        ]
+      ],
+      "dashed": false
+    },
+    {
+      "name": "MPU acquisition interface",
+      "points": [
+        [
+          330,
+          578
+        ],
+        [
+          400,
+          578
+        ]
+      ],
+      "dashed": false
+    },
+    {
+      "name": "PL PWM to isolation",
+      "points": [
+        [
+          400,
+          865
+        ],
+        [
+          330,
+          865
+        ]
+      ],
+      "dashed": false
+    },
+    {
+      "name": "isolated servo drive",
+      "points": [
+        [
+          185,
+          935
+        ],
+        [
+          185,
+          1010
+        ]
+      ],
+      "dashed": false
+    },
+    {
+      "name": "PL RGB to panel",
+      "points": [
+        [
+          1320,
+          282
+        ],
+        [
+          1430,
+          282
+        ]
+      ],
+      "dashed": false
+    },
+    {
+      "name": "GT911 touch to PL",
+      "points": [
+        [
+          1430,
+          345
+        ],
+        [
+          1320,
+          345
+        ]
+      ],
+      "dashed": false
+    },
+    {
+      "name": "AXI control mailboxes",
+      "points": [
+        [
+          1320,
+          690
+        ],
+        [
+          1430,
+          690
+        ]
+      ],
+      "dashed": true
+    },
+    {
+      "name": "HP0 DMA VDMA",
+      "points": [
+        [
+          720,
+          1040
+        ],
+        [
+          720,
+          1160
+        ]
+      ],
+      "dashed": false
+    },
+    {
+      "name": "HP1 accelerator DDR",
+      "points": [
+        [
+          1110,
+          1040
+        ],
+        [
+          1110,
+          1160
+        ]
+      ],
+      "dashed": false
+    },
+    {
+      "name": "PS accesses DDR",
+      "points": [
+        [
+          1430,
+          1000
+        ],
+        [
+          1365,
+          1000
+        ],
+        [
+          1365,
+          1226
+        ],
+        [
+          1260,
+          1226
+        ]
+      ],
+      "dashed": false
+    },
+    {
+      "name": "PS peripheral storage and serial",
+      "points": [
+        [
+          1695,
+          1040
+        ],
+        [
+          1695,
+          1160
+        ]
+      ],
+      "dashed": false
+    },
+    {
+      "name": "legend data",
+      "points": [
+        [
+          48,
+          1230
+        ],
+        [
+          112,
+          1230
+        ]
+      ],
+      "dashed": false
+    },
+    {
+      "name": "legend control",
+      "points": [
+        [
+          48,
+          1270
+        ],
+        [
+          112,
+          1270
+        ]
+      ],
+      "dashed": true
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+ERROR: [XSIM 43-4316] Can not find file: sim/m.sv
+Attitude RTL/netlist compile failed
+At D:\FPGA\sEMG-HMRS\build\scripts\run_imu_test.ps1:7 char:56
++ ... nction Check-Exit($message) {if($LASTEXITCODE -ne 0){throw $message}}
++                                                          ~~~~~~~~~~~~~~
+    + CategoryInfo          : OperationStopped: (Attitude RTL/netlist compile failed:String) [], RuntimeException
+    + FullyQualifiedErrorId : Attitude RTL/netlist compile failed
+ 

@@ -1,0 +1,40 @@
+{
+  "v16": {
+    "lut": 23793,
+    "ff": 24622,
+    "slice": 9284,
+    "bram": 45.5,
+    "dsp": 49,
+    "wns_ns": 0.151,
+    "whs_ns": 0.028,
+    "control_sets": 1058
+  },
+  "v17": {
+    "lut": 27370,
+    "ff": 28784,
+    "slice": 11098,
+    "bram": 49.5,
+    "dsp": 53,
+    "wns_ns": 0.386,
+    "whs_ns": 0.036
+  },
+  "delta": {
+    "lut": 3577,
+    "ff": 4162,
+    "slice": 1814,
+    "bram": 4.0,
+    "dsp": 4
+  },
+  "bus_skew_min_slack_ns": 8.425,
+  "performance": {
+    "clock_hz": 100000000,
+    "sensor_hz": 100,
+    "sample_count": 13528,
+    "resets": 32,
+    "observed_peak_cycles": 6112,
+    "observed_peak_us": 61.12,
+    "max_matrix_component_error": 0.002197265625,
+    "max_twist_error_degrees": 1,
+    "scope": "Trace-observed core latency and routed timing, not measured board latency or power."
+  }
+}

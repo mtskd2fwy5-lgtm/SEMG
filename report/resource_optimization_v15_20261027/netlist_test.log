@@ -1,0 +1,128 @@
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/report/resource_optimization_v15_20261027/candidate_emg_nn_infer_synth.v" into library work
+INFO: [VRFC 10-311] analyzing module emg_nn_infer
+INFO: [VRFC 10-311] analyzing module glbl
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/report/resource_optimization_v15_20261027/candidate_hand_servo_pwm_synth.v" into library work
+INFO: [VRFC 10-311] analyzing module hand_servo_pwm
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/report/resource_optimization_v15_20261027/candidate_emg_fatigue_synth.v" into library work
+INFO: [VRFC 10-311] analyzing module emg_fatigue
+INFO: [VRFC 10-311] analyzing module emg_fatigue_state
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/sim/results_v15_netlist/emg_nn_infer_v14.v" into library work
+INFO: [VRFC 10-311] analyzing module emg_nn_infer_v14
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/sim/results_v15_netlist/hand_servo_pwm_v14.v" into library work
+INFO: [VRFC 10-311] analyzing module hand_servo_pwm_v14
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/sim/results_v15_netlist/emg_fatigue_v14.v" into library work
+INFO: [VRFC 10-311] analyzing module emg_fatigue_v14
+INFO: [VRFC 10-311] analyzing module emg_fatigue_state_v14
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/sim/results_v15_netlist/v15_netlist_tb.sv" into library work
+INFO: [VRFC 10-311] analyzing module nn_v15_case
+INFO: [VRFC 10-311] analyzing module pwm_v15_case
+INFO: [VRFC 10-311] analyzing module v15_netlist_tb
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/sim/results_v15_netlist/v15_fatigue_netlist_tb.sv" into library work
+INFO: [VRFC 10-311] analyzing module tb_emg_fatigue
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/VIVADO/2025.2/data/verilog/src/glbl.v" into library work
+Vivado Simulator v2025.2
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+Running: D:/FPGA/VIVADO/2025.2/Vivado/bin/unwrapped/win64.o/xelab.exe v15_netlist_tb glbl -L unisims_ver -L unimacro_ver -s v15_netlist_tb -debug typical 
+Multi-threading is on. Using 30 slave threads.
+Starting static elaboration
+Pass Through NonSizing Optimizer
+Completed static elaboration
+Starting simulation data flow analysis
+Completed simulation data flow analysis
+Time Resolution for simulation is 1ps
+Compiling module unisims_ver.LUT6
+Compiling module unisims_ver.LUT5
+Compiling module unisims_ver.x_lut2_mux4
+Compiling module unisims_ver.LUT2
+Compiling module unisims_ver.FDRE_default
+Compiling module unisims_ver.MUXF7
+Compiling module unisims_ver.x_lut3_mux8
+Compiling module unisims_ver.LUT3
+Compiling module unisims_ver.LUT4
+Compiling module unisims_ver.x_lut1_mux2
+Compiling module unisims_ver.LUT1
+Compiling module unisims_ver.CARRY4
+Compiling module unisims_ver.MUXF8
+Compiling module unisims_ver.RB36_INTERNAL_VLOG(DOA_REG=1,RDA...
+Compiling module unisims_ver.RAMB36E1(DOA_REG=1,INIT_00=256'b...
+Compiling module unisims_ver.RB36_INTERNAL_VLOG(DOA_REG=1,RDA...
+Compiling module unisims_ver.RAMB36E1(DOA_REG=1,INIT_00=256'b...
+Compiling module unisims_ver.RAM64M
+Compiling module unisims_ver.RAM64X1D
+Compiling module unisims_ver.RAM32M
+Compiling module unisims_ver.RAM32X1D
+Compiling module unisims_ver.DSP48E1(ALUMODEREG=0,CARRYINREG=...
+Compiling module unisims_ver.DSP48E1(ALUMODEREG=0,CARRYINREG=...
+Compiling module unisims_ver.DSP48E1(ACASCREG=0,ALUMODEREG=0,...
+Compiling module work.emg_nn_infer
+Compiling module work.emg_nn_infer_v14
+Compiling module work.nn_v15_case
+Compiling module work.hand_servo_pwm
+Compiling module work.hand_servo_pwm_v14_default
+Compiling module work.pwm_v15_case(FRAME=20000,WD=250)
+Compiling module work.v15_netlist_tb
+Compiling module work.glbl
+Built simulation snapshot v15_netlist_tb
+
+****** xsim v2025.2 (64-bit)
+  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025
+  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025
+  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025
+  **** Start of session at: Tue Oct 27 17:02:30 2026
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+
+source xsim.dir/v15_netlist_tb/xsim_script.tcl
+# xsim {v15_netlist_tb} -autoloadwcfg -runall
+Time resolution is 1 ps
+run -all
+MLP_V15_CYCLES phase=0 window=0 cycles=5379
+MLP_V15_CYCLES phase=0 window=1 cycles=5379
+MLP_V15_CYCLES phase=0 window=2 cycles=5379
+MLP_V15_CYCLES phase=0 window=3 cycles=5379
+MLP_V15_CYCLES phase=0 window=4 cycles=5378
+MLP_V15_CYCLES phase=0 window=5 cycles=5378
+MLP_V15_CYCLES phase=0 window=6 cycles=5379
+MLP_V15_CYCLES phase=0 window=7 cycles=5378
+MLP_V15_CYCLES phase=1 window=0 cycles=5378
+MLP_V15_CYCLES phase=1 window=1 cycles=5379
+MLP_V15_CYCLES phase=1 window=2 cycles=5378
+MLP_V15_CYCLES phase=1 window=3 cycles=5379
+MLP_V15_CYCLES phase=1 window=4 cycles=5378
+MLP_V15_CYCLES phase=1 window=5 cycles=5378
+MLP_V15_CYCLES phase=1 window=6 cycles=5379
+MLP_V15_CYCLES phase=1 window=7 cycles=5378
+MLP_V15_CYCLES phase=2 window=0 cycles=5379
+MLP_V15_CYCLES phase=2 window=1 cycles=5378
+MLP_V15_CYCLES phase=2 window=2 cycles=5378
+MLP_V15_CYCLES phase=2 window=3 cycles=5378
+MLP_V15_CYCLES phase=2 window=4 cycles=5379
+MLP_V15_CYCLES phase=2 window=5 cycles=5379
+MLP_V15_CYCLES phase=2 window=6 cycles=5379
+MLP_V15_CYCLES phase=2 window=7 cycles=5378
+MLP_V15_CYCLES phase=3 window=0 cycles=5379
+MLP_V15_CYCLES phase=3 window=1 cycles=5378
+MLP_V15_CYCLES phase=3 window=2 cycles=5380
+MLP_V15_CYCLES phase=3 window=3 cycles=5379
+MLP_V15_CYCLES phase=3 window=4 cycles=5378
+MLP_V15_CYCLES phase=3 window=5 cycles=5379
+MLP_V15_CYCLES phase=3 window=6 cycles=5379
+MLP_V15_CYCLES phase=3 window=7 cycles=5379
+TEST_PASS MLP V15 cycle-exact 32 windows, repeated indices, saturation, backpressure, mid-task reset model=d:/FPGA/sEMG-HMRS/data/models/nn_int8_board_multiwear/nn_int8_weights.mem
+TEST_PASS PWM V15 cycle-exact clock=25000000 frame=20000 armed_cycles=225000 fault_cycles=50000
+TEST_PASS V15 synthesized MLP PWM cycle-exact
+$finish called at time : 25000200 ns : File "D:/FPGA/sEMG-HMRS/sim/results_v15_netlist/v15_netlist_tb.sv" Line 84
+run: Time (s): cpu = 00:00:00 ; elapsed = 00:01:42 . Memory (MB): peak = 229.258 ; gain = 0.000
+exit
+INFO: xsimkernel Simulation Memory Usage: 28864 KB (Peak: 28864 KB), Simulation CPU Usage: 100796 ms
+INFO: [Common 17-206] Exiting xsim at Tue Oct 27 17:04:14 2026...
+Select-String : Cannot find path 'D:\FPGA\sEMG-HMRS\sim\results_v15_netlist\TEST_PASS V15 synthesized MLP PWM' because 
+it does not exist.
+At D:\FPGA\sEMG-HMRS\build\scripts\run_v15_netlist_test.ps1:47 char:32
++ ... DE -ne 0 -or !(Select-String "$top.log" -SimpleMatch $case[1])){throw ...
++                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (D:\FPGA\sEMG-HM...hesized MLP PWM:String) [Select-String], ItemNotFound 
+   Exception
+    + FullyQualifiedErrorId : PathNotFound,Microsoft.PowerShell.Commands.SelectStringCommand
+ 

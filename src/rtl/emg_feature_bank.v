@@ -54,8 +54,33 @@ module emg_feature_bank #(
     wire [31:0] wf_zc    [0:CHANNELS-1];
     wire [31:0] wf_ssc   [0:CHANNELS-1];
 
+    wire shared_valid;
+    wire [CHANNEL_BITS-1:0] shared_channel;
+    wire [31:0] shared_mav,shared_wl,shared_energy,shared_zc,shared_ssc;
     genvar g;
     generate
+      if(BYPASS_BANDPASS)begin : shared_features
+        emg_window_features_shared #(.CHANNELS(CHANNELS),.CHANNEL_BITS(CHANNEL_BITS),
+            .SAMPLE_WIDTH(SAMPLE_WIDTH),.WINDOW_SAMPLES(WINDOW_SAMPLES),
+            .HOP_SAMPLES(HOP_SAMPLES),.RMS_INPUT_SHIFT(RMS_INPUT_SHIFT),
+            .ZC_THRESHOLD(ZC_THRESHOLD),.SSC_THRESHOLD(SSC_THRESHOLD)) u_features (
+            .clk(clk),.rst_n(rst_n),.sample_valid(sample_valid),.sample_channel(sample_channel),
+            .sample_in(sample_data),.window_valid(shared_valid),.window_channel(shared_channel),
+            .mav_sum(shared_mav),.wl_sum(shared_wl),.energy_sum(shared_energy),
+            .zc_count(shared_zc),.ssc_count(shared_ssc));
+        for(g=0;g<CHANNELS;g=g+1)begin : channel_outputs
+            assign wf_valid[g]=shared_valid && shared_channel==g;
+            assign wf_mav[g]=shared_mav;
+            assign wf_wl[g]=shared_wl;
+            assign wf_energy[g]=shared_energy;
+            assign wf_zc[g]=shared_zc;
+            assign wf_ssc[g]=shared_ssc;
+        end
+      end else begin : local_features
+        assign shared_valid=0;
+        assign shared_channel=0;
+        assign shared_mav=0;assign shared_wl=0;assign shared_energy=0;
+        assign shared_zc=0;assign shared_ssc=0;
         for (g = 0; g < CHANNELS; g = g + 1) begin : gen_ch
             wire ch_sample_valid = sample_valid && (sample_channel == g);
             wire bp_valid;
@@ -92,14 +117,12 @@ module emg_feature_bank #(
                 .zc_count(wf_zc[g]), .ssc_count(wf_ssc[g])
             );
         end
+      end
     endgenerate
 
     // Holding registers and pending flags for completed windows.
-    reg [31:0] hold_mav    [0:CHANNELS-1];
-    reg [31:0] hold_wl     [0:CHANNELS-1];
-    reg [31:0] hold_energy [0:CHANNELS-1];
-    reg [31:0] hold_zc     [0:CHANNELS-1];
-    reg [31:0] hold_ssc    [0:CHANNELS-1];
+    (* ram_style="distributed" *) reg [159:0] hold_mem[0:CHANNELS-1];
+    reg [CHANNELS-1:0] hold_seen;
     reg [CHANNELS-1:0] pending;
 
     // Serializer state.
@@ -116,13 +139,14 @@ module emg_feature_bank #(
     // unchanged fidx/active_ch (the very first word after reset) would
     // emit a stale payload.
     reg [31:0] feature_data_mux;
+    wire [159:0] hold_word=hold_seen[active_ch] ? hold_mem[active_ch] : 160'd0;
     always @(*) begin
         case (fidx)
-            3'd0:    feature_data_mux = hold_mav[active_ch];
-            3'd1:    feature_data_mux = hold_wl[active_ch];
-            3'd2:    feature_data_mux = hold_energy[active_ch];
-            3'd3:    feature_data_mux = hold_zc[active_ch];
-            default: feature_data_mux = hold_ssc[active_ch];
+            3'd0:    feature_data_mux = hold_word[159:128];
+            3'd1:    feature_data_mux = hold_word[127:96];
+            3'd2:    feature_data_mux = hold_word[95:64];
+            3'd3:    feature_data_mux = hold_word[63:32];
+            default: feature_data_mux = hold_word[31:0];
         endcase
     end
 
@@ -130,6 +154,20 @@ module emg_feature_bank #(
     assign feature_channel = active_ch;
     assign feature_id      = fidx;
     assign feature_data    = feature_data_mux;
+
+    // Payload memories are masked by resettable seen bits. Keeping the
+    // arrays outside reset allows RAM inference without exposing stale data.
+    generate if(BYPASS_BANDPASS)begin : shared_capture
+        always @(posedge clk)
+            if(rst_n && shared_valid)hold_mem[shared_channel] <=
+                {shared_mav,shared_wl,shared_energy,shared_zc,shared_ssc};
+    end else begin : local_capture
+        for(g=0;g<CHANNELS;g=g+1)begin : ch
+            always @(posedge clk)
+                if(rst_n && wf_valid[g])hold_mem[g] <=
+                    {wf_mav[g],wf_wl[g],wf_energy[g],wf_zc[g],wf_ssc[g]};
+        end
+    end endgenerate
 
     // Window capture, pending management and the serializer share one
     // clocked process so pending bits have a single driver. On a
@@ -143,13 +181,7 @@ module emg_feature_bank #(
             fidx <= 3'd0;
             scan_ptr <= {CH_PTR_W{1'b0}};
             feature_sequence <= 16'd0;
-            for (i = 0; i < CHANNELS; i = i + 1) begin
-                hold_mav[i] <= 32'd0;
-                hold_wl[i] <= 32'd0;
-                hold_energy[i] <= 32'd0;
-                hold_zc[i] <= 32'd0;
-                hold_ssc[i] <= 32'd0;
-            end
+            hold_seen <= 0;
         end else begin
             // Serializer: clear first so a simultaneous capture wins.
             if (busy && feature_ready) begin
@@ -177,11 +209,7 @@ module emg_feature_bank #(
             // Capture completed windows.
             for (i = 0; i < CHANNELS; i = i + 1) begin
                 if (wf_valid[i]) begin
-                    hold_mav[i]    <= wf_mav[i];
-                    hold_wl[i]     <= wf_wl[i];
-                    hold_energy[i] <= wf_energy[i];
-                    hold_zc[i]     <= wf_zc[i];
-                    hold_ssc[i]    <= wf_ssc[i];
+                    hold_seen[i]   <= 1'b1;
                     pending[i]     <= 1'b1;
                 end
             end

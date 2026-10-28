@@ -1,0 +1,16 @@
+netlist: D:\FPGA\sEMG-HMRS\build\vivado\hand_motion_reconstruction.gen\sources_1\bd\design_1\ip\design_1_emg_pl_export_0_7\design_1_emg_pl_export_0_7_sim_netlist.v
+total DSP48E1 instances : 36
+literal-B (constant) DSP: 6
+  line 71984    inst=numerator_reg B=100      raw={1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b1,1'b1,1'b0 [benign policy confidence percent numerator]
+  line 111697   inst=spec_idx0    B=30       raw={1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b1
+  line 115815   inst=candidate2   B=70       raw={1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b1,1'b0,1'b0 [benign relative MDF percentage comparison]
+  line 115892   inst=candidate3   B=80       raw={1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b1,1'b0,1'b1 [benign relative MDF percentage comparison]
+  line 115969   inst=candidate4   B=90       raw={1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b1,1'b0,1'b1 [benign relative MDF percentage comparison]
+  line 116136   inst=current_scaled B=400      raw={1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b1,1'b1,1'b0,1'b0,1'b1 [benign relative MDF percentage comparison]
+benign literal-B DSP     : 5
+unexpected literal-B DSP : 1
+wire-B (dynamic) DSP     : 30
+value 14646   (B0/B2 bad): 0 literal hits
+value -116680 (A2 bad): 0 literal hits
+value 14642   (LP bad): 0 literal hits
+RESULT: FAIL - literal-B DSPs or known-bad literals present

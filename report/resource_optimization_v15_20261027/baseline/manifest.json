@@ -1,0 +1,137 @@
+{
+  "tag": "20261027_HAND_CONTROL_HDC_DYNAMIC_V14",
+  "files": {
+    "src/rtl/ads1299_spi.v": {
+      "sha256": "2e06afa3376312f0f5edee8f423eaa544628278bb2938e1efccedc1c1aa8a8ca"
+    },
+    "src/rtl/ads8698_spi.v": {
+      "sha256": "02d5171872d1821f96599c949a92e8661daa263da54eac680251f0f948dc8896"
+    },
+    "src/rtl/axis_async_fifo.v": {
+      "sha256": "fe24aeaf6b3fc90122f3a9dcce98a659034571b35216e17cc113d88325f36a02"
+    },
+    "src/rtl/axis_packet_mux.v": {
+      "sha256": "e9365f1971635ce92faf8f3c838040a80ef66a190839feb05206171ccc44dd40"
+    },
+    "src/rtl/emg_bandpass.v": {
+      "sha256": "5783eef5f10c4d78faf2ec8782a1b357f5a484d87673b31cc06136948a241334"
+    },
+    "src/rtl/emg_comb50.v": {
+      "sha256": "d2fadd0829ea93dfc06394d3a1262c5ef19bff6690f2894f16381e0266f3a348"
+    },
+    "src/rtl/emg_control_constants.vh": {
+      "sha256": "cf077f7e7e2a98848b1e725313e2d99ac8eaee67cc762fa4e14896faef2cded9"
+    },
+    "src/rtl/emg_control_inference.v": {
+      "sha256": "f2119b7b771b6697ffd8bd2f703b23e6945a6887b3b3c4584e2d01fdac46d83b"
+    },
+    "src/rtl/emg_control_policy.v": {
+      "sha256": "d9350f6c7929e2adc755ae9187fa8cc4e7905f74da2c37f19431c71ea84b8278"
+    },
+    "src/rtl/emg_data_path.v": {
+      "sha256": "5e07cc2d9f78fc50116398af4c418f2a10cc1aaa1f4e9dcb92a5f7cf265c59b7"
+    },
+    "src/rtl/emg_fatigue.v": {
+      "sha256": "09b3b1acf0bef50fc471d662767ebd68df7d831a1f54bd2acfc45d64e5c8e8ac"
+    },
+    "src/rtl/emg_feature_bank.v": {
+      "sha256": "a32d86053b679333f8ec1ac89e4352bbc1710807b7f2f30fd028a0f33b8c9b58"
+    },
+    "src/rtl/emg_learning_accel.v": {
+      "sha256": "97a37ef69351637154d7f7790b1ccef03fdc16af7bd10fa18896821b7bd11db8"
+    },
+    "src/rtl/emg_line_filter.v": {
+      "sha256": "4f24c4fcf0218e3331ae6661f4e6cdb1b1b86d42a547fbd6db445b52fcd1536c"
+    },
+    "src/rtl/emg_nn_infer.v": {
+      "sha256": "51997f86b52913680c6312e5ae2bd60fbe348bc86d45a7da9001ce3d743f7fd2"
+    },
+    "src/rtl/emg_notch50.v": {
+      "sha256": "32285e74b71882f1cb81a7978ace98822661ada8be12f86a68b285449a4f0bed"
+    },
+    "src/rtl/emg_pl_control.v": {
+      "sha256": "cf67a00daad7c55cd4124a269a6370f629a45dd2a338846c6c3d41ce37883b43"
+    },
+    "src/rtl/emg_pl_export.v": {
+      "sha256": "92d25e10bb7d039b9047351aaf82856050abafe21c171e1cfb69b2b2fd12cc8f"
+    },
+    "src/rtl/emg_pl_export_status.v": {
+      "sha256": "7c058364aa86a0335317884c218a1263594e13582c80bb7f1ba67b6202878a39"
+    },
+    "src/rtl/emg_preprocess.v": {
+      "sha256": "09404f30e67c8475bff256f1a63781289a4d1d0797e85bebe38fc39f042f00d4"
+    },
+    "src/rtl/emg_window_features.v": {
+      "sha256": "c9e020b9ca05c3cd656bbc116e9a57b39eb0554f47bce8fde9723f292097d6d6"
+    },
+    "src/rtl/hand_control.v": {
+      "sha256": "4cf8590d3d959c70ee4b4a7f348a4ec62fe60dc60016e18e777b133c4d9dc4e7"
+    },
+    "src/rtl/hand_motion_top.v": {
+      "sha256": "2126de5cf70db1feeffe14706f132ce7807083fec32298a1b7a84d21b13b9b75"
+    },
+    "src/rtl/hand_servo_pwm.v": {
+      "sha256": "6fea2331f016fbc2086b984ca0494724b706da587806a1fc3301069a56e580e6"
+    },
+    "src/rtl/lcd_clk_fwd.v": {
+      "sha256": "39a7aaed722bd2b9b8f870f446ebd239b17b7ee5ea241045f69768fc6142b9f5"
+    },
+    "src/rtl/lcd_panel_adapter.v": {
+      "sha256": "683f0dc1f0690142342fa06fab110a6b15dd3af80698d332ada74dc796f28391"
+    },
+    "src/rtl/learning_div64.v": {
+      "sha256": "42ddadc38445d0769b52f1798a8209f5900e8f92022470f57223b829af66a344"
+    },
+    "src/rtl/mpu6050_motion.v": {
+      "sha256": "62ac8cb47bc78b37e4e38cc2ad7b7e524cd40746dc347a690778d85151e3b605"
+    },
+    "src/rtl/mpu6050_tilt.v": {
+      "sha256": "a5a7084c41162f24005066032409cb1ccaa3269904fb65ac64071afa95623bb0"
+    },
+    "src/rtl/touch_gt911.v": {
+      "sha256": "0e01ba47d4aae3411b0a8c1631561280a627c0750f197e2c562d0beafd578276"
+    },
+    "board/constraints/hz_zynq_ads1299.xdc": {
+      "sha256": "62109953adf4ffde3a535f5b13491b0bbdb4226bed62c30e04c14d92ef656c71"
+    },
+    "board/constraints/hz_zynq_ads1299_bd.xdc": {
+      "sha256": "2c3f59a2a3d727e3483992fd802771a9f679efbffa00660fc304d91001cb9527"
+    },
+    "board/constraints/hz_zynq_clock_groups.xdc": {
+      "sha256": "533302753e7dbff7f6b7d78442884c323f7071266b980e9af8b60c1f21c4961a"
+    },
+    "board/constraints/hz_zynq_hand.xdc": {
+      "sha256": "665d5bf0096ca656fdae4826de1e53746e9e19e527ee6fe3719a8a43fbb693e1"
+    },
+    "board/constraints/hz_zynq_lcd.xdc": {
+      "sha256": "0a78bd4b0de1735e6f8a238252a676fbd10c3a86ba7f551a9bbd7e711ed1e81b"
+    },
+    "board/constraints/hz_zynq_lcd_timing.xdc": {
+      "sha256": "b16419ade3e42fd0ca4ac3bff2103b5a0edd0269500238c81076d337e6a8e0bb"
+    },
+    "data/models/nn_int8_board_multiwear/nn_int8_weights.mem": {
+      "sha256": "5bb2c512365bc8af6b57835f8d678694fa78427999b085814225f968d66bbe62"
+    },
+    "data/models/nn_int8_board_multiwear/quant_params.json": {
+      "sha256": "8ca80b14ecd48907a55c6fe983b472f0382b6beeff3b2a4f4e36e1aeea4819ef"
+    },
+    "data/models/nn_int8_board_multiwear/tb_inputs.mem": {
+      "sha256": "3ceff4c2902fa5b6fb5b672908194f5f6416bbadd98abe99e2a93baee6d96ac3"
+    },
+    "data/models/nn_int8_board_multiwear/tb_logits.mem": {
+      "sha256": "e654458694aa8cc34ecb8e93075d12bba853e6e16b9a69b366e76c1ac7e8e4b5"
+    },
+    "build/export/design_1.xsa": {
+      "sha256": "1cf5741859a078a987e345d906b99bd3a4111eb1f50a7cfec467be8e0e2924e8"
+    },
+    "build/vivado/hand_motion_reconstruction.runs/impl_1/design_1.bit": {
+      "sha256": "9cd8a133e2d9f45b89a108cdfb7ec8f86721ab5e58f0ced7e918c53eeb2e6ee8"
+    },
+    "build/vivado/hand_motion_reconstruction.runs/impl_1/design_1_routed.dcp": {
+      "sha256": "07abfaa70cf2eb85c402ae93404fb0e7eeeb21435b2faf017cbeb53f358fe06b"
+    },
+    "build/boot/BOOT_20261027_HAND_CONTROL_HDC_DYNAMIC_V14.BIN": {
+      "sha256": "292f9ee1a971d468f2e293b7775f99c066b9f5b7b226702dc18d09c0decc78a5"
+    }
+  }
+}

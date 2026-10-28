@@ -1,0 +1,127 @@
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/src/rtl/emg_nn_infer.v" into library work
+INFO: [VRFC 10-311] analyzing module emg_nn_infer
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/src/rtl/hand_servo_pwm.v" into library work
+INFO: [VRFC 10-311] analyzing module hand_servo_pwm
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/sim/results_v15_equiv/emg_nn_infer_v14.v" into library work
+INFO: [VRFC 10-311] analyzing module emg_nn_infer_v14
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/sim/results_v15_equiv/hand_servo_pwm_v14.v" into library work
+INFO: [VRFC 10-311] analyzing module hand_servo_pwm_v14
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/sim/emg_v15_equiv_tb.sv" into library work
+INFO: [VRFC 10-311] analyzing module nn_v15_case
+INFO: [VRFC 10-311] analyzing module pwm_v15_case
+INFO: [VRFC 10-311] analyzing module emg_v15_equiv_tb
+Vivado Simulator v2025.2
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+Running: D:/FPGA/VIVADO/2025.2/Vivado/bin/unwrapped/win64.o/xelab.exe emg_v15_equiv_tb -s v15_equiv -debug typical 
+Multi-threading is on. Using 30 slave threads.
+Starting static elaboration
+Pass Through NonSizing Optimizer
+Completed static elaboration
+Starting simulation data flow analysis
+Completed simulation data flow analysis
+Time Resolution for simulation is 1ps
+Compiling module work.emg_nn_infer
+Compiling module work.emg_nn_infer_v14
+Compiling module work.nn_v15_case
+Compiling module work.emg_nn_infer(MEM_FILE="random_mo...
+Compiling module work.emg_nn_infer_v14(MEM_FILE="rando...
+Compiling module work.nn_v15_case(MODEL="random_model....
+Compiling module work.hand_servo_pwm(CLOCK_HZ=1000000,...
+Compiling module work.hand_servo_pwm_v14(CLOCK_HZ=1000...
+Compiling module work.pwm_v15_case(CLOCK=1000000)
+Compiling module work.hand_servo_pwm(FRAME_US=3000,WAT...
+Compiling module work.hand_servo_pwm_v14(FRAME_US=3000...
+Compiling module work.pwm_v15_case
+Compiling module work.hand_servo_pwm(CLOCK_HZ=3000000,...
+Compiling module work.hand_servo_pwm_v14(CLOCK_HZ=3000...
+Compiling module work.pwm_v15_case(CLOCK=3000000,FRAME...
+Compiling module work.emg_v15_equiv_tb
+Built simulation snapshot v15_equiv
+
+****** xsim v2025.2 (64-bit)
+  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025
+  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025
+  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025
+  **** Start of session at: Tue Oct 27 16:52:50 2026
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+
+source xsim.dir/v15_equiv/xsim_script.tcl
+# xsim {v15_equiv} -autoloadwcfg -runall
+Time resolution is 1 ps
+run -all
+MLP_V15_CYCLES phase=0 window=0 cycles=5379
+MLP_V15_CYCLES phase=0 window=0 cycles=5379
+MLP_V15_CYCLES phase=0 window=1 cycles=5379
+MLP_V15_CYCLES phase=0 window=1 cycles=5379
+MLP_V15_CYCLES phase=0 window=2 cycles=5379
+MLP_V15_CYCLES phase=0 window=2 cycles=5379
+MLP_V15_CYCLES phase=0 window=3 cycles=5379
+MLP_V15_CYCLES phase=0 window=3 cycles=5379
+TEST_PASS PWM V15 cycle-exact clock=1000000 frame=3000 armed_cycles=73999 fault_cycles=7999
+MLP_V15_CYCLES phase=0 window=4 cycles=5378
+MLP_V15_CYCLES phase=0 window=4 cycles=5378
+MLP_V15_CYCLES phase=0 window=5 cycles=5378
+MLP_V15_CYCLES phase=0 window=5 cycles=5378
+MLP_V15_CYCLES phase=0 window=6 cycles=5379
+MLP_V15_CYCLES phase=0 window=6 cycles=5379
+MLP_V15_CYCLES phase=0 window=7 cycles=5378
+MLP_V15_CYCLES phase=0 window=7 cycles=5378
+MLP_V15_CYCLES phase=1 window=0 cycles=5378
+MLP_V15_CYCLES phase=1 window=0 cycles=5378
+MLP_V15_CYCLES phase=1 window=1 cycles=5379
+MLP_V15_CYCLES phase=1 window=1 cycles=5379
+MLP_V15_CYCLES phase=1 window=2 cycles=5378
+MLP_V15_CYCLES phase=1 window=2 cycles=5378
+MLP_V15_CYCLES phase=1 window=3 cycles=5379
+MLP_V15_CYCLES phase=1 window=3 cycles=5379
+MLP_V15_CYCLES phase=1 window=4 cycles=5378
+MLP_V15_CYCLES phase=1 window=4 cycles=5378
+TEST_PASS PWM V15 cycle-exact clock=3000000 frame=4096 armed_cycles=211559 fault_cycles=17999
+MLP_V15_CYCLES phase=1 window=5 cycles=5378
+MLP_V15_CYCLES phase=1 window=5 cycles=5378
+MLP_V15_CYCLES phase=1 window=6 cycles=5379
+MLP_V15_CYCLES phase=1 window=6 cycles=5379
+MLP_V15_CYCLES phase=1 window=7 cycles=5378
+MLP_V15_CYCLES phase=1 window=7 cycles=5378
+MLP_V15_CYCLES phase=2 window=0 cycles=5379
+MLP_V15_CYCLES phase=2 window=0 cycles=5379
+MLP_V15_CYCLES phase=2 window=1 cycles=5378
+MLP_V15_CYCLES phase=2 window=1 cycles=5378
+MLP_V15_CYCLES phase=2 window=2 cycles=5378
+MLP_V15_CYCLES phase=2 window=2 cycles=5378
+MLP_V15_CYCLES phase=2 window=3 cycles=5378
+MLP_V15_CYCLES phase=2 window=3 cycles=5378
+MLP_V15_CYCLES phase=2 window=4 cycles=5379
+MLP_V15_CYCLES phase=2 window=4 cycles=5379
+MLP_V15_CYCLES phase=2 window=5 cycles=5379
+MLP_V15_CYCLES phase=2 window=5 cycles=5379
+MLP_V15_CYCLES phase=2 window=6 cycles=5379
+MLP_V15_CYCLES phase=2 window=6 cycles=5379
+MLP_V15_CYCLES phase=2 window=7 cycles=5378
+MLP_V15_CYCLES phase=2 window=7 cycles=5378
+MLP_V15_CYCLES phase=3 window=0 cycles=5379
+MLP_V15_CYCLES phase=3 window=0 cycles=5379
+MLP_V15_CYCLES phase=3 window=1 cycles=5378
+MLP_V15_CYCLES phase=3 window=1 cycles=5378
+MLP_V15_CYCLES phase=3 window=2 cycles=5380
+MLP_V15_CYCLES phase=3 window=2 cycles=5380
+MLP_V15_CYCLES phase=3 window=3 cycles=5379
+MLP_V15_CYCLES phase=3 window=3 cycles=5379
+MLP_V15_CYCLES phase=3 window=4 cycles=5378
+MLP_V15_CYCLES phase=3 window=4 cycles=5378
+MLP_V15_CYCLES phase=3 window=5 cycles=5379
+MLP_V15_CYCLES phase=3 window=5 cycles=5379
+MLP_V15_CYCLES phase=3 window=6 cycles=5379
+MLP_V15_CYCLES phase=3 window=6 cycles=5379
+MLP_V15_CYCLES phase=3 window=7 cycles=5379
+MLP_V15_CYCLES phase=3 window=7 cycles=5379
+TEST_PASS MLP V15 cycle-exact 32 windows, repeated indices, saturation, backpressure, mid-task reset model=d:/FPGA/sEMG-HMRS/data/models/nn_int8_board_multiwear/nn_int8_weights.mem
+TEST_PASS MLP V15 cycle-exact 32 windows, repeated indices, saturation, backpressure, mid-task reset model=random_model.mem
+TEST_PASS PWM V15 cycle-exact clock=25000000 frame=3000 armed_cycles=1849999 fault_cycles=199999
+TEST_PASS V15 MLP PWM equivalence complete
+$finish called at time : 25000200 ns : File "D:/FPGA/sEMG-HMRS/sim/emg_v15_equiv_tb.sv" Line 87
+run: Time (s): cpu = 00:00:00 ; elapsed = 00:00:07 . Memory (MB): peak = 226.297 ; gain = 0.000
+exit
+INFO: [Common 17-206] Exiting xsim at Tue Oct 27 16:53:00 2026...

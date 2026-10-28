@@ -1,0 +1,30 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+---------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025
+| Date         : Wed Oct 28 20:48:14 2026
+| Host         : LAPTOP-VCCV41QO running 64-bit major release  (build 9200)
+| Command      : report_cdc -file D:/FPGA/sEMG-HMRS/report/imu_pl_20261028/cdc.rpt
+| Design       : design_1
+| Device       : 7z020-clg400
+| Speed File   : -2  PRODUCTION 1.12 2019-11-22
+| Design State : Routed
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+CDC Report
+
+Severity  Source Clock      Destination Clock  CDC Type                 Exceptions               Endpoints  Safe  Unsafe  Unknown  No ASYNC_REG  
+--------  ----------------  -----------------  -----------------------  -----------------------  ---------  ----  ------  -------  ------------  
+Critical  input port clock  c50_raw            No Common Primary Clock  False Path                       9     0       0        9             0  
+Critical  clk_fpga_1        clk_fpga_0         No Common Primary Clock  Max Delay Datapath Only        264   152     112        0             0  
+Critical  input port clock  clk_fpga_1         No Common Primary Clock  False Path                       4     0       0        4             0  
+Critical  clk_fpga_0        pl_clk             No Common Primary Clock  Asynch Clock Groups           1763   604       1     1158             0  
+Critical  input port clock  pl_clk             No Common Primary Clock  False Path                    9045    10    1287     7748             4  
+Warning   c50_raw           clk_fpga_0         No Common Primary Clock  Max Delay Datapath Only         18    18       0        0             0  
+Warning   pl_clk            clk_fpga_0         No Common Primary Clock  Asynch Clock Groups            111   111       0        0             0  
+Info      clk_fpga_0        c31_raw            No Common Primary Clock  Max Delay Datapath Only          1     1       0        0             0  
+Info      clk_fpga_1        c31_raw            Safely Timed             None                             1     1       0        0             0  
+Info      clk_fpga_0        c50_raw            No Common Primary Clock  Max Delay Datapath Only          1     1       0        0             0  
+Info      clk_fpga_1        c50_raw            Safely Timed             None                            50    50       0        0             0  
+Info      c31_raw           clk_fpga_0         No Common Primary Clock  Max Delay Datapath Only          2     2       0        0             0  
+Info      input port clock  clk_fpga_0         No Common Primary Clock  False Path                       1     1       0        0             0  
+

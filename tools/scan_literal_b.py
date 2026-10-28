@@ -25,6 +25,7 @@ BAD_VALUES = ((14646, 'B0/B2 bad'), (-116680, 'A2 bad'), (14642, 'LP bad'))
 BENIGN_LITERAL_DSP = {
     ('p_0_out__1', 30),
     ('p_0_out', 30),  # Same spectrum-index expression after V5 elaboration.
+    ('spec_idx0', 30),  # V15 banked spectrum state retains spec_offset * 30.
 }
 
 # V5 relative MDF comparisons: baseline_sum * (100 - {30,20,10})

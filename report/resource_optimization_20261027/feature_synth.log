@@ -1,0 +1,562 @@
+#-----------------------------------------------------------
+# Vivado v2025.2 (64-bit)
+# SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025
+# IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025
+# SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025
+# Start of session at: Tue Oct 27 15:24:46 2026
+# Process ID         : 37688
+# Current directory  : D:/FPGA/sEMG-HMRS
+# Command line       : vivado.exe -mode batch -source tmp/resource_optimization_20261027/synth_feature.tcl -log report/resource_optimization_20261027/feature_synth.log -journal report/resource_optimization_20261027/feature_synth.jou
+# Log file           : D:/FPGA/sEMG-HMRS/report/resource_optimization_20261027/feature_synth.log
+# Journal file       : D:/FPGA/sEMG-HMRS\report/resource_optimization_20261027/feature_synth.jou
+# Running On         : LAPTOP-VCCV41QO
+# Platform           : Windows Server 2016 or Windows 10
+# Operating System   : 26200
+# Processor Detail   : AMD Ryzen 9 7945HX with Radeon Graphics        
+# CPU Frequency      : 2495 MHz
+# CPU Physical cores : 16
+# CPU Logical cores  : 32
+# Host memory        : 16844 MB
+# Swap memory        : 16844 MB
+# Total Virtual      : 33689 MB
+# Available Virtual  : 9831 MB
+#-----------------------------------------------------------
+INFO: [Common 17-1239] XILINX_LOCAL_USER_DATA is set to 'no'.
+source tmp/resource_optimization_20261027/synth_feature.tcl
+# set root D:/FPGA/sEMG-HMRS
+# set out $root/report/resource_optimization_20261027
+# foreach variant {baseline candidate} {
+#     create_project -in_memory -part xc7z020clg400-2
+#     if {$variant eq "baseline"} {
+#         read_verilog $out/baseline/src/rtl/emg_window_features.v
+#     } else {
+#         read_verilog $root/src/rtl/emg_window_features.v
+#     }
+#     synth_design -top emg_window_features -part xc7z020clg400-2 -mode out_of_context
+#     create_clock -name feature_clock -period 40 [get_ports clk]
+#     report_utilization -file $out/$variant/feature_synth_utilization.rpt
+#     if {$variant eq "candidate"} {
+#         write_verilog -force -mode funcsim $out/candidate/feature_synth.v
+#     }
+#     close_project
+# }
+create_project: Time (s): cpu = 00:00:02 ; elapsed = 00:00:27 . Memory (MB): peak = 314.070 ; gain = 7.898
+Command: synth_design -top emg_window_features -part xc7z020clg400-2 -mode out_of_context
+Starting synth_design
+Attempting to get a license for feature 'Synthesis' and/or device 'xc7z020'
+INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xc7z020'
+INFO: [Synth 8-7079] Multithreading enabled for synth_design using a maximum of 2 processes.
+INFO: [Synth 8-7078] Launching helper process for spawning children vivado processes
+INFO: [Synth 8-7075] Helper process launched with PID 34236
+---------------------------------------------------------------------------------
+Starting Synthesize : Time (s): cpu = 00:00:07 ; elapsed = 00:00:10 . Memory (MB): peak = 860.664 ; gain = 541.102
+---------------------------------------------------------------------------------
+INFO: [Synth 8-6157] synthesizing module 'emg_window_features' [D:/FPGA/sEMG-HMRS/report/resource_optimization_20261027/baseline/src/rtl/emg_window_features.v:27]
+INFO: [Synth 8-6155] done synthesizing module 'emg_window_features' (0#1) [D:/FPGA/sEMG-HMRS/report/resource_optimization_20261027/baseline/src/rtl/emg_window_features.v:27]
+WARNING: [Synth 8-6014] Unused sequential element abs_x_reg was removed.  [D:/FPGA/sEMG-HMRS/report/resource_optimization_20261027/baseline/src/rtl/emg_window_features.v:141]
+WARNING: [Synth 8-6014] Unused sequential element diff_reg was removed.  [D:/FPGA/sEMG-HMRS/report/resource_optimization_20261027/baseline/src/rtl/emg_window_features.v:144]
+WARNING: [Synth 8-6014] Unused sequential element abs_diff_reg was removed.  [D:/FPGA/sEMG-HMRS/report/resource_optimization_20261027/baseline/src/rtl/emg_window_features.v:145]
+WARNING: [Synth 8-6014] Unused sequential element zc_event_reg was removed.  [D:/FPGA/sEMG-HMRS/report/resource_optimization_20261027/baseline/src/rtl/emg_window_features.v:146]
+WARNING: [Synth 8-6014] Unused sequential element s2_reg was removed.  [D:/FPGA/sEMG-HMRS/report/resource_optimization_20261027/baseline/src/rtl/emg_window_features.v:154]
+WARNING: [Synth 8-6014] Unused sequential element s1_reg was removed.  [D:/FPGA/sEMG-HMRS/report/resource_optimization_20261027/baseline/src/rtl/emg_window_features.v:155]
+WARNING: [Synth 8-6014] Unused sequential element abs_s1_reg was removed.  [D:/FPGA/sEMG-HMRS/report/resource_optimization_20261027/baseline/src/rtl/emg_window_features.v:156]
+WARNING: [Synth 8-6014] Unused sequential element abs_s2_reg was removed.  [D:/FPGA/sEMG-HMRS/report/resource_optimization_20261027/baseline/src/rtl/emg_window_features.v:157]
+WARNING: [Synth 8-6014] Unused sequential element ssc_event_reg was removed.  [D:/FPGA/sEMG-HMRS/report/resource_optimization_20261027/baseline/src/rtl/emg_window_features.v:158]
+WARNING: [Synth 8-6014] Unused sequential element x_shift_reg was removed.  [D:/FPGA/sEMG-HMRS/report/resource_optimization_20261027/baseline/src/rtl/emg_window_features.v:165]
+WARNING: [Synth 8-6014] Unused sequential element x_sq_reg was removed.  [D:/FPGA/sEMG-HMRS/report/resource_optimization_20261027/baseline/src/rtl/emg_window_features.v:166]
+WARNING: [Synth 8-6014] Unused sequential element seg_done_reg was removed.  [D:/FPGA/sEMG-HMRS/report/resource_optimization_20261027/baseline/src/rtl/emg_window_features.v:169]
+WARNING: [Synth 8-6014] Unused sequential element window_done_reg was removed.  [D:/FPGA/sEMG-HMRS/report/resource_optimization_20261027/baseline/src/rtl/emg_window_features.v:170]
+WARNING: [Synth 8-6014] Unused sequential element clamp_val_reg was removed.  [D:/FPGA/sEMG-HMRS/report/resource_optimization_20261027/baseline/src/rtl/emg_window_features.v:239]
+---------------------------------------------------------------------------------
+Finished Synthesize : Time (s): cpu = 00:00:10 ; elapsed = 00:00:13 . Memory (MB): peak = 985.387 ; gain = 665.824
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Constraint Validation : Time (s): cpu = 00:00:11 ; elapsed = 00:00:14 . Memory (MB): peak = 985.387 ; gain = 665.824
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Loading Part and Timing Information
+---------------------------------------------------------------------------------
+Loading part: xc7z020clg400-2
+---------------------------------------------------------------------------------
+INFO: [Device 21-403] Loading part xc7z020clg400-2
+Finished Loading Part and Timing Information : Time (s): cpu = 00:00:11 ; elapsed = 00:00:14 . Memory (MB): peak = 985.387 ; gain = 665.824
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished RTL Optimization Phase 2 : Time (s): cpu = 00:00:11 ; elapsed = 00:00:15 . Memory (MB): peak = 985.387 ; gain = 665.824
+---------------------------------------------------------------------------------
+No constraint files found.
+---------------------------------------------------------------------------------
+Start RTL Component Statistics 
+---------------------------------------------------------------------------------
+Detailed RTL Component Info : 
++---Adders : 
+	   5 Input   40 Bit       Adders := 3     
+	   2 Input   32 Bit       Adders := 5     
+	   4 Input   32 Bit       Adders := 2     
+	   2 Input   25 Bit       Adders := 3     
+	   3 Input   25 Bit       Adders := 2     
+	   2 Input    9 Bit       Adders := 1     
+	   2 Input    7 Bit       Adders := 2     
+	   2 Input    2 Bit       Adders := 1     
++---Registers : 
+	               40 Bit    Registers := 6     
+	               32 Bit    Registers := 29    
+	               24 Bit    Registers := 2     
+	                9 Bit    Registers := 1     
+	                7 Bit    Registers := 2     
+	                2 Bit    Registers := 1     
+	                1 Bit    Registers := 4     
++---Muxes : 
+	   2 Input   40 Bit        Muxes := 6     
+	   4 Input   32 Bit        Muxes := 5     
+	   2 Input   32 Bit        Muxes := 13    
+	   2 Input   25 Bit        Muxes := 3     
+	   2 Input    2 Bit        Muxes := 1     
+	   2 Input    1 Bit        Muxes := 9     
+---------------------------------------------------------------------------------
+Finished RTL Component Statistics 
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Part Resource Summary
+---------------------------------------------------------------------------------
+Part Resources:
+DSPs: 220 (col length:60)
+BRAMs: 280 (col length: RAMB18 60 RAMB36 30)
+---------------------------------------------------------------------------------
+Finished Part Resource Summary
+---------------------------------------------------------------------------------
+No constraint files found.
+---------------------------------------------------------------------------------
+Start Cross Boundary and Area Optimization
+---------------------------------------------------------------------------------
+DSP Report: Generating DSP seg_energy1, operation Mode is: A*B.
+DSP Report: operator seg_energy1 is absorbed into DSP seg_energy1.
+DSP Report: operator seg_energy1 is absorbed into DSP seg_energy1.
+DSP Report: Generating DSP seg_energy1, operation Mode is: (PCIN>>17)+A*B.
+DSP Report: operator seg_energy1 is absorbed into DSP seg_energy1.
+DSP Report: operator seg_energy1 is absorbed into DSP seg_energy1.
+---------------------------------------------------------------------------------
+Finished Cross Boundary and Area Optimization : Time (s): cpu = 00:00:27 ; elapsed = 00:00:40 . Memory (MB): peak = 1291.410 ; gain = 971.848
+---------------------------------------------------------------------------------
+ Sort Area is  seg_energy1_0 : 0 0 : 3300 3951 : Used 1 time 0
+ Sort Area is  seg_energy1_0 : 0 1 : 651 3951 : Used 1 time 0
+---------------------------------------------------------------------------------
+Start ROM, RAM, DSP, Shift Register and Retiming Reporting
+---------------------------------------------------------------------------------
+
+DSP: Preliminary Mapping Report (see note below. The ' indicates corresponding REG is set)
++--------------------+----------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+|Module Name         | DSP Mapping    | A Size | B Size | C Size | D Size | P Size | AREG | BREG | CREG | DREG | ADREG | MREG | PREG | 
++--------------------+----------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+|emg_window_features | A*B            | 24     | 18     | -      | -      | 48     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|emg_window_features | (PCIN>>17)+A*B | 15     | 7      | -      | -      | 15     | 0    | 0    | -    | -    | -     | 0    | 0    | 
++--------------------+----------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+
+Note: The table above is a preliminary report that shows the DSPs inferred at the current stage of the synthesis flow. Some DSP may be reimplemented as non DSP primitives later in the synthesis flow. Multiple instantiated DSPs are reported only once.
+---------------------------------------------------------------------------------
+Finished ROM, RAM, DSP, Shift Register and Retiming Reporting
+---------------------------------------------------------------------------------
+No constraint files found.
+---------------------------------------------------------------------------------
+Start Timing Optimization
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Timing Optimization : Time (s): cpu = 00:00:27 ; elapsed = 00:00:40 . Memory (MB): peak = 1291.410 ; gain = 971.848
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Technology Mapping
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Technology Mapping : Time (s): cpu = 00:00:28 ; elapsed = 00:00:41 . Memory (MB): peak = 1295.715 ; gain = 976.152
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished IO Insertion : Time (s): cpu = 00:00:33 ; elapsed = 00:00:47 . Memory (MB): peak = 1465.016 ; gain = 1145.453
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Instances
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Instances : Time (s): cpu = 00:00:33 ; elapsed = 00:00:47 . Memory (MB): peak = 1465.016 ; gain = 1145.453
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Rebuilding User Hierarchy
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Rebuilding User Hierarchy : Time (s): cpu = 00:00:33 ; elapsed = 00:00:47 . Memory (MB): peak = 1465.016 ; gain = 1145.453
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Ports
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Ports : Time (s): cpu = 00:00:33 ; elapsed = 00:00:47 . Memory (MB): peak = 1465.016 ; gain = 1145.453
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Handling Custom Attributes
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Handling Custom Attributes : Time (s): cpu = 00:00:33 ; elapsed = 00:00:47 . Memory (MB): peak = 1465.016 ; gain = 1145.453
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Nets
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Nets : Time (s): cpu = 00:00:33 ; elapsed = 00:00:47 . Memory (MB): peak = 1465.016 ; gain = 1145.453
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Writing Synthesis Report
+---------------------------------------------------------------------------------
+
+DSP Final Report (the ' indicates corresponding REG is set)
++--------------------+--------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+|Module Name         | DSP Mapping  | A Size | B Size | C Size | D Size | P Size | AREG | BREG | CREG | DREG | ADREG | MREG | PREG | 
++--------------------+--------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+|emg_window_features | A*B          | 30     | 17     | -      | -      | 48     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|emg_window_features | PCIN>>17+A*B | 30     | 18     | -      | -      | 15     | 0    | 0    | -    | -    | -     | 0    | 0    | 
++--------------------+--------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+
+
+Report BlackBoxes: 
++-+--------------+----------+
+| |BlackBox name |Instances |
++-+--------------+----------+
++-+--------------+----------+
+
+Report Cell Usage: 
++------+--------+------+
+|      |Cell    |Count |
++------+--------+------+
+|1     |CARRY4  |   176|
+|2     |DSP48E1 |     2|
+|3     |LUT1    |    75|
+|4     |LUT2    |   183|
+|5     |LUT3    |   379|
+|6     |LUT4    |   297|
+|7     |LUT5    |   399|
+|8     |LUT6    |   286|
+|9     |FDRE    |  1312|
+|10    |FDSE    |    93|
++------+--------+------+
+
+Report Instance Areas: 
++------+---------+-------+------+
+|      |Instance |Module |Cells |
++------+---------+-------+------+
+|1     |top      |       |  3202|
++------+---------+-------+------+
+---------------------------------------------------------------------------------
+Finished Writing Synthesis Report : Time (s): cpu = 00:00:33 ; elapsed = 00:00:47 . Memory (MB): peak = 1465.016 ; gain = 1145.453
+---------------------------------------------------------------------------------
+Synthesis finished with 0 errors, 0 critical warnings and 14 warnings.
+Synthesis Optimization Runtime : Time (s): cpu = 00:00:33 ; elapsed = 00:00:48 . Memory (MB): peak = 1465.016 ; gain = 1145.453
+Synthesis Optimization Complete : Time (s): cpu = 00:00:33 ; elapsed = 00:00:48 . Memory (MB): peak = 1465.016 ; gain = 1145.453
+INFO: [Project 1-571] Translating synthesized netlist
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.040 . Memory (MB): peak = 1479.086 ; gain = 0.000
+INFO: [Netlist 29-17] Analyzing 178 Unisim elements for replacement
+INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
+WARNING: [Netlist 29-101] Netlist 'emg_window_features' is not ideal for floorplanning, since the cellview 'emg_window_features' contains a large number of primitives.  Please consider enabling hierarchy in synthesis if you want to do floorplanning.
+INFO: [Project 1-570] Preparing netlist for logic optimization
+INFO: [Opt 31-138] Pushed 0 inverter(s) to 0 load pin(s).
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.002 . Memory (MB): peak = 1597.555 ; gain = 0.000
+INFO: [Project 1-111] Unisim Transformation Summary:
+No Unisim elements were transformed.
+
+Synth Design complete | Checksum: f86e03fa
+INFO: [Common 17-83] Releasing license: Synthesis
+14 Infos, 15 Warnings, 0 Critical Warnings and 0 Errors encountered.
+synth_design completed successfully
+synth_design: Time (s): cpu = 00:00:37 ; elapsed = 00:00:54 . Memory (MB): peak = 1597.555 ; gain = 1283.484
+Command: synth_design -top emg_window_features -part xc7z020clg400-2 -mode out_of_context
+Starting synth_design
+Attempting to get a license for feature 'Synthesis' and/or device 'xc7z020'
+INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xc7z020'
+INFO: [Synth 8-7079] Multithreading enabled for synth_design using a maximum of 2 processes.
+---------------------------------------------------------------------------------
+Starting Synthesize : Time (s): cpu = 00:00:08 ; elapsed = 00:00:09 . Memory (MB): peak = 1597.555 ; gain = 0.000
+---------------------------------------------------------------------------------
+INFO: [Synth 8-6157] synthesizing module 'emg_window_features' [D:/FPGA/sEMG-HMRS/src/rtl/emg_window_features.v:27]
+INFO: [Synth 8-6155] done synthesizing module 'emg_window_features' (0#1) [D:/FPGA/sEMG-HMRS/src/rtl/emg_window_features.v:27]
+WARNING: [Synth 8-6014] Unused sequential element abs_x_reg was removed.  [D:/FPGA/sEMG-HMRS/src/rtl/emg_window_features.v:146]
+WARNING: [Synth 8-6014] Unused sequential element diff_reg was removed.  [D:/FPGA/sEMG-HMRS/src/rtl/emg_window_features.v:149]
+WARNING: [Synth 8-6014] Unused sequential element abs_diff_reg was removed.  [D:/FPGA/sEMG-HMRS/src/rtl/emg_window_features.v:150]
+WARNING: [Synth 8-6014] Unused sequential element zc_event_reg was removed.  [D:/FPGA/sEMG-HMRS/src/rtl/emg_window_features.v:151]
+WARNING: [Synth 8-6014] Unused sequential element s2_reg was removed.  [D:/FPGA/sEMG-HMRS/src/rtl/emg_window_features.v:159]
+WARNING: [Synth 8-6014] Unused sequential element s1_reg was removed.  [D:/FPGA/sEMG-HMRS/src/rtl/emg_window_features.v:160]
+WARNING: [Synth 8-6014] Unused sequential element abs_s1_reg was removed.  [D:/FPGA/sEMG-HMRS/src/rtl/emg_window_features.v:161]
+WARNING: [Synth 8-6014] Unused sequential element abs_s2_reg was removed.  [D:/FPGA/sEMG-HMRS/src/rtl/emg_window_features.v:162]
+WARNING: [Synth 8-6014] Unused sequential element ssc_event_reg was removed.  [D:/FPGA/sEMG-HMRS/src/rtl/emg_window_features.v:163]
+WARNING: [Synth 8-6014] Unused sequential element x_shift_reg was removed.  [D:/FPGA/sEMG-HMRS/src/rtl/emg_window_features.v:170]
+WARNING: [Synth 8-6014] Unused sequential element x_sq_reg was removed.  [D:/FPGA/sEMG-HMRS/src/rtl/emg_window_features.v:171]
+WARNING: [Synth 8-6014] Unused sequential element seg_done_reg was removed.  [D:/FPGA/sEMG-HMRS/src/rtl/emg_window_features.v:174]
+WARNING: [Synth 8-6014] Unused sequential element window_done_reg was removed.  [D:/FPGA/sEMG-HMRS/src/rtl/emg_window_features.v:175]
+WARNING: [Synth 8-6014] Unused sequential element clamp_val_reg was removed.  [D:/FPGA/sEMG-HMRS/src/rtl/emg_window_features.v:244]
+---------------------------------------------------------------------------------
+Finished Synthesize : Time (s): cpu = 00:00:11 ; elapsed = 00:00:13 . Memory (MB): peak = 1597.555 ; gain = 0.000
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Constraint Validation : Time (s): cpu = 00:00:12 ; elapsed = 00:00:14 . Memory (MB): peak = 1597.555 ; gain = 0.000
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Loading Part and Timing Information
+---------------------------------------------------------------------------------
+Loading part: xc7z020clg400-2
+---------------------------------------------------------------------------------
+Finished Loading Part and Timing Information : Time (s): cpu = 00:00:12 ; elapsed = 00:00:14 . Memory (MB): peak = 1597.555 ; gain = 0.000
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished RTL Optimization Phase 2 : Time (s): cpu = 00:00:12 ; elapsed = 00:00:14 . Memory (MB): peak = 1597.555 ; gain = 0.000
+---------------------------------------------------------------------------------
+No constraint files found.
+---------------------------------------------------------------------------------
+Start RTL Component Statistics 
+---------------------------------------------------------------------------------
+Detailed RTL Component Info : 
++---Adders : 
+	   5 Input   40 Bit       Adders := 3     
+	   2 Input   32 Bit       Adders := 3     
+	   2 Input   25 Bit       Adders := 3     
+	   3 Input   25 Bit       Adders := 2     
+	   2 Input    9 Bit       Adders := 1     
+	   5 Input    9 Bit       Adders := 2     
+	   2 Input    7 Bit       Adders := 6     
+	   2 Input    2 Bit       Adders := 1     
++---Registers : 
+	               40 Bit    Registers := 6     
+	               32 Bit    Registers := 15    
+	               24 Bit    Registers := 2     
+	                9 Bit    Registers := 7     
+	                7 Bit    Registers := 12    
+	                2 Bit    Registers := 1     
+	                1 Bit    Registers := 4     
++---Muxes : 
+	   2 Input   40 Bit        Muxes := 6     
+	   4 Input   32 Bit        Muxes := 3     
+	   2 Input   32 Bit        Muxes := 9     
+	   2 Input   25 Bit        Muxes := 3     
+	   2 Input    9 Bit        Muxes := 4     
+	   4 Input    7 Bit        Muxes := 2     
+	   2 Input    2 Bit        Muxes := 1     
+	   2 Input    1 Bit        Muxes := 9     
+---------------------------------------------------------------------------------
+Finished RTL Component Statistics 
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Part Resource Summary
+---------------------------------------------------------------------------------
+Part Resources:
+DSPs: 220 (col length:60)
+BRAMs: 280 (col length: RAMB18 60 RAMB36 30)
+---------------------------------------------------------------------------------
+Finished Part Resource Summary
+---------------------------------------------------------------------------------
+No constraint files found.
+---------------------------------------------------------------------------------
+Start Cross Boundary and Area Optimization
+---------------------------------------------------------------------------------
+DSP Report: Generating DSP seg_energy1, operation Mode is: A*B.
+DSP Report: operator seg_energy1 is absorbed into DSP seg_energy1.
+DSP Report: operator seg_energy1 is absorbed into DSP seg_energy1.
+DSP Report: Generating DSP seg_energy1, operation Mode is: (PCIN>>17)+A*B.
+DSP Report: operator seg_energy1 is absorbed into DSP seg_energy1.
+DSP Report: operator seg_energy1 is absorbed into DSP seg_energy1.
+WARNING: [Synth 8-3917] design emg_window_features has port zc_count[31] driven by constant 0
+WARNING: [Synth 8-3917] design emg_window_features has port zc_count[30] driven by constant 0
+WARNING: [Synth 8-3917] design emg_window_features has port zc_count[29] driven by constant 0
+WARNING: [Synth 8-3917] design emg_window_features has port zc_count[28] driven by constant 0
+WARNING: [Synth 8-3917] design emg_window_features has port zc_count[27] driven by constant 0
+WARNING: [Synth 8-3917] design emg_window_features has port zc_count[26] driven by constant 0
+WARNING: [Synth 8-3917] design emg_window_features has port zc_count[25] driven by constant 0
+WARNING: [Synth 8-3917] design emg_window_features has port zc_count[24] driven by constant 0
+WARNING: [Synth 8-3917] design emg_window_features has port zc_count[23] driven by constant 0
+WARNING: [Synth 8-3917] design emg_window_features has port zc_count[22] driven by constant 0
+WARNING: [Synth 8-3917] design emg_window_features has port zc_count[21] driven by constant 0
+WARNING: [Synth 8-3917] design emg_window_features has port zc_count[20] driven by constant 0
+WARNING: [Synth 8-3917] design emg_window_features has port zc_count[19] driven by constant 0
+WARNING: [Synth 8-3917] design emg_window_features has port zc_count[18] driven by constant 0
+WARNING: [Synth 8-3917] design emg_window_features has port zc_count[17] driven by constant 0
+WARNING: [Synth 8-3917] design emg_window_features has port zc_count[16] driven by constant 0
+WARNING: [Synth 8-3917] design emg_window_features has port zc_count[15] driven by constant 0
+WARNING: [Synth 8-3917] design emg_window_features has port zc_count[14] driven by constant 0
+WARNING: [Synth 8-3917] design emg_window_features has port zc_count[13] driven by constant 0
+WARNING: [Synth 8-3917] design emg_window_features has port zc_count[12] driven by constant 0
+WARNING: [Synth 8-3917] design emg_window_features has port zc_count[11] driven by constant 0
+WARNING: [Synth 8-3917] design emg_window_features has port zc_count[10] driven by constant 0
+WARNING: [Synth 8-3917] design emg_window_features has port zc_count[9] driven by constant 0
+WARNING: [Synth 8-3917] design emg_window_features has port ssc_count[31] driven by constant 0
+WARNING: [Synth 8-3917] design emg_window_features has port ssc_count[30] driven by constant 0
+WARNING: [Synth 8-3917] design emg_window_features has port ssc_count[29] driven by constant 0
+WARNING: [Synth 8-3917] design emg_window_features has port ssc_count[28] driven by constant 0
+WARNING: [Synth 8-3917] design emg_window_features has port ssc_count[27] driven by constant 0
+WARNING: [Synth 8-3917] design emg_window_features has port ssc_count[26] driven by constant 0
+WARNING: [Synth 8-3917] design emg_window_features has port ssc_count[25] driven by constant 0
+WARNING: [Synth 8-3917] design emg_window_features has port ssc_count[24] driven by constant 0
+WARNING: [Synth 8-3917] design emg_window_features has port ssc_count[23] driven by constant 0
+WARNING: [Synth 8-3917] design emg_window_features has port ssc_count[22] driven by constant 0
+WARNING: [Synth 8-3917] design emg_window_features has port ssc_count[21] driven by constant 0
+WARNING: [Synth 8-3917] design emg_window_features has port ssc_count[20] driven by constant 0
+WARNING: [Synth 8-3917] design emg_window_features has port ssc_count[19] driven by constant 0
+WARNING: [Synth 8-3917] design emg_window_features has port ssc_count[18] driven by constant 0
+WARNING: [Synth 8-3917] design emg_window_features has port ssc_count[17] driven by constant 0
+WARNING: [Synth 8-3917] design emg_window_features has port ssc_count[16] driven by constant 0
+WARNING: [Synth 8-3917] design emg_window_features has port ssc_count[15] driven by constant 0
+WARNING: [Synth 8-3917] design emg_window_features has port ssc_count[14] driven by constant 0
+WARNING: [Synth 8-3917] design emg_window_features has port ssc_count[13] driven by constant 0
+WARNING: [Synth 8-3917] design emg_window_features has port ssc_count[12] driven by constant 0
+WARNING: [Synth 8-3917] design emg_window_features has port ssc_count[11] driven by constant 0
+WARNING: [Synth 8-3917] design emg_window_features has port ssc_count[10] driven by constant 0
+WARNING: [Synth 8-3917] design emg_window_features has port ssc_count[9] driven by constant 0
+---------------------------------------------------------------------------------
+Finished Cross Boundary and Area Optimization : Time (s): cpu = 00:00:23 ; elapsed = 00:00:27 . Memory (MB): peak = 1597.555 ; gain = 0.000
+---------------------------------------------------------------------------------
+ Sort Area is  seg_energy1_0 : 0 0 : 3300 3951 : Used 1 time 0
+ Sort Area is  seg_energy1_0 : 0 1 : 651 3951 : Used 1 time 0
+---------------------------------------------------------------------------------
+Start ROM, RAM, DSP, Shift Register and Retiming Reporting
+---------------------------------------------------------------------------------
+
+DSP: Preliminary Mapping Report (see note below. The ' indicates corresponding REG is set)
++--------------------+----------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+|Module Name         | DSP Mapping    | A Size | B Size | C Size | D Size | P Size | AREG | BREG | CREG | DREG | ADREG | MREG | PREG | 
++--------------------+----------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+|emg_window_features | A*B            | 24     | 18     | -      | -      | 48     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|emg_window_features | (PCIN>>17)+A*B | 15     | 7      | -      | -      | 15     | 0    | 0    | -    | -    | -     | 0    | 0    | 
++--------------------+----------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+
+Note: The table above is a preliminary report that shows the DSPs inferred at the current stage of the synthesis flow. Some DSP may be reimplemented as non DSP primitives later in the synthesis flow. Multiple instantiated DSPs are reported only once.
+---------------------------------------------------------------------------------
+Finished ROM, RAM, DSP, Shift Register and Retiming Reporting
+---------------------------------------------------------------------------------
+No constraint files found.
+---------------------------------------------------------------------------------
+Start Timing Optimization
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Timing Optimization : Time (s): cpu = 00:00:24 ; elapsed = 00:00:27 . Memory (MB): peak = 1597.555 ; gain = 0.000
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Technology Mapping
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Technology Mapping : Time (s): cpu = 00:00:24 ; elapsed = 00:00:28 . Memory (MB): peak = 1597.555 ; gain = 0.000
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished IO Insertion : Time (s): cpu = 00:00:31 ; elapsed = 00:00:34 . Memory (MB): peak = 1597.555 ; gain = 0.000
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Instances
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Instances : Time (s): cpu = 00:00:31 ; elapsed = 00:00:34 . Memory (MB): peak = 1597.555 ; gain = 0.000
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Rebuilding User Hierarchy
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Rebuilding User Hierarchy : Time (s): cpu = 00:00:31 ; elapsed = 00:00:34 . Memory (MB): peak = 1597.555 ; gain = 0.000
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Ports
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Ports : Time (s): cpu = 00:00:31 ; elapsed = 00:00:34 . Memory (MB): peak = 1597.555 ; gain = 0.000
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Handling Custom Attributes
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Handling Custom Attributes : Time (s): cpu = 00:00:31 ; elapsed = 00:00:35 . Memory (MB): peak = 1597.555 ; gain = 0.000
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Nets
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Nets : Time (s): cpu = 00:00:31 ; elapsed = 00:00:35 . Memory (MB): peak = 1597.555 ; gain = 0.000
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Writing Synthesis Report
+---------------------------------------------------------------------------------
+
+DSP Final Report (the ' indicates corresponding REG is set)
++--------------------+--------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+|Module Name         | DSP Mapping  | A Size | B Size | C Size | D Size | P Size | AREG | BREG | CREG | DREG | ADREG | MREG | PREG | 
++--------------------+--------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+|emg_window_features | A*B          | 30     | 17     | -      | -      | 48     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|emg_window_features | PCIN>>17+A*B | 30     | 18     | -      | -      | 15     | 0    | 0    | -    | -    | -     | 0    | 0    | 
++--------------------+--------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+
+
+Report BlackBoxes: 
++-+--------------+----------+
+| |BlackBox name |Instances |
++-+--------------+----------+
++-+--------------+----------+
+
+Report Cell Usage: 
++------+--------+------+
+|      |Cell    |Count |
++------+--------+------+
+|1     |CARRY4  |   134|
+|2     |DSP48E1 |     2|
+|3     |LUT1    |    76|
+|4     |LUT2    |   183|
+|5     |LUT3    |   287|
+|6     |LUT4    |   141|
+|7     |LUT5    |   280|
+|8     |LUT6    |   336|
+|9     |FDRE    |   924|
+|10    |FDSE    |    93|
++------+--------+------+
+---------------------------------------------------------------------------------
+Finished Writing Synthesis Report : Time (s): cpu = 00:00:31 ; elapsed = 00:00:35 . Memory (MB): peak = 1597.555 ; gain = 0.000
+---------------------------------------------------------------------------------
+Synthesis finished with 0 errors, 0 critical warnings and 60 warnings.
+Synthesis Optimization Runtime : Time (s): cpu = 00:00:31 ; elapsed = 00:00:35 . Memory (MB): peak = 1597.555 ; gain = 0.000
+Synthesis Optimization Complete : Time (s): cpu = 00:00:31 ; elapsed = 00:00:35 . Memory (MB): peak = 1597.555 ; gain = 0.000
+INFO: [Project 1-571] Translating synthesized netlist
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.025 . Memory (MB): peak = 1597.555 ; gain = 0.000
+INFO: [Netlist 29-17] Analyzing 136 Unisim elements for replacement
+INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
+WARNING: [Netlist 29-101] Netlist 'emg_window_features' is not ideal for floorplanning, since the cellview 'emg_window_features' contains a large number of primitives.  Please consider enabling hierarchy in synthesis if you want to do floorplanning.
+INFO: [Project 1-570] Preparing netlist for logic optimization
+INFO: [Opt 31-138] Pushed 0 inverter(s) to 0 load pin(s).
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.001 . Memory (MB): peak = 1611.680 ; gain = 0.000
+INFO: [Project 1-111] Unisim Transformation Summary:
+No Unisim elements were transformed.
+
+Synth Design complete | Checksum: 5f9b57bf
+INFO: [Common 17-83] Releasing license: Synthesis
+11 Infos, 61 Warnings, 0 Critical Warnings and 0 Errors encountered.
+synth_design completed successfully
+synth_design: Time (s): cpu = 00:00:35 ; elapsed = 00:00:41 . Memory (MB): peak = 1611.680 ; gain = 14.125
+# puts FEATURE_SYNTH_COMPARISON_COMPLETE
+FEATURE_SYNTH_COMPARISON_COMPLETE
+INFO: [Common 17-206] Exiting Vivado at Tue Oct 27 15:27:03 2026...

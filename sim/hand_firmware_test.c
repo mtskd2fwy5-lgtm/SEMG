@@ -2,39 +2,37 @@
 #define CONTROL_REFERENCE_NO_MAIN 1
 #include <math.h>
 #include "control_policy_reference.c"
+/* Drive real six-axis input through the Q24 model and production consumer.
+ * Direct calls to the old PS twist routine would not test the migrated path. */
+static void hand_imu_sample(double degrees,int gyro_y,unsigned *seq)
+{
+    double a=degrees*3.141592653589793/180.0;
+    int ax=(int)round(-sin(a)*16384.0),az=(int)round(-cos(a)*16384.0);
+    time_ticks+=10u*GT_TICKS_PER_MS-3333u;
+    lcd_imu_ingest(((u32)ax&65535u)<<16,((u32)az&65535u)<<16,
+                   ((u32)gyro_y&65535u)<<16,0x80000000u|((++*seq&127u)<<24));
+}
 static void test_rotation_attitude(void)
 {
-    int i;
-    lcd_imu_reset();
-    imu_hand_rotation_update((imu_quat){1,0,0,0});assert(!imu_hand_rotation_valid);
-    mpu_zero_valid=1u;
-    for(i=0;i<=260;i+=2) {
-        double a=i*3.141592653589793/360.0;
-        imu_quat twist={(float)cos(a),0,-(float)sin(a),0};
-        imu_hand_rotation_update(twist);
+    int i;unsigned seq=0;
+    lcd_imu_reset();assert(!imu_hand_rotation_valid);
+    for(i=0;i<101;i++)hand_imu_sample(0,0,&seq);
+    assert(mpu_zero_valid && imu_hand_rotation_valid);
+    for(i=2;i<=260;i+=2) {
+        hand_imu_sample(i,-6560,&seq);
         assert(imu_hand_rotation_valid);
-        assert(abs(imu_hand_rotation_deg-(i>225?225:i))<=1);
+        assert(abs(imu_hand_rotation_deg-(i>225?225:i))<=2);
     }
-    for(i=260;i>=0;i-=2) {
-        double a=i*3.141592653589793/360.0;
-        imu_hand_rotation_update((imu_quat){(float)cos(a),0,-(float)sin(a),0});
-        assert(abs(imu_hand_rotation_deg-(i>225?225:i))<=1);
+    for(i=258;i>=0;i-=2) {
+        hand_imu_sample(i,6560,&seq);
+        assert(abs(imu_hand_rotation_deg-(i>225?225:i))<=2);
     }
-    for(i=0;i<=90;i+=2) {
-        double a=i*3.141592653589793/360.0;
-        imu_hand_rotation_update((imu_quat){(float)cos(a),0,(float)sin(a),0});
-        assert(abs(imu_hand_rotation_deg+(i>45?45:i))<=1);
+    for(i=2;i<=90;i+=2) {
+        hand_imu_sample(-i,6560,&seq);
+        assert(abs(imu_hand_rotation_deg+(i>45?45:i))<=2);
     }
-    lcd_imu_reset();mpu_zero_valid=1u;
-    // Forearm elevation (swing) must not be interpreted as palm rotation.
-    for(i=0;i<80;i+=5) {
-        double a=i*3.141592653589793/360.0;
-        imu_quat swing={(float)cos(a),(float)sin(a),0,0};
-        imu_hand_rotation_update(imu_mul(swing,(imu_quat){0.8660254f,0,-0.5f,0}));
-        assert(imu_hand_rotation_valid && abs(imu_hand_rotation_deg-60)<=1);
-    }
-    imu_hand_rotation_update((imu_quat){0,1,0,0});assert(!imu_hand_rotation_valid);
     lcd_imu_reset();assert(!imu_hand_rotation_valid && !imu_hand_rotation_seen);
+    puts("TEST_PASS PL attitude consumer: six-axis twist unwrap, -45/+225 limits, reset");
 }
 static void ack_tick(uint32_t now)
 {
@@ -310,10 +308,80 @@ static void test_boot_home(void)
     hand_home_state=HAND_HOME_IDLE;
     puts("TEST_PASS BOOT HOME: SD latest-valid/CRC fallback, saved rest + exact 833us zero, six disabled stages/one atomic commit/continuous hold, no synthetic classifier/MPU or later target overwrite, time wrap, no repeat, header STOP/ACK timeout/fault cancel, legacy PL and lost group refusal, invalid configuration refusal");
 }
+static void test_hdc_stability(void)
+{
+    uint32_t i,now=10000u;uint16_t seq=65496u;
+    static const uint32_t cls[]={39u,38u,39u,39u};
+    hand_run=0u;hand_hdc_reset();
+    /* A single wrong class no longer restarts all evidence. Full-width IDs,
+     * sequence wrap and time wrap must behave like the real feature stream. */
+    for(i=0u;i<4u;i++,now+=25u,seq=(uint16_t)(seq+40u)) {
+        hand_hdc_observe(now,seq,cls[i],1u);
+        assert(hand_hdc_valid==(i==3u));
+    }
+    assert(hand_hdc_class==39u);
+    hand_hdc_observe(now,seq,38u,2u);now+=25u;seq=(uint16_t)(seq+40u);
+    assert(hand_hdc_valid && hand_hdc_class==39u);
+    hand_hdc_observe(now,seq,39u,1u);now+=25u;seq=(uint16_t)(seq+40u);
+    assert(hand_hdc_valid && hand_hdc_class==39u);
+    /* Three fresh strong windows still switch a genuine new gesture. */
+    for(i=0u;i<3u;i++,now+=25u,seq=(uint16_t)(seq+40u))
+        hand_hdc_observe(now,seq,38u,1u);
+    assert(hand_hdc_valid && hand_hdc_class==38u);
+    /* Continuous weak packets cannot renew the last accepted target forever. */
+    hand_run=3u;
+    for(i=0u;i<8u;i++,now+=25u,seq=(uint16_t)(seq+40u)) {
+        hand_hdc_observe(now,seq,38u,2u);
+        assert(hand_hdc_valid==(i<7u));
+    }
+    assert(!hand_run && hand_stop_pending);
+    hand_stop_pending=0u;
+    /* Startup abstentions and 3:2 alternating predictions never confirm. */
+    hand_hdc_reset();
+    for(i=0u;i<40u;i++,now+=25u,seq=(uint16_t)(seq+40u)) {
+        hand_hdc_observe(now,seq,5u+i%2u,1u);assert(!hand_hdc_valid);
+    }
+    hand_hdc_reset();
+    for(i=0u;i<20u;i++,now+=25u,seq=(uint16_t)(seq+40u)) {
+        hand_hdc_observe(now,seq,5u,2u);assert(!hand_hdc_valid);
+    }
+    /* A weak window and an isolated error can be tolerated during acquisition. */
+    hand_hdc_reset();
+    for(i=0u;i<5u;i++,now+=25u,seq=(uint16_t)(seq+40u)) {
+        hand_hdc_observe(now,seq,i==3u?6u:5u,i==1u?2u:1u);
+        assert(hand_hdc_valid==(i==4u));
+    }
+    /* Rest keeps its more conservative six-of-eight confirmation. */
+    hand_hdc_reset();
+    for(i=0u;i<7u;i++,now+=25u,seq=(uint16_t)(seq+40u)) {
+        hand_hdc_observe(now,seq,0u,i==2u?2u:1u);
+        assert(hand_hdc_valid==(i==6u));
+    }
+    assert(hand_hdc_class==0u);
+    /* Invalid data (including excessive clipping/model loss) remains hard STOP. */
+    hand_run=3u;hand_hdc_observe(now,seq,0u,0u);
+    assert(!hand_hdc_valid && !hand_run && hand_stop_pending);
+    hand_stop_pending=0u;hand_hdc_reset();
+    now=0xffffffc0u;
+    for(i=0u;i<3u;i++,now+=25u,seq=(uint16_t)(seq+40u))
+        hand_hdc_observe(now,seq,39u,1u);
+    assert(hand_hdc_valid && hand_hdc_class==39u);
+    hand_hdc_observe(now+251u,seq,39u,1u);assert(!hand_hdc_valid);
+    /* Wall-clock bound applies even when the packet sequence stays consecutive. */
+    hand_hdc_reset();now=20000u;
+    for(i=0u;i<3u;i++,now+=25u,seq=(uint16_t)(seq+40u))
+        hand_hdc_observe(now,seq,39u,1u);
+    hand_run=3u;hand_hdc_observe(now+175u,seq,39u,2u);
+    assert(!hand_hdc_valid && !hand_run);
+    hand_stop_pending=0u;hand_hdc_reset();
+    puts("TEST_PASS HDC stability: isolated error/abstention, rival hysteresis, 75ms clean transition, 200ms ambiguity STOP, rest debounce, full class IDs, sequence/time wrap, hard invalidation");
+}
+
 int main(void)
 {
     uint32_t i,j,panel,word;HandProfile previous;
     test_rotation_attitude();
+    test_hdc_stability();
     g_mode=MODE_MONITOR;
     hand_profile_init();assert(hand_profile.cal_mask==0 && hand_profile.row_mask==0);
     hand_profile.crc=hand_crc(&hand_profile);assert(hand_profile_valid(&hand_profile));

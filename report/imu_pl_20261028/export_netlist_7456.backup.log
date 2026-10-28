@@ -1,0 +1,54 @@
+#-----------------------------------------------------------
+# Vivado v2025.2 (64-bit)
+# SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025
+# IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025
+# SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025
+# Start of session at: Wed Oct 28 19:54:16 2026
+# Process ID         : 7456
+# Current directory  : D:/FPGA/sEMG-HMRS
+# Command line       : vivado.exe -mode batch -source build/scripts/export_imu_netlist.tcl -log report/imu_pl_20261028/export_netlist.log -journal report/imu_pl_20261028/export_netlist.jou
+# Log file           : D:/FPGA/sEMG-HMRS/report/imu_pl_20261028/export_netlist.log
+# Journal file       : D:/FPGA/sEMG-HMRS\report/imu_pl_20261028/export_netlist.jou
+# Running On         : LAPTOP-VCCV41QO
+# Platform           : Windows Server 2016 or Windows 10
+# Operating System   : 26200
+# Processor Detail   : AMD Ryzen 9 7945HX with Radeon Graphics        
+# CPU Frequency      : 2495 MHz
+# CPU Physical cores : 16
+# CPU Logical cores  : 32
+# Host memory        : 16844 MB
+# Swap memory        : 16844 MB
+# Total Virtual      : 33689 MB
+# Available Virtual  : 11790 MB
+#-----------------------------------------------------------
+INFO: [Common 17-1239] XILINX_LOCAL_USER_DATA is set to 'no'.
+source build/scripts/export_imu_netlist.tcl
+# set root [file normalize [file join [file dirname [info script]] ../..]]
+# set out [file join $root report imu_pl_20261028 ooc]
+# file mkdir $out
+# open_checkpoint [file join $root build vivado hand_motion_reconstruction.runs design_1_mpu_attitude_0_0_synth_1 design_1_mpu_attitude_0_0.dcp]
+Command: open_checkpoint D:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.runs/design_1_mpu_attitude_0_0_synth_1/design_1_mpu_attitude_0_0.dcp
+
+Starting open_checkpoint Task
+
+Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.078 . Memory (MB): peak = 319.098 ; gain = 5.492
+INFO: [Device 21-403] Loading part xc7z020clg400-2
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.043 . Memory (MB): peak = 581.469 ; gain = 0.000
+INFO: [Netlist 29-17] Analyzing 374 Unisim elements for replacement
+INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
+INFO: [Project 1-479] Netlist was created with Vivado 2025.2
+INFO: [Project 1-570] Preparing netlist for logic optimization
+Read ShapeDB Complete: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.020 . Memory (MB): peak = 686.035 ; gain = 1.371
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.004 . Memory (MB): peak = 686.035 ; gain = 0.000
+INFO: [Project 1-111] Unisim Transformation Summary:
+  A total of 90 instances were transformed.
+  RAM32M => RAM32M (RAMD32(x6), RAMS32(x2)): 2 instances
+  RAM64M => RAM64M (RAMD64E(x4)): 88 instances
+
+INFO: [Project 1-604] Checkpoint was created with Vivado v2025.2 (64-bit) build 6299465
+open_checkpoint: Time (s): cpu = 00:00:07 ; elapsed = 00:00:31 . Memory (MB): peak = 694.086 ; gain = 389.953
+# report_utilization -file [file join $out utilization_synth.rpt]
+# write_verilog -force -mode funcsim -rename_top mpu_attitude [file join $out attitude_funcsim.v]
+# puts "TEST_PASS IMU netlist exported from actual full-build OOC checkpoint"
+TEST_PASS IMU netlist exported from actual full-build OOC checkpoint
+INFO: [Common 17-206] Exiting Vivado at Wed Oct 28 19:54:59 2026...

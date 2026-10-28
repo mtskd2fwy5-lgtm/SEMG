@@ -68,14 +68,15 @@ static void hdc_on_window(const u32 features[40],u16 seq)
 {
     u32 before,dt,k,best=0u,old_hand_valid=hand_hdc_valid,old_hand_class=hand_hdc_class; i32 logits[5]; uint32_t mav[8];
     if(hdc.stage==HDC_IDLE || hdc.stage==HDC_BUILD)return;
-    if(!hdc_available()){hdc_interrupt(&hdc);return;}
+    if(!hdc_available()){hdc_interrupt(&hdc);hand_hdc_reset();return;}
     before=gt_stamp();
     selfcal_nn_logits(features,hdc_mlp_shift,logits);
     for(k=1u;k<5u;k++)if(logits[k]>logits[best])best=k;
     for(k=0u;k<8u;k++)mav[k]=features[k];
     hdc_window(&hdc,mav,seq,rehab_milliseconds(),best);
     hand_hdc_observe(rehab_milliseconds(),seq,hdc.latest,
-        hdc_hand_model_ready() && hdc.latest_valid && hdc.margin>=2u && hdc.clip<=1u);
+        !hdc_hand_model_ready() || !hdc.latest_valid || hdc.clip>1u?0u:
+        hdc.margin>=2u?1u:2u);
     if((lcd_hand_view || hand_source_hdc) && old_hand_valid!=hand_hdc_valid)lcd_input_status_changed();
     if(hand_hdc_valid && hand_hdc_class==hdc.latest)virtual_hdc_margin=hdc.margin;
     if(hand_source_hdc && ui_page_owner()==UI_MONITOR &&
@@ -184,7 +185,9 @@ static void lcd_hdc_render(void)
     }
     p_rect(LCD_X(28),LCD_Y(379),LCD_X(968),LCD_Y(66),239,245,245);
     ui_label(LCD_X(42),LCD_Y(388),LCD_X(350),2,25,120,111,
-             hdc.latest_valid?hdc_name(hdc.latest):"HDC 等待有效模型 / 数据");
+             hdc.stage==HDC_DONE?
+                 (hand_hdc_valid?hdc_name(hand_hdc_class):"等待稳定手势"):
+                 (hdc.latest_valid?hdc_name(hdc.latest):"HDC 等待有效模型 / 数据"));
     lcd_analysis_label(text,sizeof text,"分数间隔 ",hdc.latest_valid?hdc.margin:0u,"% / 非概率");
     ui_label(LCD_X(410),LCD_Y(391),LCD_X(560),1,94,112,119,text);
     ui_label(LCD_X(42),LCD_Y(420),LCD_X(370),1,94,112,119,

@@ -69,7 +69,7 @@ typedef unsigned char u8;
 #define PL_CONTROL_ENABLE 0
 #endif
 #if PL_CONTROL_ENABLE
-#define BUILD_TAG "20261026_HAND_CONTROL_HDC_DYNAMIC_V13"
+#define BUILD_TAG "20261028_HAND_CONTROL_HDC_DYNAMIC_IMU_PL_V17"
 #else
 #define BUILD_TAG "20261024_HDC_DISPLAY_V1"
 #endif
@@ -739,8 +739,11 @@ static i32 lcd_state_shift;
 static u32 lcd_state_valid;
 static i32 lcd_imu_matrix[9]={-4096,0,0,0,4096,0,0,0,-4096};
 static u32 lcd_imu_valid, lcd_imu_generation, lcd_state_imu_generation;
+#ifdef LCD_HOST_TEST
 static void lcd_imu_ingest(u32 a,u32 b,u32 c,u32 word);
+#endif
 static void lcd_imu_reset(void);
+static void lcd_imu_poll(void);
 static u32 lcd_wave_view;
 static u32 lcd_data_view;
 static u32 lcd_spectrum_view;
@@ -1117,6 +1120,7 @@ static void mpu_tilt_update(void)
 
 static void mpu_tick(void)
 {
+#if defined(IMU_REFERENCE_TEST) || defined(IMU_SENSOR_MODEL_TEST)
     u32 w = MPU_GPIO;
     u32 a=MPU_MOTION_A,b=MPU_MOTION_B,c=MPU_MOTION_C;
     i32 p, r;
@@ -1153,6 +1157,9 @@ static void mpu_tick(void)
         uprintf("M p=%d r=%d\n", (u32)p, (u32)r, 0, 0);
         g_tx_data = 0u;
     }
+#else
+    lcd_imu_poll();
+#endif
 }
 
 typedef struct {
@@ -1633,7 +1640,11 @@ static void lcd_quad(volatile u8 *fb, const lcd_dl_t *e,
 }
 
 #include "lcd_hand_3d.h"
+#ifdef IMU_REFERENCE_TEST
+#include "../../sim/imu_float_reference.h"
+#else
 #include "lcd_imu_3d.h"
+#endif
 #include "lcd_ui.h"
 #include "lcd_waveform.h"
 #include "lcd_settings.h"

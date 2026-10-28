@@ -40,24 +40,21 @@ module emg_line_filter #(
         .filtered_channel(comb_channel),.filtered_sequence(comb_sequence),.overrun(comb_overrun));
 
     generate if (BANDPASS_ENABLE) begin : final_bandpass
-        wire [7:0] bp_valid;
-        wire signed [23:0] bp_data[0:7];
+        wire bp_valid;
+        wire signed [23:0] bp_data;
         reg [2:0] channel_q;
         reg [15:0] sequence_q;
         always @(posedge clk) begin
             if (!rst_n) begin channel_q<=0; sequence_q<=0; end
             else if (comb_valid) begin channel_q<=comb_channel; sequence_q<=comb_sequence; end
         end
-        genvar g;
-        for(g=0;g<8;g=g+1) begin : gen_ch
-            emg_bandpass #(.HP_B0(HP_B0),.HP_B1(HP_B1),.HP_B2(HP_B2),
+            emg_bandpass_shared #(.HP_B0(HP_B0),.HP_B1(HP_B1),.HP_B2(HP_B2),
                            .HP_A1(HP_A1),.HP_A2(HP_A2),.LP_ALPHA(LP_ALPHA),
                            .FRACTION_SAVE(1)) u_bandpass (
-                .clk(clk),.rst_n(rst_n),.sample_valid(comb_valid && comb_channel==g),
-                .sample_in(comb_data),.filtered_valid(bp_valid[g]),.filtered_out(bp_data[g]));
-        end
-        assign filtered_valid=|bp_valid;
-        assign filtered_data=bp_data[channel_q];
+                .clk(clk),.rst_n(rst_n),.sample_valid(comb_valid),.sample_channel(comb_channel),
+                .sample_in(comb_data),.filtered_valid(bp_valid),.filtered_out(bp_data));
+        assign filtered_valid=bp_valid;
+        assign filtered_data=bp_data;
         assign filtered_channel=channel_q;
         assign filtered_sequence=sequence_q;
     end else begin : no_bandpass

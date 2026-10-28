@@ -1,0 +1,137 @@
+line filter stimulus: 802824 beats, 16 tones, DC, full scale, channel isolation, reset/wrap
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/src/rtl/emg_notch50.v" into library work
+INFO: [VRFC 10-311] analyzing module emg_notch50
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/src/rtl/emg_comb50.v" into library work
+INFO: [VRFC 10-311] analyzing module emg_comb50
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/src/rtl/emg_bandpass.v" into library work
+INFO: [VRFC 10-311] analyzing module emg_bandpass
+INFO: [VRFC 10-311] analyzing module emg_bandpass_shared
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/src/rtl/emg_line_filter.v" into library work
+INFO: [VRFC 10-311] analyzing module emg_line_filter
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/sim/emg_notch50_tb.sv" into library work
+INFO: [VRFC 10-311] analyzing module emg_notch50_tb
+Vivado Simulator v2025.2
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+Running: D:/FPGA/VIVADO/2025.2/Vivado/bin/unwrapped/win64.o/xelab.exe emg_notch50_tb -s line_filter_sim 
+Multi-threading is on. Using 30 slave threads.
+Starting static elaboration
+Pass Through NonSizing Optimizer
+Completed static elaboration
+Starting simulation data flow analysis
+Completed simulation data flow analysis
+Time Resolution for simulation is 1ps
+Compiling module work.emg_notch50
+Compiling module work.emg_comb50
+Compiling module work.emg_bandpass_shared(FRACTION_SAV...
+Compiling module work.emg_line_filter(BANDPASS_ENABLE=...
+Compiling module work.emg_notch50_tb
+Built simulation snapshot line_filter_sim
+
+****** xsim v2025.2 (64-bit)
+  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025
+  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025
+  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025
+  **** Start of session at: Tue Oct 27 16:03:38 2026
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+
+source xsim.dir/line_filter_sim/xsim_script.tcl
+# xsim {line_filter_sim} -autoloadwcfg -runall
+Time resolution is 1 ps
+run -all
+TEST_PASS notch50: 802824 beats, reset, overrun, channel/sequence alignment
+$finish called at time : 240847570 ns : File "D:/FPGA/sEMG-HMRS/sim/emg_notch50_tb.sv" Line 66
+run: Time (s): cpu = 00:00:00 ; elapsed = 00:00:34 . Memory (MB): peak = 218.707 ; gain = 0.000
+exit
+INFO: xsimkernel Simulation Memory Usage: 10604 KB (Peak: 10604 KB), Simulation CPU Usage: 33327 ms
+INFO: [Common 17-206] Exiting xsim at Tue Oct 27 16:04:14 2026...
+{
+  "filter": "notch50_q10_comb50_bw1_hp20_lp215_v1",
+  "samples_bit_exact": 802824,
+  "measurements": [
+    {
+      "frequency_hz": 50,
+      "rtl_gain_db": -353.9794,
+      "dc_mean_counts": 0.0
+    },
+    {
+      "frequency_hz": 49,
+      "rtl_gain_db": -9.8376,
+      "dc_mean_counts": -0.001625
+    },
+    {
+      "frequency_hz": 51,
+      "rtl_gain_db": -9.9852,
+      "dc_mean_counts": 0.00025
+    },
+    {
+      "frequency_hz": 75,
+      "rtl_gain_db": -0.58,
+      "dc_mean_counts": 0.0
+    },
+    {
+      "frequency_hz": 100,
+      "rtl_gain_db": -353.9794,
+      "dc_mean_counts": 0.0
+    },
+    {
+      "frequency_hz": 150,
+      "rtl_gain_db": -166.0206,
+      "dc_mean_counts": -0.00375
+    },
+    {
+      "frequency_hz": 250,
+      "rtl_gain_db": -353.9794,
+      "dc_mean_counts": 0.0
+    },
+    {
+      "frequency_hz": 450,
+      "rtl_gain_db": -353.9794,
+      "dc_mean_counts": 0.0
+    },
+    {
+      "frequency_hz": 40,
+      "rtl_gain_db": -0.6336,
+      "dc_mean_counts": -0.000125
+    },
+    {
+      "frequency_hz": 60,
+      "rtl_gain_db": -0.6989,
+      "dc_mean_counts": -0.00075
+    },
+    {
+      "frequency_hz": 125,
+      "rtl_gain_db": -1.2642,
+      "dc_mean_counts": -0.0
+    },
+    {
+      "frequency_hz": 175,
+      "rtl_gain_db": -2.1856,
+      "dc_mean_counts": -0.000625
+    },
+    {
+      "frequency_hz": 200,
+      "rtl_gain_db": -353.9794,
+      "dc_mean_counts": 0.0
+    },
+    {
+      "frequency_hz": 300,
+      "rtl_gain_db": -353.9794,
+      "dc_mean_counts": 0.0
+    },
+    {
+      "frequency_hz": 350,
+      "rtl_gain_db": -353.9794,
+      "dc_mean_counts": 0.0
+    },
+    {
+      "frequency_hz": 400,
+      "rtl_gain_db": -353.9794,
+      "dc_mean_counts": 0.0
+    }
+  ],
+  "recovery_max_counts": 0,
+  "hardware_measured": false
+}
+TEST_PASS line_filter: bit-exact, 50-450 Hz teeth, passband, DC, full-scale recovery, isolation

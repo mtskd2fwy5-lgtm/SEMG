@@ -24,8 +24,9 @@ static uint32_t hand_home_target[6];
 static int32_t hand_rotation_deg;
 static uint32_t hand_rotation_valid,hand_rotation_sent;
 static uint32_t hand_rotation_sent_ms;
-static uint32_t hand_hdc_valid,hand_hdc_class,hand_hdc_candidate,hand_hdc_count;
-static uint32_t hand_hdc_generation,hand_hdc_sent_generation,hand_hdc_ms,hand_hdc_hold;
+static uint32_t hand_hdc_valid,hand_hdc_class;
+static uint32_t hand_hdc_history[8],hand_hdc_history_ok[8],hand_hdc_head,hand_hdc_size;
+static uint32_t hand_hdc_generation,hand_hdc_sent_generation,hand_hdc_ms,hand_hdc_hold,hand_hdc_support_ms;
 static uint32_t hand_hdc_seq_seen;
 static uint16_t hand_hdc_seq;
 static uint32_t hand_hdc_pose[6],hand_hdc_pose_valid;
@@ -87,24 +88,44 @@ static void hand_stop(void)
 }
 static void hand_hdc_reset(void)
 {
-    hand_hdc_valid=hand_hdc_count=hand_hdc_hold=hand_hdc_seq_seen=0u;
+    hand_hdc_valid=hand_hdc_size=hand_hdc_head=hand_hdc_hold=hand_hdc_seq_seen=0u;
     hand_hdc_pose_valid=0u;
     if(hand_run==3u)hand_stop();
 }
-/* Confirm transitions from fresh, qualified windows, never from UI labels.
- * Keep the last target through a short transition, bounded to eight windows. */
-static void hand_hdc_observe(uint32_t now,uint16_t seq,uint32_t cls,uint32_t valid)
+/* Evidence: 0 = invalid model/data (immediate STOP), 1 = qualified prediction,
+ * 2 = low-margin abstention. Votes never modify training/validation results.
+ * Confirm 3 of the last 5 windows (rest: 6 of 8), including the current window,
+ * with two votes ahead of any rival, or three consecutive strong predictions,
+ * to reject a 3:2 oscillation without delaying clean gesture transitions.
+ * Unsupported output expires at eight windows or 200 ms, whichever comes first. */
+static void hand_hdc_observe(uint32_t now,uint16_t seq,uint32_t cls,uint32_t evidence)
 {
-    if(!valid) {hand_hdc_reset();return;}
+    uint32_t i,j,votes=0u,rival=0u,consecutive=1u,width=cls?5u:8u,qualified=evidence==1u;
+    if(!evidence || evidence>2u) {hand_hdc_reset();return;}
     if(hand_hdc_seq_seen && (now-hand_hdc_ms>250u || (uint16_t)(seq-hand_hdc_seq)!=40u))
         hand_hdc_reset();
     hand_hdc_seq_seen=1u;hand_hdc_seq=seq;hand_hdc_ms=now;
-    if(!hand_hdc_count || cls!=hand_hdc_candidate) {
-        hand_hdc_candidate=cls;hand_hdc_count=1u;
-    } else if(hand_hdc_count<6u)hand_hdc_count++;
-    if(hand_hdc_count>=(cls?3u:6u)) {
-        hand_hdc_class=cls;hand_hdc_valid=1u;hand_hdc_hold=0u;
-    } else if(hand_hdc_valid && cls!=hand_hdc_class && ++hand_hdc_hold>8u) {
+    hand_hdc_history[hand_hdc_head]=cls;
+    hand_hdc_history_ok[hand_hdc_head]=qualified;
+    hand_hdc_head=(hand_hdc_head+1u)%8u;
+    if(hand_hdc_size<8u)hand_hdc_size++;
+    if(hand_hdc_size<3u)consecutive=0u;
+    for(i=0u;i<hand_hdc_size && i<width;i++) {
+        uint32_t slot=(hand_hdc_head+7u-i)%8u;
+        if(i<3u && (!hand_hdc_history_ok[slot] || hand_hdc_history[slot]!=cls))consecutive=0u;
+        if(hand_hdc_history_ok[slot] && hand_hdc_history[slot]==cls)votes++;
+        else if(hand_hdc_history_ok[slot]) {
+            uint32_t n=0u;
+            for(j=0u;j<hand_hdc_size && j<width;j++) {
+                uint32_t other=(hand_hdc_head+7u-j)%8u;
+                if(hand_hdc_history_ok[other] && hand_hdc_history[other]==hand_hdc_history[slot])n++;
+            }
+            if(n>rival)rival=n;
+        }
+    }
+    if(qualified && votes>=(cls?3u:6u) && (votes>=rival+2u || consecutive)) {
+        hand_hdc_class=cls;hand_hdc_valid=1u;hand_hdc_hold=0u;hand_hdc_support_ms=now;
+    } else if(hand_hdc_valid && (++hand_hdc_hold>=8u || now-hand_hdc_support_ms>=200u)) {
         hand_hdc_reset();return;
     }
     if(hand_hdc_valid)hand_hdc_generation++;

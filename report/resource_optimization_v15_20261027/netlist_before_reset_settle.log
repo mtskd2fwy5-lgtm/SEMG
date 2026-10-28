@@ -1,0 +1,93 @@
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/report/resource_optimization_v15_20261027/candidate_emg_nn_infer_synth.v" into library work
+INFO: [VRFC 10-311] analyzing module emg_nn_infer
+INFO: [VRFC 10-311] analyzing module glbl
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/report/resource_optimization_v15_20261027/candidate_hand_servo_pwm_synth.v" into library work
+INFO: [VRFC 10-311] analyzing module hand_servo_pwm
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/report/resource_optimization_v15_20261027/candidate_emg_fatigue_synth.v" into library work
+INFO: [VRFC 10-311] analyzing module emg_fatigue
+INFO: [VRFC 10-311] analyzing module emg_fatigue_state
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/sim/results_v15_netlist/emg_nn_infer_v14.v" into library work
+INFO: [VRFC 10-311] analyzing module emg_nn_infer_v14
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/sim/results_v15_netlist/hand_servo_pwm_v14.v" into library work
+INFO: [VRFC 10-311] analyzing module hand_servo_pwm_v14
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/sim/results_v15_netlist/emg_fatigue_v14.v" into library work
+INFO: [VRFC 10-311] analyzing module emg_fatigue_v14
+INFO: [VRFC 10-311] analyzing module emg_fatigue_state_v14
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/sim/results_v15_netlist/v15_netlist_tb.sv" into library work
+INFO: [VRFC 10-311] analyzing module nn_v15_case
+INFO: [VRFC 10-311] analyzing module pwm_v15_case
+INFO: [VRFC 10-311] analyzing module v15_netlist_tb
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/sim/results_v15_netlist/v15_fatigue_netlist_tb.sv" into library work
+INFO: [VRFC 10-311] analyzing module tb_emg_fatigue
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/VIVADO/2025.2/data/verilog/src/glbl.v" into library work
+Vivado Simulator v2025.2
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+Running: D:/FPGA/VIVADO/2025.2/Vivado/bin/unwrapped/win64.o/xelab.exe tb_emg_fatigue glbl -L unisims_ver -L unimacro_ver -s tb_emg_fatigue -debug typical 
+Multi-threading is on. Using 30 slave threads.
+Starting static elaboration
+Pass Through NonSizing Optimizer
+Completed static elaboration
+Starting simulation data flow analysis
+Completed simulation data flow analysis
+Time Resolution for simulation is 1ps
+Compiling module unisims_ver.LUT5
+Compiling module unisims_ver.LUT6
+Compiling module unisims_ver.FDRE_default
+Compiling module unisims_ver.LUT4
+Compiling module unisims_ver.x_lut3_mux8
+Compiling module unisims_ver.LUT3
+Compiling module unisims_ver.x_lut2_mux4
+Compiling module unisims_ver.LUT2
+Compiling module unisims_ver.CARRY4
+Compiling module unisims_ver.DSP48E1(ACASCREG=0,ALUMODEREG=0,...
+Compiling module unisims_ver.x_lut1_mux2
+Compiling module unisims_ver.LUT1
+Compiling module unisims_ver.MUXF7
+Compiling module work.emg_fatigue_state
+Compiling module unisims_ver.RB36_INTERNAL_VLOG(READ_WIDTH_A=...
+Compiling module unisims_ver.RAMB36E1(READ_WIDTH_A=18,READ_WI...
+Compiling module unisims_ver.MUXF8
+Compiling module unisims_ver.DSP48E1(ALUMODEREG=0,BCASCREG=2,...
+Compiling module unisims_ver.RB36_INTERNAL_VLOG(READ_WIDTH_A=...
+Compiling module unisims_ver.RAMB36E1(READ_WIDTH_A=1,READ_WID...
+Compiling module unisims_ver.RAM32M
+Compiling module unisims_ver.DSP48E1(ACASCREG=0,ADREG=0,ALUMO...
+Compiling module unisims_ver.RB36_INTERNAL_VLOG(RDADDR_COLLIS...
+Compiling module unisims_ver.RAMB36E1(INIT_00=256'b0111111111...
+Compiling module work.emg_fatigue
+Compiling module work.emg_fatigue_state_v14_default
+Compiling module work.emg_fatigue_v14
+Compiling module work.tb_emg_fatigue
+Compiling module work.glbl
+Built simulation snapshot tb_emg_fatigue
+
+****** xsim v2025.2 (64-bit)
+  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025
+  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025
+  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025
+  **** Start of session at: Tue Oct 27 17:05:23 2026
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+
+source xsim.dir/tb_emg_fatigue/xsim_script.tcl
+# xsim {tb_emg_fatigue} -autoloadwcfg -runall
+Time resolution is 1 ps
+run -all
+WARNING: Too many words specified in data file d:/FPGA/sEMG-HMRS/data/models/fatigue/tb_fatigue_samples.mem
+WARNING: Too many words specified in data file d:/FPGA/sEMG-HMRS/data/models/fatigue/tb_fatigue_exp_id.mem
+WARNING: Too many words specified in data file d:/FPGA/sEMG-HMRS/data/models/fatigue/tb_fatigue_exp_data.mem
+Fatal: V15 fatigue cycle mismatch cycle=747595 got=00000000000000 ref=18000000520001
+Time: 7475946 ns  Iteration: 0  Process: /tb_emg_fatigue/Always92_9052  Scope: tb_emg_fatigue  File: D:/FPGA/sEMG-HMRS/sim/results_v15_netlist/v15_fatigue_netlist_tb.sv Line: 95
+$finish called at time : 7475946 ns
+run: Time (s): cpu = 00:00:00 ; elapsed = 00:03:14 . Memory (MB): peak = 229.988 ; gain = 0.000
+exit
+INFO: xsimkernel Simulation Memory Usage: 38560 KB (Peak: 38560 KB), Simulation CPU Usage: 190140 ms
+INFO: [Common 17-206] Exiting xsim at Tue Oct 27 17:08:40 2026...
+V15 netlist simulation failed: tb_emg_fatigue
+At D:\FPGA\sEMG-HMRS\build\scripts\run_v15_netlist_test.ps1:48 char:96
++ ... atch -Pattern $case[1])){throw "V15 netlist simulation failed: $top"}
++                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : OperationStopped: (V15 netlist sim... tb_emg_fatigue:String) [], RuntimeException
+    + FullyQualifiedErrorId : V15 netlist simulation failed: tb_emg_fatigue
+ 

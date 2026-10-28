@@ -1,0 +1,97 @@
+[
+  {
+    "path": "sw/ps_uart_print/main.c",
+    "bytes": 156480,
+    "sha256": "29e6c499d663efa410122b50ec96fbb93732434599ab5a1e22c0c291e34687db"
+  },
+  {
+    "path": "sw/ps_uart_print/lcd_imu_3d.h",
+    "bytes": 11785,
+    "sha256": "595c7529a24262c9d8b3a9eec93b76e5be66e8fc309381f863e128453299e566"
+  },
+  {
+    "path": "sw/ps_uart_print/hand_control.h",
+    "bytes": 14881,
+    "sha256": "c82557f1e77d5acd55f62a54eaf3a954664473569f6aca190307fdbd41e9e6d4"
+  },
+  {
+    "path": "sw/ps_uart_print/lcd_hdc.h",
+    "bytes": 14420,
+    "sha256": "c3d10d17f274e71b57a473918cb5003d4ef6295c63bb462e233e22b510ecb0f4"
+  },
+  {
+    "path": "sim/lcd_firmware_test.c",
+    "bytes": 82767,
+    "sha256": "3d5b2791b74144b7316468a52b2c9f1a6170fe80a1cb067b0f99ef9707352f3d"
+  },
+  {
+    "path": "sim/hand_firmware_test.c",
+    "bytes": 28330,
+    "sha256": "962ee8b102f782354a6b35daa30aba495b6c0a7a22fde7a1922712f3f1faed46"
+  },
+  {
+    "path": "src/rtl/mpu6050_motion.v",
+    "bytes": 476,
+    "sha256": "62ac8cb47bc78b37e4e38cc2ad7b7e524cd40746dc347a690778d85151e3b605"
+  },
+  {
+    "path": "src/rtl/mpu6050_tilt.v",
+    "bytes": 27557,
+    "sha256": "a5a7084c41162f24005066032409cb1ccaa3269904fb65ac64071afa95623bb0"
+  },
+  {
+    "path": "build/scripts/add_lcd_motion_gpio.tcl",
+    "bytes": 4725,
+    "sha256": "40f25449f639e912f6b8dc5c76678b667648a3459ef848f0c25c03e53758c107"
+  },
+  {
+    "path": "build/boot/build_pl_control_boot.ps1",
+    "bytes": 4574,
+    "sha256": "c342cf0bf4e6dec3838e5a70b549d68e60a38e348818ec77d99ae67047dd1bcf"
+  },
+  {
+    "path": "tools/verify_control_boot.py",
+    "bytes": 21940,
+    "sha256": "6b58081156516f063bc648f8689628701e03f159ffdeebc54b56f98ae16cf2c1"
+  },
+  {
+    "path": "build/export/design_1.xsa",
+    "bytes": 1326024,
+    "sha256": "ea83c99bdb50b82b36d0894c47ebd7bf3bdb4a9a7845c5986bea1c9ca27cb46d"
+  },
+  {
+    "path": "build/vitis_ws/platform/export/platform/sw/boot/fsbl.elf",
+    "bytes": 585096,
+    "sha256": "8086082110a90f2c483ae174a397450fb83e88d30a3982899ae8dd27f385fcfc"
+  },
+  {
+    "path": "build/boot/BOOT_20261027_HAND_CONTROL_HDC_DYNAMIC_V16.BIN",
+    "bytes": 5087260,
+    "sha256": "bd939792d700ea8cd13e868801883c2c292d143805e92fec100c81491864fb61"
+  },
+  {
+    "path": "tools/draw_system_block_compact.py",
+    "bytes": 6209,
+    "sha256": "3fc7ed39a940e86dd902e18bd129b1b295c27a3ed0a505f16a506db3dc7803e9"
+  },
+  {
+    "path": "tools/draw_system_block.py",
+    "bytes": 11145,
+    "sha256": "392680296fbc0bdb615fe7ede0b723bfa1ff9afb6a9361efad40d8c938d31fcf"
+  },
+  {
+    "path": "build/vivado/hand_motion_reconstruction.runs/impl_1/design_1.bit",
+    "bytes": 4045684,
+    "sha256": "80e76ceef16cc5aeeaca93000a06994a10537d05acb6afd0b2a510db84bc47b3"
+  },
+  {
+    "path": "board/constraints/hz_zynq_ads1299_bd.xdc",
+    "bytes": 6016,
+    "sha256": "2c3f59a2a3d727e3483992fd802771a9f679efbffa00660fc304d91001cb9527"
+  },
+  {
+    "path": "build/vivado/hand_motion_reconstruction.srcs/sources_1/bd/design_1/design_1.bd",
+    "bytes": 114431,
+    "sha256": "bd991304b602f8a3a6207699a722a01db769529a8a3c3ead7d7b9f0e7dacffb1"
+  }
+]

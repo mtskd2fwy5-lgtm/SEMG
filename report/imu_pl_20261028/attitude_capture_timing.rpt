@@ -1,0 +1,297 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025
+| Date         : Wed Oct 28 20:48:38 2026
+| Host         : LAPTOP-VCCV41QO running 64-bit major release  (build 9200)
+| Command      : report_timing -to [get_pins -quiet -of_objects [get_cells -hier -filter {NAME =~ *mpu_attitude_0/*/sensor_?_reg*}] -filter {REF_PIN_NAME == D}] -max_paths 10 -path_type full_clock_expanded -file D:/FPGA/sEMG-HMRS/report/imu_pl_20261028/attitude_capture_timing.rpt
+| Design       : design_1
+| Device       : 7z020-clg400
+| Speed File   : -2  PRODUCTION 1.12 2019-11-22
+| Design State : Routed
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Timing Report
+
+Slack (MET) :             18.243ns  (required time - arrival time)
+  Source:                 mpu6050_tilt_0/inst/frontend/motion_b_reg[10]/C
+                            (rising edge-triggered cell FDRE clocked by clk_fpga_1  {rise@0.000ns fall@10.000ns period=20.000ns})
+  Destination:            mpu_attitude_0/inst/sensor_b_reg[10]/D
+                            (rising edge-triggered cell FDRE clocked by clk_fpga_0  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             clk_fpga_0
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            20.000ns  (MaxDelay Path 20.000ns)
+  Data Path Delay:        1.713ns  (logic 0.379ns (22.122%)  route 1.334ns (77.878%))
+  Logic Levels:           0  
+  Timing Exception:       MaxDelay Path 20.000ns -datapath_only
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+    SLICE_X88Y111                                     0.000     0.000 r  mpu6050_tilt_0/inst/frontend/motion_b_reg[10]/C
+    SLICE_X88Y111        FDRE (Prop_fdre_C_Q)         0.379     0.379 r  mpu6050_tilt_0/inst/frontend/motion_b_reg[10]/Q
+                         net (fo=2, routed)           1.334     1.713    mpu_attitude_0/inst/motion_b[10]
+    SLICE_X56Y117        FDRE                                         r  mpu_attitude_0/inst/sensor_b_reg[10]/D
+  -------------------------------------------------------------------    -------------------
+
+                         max delay                   20.000    20.000    
+    SLICE_X56Y117        FDRE (Setup_fdre_C_D)       -0.044    19.956    mpu_attitude_0/inst/sensor_b_reg[10]
+  -------------------------------------------------------------------
+                         required time                         19.956    
+                         arrival time                          -1.713    
+  -------------------------------------------------------------------
+                         slack                                 18.243    
+
+Slack (MET) :             18.499ns  (required time - arrival time)
+  Source:                 mpu6050_tilt_0/inst/frontend/motion_b_reg[19]/C
+                            (rising edge-triggered cell FDRE clocked by clk_fpga_1  {rise@0.000ns fall@10.000ns period=20.000ns})
+  Destination:            mpu_attitude_0/inst/sensor_b_reg[19]/D
+                            (rising edge-triggered cell FDRE clocked by clk_fpga_0  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             clk_fpga_0
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            20.000ns  (MaxDelay Path 20.000ns)
+  Data Path Delay:        1.489ns  (logic 0.379ns (25.456%)  route 1.110ns (74.544%))
+  Logic Levels:           0  
+  Timing Exception:       MaxDelay Path 20.000ns -datapath_only
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+    SLICE_X39Y113                                     0.000     0.000 r  mpu6050_tilt_0/inst/frontend/motion_b_reg[19]/C
+    SLICE_X39Y113        FDRE (Prop_fdre_C_Q)         0.379     0.379 r  mpu6050_tilt_0/inst/frontend/motion_b_reg[19]/Q
+                         net (fo=2, routed)           1.110     1.489    mpu_attitude_0/inst/motion_b[19]
+    SLICE_X62Y113        FDRE                                         r  mpu_attitude_0/inst/sensor_b_reg[19]/D
+  -------------------------------------------------------------------    -------------------
+
+                         max delay                   20.000    20.000    
+    SLICE_X62Y113        FDRE (Setup_fdre_C_D)       -0.012    19.988    mpu_attitude_0/inst/sensor_b_reg[19]
+  -------------------------------------------------------------------
+                         required time                         19.988    
+                         arrival time                          -1.489    
+  -------------------------------------------------------------------
+                         slack                                 18.499    
+
+Slack (MET) :             18.506ns  (required time - arrival time)
+  Source:                 mpu6050_tilt_0/inst/frontend/motion_a_reg[3]/C
+                            (rising edge-triggered cell FDRE clocked by clk_fpga_1  {rise@0.000ns fall@10.000ns period=20.000ns})
+  Destination:            mpu_attitude_0/inst/sensor_a_reg[3]/D
+                            (rising edge-triggered cell FDRE clocked by clk_fpga_0  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             clk_fpga_0
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            20.000ns  (MaxDelay Path 20.000ns)
+  Data Path Delay:        1.461ns  (logic 0.433ns (29.628%)  route 1.028ns (70.372%))
+  Logic Levels:           0  
+  Timing Exception:       MaxDelay Path 20.000ns -datapath_only
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+    SLICE_X50Y116                                     0.000     0.000 r  mpu6050_tilt_0/inst/frontend/motion_a_reg[3]/C
+    SLICE_X50Y116        FDRE (Prop_fdre_C_Q)         0.433     0.433 r  mpu6050_tilt_0/inst/frontend/motion_a_reg[3]/Q
+                         net (fo=2, routed)           1.028     1.461    mpu_attitude_0/inst/motion_a[3]
+    SLICE_X62Y113        FDRE                                         r  mpu_attitude_0/inst/sensor_a_reg[3]/D
+  -------------------------------------------------------------------    -------------------
+
+                         max delay                   20.000    20.000    
+    SLICE_X62Y113        FDRE (Setup_fdre_C_D)       -0.033    19.967    mpu_attitude_0/inst/sensor_a_reg[3]
+  -------------------------------------------------------------------
+                         required time                         19.967    
+                         arrival time                          -1.461    
+  -------------------------------------------------------------------
+                         slack                                 18.506    
+
+Slack (MET) :             18.523ns  (required time - arrival time)
+  Source:                 mpu6050_tilt_0/inst/frontend/motion_b_reg[18]/C
+                            (rising edge-triggered cell FDRE clocked by clk_fpga_1  {rise@0.000ns fall@10.000ns period=20.000ns})
+  Destination:            mpu_attitude_0/inst/sensor_b_reg[18]/D
+                            (rising edge-triggered cell FDRE clocked by clk_fpga_0  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             clk_fpga_0
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            20.000ns  (MaxDelay Path 20.000ns)
+  Data Path Delay:        1.465ns  (logic 0.379ns (25.872%)  route 1.086ns (74.128%))
+  Logic Levels:           0  
+  Timing Exception:       MaxDelay Path 20.000ns -datapath_only
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+    SLICE_X49Y114                                     0.000     0.000 r  mpu6050_tilt_0/inst/frontend/motion_b_reg[18]/C
+    SLICE_X49Y114        FDRE (Prop_fdre_C_Q)         0.379     0.379 r  mpu6050_tilt_0/inst/frontend/motion_b_reg[18]/Q
+                         net (fo=2, routed)           1.086     1.465    mpu_attitude_0/inst/motion_b[18]
+    SLICE_X62Y113        FDRE                                         r  mpu_attitude_0/inst/sensor_b_reg[18]/D
+  -------------------------------------------------------------------    -------------------
+
+                         max delay                   20.000    20.000    
+    SLICE_X62Y113        FDRE (Setup_fdre_C_D)       -0.012    19.988    mpu_attitude_0/inst/sensor_b_reg[18]
+  -------------------------------------------------------------------
+                         required time                         19.988    
+                         arrival time                          -1.465    
+  -------------------------------------------------------------------
+                         slack                                 18.523    
+
+Slack (MET) :             18.541ns  (required time - arrival time)
+  Source:                 mpu6050_tilt_0/inst/frontend/motion_c_reg[31]/C
+                            (rising edge-triggered cell FDRE clocked by clk_fpga_1  {rise@0.000ns fall@10.000ns period=20.000ns})
+  Destination:            mpu_attitude_0/inst/sensor_c_reg[31]/D
+                            (rising edge-triggered cell FDRE clocked by clk_fpga_0  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             clk_fpga_0
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            20.000ns  (MaxDelay Path 20.000ns)
+  Data Path Delay:        1.432ns  (logic 0.379ns (26.470%)  route 1.053ns (73.530%))
+  Logic Levels:           0  
+  Timing Exception:       MaxDelay Path 20.000ns -datapath_only
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+    SLICE_X89Y109                                     0.000     0.000 r  mpu6050_tilt_0/inst/frontend/motion_c_reg[31]/C
+    SLICE_X89Y109        FDRE (Prop_fdre_C_Q)         0.379     0.379 r  mpu6050_tilt_0/inst/frontend/motion_c_reg[31]/Q
+                         net (fo=2, routed)           1.053     1.432    mpu_attitude_0/inst/motion_c[31]
+    SLICE_X66Y119        FDRE                                         r  mpu_attitude_0/inst/sensor_c_reg[31]/D
+  -------------------------------------------------------------------    -------------------
+
+                         max delay                   20.000    20.000    
+    SLICE_X66Y119        FDRE (Setup_fdre_C_D)       -0.027    19.973    mpu_attitude_0/inst/sensor_c_reg[31]
+  -------------------------------------------------------------------
+                         required time                         19.973    
+                         arrival time                          -1.432    
+  -------------------------------------------------------------------
+                         slack                                 18.541    
+
+Slack (MET) :             18.556ns  (required time - arrival time)
+  Source:                 mpu6050_tilt_0/inst/frontend/motion_b_reg[16]/C
+                            (rising edge-triggered cell FDRE clocked by clk_fpga_1  {rise@0.000ns fall@10.000ns period=20.000ns})
+  Destination:            mpu_attitude_0/inst/sensor_b_reg[16]/D
+                            (rising edge-triggered cell FDRE clocked by clk_fpga_0  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             clk_fpga_0
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            20.000ns  (MaxDelay Path 20.000ns)
+  Data Path Delay:        1.282ns  (logic 0.348ns (27.140%)  route 0.934ns (72.860%))
+  Logic Levels:           0  
+  Timing Exception:       MaxDelay Path 20.000ns -datapath_only
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+    SLICE_X45Y117                                     0.000     0.000 r  mpu6050_tilt_0/inst/frontend/motion_b_reg[16]/C
+    SLICE_X45Y117        FDRE (Prop_fdre_C_Q)         0.348     0.348 r  mpu6050_tilt_0/inst/frontend/motion_b_reg[16]/Q
+                         net (fo=2, routed)           0.934     1.282    mpu_attitude_0/inst/motion_b[16]
+    SLICE_X56Y117        FDRE                                         r  mpu_attitude_0/inst/sensor_b_reg[16]/D
+  -------------------------------------------------------------------    -------------------
+
+                         max delay                   20.000    20.000    
+    SLICE_X56Y117        FDRE (Setup_fdre_C_D)       -0.162    19.838    mpu_attitude_0/inst/sensor_b_reg[16]
+  -------------------------------------------------------------------
+                         required time                         19.838    
+                         arrival time                          -1.282    
+  -------------------------------------------------------------------
+                         slack                                 18.556    
+
+Slack (MET) :             18.558ns  (required time - arrival time)
+  Source:                 mpu6050_tilt_0/inst/frontend/motion_b_reg[28]/C
+                            (rising edge-triggered cell FDRE clocked by clk_fpga_1  {rise@0.000ns fall@10.000ns period=20.000ns})
+  Destination:            mpu_attitude_0/inst/sensor_b_reg[28]/D
+                            (rising edge-triggered cell FDRE clocked by clk_fpga_0  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             clk_fpga_0
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            20.000ns  (MaxDelay Path 20.000ns)
+  Data Path Delay:        1.268ns  (logic 0.348ns (27.450%)  route 0.920ns (72.550%))
+  Logic Levels:           0  
+  Timing Exception:       MaxDelay Path 20.000ns -datapath_only
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+    SLICE_X39Y114                                     0.000     0.000 r  mpu6050_tilt_0/inst/frontend/motion_b_reg[28]/C
+    SLICE_X39Y114        FDRE (Prop_fdre_C_Q)         0.348     0.348 r  mpu6050_tilt_0/inst/frontend/motion_b_reg[28]/Q
+                         net (fo=2, routed)           0.920     1.268    mpu_attitude_0/inst/motion_b[28]
+    SLICE_X49Y118        FDRE                                         r  mpu_attitude_0/inst/sensor_b_reg[28]/D
+  -------------------------------------------------------------------    -------------------
+
+                         max delay                   20.000    20.000    
+    SLICE_X49Y118        FDRE (Setup_fdre_C_D)       -0.174    19.826    mpu_attitude_0/inst/sensor_b_reg[28]
+  -------------------------------------------------------------------
+                         required time                         19.826    
+                         arrival time                          -1.268    
+  -------------------------------------------------------------------
+                         slack                                 18.558    
+
+Slack (MET) :             18.594ns  (required time - arrival time)
+  Source:                 mpu6050_tilt_0/inst/frontend/motion_a_reg[17]/C
+                            (rising edge-triggered cell FDRE clocked by clk_fpga_1  {rise@0.000ns fall@10.000ns period=20.000ns})
+  Destination:            mpu_attitude_0/inst/sensor_a_reg[17]/D
+                            (rising edge-triggered cell FDRE clocked by clk_fpga_0  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             clk_fpga_0
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            20.000ns  (MaxDelay Path 20.000ns)
+  Data Path Delay:        1.331ns  (logic 0.379ns (28.471%)  route 0.952ns (71.529%))
+  Logic Levels:           0  
+  Timing Exception:       MaxDelay Path 20.000ns -datapath_only
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+    SLICE_X48Y115                                     0.000     0.000 r  mpu6050_tilt_0/inst/frontend/motion_a_reg[17]/C
+    SLICE_X48Y115        FDRE (Prop_fdre_C_Q)         0.379     0.379 r  mpu6050_tilt_0/inst/frontend/motion_a_reg[17]/Q
+                         net (fo=2, routed)           0.952     1.331    mpu_attitude_0/inst/motion_a[17]
+    SLICE_X59Y115        FDRE                                         r  mpu_attitude_0/inst/sensor_a_reg[17]/D
+  -------------------------------------------------------------------    -------------------
+
+                         max delay                   20.000    20.000    
+    SLICE_X59Y115        FDRE (Setup_fdre_C_D)       -0.075    19.925    mpu_attitude_0/inst/sensor_a_reg[17]
+  -------------------------------------------------------------------
+                         required time                         19.925    
+                         arrival time                          -1.331    
+  -------------------------------------------------------------------
+                         slack                                 18.594    
+
+Slack (MET) :             18.613ns  (required time - arrival time)
+  Source:                 mpu6050_tilt_0/inst/frontend/motion_a_reg[16]/C
+                            (rising edge-triggered cell FDRE clocked by clk_fpga_1  {rise@0.000ns fall@10.000ns period=20.000ns})
+  Destination:            mpu_attitude_0/inst/sensor_a_reg[16]/D
+                            (rising edge-triggered cell FDRE clocked by clk_fpga_0  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             clk_fpga_0
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            20.000ns  (MaxDelay Path 20.000ns)
+  Data Path Delay:        1.314ns  (logic 0.379ns (28.845%)  route 0.935ns (71.155%))
+  Logic Levels:           0  
+  Timing Exception:       MaxDelay Path 20.000ns -datapath_only
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+    SLICE_X40Y116                                     0.000     0.000 r  mpu6050_tilt_0/inst/frontend/motion_a_reg[16]/C
+    SLICE_X40Y116        FDRE (Prop_fdre_C_Q)         0.379     0.379 r  mpu6050_tilt_0/inst/frontend/motion_a_reg[16]/Q
+                         net (fo=2, routed)           0.935     1.314    mpu_attitude_0/inst/motion_a[16]
+    SLICE_X56Y117        FDRE                                         r  mpu_attitude_0/inst/sensor_a_reg[16]/D
+  -------------------------------------------------------------------    -------------------
+
+                         max delay                   20.000    20.000    
+    SLICE_X56Y117        FDRE (Setup_fdre_C_D)       -0.073    19.927    mpu_attitude_0/inst/sensor_a_reg[16]
+  -------------------------------------------------------------------
+                         required time                         19.927    
+                         arrival time                          -1.314    
+  -------------------------------------------------------------------
+                         slack                                 18.613    
+
+Slack (MET) :             18.619ns  (required time - arrival time)
+  Source:                 mpu6050_tilt_0/inst/frontend/motion_c_reg[23]/C
+                            (rising edge-triggered cell FDRE clocked by clk_fpga_1  {rise@0.000ns fall@10.000ns period=20.000ns})
+  Destination:            mpu_attitude_0/inst/sensor_c_reg[23]/D
+                            (rising edge-triggered cell FDRE clocked by clk_fpga_0  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             clk_fpga_0
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            20.000ns  (MaxDelay Path 20.000ns)
+  Data Path Delay:        1.369ns  (logic 0.379ns (27.691%)  route 0.990ns (72.309%))
+  Logic Levels:           0  
+  Timing Exception:       MaxDelay Path 20.000ns -datapath_only
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+    SLICE_X93Y108                                     0.000     0.000 r  mpu6050_tilt_0/inst/frontend/motion_c_reg[23]/C
+    SLICE_X93Y108        FDRE (Prop_fdre_C_Q)         0.379     0.379 r  mpu6050_tilt_0/inst/frontend/motion_c_reg[23]/Q
+                         net (fo=2, routed)           0.990     1.369    mpu_attitude_0/inst/motion_c[23]
+    SLICE_X86Y111        FDRE                                         r  mpu_attitude_0/inst/sensor_c_reg[23]/D
+  -------------------------------------------------------------------    -------------------
+
+                         max delay                   20.000    20.000    
+    SLICE_X86Y111        FDRE (Setup_fdre_C_D)       -0.012    19.988    mpu_attitude_0/inst/sensor_c_reg[23]
+  -------------------------------------------------------------------
+                         required time                         19.988    
+                         arrival time                          -1.369    
+  -------------------------------------------------------------------
+                         slack                                 18.619    
+
+
+
+

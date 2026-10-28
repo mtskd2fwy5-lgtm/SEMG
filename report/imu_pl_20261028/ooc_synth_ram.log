@@ -1,0 +1,532 @@
+#-----------------------------------------------------------
+# Vivado v2025.2 (64-bit)
+# SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025
+# IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025
+# SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025
+# Start of session at: Wed Oct 28 19:33:56 2026
+# Process ID         : 27608
+# Current directory  : D:/FPGA/sEMG-HMRS
+# Command line       : vivado.exe -mode batch -source build/scripts/synth_imu_ooc.tcl -log report/imu_pl_20261028/ooc_synth_ram.log -journal report/imu_pl_20261028/ooc_synth_ram.jou
+# Log file           : D:/FPGA/sEMG-HMRS/report/imu_pl_20261028/ooc_synth_ram.log
+# Journal file       : D:/FPGA/sEMG-HMRS\report/imu_pl_20261028/ooc_synth_ram.jou
+# Running On         : LAPTOP-VCCV41QO
+# Platform           : Windows Server 2016 or Windows 10
+# Operating System   : 26200
+# Processor Detail   : AMD Ryzen 9 7945HX with Radeon Graphics        
+# CPU Frequency      : 2495 MHz
+# CPU Physical cores : 16
+# CPU Logical cores  : 32
+# Host memory        : 16844 MB
+# Swap memory        : 16844 MB
+# Total Virtual      : 33689 MB
+# Available Virtual  : 16333 MB
+#-----------------------------------------------------------
+INFO: [Common 17-1239] XILINX_LOCAL_USER_DATA is set to 'no'.
+source build/scripts/synth_imu_ooc.tcl
+# set root [file normalize [file join [file dirname [info script]] ../..]]
+# set out [file join $root report imu_pl_20261028 ooc]
+# file mkdir $out
+# create_project -in_memory -part xc7z020clg400-2
+create_project: Time (s): cpu = 00:00:01 ; elapsed = 00:00:19 . Memory (MB): peak = 315.422 ; gain = 10.867
+# set_property include_dirs [list [file join $root src rtl]] [current_fileset]
+# read_verilog [list [file join $root src rtl learning_div64.v] [file join $root src rtl mpu_attitude_core.v] [file join $root src rtl mpu_attitude.v]]
+# synth_design -top mpu_attitude -mode out_of_context -part xc7z020clg400-2
+Command: synth_design -top mpu_attitude -mode out_of_context -part xc7z020clg400-2
+Starting synth_design
+Attempting to get a license for feature 'Synthesis' and/or device 'xc7z020'
+INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xc7z020'
+INFO: [Synth 8-7079] Multithreading enabled for synth_design using a maximum of 2 processes.
+INFO: [Synth 8-7078] Launching helper process for spawning children vivado processes
+INFO: [Synth 8-7075] Helper process launched with PID 28536
+---------------------------------------------------------------------------------
+Starting Synthesize : Time (s): cpu = 00:00:07 ; elapsed = 00:00:08 . Memory (MB): peak = 861.137 ; gain = 540.672
+---------------------------------------------------------------------------------
+INFO: [Synth 8-6157] synthesizing module 'mpu_attitude' [D:/FPGA/sEMG-HMRS/src/rtl/mpu_attitude.v:5]
+INFO: [Synth 8-6157] synthesizing module 'mpu_attitude_core' [D:/FPGA/sEMG-HMRS/src/rtl/mpu_attitude_core.v:5]
+INFO: [Synth 8-6157] synthesizing module 'learning_div64' [D:/FPGA/sEMG-HMRS/src/rtl/learning_div64.v:3]
+INFO: [Synth 8-6155] done synthesizing module 'learning_div64' (0#1) [D:/FPGA/sEMG-HMRS/src/rtl/learning_div64.v:3]
+INFO: [Synth 8-6155] done synthesizing module 'mpu_attitude_core' (0#1) [D:/FPGA/sEMG-HMRS/src/rtl/mpu_attitude_core.v:5]
+INFO: [Synth 8-6155] done synthesizing module 'mpu_attitude' (0#1) [D:/FPGA/sEMG-HMRS/src/rtl/mpu_attitude.v:5]
+WARNING: [Synth 8-7129] Port mpu_data[23] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port mpu_data[22] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port mpu_data[21] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port mpu_data[20] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port mpu_data[19] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port mpu_data[18] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port mpu_data[17] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port mpu_data[16] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port mpu_data[15] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port mpu_data[14] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port mpu_data[13] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port mpu_data[12] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port mpu_data[11] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port mpu_data[10] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port mpu_data[9] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port mpu_data[8] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port mpu_data[7] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port mpu_data[6] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port mpu_data[5] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port mpu_data[4] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port mpu_data[3] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port mpu_data[2] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port mpu_data[1] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port mpu_data[0] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port command[30] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port command[29] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port command[28] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port command[23] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port command[22] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port command[21] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port command[20] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port command[19] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port command[18] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port command[17] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port command[16] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port command[15] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port command[14] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port command[13] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port command[12] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port command[11] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port command[10] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port command[9] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port command[8] in module mpu_attitude is either unconnected or has no load
+---------------------------------------------------------------------------------
+Finished Synthesize : Time (s): cpu = 00:00:10 ; elapsed = 00:00:11 . Memory (MB): peak = 999.977 ; gain = 679.512
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Constraint Validation : Time (s): cpu = 00:00:11 ; elapsed = 00:00:12 . Memory (MB): peak = 999.977 ; gain = 679.512
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Loading Part and Timing Information
+---------------------------------------------------------------------------------
+Loading part: xc7z020clg400-2
+---------------------------------------------------------------------------------
+INFO: [Device 21-403] Loading part xc7z020clg400-2
+Finished Loading Part and Timing Information : Time (s): cpu = 00:00:11 ; elapsed = 00:00:12 . Memory (MB): peak = 999.977 ; gain = 679.512
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished RTL Optimization Phase 2 : Time (s): cpu = 00:00:13 ; elapsed = 00:00:14 . Memory (MB): peak = 999.977 ; gain = 679.512
+---------------------------------------------------------------------------------
+No constraint files found.
+---------------------------------------------------------------------------------
+Start RTL Component Statistics 
+---------------------------------------------------------------------------------
+Detailed RTL Component Info : 
++---Adders : 
+	   3 Input   66 Bit       Adders := 1     
+	   2 Input   64 Bit       Adders := 1     
+	   3 Input   64 Bit       Adders := 1     
+	   2 Input   33 Bit       Adders := 1     
+	   2 Input   32 Bit       Adders := 4     
+	   2 Input   24 Bit       Adders := 1     
+	   2 Input   11 Bit       Adders := 1     
+	   2 Input    8 Bit       Adders := 1     
+	   2 Input    7 Bit       Adders := 1     
+	   2 Input    6 Bit       Adders := 1     
+	   2 Input    3 Bit       Adders := 2     
+	   2 Input    2 Bit       Adders := 1     
++---XORs : 
+	   2 Input      1 Bit         XORs := 1     
++---Registers : 
+	              960 Bit    Registers := 2     
+	               66 Bit    Registers := 1     
+	               64 Bit    Registers := 9     
+	               32 Bit    Registers := 12    
+	               24 Bit    Registers := 1     
+	               11 Bit    Registers := 2     
+	                8 Bit    Registers := 5     
+	                7 Bit    Registers := 3     
+	                6 Bit    Registers := 1     
+	                4 Bit    Registers := 1     
+	                2 Bit    Registers := 1     
+	                1 Bit    Registers := 12    
++---Multipliers : 
+	              32x32  Multipliers := 1     
++---RAMs : 
+	               88 Bit	(8 X 11 bit)          RAMs := 1     
++---ROMs : 
+	                    ROMs := 1     
++---Muxes : 
+	   2 Input  960 Bit        Muxes := 7     
+	   8 Input  960 Bit        Muxes := 1     
+	  17 Input  960 Bit        Muxes := 2     
+	   4 Input  960 Bit        Muxes := 1     
+	   2 Input   66 Bit        Muxes := 3     
+	   8 Input   66 Bit        Muxes := 1     
+	  17 Input   66 Bit        Muxes := 1     
+	   2 Input   64 Bit        Muxes := 5     
+	   8 Input   64 Bit        Muxes := 1     
+	  17 Input   64 Bit        Muxes := 2     
+	   2 Input   32 Bit        Muxes := 21    
+	   3 Input   32 Bit        Muxes := 1     
+	   8 Input   32 Bit        Muxes := 2     
+	  17 Input   32 Bit        Muxes := 1     
+	   4 Input   32 Bit        Muxes := 1     
+	   2 Input   24 Bit        Muxes := 5     
+	   2 Input   11 Bit        Muxes := 7     
+	   2 Input    8 Bit        Muxes := 3     
+	   8 Input    8 Bit        Muxes := 1     
+	  17 Input    8 Bit        Muxes := 1     
+	   6 Input    8 Bit        Muxes := 1     
+	   2 Input    7 Bit        Muxes := 1     
+	   2 Input    6 Bit        Muxes := 3     
+	   8 Input    6 Bit        Muxes := 1     
+	  17 Input    6 Bit        Muxes := 1     
+	   2 Input    3 Bit        Muxes := 2     
+	   8 Input    3 Bit        Muxes := 1     
+	  17 Input    3 Bit        Muxes := 1     
+	   2 Input    2 Bit        Muxes := 1     
+	   2 Input    1 Bit        Muxes := 51    
+	   8 Input    1 Bit        Muxes := 20    
+	  17 Input    1 Bit        Muxes := 13    
+	   6 Input    1 Bit        Muxes := 1     
+	  11 Input    1 Bit        Muxes := 1     
+	   4 Input    1 Bit        Muxes := 2     
+---------------------------------------------------------------------------------
+Finished RTL Component Statistics 
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Part Resource Summary
+---------------------------------------------------------------------------------
+Part Resources:
+DSPs: 220 (col length:60)
+BRAMs: 280 (col length: RAMB18 60 RAMB36 30)
+---------------------------------------------------------------------------------
+Finished Part Resource Summary
+---------------------------------------------------------------------------------
+No constraint files found.
+---------------------------------------------------------------------------------
+Start Cross Boundary and Area Optimization
+---------------------------------------------------------------------------------
+DSP Report: Generating DSP product0, operation Mode is: A2*B2.
+DSP Report: register a_reg is absorbed into DSP product0.
+DSP Report: register product0 is absorbed into DSP product0.
+DSP Report: operator product0 is absorbed into DSP product0.
+DSP Report: operator product0 is absorbed into DSP product0.
+DSP Report: Generating DSP product_reg, operation Mode is: (PCIN>>17)+A2*B2.
+DSP Report: register b_reg is absorbed into DSP product_reg.
+DSP Report: register a_reg is absorbed into DSP product_reg.
+DSP Report: register product_reg is absorbed into DSP product_reg.
+DSP Report: operator product0 is absorbed into DSP product_reg.
+DSP Report: operator product0 is absorbed into DSP product_reg.
+DSP Report: Generating DSP product0, operation Mode is: A2*B2.
+DSP Report: register product0 is absorbed into DSP product0.
+DSP Report: register product0 is absorbed into DSP product0.
+DSP Report: operator product0 is absorbed into DSP product0.
+DSP Report: operator product0 is absorbed into DSP product0.
+DSP Report: Generating DSP product_reg, operation Mode is: (PCIN>>17)+A2*B2.
+DSP Report: register b_reg is absorbed into DSP product_reg.
+DSP Report: register product_reg is absorbed into DSP product_reg.
+DSP Report: register product_reg is absorbed into DSP product_reg.
+DSP Report: operator product0 is absorbed into DSP product_reg.
+DSP Report: operator product0 is absorbed into DSP product_reg.
+WARNING: [Synth 8-7129] Port mpu_data[23] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port mpu_data[22] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port mpu_data[21] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port mpu_data[20] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port mpu_data[19] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port mpu_data[18] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port mpu_data[17] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port mpu_data[16] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port mpu_data[15] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port mpu_data[14] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port mpu_data[13] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port mpu_data[12] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port mpu_data[11] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port mpu_data[10] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port mpu_data[9] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port mpu_data[8] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port mpu_data[7] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port mpu_data[6] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port mpu_data[5] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port mpu_data[4] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port mpu_data[3] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port mpu_data[2] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port mpu_data[1] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port mpu_data[0] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port command[30] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port command[29] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port command[28] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port command[23] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port command[22] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port command[21] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port command[20] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port command[19] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port command[18] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port command[17] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port command[16] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port command[15] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port command[14] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port command[13] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port command[12] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port command[11] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port command[10] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port command[9] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-7129] Port command[8] in module mpu_attitude is either unconnected or has no load
+WARNING: [Synth 8-3332] Sequential element (product_reg[47]) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[46]) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[45]) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[44]) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[43]) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[42]) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[41]) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[40]) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[39]) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[38]) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[37]) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[36]) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[35]) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[34]) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[33]) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[32]) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[31]) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[30]) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[29]) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[28]) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[27]) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[26]) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[25]) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[24]) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[23]) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[22]) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[21]) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[20]) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[19]) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[18]) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[17]) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[47]__0) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[46]__0) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[45]__0) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[44]__0) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[43]__0) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[42]__0) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[41]__0) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[40]__0) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[39]__0) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[38]__0) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[37]__0) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[36]__0) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[35]__0) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[34]__0) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[33]__0) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[32]__0) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[31]__0) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[30]__0) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[29]__0) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[28]__0) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[27]__0) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[26]__0) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[25]__0) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[24]__0) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[23]__0) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[22]__0) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[21]__0) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[20]__0) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[19]__0) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[18]__0) is unused and will be removed from module mpu_attitude_core.
+WARNING: [Synth 8-3332] Sequential element (product_reg[17]__0) is unused and will be removed from module mpu_attitude_core.
+---------------------------------------------------------------------------------
+Finished Cross Boundary and Area Optimization : Time (s): cpu = 00:00:35 ; elapsed = 00:00:42 . Memory (MB): peak = 1361.121 ; gain = 1040.656
+---------------------------------------------------------------------------------
+ Sort Area is  product0_0 : 0 0 : 3137 5871 : Used 1 time 100
+ Sort Area is  product0_0 : 0 1 : 2734 5871 : Used 1 time 100
+ Sort Area is  product0_3 : 0 0 : 2667 5230 : Used 1 time 100
+ Sort Area is  product0_3 : 0 1 : 2563 5230 : Used 1 time 100
+---------------------------------------------------------------------------------
+Start ROM, RAM, DSP, Shift Register and Retiming Reporting
+---------------------------------------------------------------------------------
+
+Distributed RAM: Preliminary Mapping Report (see note below)
++------------+------------+----------------+----------------------+--------------+
+|Module Name | RTL Object | Inference      | Size (Depth x Width) | Primitives   | 
++------------+------------+----------------+----------------------+--------------+
+|core        | rf_reg     | User Attribute | 256 x 32             | RAM64M x 88  | 
+|core        | stack_reg  | Implied        | 8 x 11               | RAM32M x 2   | 
++------------+------------+----------------+----------------------+--------------+
+
+Note: The table above is a preliminary report that shows the Distributed RAMs at the current stage of the synthesis flow. Some Distributed RAMs may be reimplemented as non Distributed RAM primitives later in the synthesis flow. Multiple instantiated RAMs are reported only once.
+
+DSP: Preliminary Mapping Report (see note below. The ' indicates corresponding REG is set)
++------------------+------------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+|Module Name       | DSP Mapping      | A Size | B Size | C Size | D Size | P Size | AREG | BREG | CREG | DREG | ADREG | MREG | PREG | 
++------------------+------------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+|mpu_attitude_core | A2*B2            | 18     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mpu_attitude_core | (PCIN>>17)+A2*B2 | 15     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mpu_attitude_core | A2*B2            | 18     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mpu_attitude_core | (PCIN>>17)+A2*B2 | 18     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
++------------------+------------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+
+Note: The table above is a preliminary report that shows the DSPs inferred at the current stage of the synthesis flow. Some DSP may be reimplemented as non DSP primitives later in the synthesis flow. Multiple instantiated DSPs are reported only once.
+---------------------------------------------------------------------------------
+Finished ROM, RAM, DSP, Shift Register and Retiming Reporting
+---------------------------------------------------------------------------------
+No constraint files found.
+---------------------------------------------------------------------------------
+Start Timing Optimization
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Timing Optimization : Time (s): cpu = 00:00:37 ; elapsed = 00:00:44 . Memory (MB): peak = 1361.121 ; gain = 1040.656
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start ROM, RAM, DSP, Shift Register and Retiming Reporting
+---------------------------------------------------------------------------------
+
+Distributed RAM: Final Mapping Report
++------------+------------+----------------+----------------------+--------------+
+|Module Name | RTL Object | Inference      | Size (Depth x Width) | Primitives   | 
++------------+------------+----------------+----------------------+--------------+
+|core        | rf_reg     | User Attribute | 256 x 32             | RAM64M x 88  | 
+|core        | stack_reg  | Implied        | 8 x 11               | RAM32M x 2   | 
++------------+------------+----------------+----------------------+--------------+
+
+---------------------------------------------------------------------------------
+Finished ROM, RAM, DSP, Shift Register and Retiming Reporting
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Technology Mapping
+---------------------------------------------------------------------------------
+INFO: [Synth 8-7052] The timing for the instance core/instruction_reg_0 (implemented as a Block RAM) might be sub-optimal as no optional output register could be merged into the ram block. Providing additional output register may help in improving timing.
+INFO: [Synth 8-7052] The timing for the instance core/instruction_reg_1 (implemented as a Block RAM) might be sub-optimal as no optional output register could be merged into the ram block. Providing additional output register may help in improving timing.
+INFO: [Synth 8-7052] The timing for the instance core/instruction_reg_2 (implemented as a Block RAM) might be sub-optimal as no optional output register could be merged into the ram block. Providing additional output register may help in improving timing.
+INFO: [Synth 8-7052] The timing for the instance core/instruction_reg_3 (implemented as a Block RAM) might be sub-optimal as no optional output register could be merged into the ram block. Providing additional output register may help in improving timing.
+---------------------------------------------------------------------------------
+Finished Technology Mapping : Time (s): cpu = 00:00:39 ; elapsed = 00:00:46 . Memory (MB): peak = 1361.141 ; gain = 1040.676
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished IO Insertion : Time (s): cpu = 00:00:44 ; elapsed = 00:00:52 . Memory (MB): peak = 1486.988 ; gain = 1166.523
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Instances
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Instances : Time (s): cpu = 00:00:44 ; elapsed = 00:00:52 . Memory (MB): peak = 1486.988 ; gain = 1166.523
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Rebuilding User Hierarchy
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Rebuilding User Hierarchy : Time (s): cpu = 00:00:44 ; elapsed = 00:00:52 . Memory (MB): peak = 1486.988 ; gain = 1166.523
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Ports
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Ports : Time (s): cpu = 00:00:44 ; elapsed = 00:00:52 . Memory (MB): peak = 1486.988 ; gain = 1166.523
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Handling Custom Attributes
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Handling Custom Attributes : Time (s): cpu = 00:00:45 ; elapsed = 00:00:52 . Memory (MB): peak = 1488.984 ; gain = 1168.520
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Nets
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Nets : Time (s): cpu = 00:00:45 ; elapsed = 00:00:52 . Memory (MB): peak = 1488.984 ; gain = 1168.520
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Writing Synthesis Report
+---------------------------------------------------------------------------------
+
+DSP Final Report (the ' indicates corresponding REG is set)
++------------------+-------------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+|Module Name       | DSP Mapping       | A Size | B Size | C Size | D Size | P Size | AREG | BREG | CREG | DREG | ADREG | MREG | PREG | 
++------------------+-------------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+|mpu_attitude_core | A'*B'             | 17     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mpu_attitude_core | (PCIN>>17+A'*B')' | 30     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mpu_attitude_core | A'*B'             | 17     | 17     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mpu_attitude_core | (PCIN>>17+A'*B')' | 17     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
++------------------+-------------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+
+
+Report BlackBoxes: 
++-+--------------+----------+
+| |BlackBox name |Instances |
++-+--------------+----------+
++-+--------------+----------+
+
+Report Cell Usage: 
++------+---------+------+
+|      |Cell     |Count |
++------+---------+------+
+|1     |CARRY4   |   191|
+|2     |DSP48E1  |     4|
+|3     |LUT1     |   231|
+|4     |LUT2     |  1471|
+|5     |LUT3     |   267|
+|6     |LUT4     |   664|
+|7     |LUT5     |   331|
+|8     |LUT6     |  1038|
+|9     |MUXF7    |    71|
+|10    |MUXF8    |    14|
+|11    |RAM32M   |     2|
+|12    |RAM64M   |    88|
+|13    |RAMB36E1 |     4|
+|14    |FDRE     |  3655|
+|15    |FDSE     |    29|
++------+---------+------+
+
+Report Instance Areas: 
++------+------------+------------------+------+
+|      |Instance    |Module            |Cells |
++------+------------+------------------+------+
+|1     |top         |                  |  8060|
+|2     |  core      |mpu_attitude_core |  6472|
+|3     |    divider |learning_div64    |   727|
++------+------------+------------------+------+
+---------------------------------------------------------------------------------
+Finished Writing Synthesis Report : Time (s): cpu = 00:00:45 ; elapsed = 00:00:52 . Memory (MB): peak = 1488.984 ; gain = 1168.520
+---------------------------------------------------------------------------------
+Synthesis finished with 0 errors, 0 critical warnings and 148 warnings.
+Synthesis Optimization Runtime : Time (s): cpu = 00:00:45 ; elapsed = 00:00:52 . Memory (MB): peak = 1488.984 ; gain = 1168.520
+Synthesis Optimization Complete : Time (s): cpu = 00:00:45 ; elapsed = 00:00:52 . Memory (MB): peak = 1488.984 ; gain = 1168.520
+INFO: [Project 1-571] Translating synthesized netlist
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.084 . Memory (MB): peak = 1502.012 ; gain = 0.000
+INFO: [Netlist 29-17] Analyzing 374 Unisim elements for replacement
+INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
+INFO: [Project 1-570] Preparing netlist for logic optimization
+INFO: [Opt 31-138] Pushed 0 inverter(s) to 0 load pin(s).
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.005 . Memory (MB): peak = 1623.812 ; gain = 0.000
+INFO: [Project 1-111] Unisim Transformation Summary:
+  A total of 90 instances were transformed.
+  RAM32M => RAM32M (RAMD32(x6), RAMS32(x2)): 2 instances
+  RAM64M => RAM64M (RAMD64E(x4)): 88 instances
+
+Synth Design complete | Checksum: 4de97797
+INFO: [Common 17-83] Releasing license: Synthesis
+22 Infos, 148 Warnings, 0 Critical Warnings and 0 Errors encountered.
+synth_design completed successfully
+synth_design: Time (s): cpu = 00:00:50 ; elapsed = 00:00:59 . Memory (MB): peak = 1623.812 ; gain = 1308.391
+# create_clock -period 10.0 [get_ports clk]
+# report_utilization -file [file join $out utilization_synth.rpt]
+# report_timing_summary -file [file join $out timing_synth.rpt]
+INFO: [Timing 38-35] Done setting XDC timing constraints.
+INFO: [Timing 38-91] UpdateTimingParams: Speed grade: -2, Delay Type: min_max.
+INFO: [Timing 38-191] Multithreading enabled for timing update using a maximum of 2 CPUs
+WARNING: [Timing 38-242] The property HD.CLK_SRC of clock port "clk" is not set. In out-of-context mode, this prevents timing estimation for clock delay/skew
+Resolution: Set the HD.CLK_SRC property of the out-of-context port to the location of the clock buffer instance in the top-level design
+report_timing_summary: Time (s): cpu = 00:00:09 ; elapsed = 00:00:09 . Memory (MB): peak = 1623.812 ; gain = 0.000
+# write_checkpoint -force [file join $out attitude_synth.dcp]
+INFO: [Timing 38-480] Writing timing data to binary archive.
+Write ShapeDB Complete: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.018 . Memory (MB): peak = 1623.812 ; gain = 0.000
+INFO: [Common 17-1381] The checkpoint 'D:/FPGA/sEMG-HMRS/report/imu_pl_20261028/ooc/attitude_synth.dcp' has been generated.
+# write_verilog -force -mode funcsim [file join $out attitude_funcsim.v]
+# puts "IMU_OOC_SYNTH_FINISHED"
+IMU_OOC_SYNTH_FINISHED
+INFO: [Common 17-206] Exiting Vivado at Wed Oct 28 19:35:35 2026...

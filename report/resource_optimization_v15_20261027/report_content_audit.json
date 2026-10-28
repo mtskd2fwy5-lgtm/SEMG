@@ -1,0 +1,29 @@
+[
+  {
+    "path": "report\\design_report_20261027\\第一部分_作品概述_优化版_v15.docx",
+    "sha256": "9c79b74c9134c0cfcdf45db7e48f50b4103737f11bd4300e2edb62700c44daef",
+    "paragraphs": 18,
+    "tables": 1,
+    "images": {
+      "word/media/image2.png": "787db8fa20de80a88e406e5eb8bc8c3076d71592635851045bb8a8cbfb4aaadc",
+      "word/media/image1.png": "17bf7228d2d4cc7f0ca3fc097677257a3411b59ff789adcdd6d76741ab95b684"
+    }
+  },
+  {
+    "path": "report\\design_report_20261027\\第二部分_系统组成及功能说明_优化版_v15.docx",
+    "sha256": "842a0ca791ec1e76524f09094ffd2d77aedbd7442c205a3de013b45224ddecfe",
+    "paragraphs": 81,
+    "tables": 3,
+    "images": {
+      "word/media/image2.png": "03ea6eed8b453ecb2b50319f9cec9866cf540656f7c7cbde5b8321259b8f5ef8",
+      "word/media/image7.png": "f45e560d148482c5bb85a183fd516b0ed8af4a25327524544f0eff578741dd63",
+      "word/media/image1.png": "3eafb8c355b7e45de0de84dcda924c72da569a4c759d6bd14c87cc184316bdfe",
+      "word/media/image6.png": "dcef185cb21750c8cbb3fa00e0e99e416ea77e188d19f7e6c2469846e035de0d",
+      "word/media/image5.png": "c754ad781f9cbc1f43b5ef5fd62e95a64f9afaafcaa4361089608833979b367b",
+      "word/media/image9.png": "787db8fa20de80a88e406e5eb8bc8c3076d71592635851045bb8a8cbfb4aaadc",
+      "word/media/image4.png": "5ecdadc87e71e29fb877b5915163e5e49c859a755fb1532b1846b843dae05e9f",
+      "word/media/image3.png": "76297483b66eebc76e2342d7b1b62d1dcd9b60bc3ff95f1b2376371806731789",
+      "word/media/image8.png": "71ab5fb49cb8d6547f028d989f495095b49b49a79af9aacd7a3bcc6987499e4c"
+    }
+  }
+]

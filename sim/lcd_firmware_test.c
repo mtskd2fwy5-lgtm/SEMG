@@ -8,6 +8,7 @@
 #include <string.h>
 #include <math.h>
 #define LCD_HOST_TEST 1
+#define IMU_SENSOR_MODEL_TEST 1
 #define main firmware_main
 #include "../sw/ps_uart_print/main.c"
 #undef main
@@ -1143,15 +1144,71 @@ static void test_pose_stability(void)
 }
 
 static u16 hdc_test_seq;
-static void hdc_test_window(u32 cls)
+static void hdc_test_mav(const u32 mav[8])
 {
     u32 ch,id;
     test_time+=25u*GT_TICKS_PER_MS;
     for(ch=0;ch<8;ch++)for(id=0;id<5;id++) {
-        u32 v=id==0u?(ch==cls?10000u:0u):0u;
+        u32 v=id==0u?mav[ch]:0u;
         parse_packet(v,0x20000000u|(ch<<24)|(id<<20)|hdc_test_seq);
         hdc_test_seq++;
     }
+}
+static void hdc_test_window(u32 cls)
+{
+    u32 mav[8]={0};if(cls<8u)mav[cls]=10000u;hdc_test_mav(mav);
+}
+static void hdc_stability_snapshot(const char *page)
+{
+    u32 n=0u,before=lcd_present_cnt,clock_step=test_clock_step;char name[80];
+    /* Freeze the capture instant, present exactly one frame. Animation may
+     * request another frame but must not advance a stream-outage clock. */
+    test_clock_step=0u;lcd_last_build_t=gt_stamp()-ui_refresh_ms*GT_TICKS_PER_MS;
+    while(lcd_present_cnt==before && n++<20000u) {
+        lcd_slice_tick(gt_stamp());scanout_accept();
+    }
+    assert(n<20000u);expected_frame();
+    sprintf(name,"%s_%u.ppm",page,(u32)LCD_W);ppm(name);
+    lcd_pending=0u;test_clock_step=clock_step;
+}
+static void test_hdc_stability_ui(void)
+{
+    u32 k,saved_cm=hdc.hdc_cm[5][5],mav[8];
+    int16_t saved_proto[HDC_D];
+    assert(hdc_hand_model_ready());lcd_hdc_open();
+    for(k=0u;k<3u;k++)hdc_test_window(5u);
+    assert(hand_hdc_valid && hand_hdc_class==5u);
+    hdc_test_window(6u);
+    assert(hdc.latest==6u && hand_hdc_valid && hand_hdc_class==5u);
+    hdc_stability_snapshot("hdc_stable");
+    /* Force an exact score tie through the actual predictor and packet parser.
+     * The independent validation table stays untouched by temporal filtering. */
+    memcpy(saved_proto,hdc.proto[6],sizeof saved_proto);
+    memcpy(hdc.proto[6],hdc.proto[5],sizeof saved_proto);
+    hdc_test_window(5u);
+    assert(hdc.latest_valid && hdc.margin==0u && hdc.clip<=1u);
+    assert(hand_hdc_valid && hand_hdc_class==5u);
+    memcpy(hdc.proto[6],saved_proto,sizeof saved_proto);
+    hdc_test_window(5u);assert(hand_hdc_valid);
+    ui_open_page(UI_MONITOR);ui_recognition_source(1u);
+    for(k=0u;k<3u;k++)hdc_test_window(5u);
+    hdc_test_window(6u);assert(virtual_live_class()==5u);
+    lcd_virtual_sample();assert(virtual_frame_cls==5u);
+    hdc_stability_snapshot("hdc_monitor_stable");assert(virtual_frame_cls==5u);
+    for(k=0u;k<16u;k++)hdc_test_window(5u+k%2u);
+    assert(virtual_live_class()==UINT32_MAX && !hand_hdc_valid && !hand_run);
+    for(k=0u;k<3u;k++)hdc_test_window(5u);
+    assert(virtual_live_class()==5u);
+    for(k=0u;k<8u;k++)mav[k]=30000u;
+    hdc_test_mav(mav);assert(hdc.clip>1u && !hand_hdc_valid);
+    for(k=0u;k<3u;k++)hdc_test_window(5u);
+    assert(virtual_live_class()==5u);
+    hdc.hdc_cm[5][5]=0u;hdc_test_window(5u);
+    assert(!hand_hdc_valid && virtual_live_class()==UINT32_MAX);
+    hdc.hdc_cm[5][5]=saved_cm;
+    assert(hdc_hand_model_ready() && hdc_accuracy(hdc.hdc_cm,8u)==100u);
+    assert(!hand_run);lcd_hdc_open();
+    puts("TEST_PASS HDC STABILITY UI: actual parser/predictor jitter and zero-margin abstention, common stable class on learning/home pages, alternating ambiguity expires, clipping/model gates, validation unchanged, no implicit PWM");
 }
 static void test_virtual_mapping(void)
 {
@@ -1271,6 +1328,7 @@ static void test_hdc_ui(void)
     test_time+=300u*GT_TICKS_PER_MS;hdc_service();assert(!hdc.latest_valid);
     assert(!hand_hdc_valid);lcd_hdc_open();
     test_virtual_mapping();lcd_hdc_open();
+    test_hdc_stability_ui();
     /* Append beyond three custom gestures without mechanical mappings. */
     assert(!hdc.hand_mapped[5]);
     press((u32)LCD_X(500),(u32)LCD_Y(545));

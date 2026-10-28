@@ -117,9 +117,30 @@ module emg_nn_infer #(
     reg signed [63:0] rq_prod, rq_res;
     reg [2:0]  out_cnt;
 
-    reg signed [7:0]  xq [0:N_IN-1];
-    reg signed [7:0]  h1 [0:N_H1-1];
-    reg signed [7:0]  h2 [0:N_H2-1];
+    // Half-round constants are shared by the state machine and RAM writes.
+    wire [63:0] in_half = (n_in_r == 32'd0) ? 64'd0
+                        : (64'd1 << (n_in_r[5:0] - 6'd1));
+    wire [63:0] rq_half = (rq_n == 6'd0) ? 64'd0 : (64'd1 << (rq_n - 6'd1));
+
+    // Activations use asynchronous-read distributed RAM. Input seen bits
+    // preserve reset-to-zero semantics even for repeated/missing indices.
+    // Hidden layers are fully written before they can be consumed.
+    (* ram_style="distributed" *) reg signed [7:0] xq [0:N_IN-1];
+    (* ram_style="distributed" *) reg signed [7:0] h1 [0:N_H1-1];
+    (* ram_style="distributed" *) reg signed [7:0] h2 [0:N_H2-1];
+    reg [N_IN-1:0] xq_seen;
+    wire [63:0] normalized_raw=(norm_prod + in_half) >> n_in_r[5:0];
+    wire [7:0] normalized_activation=(normalized_raw > 64'd127) ? 8'd127 : {1'b0,normalized_raw[6:0]};
+    wire signed [63:0] requantized_raw=(rq_prod + $signed(rq_half)) >>> rq_n;
+    wire [7:0] hidden_activation=(requantized_raw < 64'sd0) ? 8'd0 :
+        (requantized_raw > 64'sd127) ? 8'd127 : {1'b0,requantized_raw[6:0]};
+    always @(posedge clk)begin
+        if(rst_n && state==S_WR)xq[feat_save_idx[5:0]]<=normalized_activation;
+        if(rst_n && state==S_REQS)begin
+            if(layer==LAYER1)h1[neuron[5:0]]<=hidden_activation;
+            else h2[neuron[4:0]]<=hidden_activation;
+        end
+    end
     reg signed [31:0] logits [0:N_OUT-1];
 
     integer i;
@@ -146,11 +167,16 @@ module emg_nn_infer #(
     reg signed [7:0] act;
     always @(*) begin
         case (layer)
-            LAYER1:  act = xq[mac_in[5:0]];
+            LAYER1:  act = xq_seen[mac_in[5:0]] ? xq[mac_in[5:0]] : 8'sd0;
             LAYER2:  act = h1[mac_in[5:0]];
             default: act = h2[mac_in[5:0]];
         endcase
     end
+
+    wire signed [7:0] mac_weight=(state==S_MAC0) ? $signed(bram_rdata[7:0]) :
+        (state==S_MAC1) ? $signed(word_buf[15:8]) :
+        (state==S_MAC2) ? $signed(word_buf[23:16]) : $signed(word_buf[31:24]);
+    wire signed [15:0] mac_product=act * mac_weight;
 
     // numpy-argmax semantics: strict >, ties keep the lowest index.
     // Purely combinational (single driver): the old `amax` reg was also
@@ -173,10 +199,7 @@ module emg_nn_infer #(
     // ------------------------------------------------------------------
     // half-round constant for the input normalisation shift; n = 0 means
     // the scale is exact (defensive)
-    wire [63:0] in_half = (n_in_r == 32'd0) ? 64'd0
-                        : (64'd1 << (n_in_r[5:0] - 6'd1));
     // half-round constant for requant
-    wire [63:0] rq_half = (rq_n == 6'd0) ? 64'd0 : (64'd1 << (rq_n - 6'd1));
 
     assign feat_ready = (state == S_IDLE);
 
@@ -204,9 +227,7 @@ module emg_nn_infer #(
             out_data      <= 32'd0;
             out_cnt       <= 3'd0;
             bram_addr     <= 11'd0;
-            for (i = 0; i < N_IN;  i = i + 1) xq[i] <= 8'sd0;
-            for (i = 0; i < N_H1;  i = i + 1) h1[i] <= 8'sd0;
-            for (i = 0; i < N_H2;  i = i + 1) h2[i] <= 8'sd0;
+            xq_seen <= 0;
             for (i = 0; i < N_OUT; i = i + 1) logits[i] <= 32'sd0;
         end else begin
             case (state)
@@ -238,10 +259,7 @@ module emg_nn_infer #(
             end
             S_WR: begin
                 norm_res = (norm_prod + in_half) >> n_in_r[5:0];
-                if (norm_res > 64'd127)
-                    xq[feat_save_idx[5:0]] <= 8'sd127;
-                else
-                    xq[feat_save_idx[5:0]] <= norm_res[6:0];
+                xq_seen[feat_save_idx[5:0]] <= 1'b1;
                 feat_cnt <= feat_cnt + 6'd1;
                 if (feat_cnt == N_IN-1) begin
                     feat_cnt  <= 6'd0;
@@ -285,21 +303,21 @@ module emg_nn_infer #(
             end
             S_MAC0: begin
                 word_buf <= bram_rdata;               // word for this neuron
-                acc      <= acc + act * $signed(bram_rdata[7:0]);
+                acc      <= acc + mac_product;
                 if (word_idx != layer_words - 5'd1)
                     bram_addr <= bram_addr + 11'd1;   // prefetch next word
                 state    <= S_MAC1;
             end
             S_MAC1: begin
-                acc    <= acc + act * $signed(word_buf[15:8]);
+                acc    <= acc + mac_product;
                 state  <= S_MAC2;
             end
             S_MAC2: begin
-                acc    <= acc + act * $signed(word_buf[23:16]);
+                acc    <= acc + mac_product;
                 state  <= S_MAC3;
             end
             S_MAC3: begin
-                acc    <= acc + act * $signed(word_buf[31:24]);
+                acc    <= acc + mac_product;
                 if (word_idx == layer_words - 5'd1)
                     state <= S_LST;   // wait one cycle for the last MAC
                 else begin
@@ -329,10 +347,6 @@ module emg_nn_infer #(
                     rq_res = 64'sd0;
                 else if (rq_res > 64'sd127)
                     rq_res = 64'sd127;
-                if (layer == LAYER1)
-                    h1[neuron[5:0]] <= rq_res[6:0];
-                else
-                    h2[neuron[4:0]] <= rq_res[6:0];
                 state <= S_NEXT;
             end
 

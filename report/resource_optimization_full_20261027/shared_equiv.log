@@ -1,0 +1,88 @@
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/src/rtl/emg_bandpass.v" into library work
+INFO: [VRFC 10-311] analyzing module emg_bandpass
+INFO: [VRFC 10-311] analyzing module emg_bandpass_shared
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/src/rtl/emg_window_features.v" into library work
+INFO: [VRFC 10-311] analyzing module emg_window_features
+INFO: [VRFC 10-311] analyzing module emg_window_features_shared
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/src/rtl/emg_feature_bank.v" into library work
+INFO: [VRFC 10-311] analyzing module emg_feature_bank
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/sim/results_shared_equiv/emg_bandpass_reference.v" into library work
+INFO: [VRFC 10-311] analyzing module emg_bandpass_reference
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/sim/results_shared_equiv/emg_window_features_reference.v" into library work
+INFO: [VRFC 10-311] analyzing module emg_window_features_reference
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/sim/results_shared_equiv/emg_feature_bank_reference.v" into library work
+INFO: [VRFC 10-311] analyzing module emg_feature_bank_reference
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/sim/emg_shared_equiv_tb.sv" into library work
+INFO: [VRFC 10-311] analyzing module shared_feature_case
+INFO: [VRFC 10-311] analyzing module shared_bandpass_case
+INFO: [VRFC 10-311] analyzing module emg_shared_equiv_tb
+Vivado Simulator v2025.2
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+Running: D:/FPGA/VIVADO/2025.2/Vivado/bin/unwrapped/win64.o/xelab.exe emg_shared_equiv_tb -s shared_equiv -debug typical 
+Multi-threading is on. Using 30 slave threads.
+Starting static elaboration
+Pass Through NonSizing Optimizer
+Completed static elaboration
+Starting simulation data flow analysis
+Completed simulation data flow analysis
+Time Resolution for simulation is 1ps
+Compiling module work.emg_window_features_shared(ZC_TH...
+Compiling module work.emg_window_features_reference(ZC...
+Compiling module work.emg_feature_bank(BYPASS_BANDPASS...
+Compiling module work.emg_feature_bank_reference(BYPAS...
+Compiling module work.shared_feature_case_default
+Compiling module work.emg_window_features_shared(WINDO...
+Compiling module work.emg_window_features_reference(WI...
+Compiling module work.emg_feature_bank(BYPASS_BANDPASS...
+Compiling module work.emg_feature_bank_reference(BYPAS...
+Compiling module work.shared_feature_case(W=8,H=4,SHIF...
+Compiling module work.emg_window_features_shared(WINDO...
+Compiling module work.emg_window_features_reference(WI...
+Compiling module work.emg_feature_bank(BYPASS_BANDPASS...
+Compiling module work.emg_feature_bank_reference(BYPAS...
+Compiling module work.shared_feature_case(W=63,H=9,SHI...
+Compiling module work.emg_window_features_shared(WINDO...
+Compiling module work.emg_window_features_reference(WI...
+Compiling module work.emg_feature_bank(BYPASS_BANDPASS...
+Compiling module work.emg_feature_bank_reference(BYPAS...
+Compiling module work.shared_feature_case(W=1,H=1,SHIF...
+Compiling module work.emg_bandpass_shared_default
+Compiling module work.emg_bandpass_reference_default
+Compiling module work.shared_bandpass_case(FRAC=0)
+Compiling module work.emg_bandpass_shared(FRACTION_SAV...
+Compiling module work.emg_bandpass_reference(FRACTION_...
+Compiling module work.shared_bandpass_case_default
+Compiling module work.emg_bandpass_default
+Compiling module work.emg_window_features(ZC_THRESHOLD...
+Compiling module work.emg_feature_bank(ZC_THRESHOLD=24...
+Compiling module work.emg_feature_bank_reference(ZC_TH...
+Compiling module work.shared_feature_case(BYPASS=0)
+Compiling module work.emg_shared_equiv_tb
+Built simulation snapshot shared_equiv
+
+****** xsim v2025.2 (64-bit)
+  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025
+  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025
+  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025
+  **** Start of session at: Tue Oct 27 16:07:37 2026
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+
+source xsim.dir/shared_equiv/xsim_script.tcl
+# xsim {shared_equiv} -autoloadwcfg -runall
+Time resolution is 1 ps
+run -all
+TEST_PASS shared bandpass fraction=0 beats=78122 cycle-exact II=1
+TEST_PASS shared bandpass fraction=1 beats=78122 cycle-exact II=1
+TEST_PASS shared feature W=400 H=100 windows=415 words=2011 cycle-exact II=1
+TEST_PASS shared feature W=8 H=4 windows=12152 words=34621 cycle-exact II=1
+TEST_PASS shared feature W=63 H=9 windows=5229 words=23107 cycle-exact II=1
+TEST_PASS shared feature W=1 H=1 windows=48787 words=43286 cycle-exact II=1
+TEST_PASS shared feature W=400 H=100 windows=415 words=1998 cycle-exact II=1
+TEST_PASS shared arithmetic equivalence complete
+$finish called at time : 801710 ns : File "D:/FPGA/sEMG-HMRS/sim/emg_shared_equiv_tb.sv" Line 123
+run: Time (s): cpu = 00:00:00 ; elapsed = 00:00:11 . Memory (MB): peak = 232.367 ; gain = 0.000
+exit
+INFO: xsimkernel Simulation Memory Usage: 14248 KB (Peak: 14248 KB), Simulation CPU Usage: 10624 ms
+INFO: [Common 17-206] Exiting xsim at Tue Oct 27 16:07:51 2026...

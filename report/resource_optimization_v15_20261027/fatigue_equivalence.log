@@ -1,0 +1,692 @@
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/src/rtl/emg_fatigue.v" into library work
+INFO: [VRFC 10-311] analyzing module emg_fatigue
+INFO: [VRFC 10-311] analyzing module emg_fatigue_state
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/sim/results_v15_fatigue/emg_fatigue_v14.v" into library work
+INFO: [VRFC 10-311] analyzing module emg_fatigue_v14
+INFO: [VRFC 10-311] analyzing module emg_fatigue_state_v14
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/sim/results_v15_fatigue/tb_v15_fatigue.sv" into library work
+INFO: [VRFC 10-311] analyzing module tb_emg_fatigue
+Vivado Simulator v2025.2
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+Running: D:/FPGA/VIVADO/2025.2/Vivado/bin/unwrapped/win64.o/xelab.exe tb_emg_fatigue -s v15_fatigue -debug typical 
+Multi-threading is on. Using 30 slave threads.
+Starting static elaboration
+Pass Through NonSizing Optimizer
+Completed static elaboration
+Starting simulation data flow analysis
+Completed simulation data flow analysis
+Time Resolution for simulation is 1ps
+Compiling module work.emg_fatigue_state_default
+Compiling module work.emg_fatigue
+Compiling module work.emg_fatigue_state_v14_default
+Compiling module work.emg_fatigue_v14
+Compiling module work.tb_emg_fatigue
+Built simulation snapshot v15_fatigue
+
+****** xsim v2025.2 (64-bit)
+  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025
+  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025
+  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025
+  **** Start of session at: Tue Oct 27 16:53:59 2026
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+
+source xsim.dir/v15_fatigue/xsim_script.tcl
+# xsim {v15_fatigue} -autoloadwcfg -runall
+Time resolution is 1 ps
+run -all
+FATIGUE_V15_RESULT_CYCLE sequence=1 cycle=747596
+PASS word 0 (win 0): id 8 data 00000052
+PASS word 1 (win 0): id 9 data 00000000
+PASS word 2 (win 0): id 10 data 12a5294b
+PASS word 3 (win 0): id 11 data 10982929
+PASS word 4 (win 0): id 12 data 10842108
+PASS word 5 (win 0): id 13 data 0e841d08
+PASS word 6 (win 0): id 14 data 0e741ce8
+PASS word 7 (win 0): id 15 data 0a402585
+FATIGUE_V15_RESULT_CYCLE sequence=2 cycle=1476761
+PASS word 8 (win 1): id 8 data 0000004a
+PASS word 9 (win 1): id 9 data 00000000
+PASS word 10 (win 1): id 10 data 1094a529
+PASS word 11 (win 1): id 11 data 10864129
+PASS word 12 (win 1): id 12 data 0e742108
+PASS word 13 (win 1): id 13 data 10841ce8
+PASS word 14 (win 1): id 14 data 0e739ce7
+PASS word 15 (win 1): id 15 data 094023b4
+FATIGUE_V15_RESULT_CYCLE sequence=3 cycle=2205926
+PASS word 16 (win 2): id 8 data 00000042
+PASS word 17 (win 2): id 9 data 00000000
+PASS word 18 (win 2): id 10 data 1084a52a
+PASS word 19 (win 2): id 11 data 10962a08
+PASS word 20 (win 2): id 12 data 10742109
+PASS word 21 (win 2): id 13 data 0e8420e8
+PASS word 22 (win 2): id 14 data 0e739ce8
+PASS word 23 (win 2): id 15 data 084022a5
+FATIGUE_V15_RESULT_CYCLE sequence=4 cycle=2935092
+PASS word 24 (win 3): id 8 data 0000003a
+PASS word 25 (win 3): id 9 data 00000000
+PASS word 26 (win 3): id 10 data 10842128
+PASS word 27 (win 3): id 11 data 10962550
+PASS word 28 (win 3): id 12 data 0e742108
+PASS word 29 (win 3): id 13 data 10841ce8
+PASS word 30 (win 3): id 14 data 0e741ce7
+PASS word 31 (win 3): id 15 data 0740205a
+FATIGUE_V15_RESULT_CYCLE sequence=5 cycle=3664257
+PASS word 32 (win 4): id 8 data 00000032
+PASS word 33 (win 4): id 9 data 00000000
+PASS word 34 (win 4): id 10 data 20b5294a
+PASS word 35 (win 4): id 11 data 108624e9
+PASS word 36 (win 4): id 12 data 0e742108
+PASS word 37 (win 4): id 13 data 0e741ce7
+PASS word 38 (win 4): id 14 data 0e739ce7
+PASS word 39 (win 4): id 15 data 06401d44
+FATIGUE_V15_RESULT_CYCLE sequence=6 cycle=4393422
+PASS word 40 (win 5): id 8 data 0000002a
+PASS word 41 (win 5): id 9 data 00000000
+PASS word 42 (win 5): id 10 data 10f6294a
+PASS word 43 (win 5): id 11 data 108624e8
+PASS word 44 (win 5): id 12 data 0e742108
+PASS word 45 (win 5): id 13 data 0e841ce7
+PASS word 46 (win 5): id 14 data 0e741ce7
+PASS word 47 (win 5): id 15 data 05401a68
+FATIGUE_V15_RESULT_CYCLE sequence=7 cycle=5122588
+PASS word 48 (win 6): id 8 data 00000022
+PASS word 49 (win 6): id 9 data 00000000
+PASS word 50 (win 6): id 10 data 14a82d0a
+PASS word 51 (win 6): id 11 data 1096292a
+PASS word 52 (win 6): id 12 data 0e742108
+PASS word 53 (win 6): id 13 data 0e841ce8
+PASS word 54 (win 6): id 14 data 0e739ce7
+PASS word 55 (win 6): id 15 data 0440199a
+FATIGUE_V15_RESULT_CYCLE sequence=8 cycle=5851753
+PASS word 56 (win 7): id 8 data 0000001a
+PASS word 57 (win 7): id 9 data 00000000
+PASS word 58 (win 7): id 10 data 1084bdca
+PASS word 59 (win 7): id 11 data 10862508
+PASS word 60 (win 7): id 12 data 0e742108
+PASS word 61 (win 7): id 13 data 0e741ce7
+PASS word 62 (win 7): id 14 data 0e839ce7
+PASS word 63 (win 7): id 15 data 034015a1
+FATIGUE_V15_RESULT_CYCLE sequence=9 cycle=6580918
+PASS word 64 (win 8): id 8 data 00000033
+PASS word 65 (win 8): id 9 data 00000002
+PASS word 66 (win 8): id 10 data 3107316b
+PASS word 67 (win 8): id 11 data 18da45d1
+PASS word 68 (win 8): id 12 data 16b5ad8c
+PASS word 69 (win 8): id 13 data 14a5294b
+PASS word 70 (win 8): id 14 data 1295252a
+PASS word 71 (win 8): id 15 data 0661f5a2
+FATIGUE_V15_RESULT_CYCLE sequence=10 cycle=7310084
+PASS word 72 (win 9): id 8 data 00000033
+PASS word 73 (win 9): id 9 data 00000002
+PASS word 74 (win 9): id 10 data 3107358c
+PASS word 75 (win 9): id 11 data 16ca45f1
+PASS word 76 (win 9): id 12 data 14a5294b
+PASS word 77 (win 9): id 13 data 1294a52a
+PASS word 78 (win 9): id 14 data 1094a529
+PASS word 79 (win 9): id 15 data 06622622
+FATIGUE_V15_RESULT_CYCLE sequence=11 cycle=8039249
+PASS word 80 (win 10): id 8 data 00000033
+PASS word 81 (win 10): id 9 data 00000002
+PASS word 82 (win 10): id 10 data 3117b9ad
+PASS word 83 (win 10): id 11 data 18da41b0
+PASS word 84 (win 10): id 12 data 14a52d6c
+PASS word 85 (win 10): id 13 data 1294a52a
+PASS word 86 (win 10): id 14 data 1294a529
+PASS word 87 (win 10): id 15 data 06626db4
+FATIGUE_V15_RESULT_CYCLE sequence=12 cycle=8768414
+PASS word 88 (win 11): id 8 data 00000033
+PASS word 89 (win 11): id 9 data 00000002
+PASS word 90 (win 11): id 10 data 3107358c
+PASS word 91 (win 11): id 11 data 16ca45f1
+PASS word 92 (win 11): id 12 data 14a5294b
+PASS word 93 (win 11): id 13 data 1294a52a
+PASS word 94 (win 11): id 14 data 1294a529
+PASS word 95 (win 11): id 15 data 0661fd24
+FATIGUE_V15_RESULT_CYCLE sequence=13 cycle=9497580
+PASS word 96 (win 12): id 8 data 00000033
+PASS word 97 (win 12): id 9 data 00000002
+PASS word 98 (win 12): id 10 data 3107358b
+PASS word 99 (win 12): id 11 data 18da45d1
+PASS word 100 (win 12): id 12 data 14a5ad6c
+PASS word 101 (win 12): id 13 data 14a5294a
+PASS word 102 (win 12): id 14 data 1294a54a
+PASS word 103 (win 12): id 15 data 0662283d
+FATIGUE_V15_RESULT_CYCLE sequence=14 cycle=10226745
+PASS word 104 (win 13): id 8 data 00000033
+PASS word 105 (win 13): id 9 data 00000002
+PASS word 106 (win 13): id 10 data 3107318b
+PASS word 107 (win 13): id 11 data 18da45d1
+PASS word 108 (win 13): id 12 data 16b5ad6c
+PASS word 109 (win 13): id 13 data 14a5294b
+PASS word 110 (win 13): id 14 data 1294a52a
+PASS word 111 (win 13): id 15 data 066205c1
+FATIGUE_V15_RESULT_CYCLE sequence=15 cycle=10955910
+PASS word 112 (win 14): id 8 data 00000033
+PASS word 113 (win 14): id 9 data 00000002
+PASS word 114 (win 14): id 10 data 3107358c
+PASS word 115 (win 14): id 11 data 16ca45f1
+PASS word 116 (win 14): id 12 data 14a5294b
+PASS word 117 (win 14): id 13 data 1294a52a
+PASS word 118 (win 14): id 14 data 1294a129
+PASS word 119 (win 14): id 15 data 0662035d
+FATIGUE_V15_RESULT_CYCLE sequence=16 cycle=11685076
+PASS word 120 (win 15): id 8 data 00000033
+PASS word 121 (win 15): id 9 data 00000002
+PASS word 122 (win 15): id 10 data 3117b9ad
+PASS word 123 (win 15): id 11 data 18da41b0
+PASS word 124 (win 15): id 12 data 14a52d6c
+PASS word 125 (win 15): id 13 data 1295294a
+PASS word 126 (win 15): id 14 data 1294a529
+PASS word 127 (win 15): id 15 data 06627789
+FATIGUE_V15_RESULT_CYCLE sequence=17 cycle=12414241
+PASS word 128 (win 16): id 8 data 00000033
+PASS word 129 (win 16): id 9 data 00000002
+PASS word 130 (win 16): id 10 data 3107358c
+PASS word 131 (win 16): id 11 data 16ca45f1
+PASS word 132 (win 16): id 12 data 1495294b
+PASS word 133 (win 16): id 13 data 1294a52a
+PASS word 134 (win 16): id 14 data 1294a529
+PASS word 135 (win 16): id 15 data 06621735
+FATIGUE_V15_RESULT_CYCLE sequence=18 cycle=13143406
+PASS word 136 (win 17): id 8 data 00000033
+PASS word 137 (win 17): id 9 data 00000002
+PASS word 138 (win 17): id 10 data 3107358c
+PASS word 139 (win 17): id 11 data 18da45d1
+PASS word 140 (win 17): id 12 data 14a5ad6c
+PASS word 141 (win 17): id 13 data 12a5294a
+PASS word 142 (win 17): id 14 data 1294a52a
+PASS word 143 (win 17): id 15 data 06621522
+FATIGUE_V15_RESULT_CYCLE sequence=19 cycle=13872572
+PASS word 144 (win 18): id 8 data 00000033
+PASS word 145 (win 18): id 9 data 00000002
+PASS word 146 (win 18): id 10 data 3107318b
+PASS word 147 (win 18): id 11 data 18da45d1
+PASS word 148 (win 18): id 12 data 16b5ad6c
+PASS word 149 (win 18): id 13 data 14a5294b
+PASS word 150 (win 18): id 14 data 1295292a
+PASS word 151 (win 18): id 15 data 06621549
+FATIGUE_V15_RESULT_CYCLE sequence=20 cycle=14601737
+PASS word 152 (win 19): id 8 data 00000033
+PASS word 153 (win 19): id 9 data 00000002
+PASS word 154 (win 19): id 10 data 3107358c
+PASS word 155 (win 19): id 11 data 16ca45f1
+PASS word 156 (win 19): id 12 data 14a5294b
+PASS word 157 (win 19): id 13 data 1295252a
+PASS word 158 (win 19): id 14 data 1094a529
+PASS word 159 (win 19): id 15 data 066228fa
+FATIGUE_V15_RESULT_CYCLE sequence=21 cycle=15330902
+PASS word 160 (win 20): id 8 data 00000033
+PASS word 161 (win 20): id 9 data 00000002
+PASS word 162 (win 20): id 10 data 3117b9ad
+PASS word 163 (win 20): id 11 data 18da41b0
+PASS word 164 (win 20): id 12 data 14a52d6c
+PASS word 165 (win 20): id 13 data 1294a94a
+PASS word 166 (win 20): id 14 data 1294a529
+PASS word 167 (win 20): id 15 data 06626689
+FATIGUE_V15_RESULT_CYCLE sequence=22 cycle=16060068
+PASS word 168 (win 21): id 8 data 00000033
+PASS word 169 (win 21): id 9 data 00000002
+PASS word 170 (win 21): id 10 data 3107358c
+PASS word 171 (win 21): id 11 data 16ca45f1
+PASS word 172 (win 21): id 12 data 12a5294b
+PASS word 173 (win 21): id 13 data 1294a52a
+PASS word 174 (win 21): id 14 data 1294a529
+PASS word 175 (win 21): id 15 data 0661fc14
+FATIGUE_V15_RESULT_CYCLE sequence=23 cycle=16789233
+PASS word 176 (win 22): id 8 data 00000033
+PASS word 177 (win 22): id 9 data 00000002
+PASS word 178 (win 22): id 10 data 3107358b
+PASS word 179 (win 22): id 11 data 18da45d1
+PASS word 180 (win 22): id 12 data 14a5ad6c
+PASS word 181 (win 22): id 13 data 14a5294a
+PASS word 182 (win 22): id 14 data 1294a529
+PASS word 183 (win 22): id 15 data 06620921
+FATIGUE_V15_RESULT_CYCLE sequence=24 cycle=17518398
+PASS word 184 (win 23): id 8 data 00000033
+PASS word 185 (win 23): id 9 data 20000002
+PASS word 186 (win 23): id 10 data 3107318b
+PASS word 187 (win 23): id 11 data 18da45d1
+PASS word 188 (win 23): id 12 data 16b5ad6c
+PASS word 189 (win 23): id 13 data 14a5294b
+PASS word 190 (win 23): id 14 data 1294a54a
+PASS word 191 (win 23): id 15 data 06621a44
+FATIGUE_V15_RESULT_CYCLE sequence=25 cycle=18247564
+PASS word 192 (win 24): id 8 data ffe20031
+PASS word 193 (win 24): id 9 data 20000002
+PASS word 194 (win 24): id 10 data 31483dce
+PASS word 195 (win 24): id 11 data 18da45d1
+PASS word 196 (win 24): id 12 data 14a5ad6c
+PASS word 197 (win 24): id 13 data 14a5294a
+PASS word 198 (win 24): id 14 data 1295252a
+PASS word 199 (win 24): id 15 data 06390294
+FATIGUE_V15_RESULT_CYCLE sequence=26 cycle=18976729
+PASS word 200 (win 25): id 8 data ff9b002e
+PASS word 201 (win 25): id 9 data 20000002
+PASS word 202 (win 25): id 10 data 2186ad4a
+PASS word 203 (win 25): id 11 data 14ba45ad
+PASS word 204 (win 25): id 12 data 1094a52a
+PASS word 205 (win 25): id 13 data 1284a509
+PASS word 206 (win 25): id 14 data 10842109
+PASS word 207 (win 25): id 15 data 05c5c87a
+FATIGUE_V15_RESULT_CYCLE sequence=27 cycle=19705894
+PASS word 208 (win 26): id 8 data ff40002c
+PASS word 209 (win 26): id 9 data 20000002
+PASS word 210 (win 26): id 10 data 258941ce
+PASS word 211 (win 26): id 11 data 1aea45d0
+PASS word 212 (win 26): id 12 data 16c6318d
+PASS word 213 (win 26): id 13 data 14b5ad6b
+PASS word 214 (win 26): id 14 data 14a5294b
+PASS word 215 (win 26): id 15 data 0590ebb1
+FATIGUE_V15_RESULT_CYCLE sequence=28 cycle=20435060
+PASS word 216 (win 27): id 8 data fec60029
+PASS word 217 (win 27): id 9 data 20000002
+PASS word 218 (win 27): id 10 data 1987a949
+PASS word 219 (win 27): id 11 data 16ca458b
+PASS word 220 (win 27): id 12 data 1294a54a
+PASS word 221 (win 27): id 13 data 1294a129
+PASS word 222 (win 27): id 14 data 1094a509
+PASS word 223 (win 27): id 15 data 05261bc8
+FATIGUE_V15_RESULT_CYCLE sequence=29 cycle=21164225
+PASS word 224 (win 28): id 8 data fe330026
+PASS word 225 (win 28): id 9 data 20000002
+PASS word 226 (win 28): id 10 data 213c45ef
+PASS word 227 (win 28): id 11 data 18ca45cf
+PASS word 228 (win 28): id 12 data 14a5ad6b
+PASS word 229 (win 28): id 13 data 12a5294a
+PASS word 230 (win 28): id 14 data 1295252a
+PASS word 231 (win 28): id 15 data 04d60bda
+FATIGUE_V15_RESULT_CYCLE sequence=30 cycle=21893390
+PASS word 232 (win 29): id 8 data fd9c0024
+PASS word 233 (win 29): id 9 data 20000002
+PASS word 234 (win 29): id 10 data 1d0c41ac
+PASS word 235 (win 29): id 11 data 16ca45ad
+PASS word 236 (win 29): id 12 data 14a5294b
+PASS word 237 (win 29): id 13 data 1294a529
+PASS word 238 (win 29): id 14 data 1084a529
+PASS word 239 (win 29): id 15 data 0482bdbd
+FATIGUE_V15_RESULT_CYCLE sequence=31 cycle=22622556
+PASS word 240 (win 30): id 8 data fcf60021
+PASS word 241 (win 30): id 9 data 20000002
+PASS word 242 (win 30): id 10 data 1f0c520e
+PASS word 243 (win 30): id 11 data 16ca45ce
+PASS word 244 (win 30): id 12 data 14a52d6b
+PASS word 245 (win 30): id 13 data 12a5294a
+PASS word 246 (win 30): id 14 data 1294a529
+PASS word 247 (win 30): id 15 data 043c99a4
+FATIGUE_V15_RESULT_CYCLE sequence=32 cycle=23351721
+PASS word 248 (win 31): id 8 data fc56001f
+PASS word 249 (win 31): id 9 data 20000002
+PASS word 250 (win 31): id 10 data 1cf9622f
+PASS word 251 (win 31): id 11 data 18da418d
+PASS word 252 (win 31): id 12 data 16b5ad6c
+PASS word 253 (win 31): id 13 data 14a5294b
+PASS word 254 (win 31): id 14 data 1295294a
+PASS word 255 (win 31): id 15 data 03fc5679
+FATIGUE_V15_RESULT_CYCLE sequence=33 cycle=24080886
+PASS word 256 (win 32): id 8 data fbde001f
+PASS word 257 (win 32): id 9 data 20000002
+PASS word 258 (win 32): id 10 data 1cf9620f
+PASS word 259 (win 32): id 11 data 18da418d
+PASS word 260 (win 32): id 12 data 16b5ad6c
+PASS word 261 (win 32): id 13 data 14a5294b
+PASS word 262 (win 32): id 14 data 1295254a
+PASS word 263 (win 32): id 15 data 03fc5df1
+FATIGUE_V15_RESULT_CYCLE sequence=34 cycle=24810052
+PASS word 264 (win 33): id 8 data fb8e001f
+PASS word 265 (win 33): id 9 data e0000002
+PASS word 266 (win 33): id 10 data 1cf9620f
+PASS word 267 (win 33): id 11 data 18da45ad
+PASS word 268 (win 33): id 12 data 14a5ad6c
+PASS word 269 (win 33): id 13 data 14a5294a
+PASS word 270 (win 33): id 14 data 1295254a
+PASS word 271 (win 33): id 15 data 03fc25e9
+FATIGUE_V15_RESULT_CYCLE sequence=35 cycle=25539217
+PASS word 272 (win 34): id 8 data fb66001f
+PASS word 273 (win 34): id 9 data e0000002
+PASS word 274 (win 34): id 10 data 1cf9622f
+PASS word 275 (win 34): id 11 data 16ca45ad
+PASS word 276 (win 34): id 12 data 14a5294b
+PASS word 277 (win 34): id 13 data 1294a52a
+PASS word 278 (win 34): id 14 data 1294a529
+PASS word 279 (win 34): id 15 data 03fc0b88
+FATIGUE_V15_RESULT_CYCLE sequence=36 cycle=26268382
+PASS word 280 (win 35): id 8 data fb66001f
+PASS word 281 (win 35): id 9 data e0000002
+PASS word 282 (win 35): id 10 data 1cf9e20e
+PASS word 283 (win 35): id 11 data 18ca45ce
+PASS word 284 (win 35): id 12 data 14b5ad6b
+PASS word 285 (win 35): id 13 data 14a5294a
+PASS word 286 (win 35): id 14 data 1295252a
+PASS word 287 (win 35): id 15 data 03fc5595
+FATIGUE_V15_RESULT_CYCLE sequence=37 cycle=26997548
+PASS word 288 (win 36): id 8 data fb8e001f
+PASS word 289 (win 36): id 9 data e0000002
+PASS word 290 (win 36): id 10 data 1cf9e20f
+PASS word 291 (win 36): id 11 data 16ba45ce
+PASS word 292 (win 36): id 12 data 14a5294b
+PASS word 293 (win 36): id 13 data 1294a52a
+PASS word 294 (win 36): id 14 data 1294a52a
+PASS word 295 (win 36): id 15 data 03fc3900
+FATIGUE_V15_RESULT_CYCLE sequence=38 cycle=27726713
+PASS word 296 (win 37): id 8 data fbde001f
+PASS word 297 (win 37): id 9 data e0000002
+PASS word 298 (win 37): id 10 data 1cf9622f
+PASS word 299 (win 37): id 11 data 14ba45ae
+PASS word 300 (win 37): id 12 data 1295294a
+PASS word 301 (win 37): id 13 data 1294a529
+PASS word 302 (win 37): id 14 data 1094a529
+PASS word 303 (win 37): id 15 data 03fc37a2
+FATIGUE_V15_RESULT_CYCLE sequence=39 cycle=28455878
+PASS word 304 (win 38): id 8 data fc56001f
+PASS word 305 (win 38): id 9 data e0000002
+PASS word 306 (win 38): id 10 data 1cf9622f
+PASS word 307 (win 38): id 11 data 16ba45ce
+PASS word 308 (win 38): id 12 data 14a5294b
+PASS word 309 (win 38): id 13 data 1295254a
+PASS word 310 (win 38): id 14 data 1294a529
+PASS word 311 (win 38): id 15 data 03fc6925
+FATIGUE_V15_RESULT_CYCLE sequence=40 cycle=29185044
+PASS word 312 (win 39): id 8 data fcf6001f
+PASS word 313 (win 39): id 9 data e0000002
+PASS word 314 (win 39): id 10 data 1cf9e20e
+PASS word 315 (win 39): id 11 data 16ca45ce
+PASS word 316 (win 39): id 12 data 14a52d6b
+PASS word 317 (win 39): id 13 data 12a5294a
+PASS word 318 (win 39): id 14 data 1294a52a
+PASS word 319 (win 39): id 15 data 03fc5055
+FATIGUE_V15_RESULT_CYCLE sequence=41 cycle=29914209
+PASS word 320 (win 40): id 8 data fd9c001f
+PASS word 321 (win 40): id 9 data e0000002
+PASS word 322 (win 40): id 10 data 1cf9e20f
+PASS word 323 (win 40): id 11 data 16ca45ae
+PASS word 324 (win 40): id 12 data 14a5ad6b
+PASS word 325 (win 40): id 13 data 14a5294a
+PASS word 326 (win 40): id 14 data 1294a52a
+PASS word 327 (win 40): id 15 data 03fc4e75
+FATIGUE_V15_RESULT_CYCLE sequence=42 cycle=30643374
+PASS word 328 (win 41): id 8 data fe33001f
+PASS word 329 (win 41): id 9 data e0000002
+PASS word 330 (win 41): id 10 data 1af9622f
+PASS word 331 (win 41): id 11 data 18ca458d
+PASS word 332 (win 41): id 12 data 14a5296b
+PASS word 333 (win 41): id 13 data 1295252a
+PASS word 334 (win 41): id 14 data 1294a529
+PASS word 335 (win 41): id 15 data 03fc09d9
+FATIGUE_V15_RESULT_CYCLE sequence=43 cycle=31372540
+PASS word 336 (win 42): id 8 data fec6001f
+PASS word 337 (win 42): id 9 data e0000002
+PASS word 338 (win 42): id 10 data 1cf9e20f
+PASS word 339 (win 42): id 11 data 18da45ad
+PASS word 340 (win 42): id 12 data 16b5ad6c
+PASS word 341 (win 42): id 13 data 14a5294b
+PASS word 342 (win 42): id 14 data 1295294a
+PASS word 343 (win 42): id 15 data 03fc5705
+FATIGUE_V15_RESULT_CYCLE sequence=44 cycle=32101705
+PASS word 344 (win 43): id 8 data ff40001f
+PASS word 345 (win 43): id 9 data e0000002
+PASS word 346 (win 43): id 10 data 1cf9622f
+PASS word 347 (win 43): id 11 data 18da418d
+PASS word 348 (win 43): id 12 data 14b5ad6c
+PASS word 349 (win 43): id 13 data 14a5294a
+PASS word 350 (win 43): id 14 data 1294a94a
+PASS word 351 (win 43): id 15 data 03fc3150
+FATIGUE_V15_RESULT_CYCLE sequence=45 cycle=32830870
+PASS word 352 (win 44): id 8 data ff9b001f
+PASS word 353 (win 44): id 9 data e0000002
+PASS word 354 (win 44): id 10 data 1cf9622f
+PASS word 355 (win 44): id 11 data 18da418d
+PASS word 356 (win 44): id 12 data 14a5ad6c
+PASS word 357 (win 44): id 13 data 12a5294a
+PASS word 358 (win 44): id 14 data 1294a52a
+PASS word 359 (win 44): id 15 data 03fc31ca
+FATIGUE_V15_RESULT_CYCLE sequence=46 cycle=33560036
+PASS word 360 (win 45): id 8 data ffe2001f
+PASS word 361 (win 45): id 9 data e0000002
+PASS word 362 (win 45): id 10 data 1af9622f
+PASS word 363 (win 45): id 11 data 18da418d
+PASS word 364 (win 45): id 12 data 14a5ad6c
+PASS word 365 (win 45): id 13 data 12a5294a
+PASS word 366 (win 45): id 14 data 1294a529
+PASS word 367 (win 45): id 15 data 03fc54d5
+FATIGUE_V15_RESULT_CYCLE sequence=47 cycle=34289201
+PASS word 368 (win 46): id 8 data 0000001f
+PASS word 369 (win 46): id 9 data e0000002
+PASS word 370 (win 46): id 10 data 1cf9e20f
+PASS word 371 (win 46): id 11 data 18da45ae
+PASS word 372 (win 46): id 12 data 16b5ad6c
+PASS word 373 (win 46): id 13 data 14a5294a
+PASS word 374 (win 46): id 14 data 1294a54a
+PASS word 375 (win 46): id 15 data 03fc7a04
+FATIGUE_V15_RESULT_CYCLE sequence=48 cycle=35018366
+PASS word 376 (win 47): id 8 data 0000001f
+PASS word 377 (win 47): id 9 data e0000002
+PASS word 378 (win 47): id 10 data 1cf9e20f
+PASS word 379 (win 47): id 11 data 18ca45ae
+PASS word 380 (win 47): id 12 data 14a5ad6b
+PASS word 381 (win 47): id 13 data 12a5294a
+PASS word 382 (win 47): id 14 data 1294a54a
+PASS word 383 (win 47): id 15 data 03fc3ae9
+FATIGUE_V15_RESULT_CYCLE sequence=49 cycle=35747532
+PASS word 384 (win 48): id 8 data 0000001f
+PASS word 385 (win 48): id 9 data 00000000
+PASS word 386 (win 48): id 10 data 1095416c
+PASS word 387 (win 48): id 11 data 10862509
+PASS word 388 (win 48): id 12 data 0e742108
+PASS word 389 (win 48): id 13 data 0e739ce7
+PASS word 390 (win 48): id 14 data 0e741ce7
+PASS word 391 (win 48): id 15 data 03e01b0a
+FATIGUE_V15_RESULT_CYCLE sequence=50 cycle=36476697
+PASS word 392 (win 49): id 8 data 0000001f
+PASS word 393 (win 49): id 9 data 00000000
+PASS word 394 (win 49): id 10 data 12a5c12a
+PASS word 395 (win 49): id 11 data 10862929
+PASS word 396 (win 49): id 12 data 0e742108
+PASS word 397 (win 49): id 13 data 10739ce8
+PASS word 398 (win 49): id 14 data 0e739ce7
+PASS word 399 (win 49): id 15 data 03e01e3d
+FATIGUE_V15_RESULT_CYCLE sequence=51 cycle=37205862
+PASS word 400 (win 50): id 8 data 0000001f
+PASS word 401 (win 50): id 9 data 00000000
+PASS word 402 (win 50): id 10 data 12a5c109
+PASS word 403 (win 50): id 11 data 10862929
+PASS word 404 (win 50): id 12 data 0e742108
+PASS word 405 (win 50): id 13 data 0e841ce7
+PASS word 406 (win 50): id 14 data 0e741ce7
+PASS word 407 (win 50): id 15 data 03e01e32
+FATIGUE_V15_RESULT_CYCLE sequence=52 cycle=37935028
+PASS word 408 (win 51): id 8 data 0000001f
+PASS word 409 (win 51): id 9 data 00000000
+PASS word 410 (win 51): id 10 data 1085416a
+PASS word 411 (win 51): id 11 data 108624e8
+PASS word 412 (win 51): id 12 data 0e742108
+PASS word 413 (win 51): id 13 data 0e739ce7
+PASS word 414 (win 51): id 14 data 0e839ce7
+PASS word 415 (win 51): id 15 data 03e01ca5
+FATIGUE_V15_RESULT_CYCLE sequence=53 cycle=38664193
+PASS word 416 (win 52): id 8 data 00000033
+PASS word 417 (win 52): id 9 data 00000002
+PASS word 418 (win 52): id 10 data 3107358c
+PASS word 419 (win 52): id 11 data 1ada41d1
+PASS word 420 (win 52): id 12 data 16b5ad8c
+PASS word 421 (win 52): id 13 data 14a5294b
+PASS word 422 (win 52): id 14 data 1295294a
+PASS word 423 (win 52): id 15 data 06620705
+FATIGUE_V15_RESULT_CYCLE sequence=54 cycle=39393358
+PASS word 424 (win 53): id 8 data 00000033
+PASS word 425 (win 53): id 9 data 00000002
+PASS word 426 (win 53): id 10 data 310735ad
+PASS word 427 (win 53): id 11 data 16ba45f1
+PASS word 428 (win 53): id 12 data 1295294a
+PASS word 429 (win 53): id 13 data 1294a529
+PASS word 430 (win 53): id 14 data 1094a529
+PASS word 431 (win 53): id 15 data 06625664
+FATIGUE_V15_RESULT_CYCLE sequence=55 cycle=40122524
+PASS word 432 (win 54): id 8 data 00000033
+PASS word 433 (win 54): id 9 data 00000002
+PASS word 434 (win 54): id 10 data 3117b9ad
+PASS word 435 (win 54): id 11 data 18da45d0
+PASS word 436 (win 54): id 12 data 12a5296b
+PASS word 437 (win 54): id 13 data 1294a529
+PASS word 438 (win 54): id 14 data 1094a529
+PASS word 439 (win 54): id 15 data 06625371
+FATIGUE_V15_RESULT_CYCLE sequence=56 cycle=40851689
+PASS word 440 (win 55): id 8 data 00000033
+PASS word 441 (win 55): id 9 data 00000002
+PASS word 442 (win 55): id 10 data 3107358c
+PASS word 443 (win 55): id 11 data 18da45d1
+PASS word 444 (win 55): id 12 data 14a5a96b
+PASS word 445 (win 55): id 13 data 12a4a54a
+PASS word 446 (win 55): id 14 data 1294a529
+PASS word 447 (win 55): id 15 data 066215c8
+FATIGUE_V15_RESULT_CYCLE sequence=57 cycle=41580854
+PASS word 448 (win 56): id 8 data 00000033
+PASS word 449 (win 56): id 9 data 00000002
+PASS word 450 (win 56): id 10 data 3107358b
+PASS word 451 (win 56): id 11 data 16ca45f1
+PASS word 452 (win 56): id 12 data 14a5294b
+PASS word 453 (win 56): id 13 data 1295254a
+PASS word 454 (win 56): id 14 data 1294a529
+PASS word 455 (win 56): id 15 data 06620f0a
+FATIGUE_V15_RESULT_CYCLE sequence=58 cycle=42310020
+PASS word 456 (win 57): id 8 data 00000033
+PASS word 457 (win 57): id 9 data 00000002
+PASS word 458 (win 57): id 10 data 3107358c
+PASS word 459 (win 57): id 11 data 1ada41d1
+PASS word 460 (win 57): id 12 data 16b5ad8c
+PASS word 461 (win 57): id 13 data 14a5294b
+PASS word 462 (win 57): id 14 data 1295254a
+PASS word 463 (win 57): id 15 data 0662189d
+FATIGUE_V15_RESULT_CYCLE sequence=59 cycle=43039185
+PASS word 464 (win 58): id 8 data 00000033
+PASS word 465 (win 58): id 9 data 00000002
+PASS word 466 (win 58): id 10 data 310735ad
+PASS word 467 (win 58): id 11 data 16ba45f1
+PASS word 468 (win 58): id 12 data 1295294a
+PASS word 469 (win 58): id 13 data 1294a52a
+PASS word 470 (win 58): id 14 data 1094a529
+PASS word 471 (win 58): id 15 data 066242fd
+FATIGUE_V15_RESULT_CYCLE sequence=60 cycle=43768350
+PASS word 472 (win 59): id 8 data 00000033
+PASS word 473 (win 59): id 9 data 00000002
+PASS word 474 (win 59): id 10 data 3117b9ad
+PASS word 475 (win 59): id 11 data 18da45d0
+PASS word 476 (win 59): id 12 data 14a5294b
+PASS word 477 (win 59): id 13 data 1294a529
+PASS word 478 (win 59): id 14 data 1284a529
+PASS word 479 (win 59): id 15 data 06626dc5
+FATIGUE_V15_RESULT_CYCLE sequence=61 cycle=44497516
+PASS word 480 (win 60): id 8 data 00000033
+PASS word 481 (win 60): id 9 data 00000002
+PASS word 482 (win 60): id 10 data 3107358c
+PASS word 483 (win 60): id 11 data 18da45d1
+PASS word 484 (win 60): id 12 data 14a5ad6c
+PASS word 485 (win 60): id 13 data 1295252a
+PASS word 486 (win 60): id 14 data 1294a529
+PASS word 487 (win 60): id 15 data 06621555
+FATIGUE_V15_RESULT_CYCLE sequence=62 cycle=45226681
+PASS word 488 (win 61): id 8 data 00000033
+PASS word 489 (win 61): id 9 data 00000002
+PASS word 490 (win 61): id 10 data 3107358b
+PASS word 491 (win 61): id 11 data 16ca45f1
+PASS word 492 (win 61): id 12 data 14a5296b
+PASS word 493 (win 61): id 13 data 1294a52a
+PASS word 494 (win 61): id 14 data 1294a529
+PASS word 495 (win 61): id 15 data 0661f824
+FATIGUE_V15_RESULT_CYCLE sequence=63 cycle=45955846
+PASS word 496 (win 62): id 8 data 00000033
+PASS word 497 (win 62): id 9 data 00000002
+PASS word 498 (win 62): id 10 data 3107358c
+PASS word 499 (win 62): id 11 data 18da41d1
+PASS word 500 (win 62): id 12 data 16b5ad8c
+PASS word 501 (win 62): id 13 data 14a5294b
+PASS word 502 (win 62): id 14 data 1295254a
+PASS word 503 (win 62): id 15 data 06620bcd
+FATIGUE_V15_RESULT_CYCLE sequence=64 cycle=46685012
+PASS word 504 (win 63): id 8 data 00000033
+PASS word 505 (win 63): id 9 data 00000002
+PASS word 506 (win 63): id 10 data 310735ad
+PASS word 507 (win 63): id 11 data 16ba45f1
+PASS word 508 (win 63): id 12 data 1295294a
+PASS word 509 (win 63): id 13 data 1294a529
+PASS word 510 (win 63): id 14 data 1094a129
+PASS word 511 (win 63): id 15 data 06626151
+FATIGUE_V15_RESULT_CYCLE sequence=65 cycle=47414177
+PASS word 512 (win 64): id 8 data 00000033
+PASS word 513 (win 64): id 9 data 00000002
+PASS word 514 (win 64): id 10 data 3117b9ad
+PASS word 515 (win 64): id 11 data 18da45d0
+PASS word 516 (win 64): id 12 data 12a5296b
+PASS word 517 (win 64): id 13 data 1294a52a
+PASS word 518 (win 64): id 14 data 1084a129
+PASS word 519 (win 64): id 15 data 06626a02
+FATIGUE_V15_RESULT_CYCLE sequence=66 cycle=48143342
+PASS word 520 (win 65): id 8 data 00000033
+PASS word 521 (win 65): id 9 data 00000002
+PASS word 522 (win 65): id 10 data 3107358c
+PASS word 523 (win 65): id 11 data 18da45d1
+PASS word 524 (win 65): id 12 data 14a52d6b
+PASS word 525 (win 65): id 13 data 12a5294a
+PASS word 526 (win 65): id 14 data 1294a529
+PASS word 527 (win 65): id 15 data 066231d1
+FATIGUE_V15_RESULT_CYCLE sequence=67 cycle=48872508
+PASS word 528 (win 66): id 8 data 00000033
+PASS word 529 (win 66): id 9 data 00000002
+PASS word 530 (win 66): id 10 data 3107358b
+PASS word 531 (win 66): id 11 data 16ca45f1
+PASS word 532 (win 66): id 12 data 14a5294b
+PASS word 533 (win 66): id 13 data 1295252a
+PASS word 534 (win 66): id 14 data 1294a529
+PASS word 535 (win 66): id 15 data 066201e4
+FATIGUE_V15_RESULT_CYCLE sequence=68 cycle=49601673
+PASS word 536 (win 67): id 8 data 00000033
+PASS word 537 (win 67): id 9 data 20000002
+PASS word 538 (win 67): id 10 data 3107358c
+PASS word 539 (win 67): id 11 data 1ada41d1
+PASS word 540 (win 67): id 12 data 16b5ad8c
+PASS word 541 (win 67): id 13 data 14a5294a
+PASS word 542 (win 67): id 14 data 1294a54a
+PASS word 543 (win 67): id 15 data 066210f2
+FATIGUE_V15_RESULT_CYCLE sequence=69 cycle=50330838
+PASS word 544 (win 68): id 8 data 00000033
+PASS word 545 (win 68): id 9 data 000001c1
+PASS word 546 (win 68): id 10 data 3f8b6713
+PASS word 547 (win 68): id 11 data 273d5ed8
+PASS word 548 (win 68): id 12 data 273cca56
+PASS word 549 (win 68): id 13 data 2d99d776
+PASS word 550 (win 68): id 14 data 2f295a73
+PASS word 551 (win 68): id 15 data 067f9b65
+FATIGUE_V15_RESULT_CYCLE sequence=70 cycle=51060004
+PASS word 552 (win 69): id 8 data 00000033
+PASS word 553 (win 69): id 9 data 000001c1
+PASS word 554 (win 69): id 10 data 3f8b6715
+PASS word 555 (win 69): id 11 data 274d5ab8
+PASS word 556 (win 69): id 12 data 293cce76
+PASS word 557 (win 69): id 13 data 2da9d776
+PASS word 558 (win 69): id 14 data 2f18da32
+PASS word 559 (win 69): id 15 data 0672ded0
+FATIGUE_V15_RESULT_CYCLE sequence=71 cycle=51789169
+PASS word 560 (win 70): id 8 data 00000033
+PASS word 561 (win 70): id 9 data 00000003
+PASS word 562 (win 70): id 10 data 3139ce95
+PASS word 563 (win 70): id 11 data 1efa4610
+PASS word 564 (win 70): id 12 data 1ce7bdef
+PASS word 565 (win 70): id 13 data 1ae739ce
+PASS word 566 (win 70): id 14 data 1ad6b5ad
+PASS word 567 (win 70): id 15 data 066512f5
+FATIGUE_V15_RESULT_CYCLE sequence=72 cycle=52518334
+PASS word 568 (win 71): id 8 data 00000033
+PASS word 569 (win 71): id 9 data 00000002
+PASS word 570 (win 71): id 10 data 3107358b
+PASS word 571 (win 71): id 11 data 16ca45f1
+PASS word 572 (win 71): id 12 data 14a5294b
+PASS word 573 (win 71): id 13 data 1294a52a
+PASS word 574 (win 71): id 14 data 1294a529
+PASS word 575 (win 71): id 15 data 0661f785
+TEST_PASS V15 fatigue cycle-exact 576 words incl backpressure and activity/saturation
+$finish called at time : 525183525 ns : File "D:/FPGA/sEMG-HMRS/sim/results_v15_fatigue/tb_v15_fatigue.sv" Line 143
+run: Time (s): cpu = 00:00:00 ; elapsed = 00:01:47 . Memory (MB): peak = 226.480 ; gain = 0.000
+exit
+INFO: xsimkernel Simulation Memory Usage: 19828 KB (Peak: 19828 KB), Simulation CPU Usage: 105406 ms
+INFO: [Common 17-206] Exiting xsim at Tue Oct 27 16:55:48 2026...

@@ -1,0 +1,1 @@
+schema_version 1 data {axi_gpio_7 {requested {CONFIG.C_GPIO_WIDTH 32 CONFIG.C_ALL_OUTPUTS 1 CONFIG.C_DOUT_DEFAULT 0x00000000 CONFIG.C_IS_DUAL 1 CONFIG.C_GPIO2_WIDTH 32 CONFIG.C_ALL_INPUTS_2 1} stuck {} intent {}} smartconnect_0 {requested {CONFIG.NUM_MI 10} stuck {} intent {}}}

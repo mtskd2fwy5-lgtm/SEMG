@@ -1,0 +1,33 @@
+#-----------------------------------------------------------
+# xsim v2025.2 (64-bit)
+# SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025
+# IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025
+# SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025
+# Start of session at: Wed Oct 28 19:55:57 2026
+# Process ID         : 33012
+# Current directory  : D:/FPGA/sEMG-HMRS
+# Command line       : xsim.exe -log D:\FPGA\sEMG-HMRS\report\imu_pl_20261028/rtl_mailbox.log -mode tcl -source {xsim.dir/imu_rtl_mailbox/xsim_script.tcl}
+# Log file           : D:/FPGA/sEMG-HMRS/report/imu_pl_20261028/rtl_mailbox.log
+# Journal file       : D:/FPGA/sEMG-HMRS\xsim.jou
+# Running On         : LAPTOP-VCCV41QO
+# Platform           : Windows Server 2016 or Windows 10
+# Operating System   : 26200
+# Processor Detail   : AMD Ryzen 9 7945HX with Radeon Graphics        
+# CPU Frequency      : 2495 MHz
+# CPU Physical cores : 16
+# CPU Logical cores  : 32
+# Host memory        : 16844 MB
+# Swap memory        : 16844 MB
+# Total Virtual      : 33689 MB
+# Available Virtual  : 15707 MB
+#-----------------------------------------------------------
+source xsim.dir/imu_rtl_mailbox/xsim_script.tcl
+# xsim {imu_rtl_mailbox} -autoloadwcfg -runall
+Time resolution is 1 ps
+run -all
+TEST_PASS PL attitude mailbox CDC settling, atomic snapshot, signed read, zero/reconnect and stale timeout
+$finish called at time : 132290260 ns : File "D:/FPGA/sEMG-HMRS/sim/mpu_attitude_mailbox_tb.sv" Line 52
+run: Time (s): cpu = 00:00:00 ; elapsed = 00:00:14 . Memory (MB): peak = 226.488 ; gain = 0.000
+exit
+INFO: xsimkernel Simulation Memory Usage: 12308 KB (Peak: 12308 KB), Simulation CPU Usage: 13796 ms
+INFO: [Common 17-206] Exiting xsim at Wed Oct 28 19:56:14 2026...

@@ -1,0 +1,7 @@
+{
+  "samples": 13528,
+  "resets": 32,
+  "max_matrix_component_error": 0.002197265625,
+  "max_twist_error_degrees": 1,
+  "differences": []
+}

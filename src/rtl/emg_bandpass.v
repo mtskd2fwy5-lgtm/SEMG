@@ -157,3 +157,114 @@ module emg_bandpass #(
         end
     end
 endmodule
+
+// The same bit-exact biquad/quantization with channel-banked LUTRAM state.
+module emg_bandpass_shared #(
+    parameter integer CHANNELS = 8, CHANNEL_BITS = 3,
+    parameter integer SAMPLE_WIDTH = 24,
+    // Preserve discarded fractions in the final export chain. Default 0
+    // retains historical standalone/training arithmetic bit for bit.
+    parameter integer FRACTION_SAVE = 0,
+    // 2nd-order Butterworth high-pass, fc = 20 Hz @ 4 kSPS, Q16.
+    parameter signed [17:0] HP_B0 = 18'sd64096,
+    parameter signed [17:0] HP_B1 = -18'sd128192,
+    parameter signed [17:0] HP_B2 = 18'sd64096,
+    parameter signed [17:0] HP_A1 = -18'sd128161,
+    parameter signed [17:0] HP_A2 = 18'sd62688,
+    // 1st-order low-pass, fc = 215 Hz @ 4 kSPS, Q15.
+    parameter signed [15:0] LP_ALPHA = 16'sd9392
+) (
+    input  wire                           clk,
+    input  wire                           rst_n,
+    input  wire                           sample_valid,
+    input wire [CHANNEL_BITS-1:0] sample_channel,
+    input  wire signed [SAMPLE_WIDTH-1:0] sample_in,
+    output reg                            filtered_valid,
+    output reg  signed [SAMPLE_WIDTH-1:0] filtered_out
+);
+    // Five 24x18 products plus summation margin.
+    localparam integer ACC_WIDTH = SAMPLE_WIDTH + 18 + 3;
+    localparam signed [47:0] SAT_MAX = (48'sd1 <<< (SAMPLE_WIDTH-1)) - 48'sd1;
+    localparam signed [47:0] SAT_MIN = -(48'sd1 <<< (SAMPLE_WIDTH-1));
+
+    function signed [47:0] sat_to_input;
+        input signed [47:0] value;
+        begin
+            if (value > SAT_MAX)
+                sat_to_input = SAT_MAX;
+            else if (value < SAT_MIN)
+                sat_to_input = SAT_MIN;
+            else
+                sat_to_input = value;
+        end
+    endfunction
+
+    localparam integer CONTEXT_W=5*SAMPLE_WIDTH+31;
+    (* ram_style="distributed" *) reg [CONTEXT_W-1:0] contexts[0:CHANNELS-1];
+    reg [CHANNELS-1:0] seen;
+    wire channel_ok=sample_channel<CHANNELS;
+    wire [CONTEXT_W-1:0] context_word=channel_ok && seen[sample_channel]
+        ? contexts[sample_channel] : {CONTEXT_W{1'b0}};
+    wire signed [SAMPLE_WIDTH-1:0] hp_x1,hp_x2,hp_y1,hp_y2,lp_y;
+    wire [15:0] hp_fraction;
+    wire [14:0] lp_fraction;
+    assign {hp_x1,hp_x2,hp_y1,hp_y2,lp_y,hp_fraction,lp_fraction}=context_word;
+
+    // Filter coefficients in registers (see header note). Declared with
+    // bitstream init AND reset-loaded; either path alone would suffice.
+    (* dont_touch = "true" *) reg signed [17:0] b0_r = HP_B0;
+    (* dont_touch = "true" *) reg signed [17:0] b1_r = HP_B1;
+    (* dont_touch = "true" *) reg signed [17:0] b2_r = HP_B2;
+    (* dont_touch = "true" *) reg signed [17:0] a1_r = HP_A1;
+    (* dont_touch = "true" *) reg signed [17:0] a2_r = HP_A2;
+    (* dont_touch = "true" *) reg signed [15:0] alpha_r = LP_ALPHA;
+
+    always @(posedge clk) begin
+        if (!rst_n) begin
+            b0_r    <= HP_B0;
+            b1_r    <= HP_B1;
+            b2_r    <= HP_B2;
+            a1_r    <= HP_A1;
+            a2_r    <= HP_A2;
+            alpha_r <= LP_ALPHA;
+        end
+    end
+
+    // Combinational datapath as continuous assignments. The previous
+    // version used module-level regs assigned with blocking assignments
+    // inside the clocked block; Vivado inferred them as registers
+    // (Synth 8-6014 "Unused sequential element ... was removed") and the
+    // resulting netlist implemented a different filter than the RTL,
+    // which was unstable in the full-design synthesis context. Wires
+    // leave no such ambiguity.
+    wire signed [ACC_WIDTH-1:0] hp_acc_w = b0_r * sample_in
+                                          + b1_r * hp_x1
+                                          + b2_r * hp_x2
+                                          - a1_r * hp_y1
+                                          - a2_r * hp_y2
+                                          + (FRACTION_SAVE ? $signed({1'b0,hp_fraction}) : 17'sd0);
+    wire signed [47:0] hp_sat_w = sat_to_input(hp_acc_w >>> 16);
+    wire signed [SAMPLE_WIDTH-1:0] hp_y_w = hp_sat_w[SAMPLE_WIDTH-1:0];
+
+    wire signed [SAMPLE_WIDTH:0] lp_diff_w = hp_y_w - lp_y;
+    wire signed [40:0] lp_prod_w = alpha_r * lp_diff_w
+                                 + (FRACTION_SAVE ? $signed({1'b0,lp_fraction}) : 16'sd0);
+    wire signed [41:0] lp_sum_w = lp_y + (lp_prod_w >>> 15);
+    wire signed [47:0] lp_sat_w = sat_to_input(lp_sum_w);
+    wire signed [SAMPLE_WIDTH-1:0] lp_y_w = lp_sat_w[SAMPLE_WIDTH-1:0];
+
+    wire [15:0] next_hp_fraction = (hp_sat_w == (hp_acc_w >>> 16)) ? hp_acc_w[15:0] : 16'd0;
+    wire [14:0] next_lp_fraction = (lp_sat_w == lp_sum_w) ? lp_prod_w[14:0] : 15'd0;
+    always @(posedge clk)begin
+        if(rst_n && sample_valid && channel_ok)
+            contexts[sample_channel] <= {sample_in,hp_x1,hp_y_w,hp_y1,lp_y_w,next_hp_fraction,next_lp_fraction};
+    end
+    always @(posedge clk)begin
+        filtered_valid<=0;
+        if(!rst_n)begin seen<=0;filtered_out<=0;end
+        else if(sample_valid && channel_ok)begin
+            seen[sample_channel]<=1;
+            filtered_valid<=1;filtered_out<=lp_y_w;
+        end
+    end
+endmodule

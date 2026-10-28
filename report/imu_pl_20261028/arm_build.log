@@ -1,0 +1,21 @@
+In file included from main.c:2416:
+lcd_channel_quality.h:22:20: warning: 'lcd_quality_status' defined but not used [-Wunused-function]
+   22 | static const char *lcd_quality_status(u32 ch,u32 now)
+      |                    ^~~~~~~~~~~~~~~~~~
+main.c:1097:13: warning: 'mpu_tilt_update' defined but not used [-Wunused-function]
+ 1097 | static void mpu_tilt_update(void)
+      |             ^~~~~~~~~~~~~~~
+main.c:721:12: warning: 'mpu_last_row_t' defined but not used [-Wunused-variable]
+  721 | static u32 mpu_last_row_t;      /* gt_stamp of the last M-row */
+      |            ^~~~~~~~~~~~~~
+main.c:720:27: warning: 'mpu_word_seen' defined but not used [-Wunused-variable]
+  720 | static u32 mpu_last_word, mpu_word_seen;
+      |                           ^~~~~~~~~~~~~
+main.c:720:12: warning: 'mpu_last_word' defined but not used [-Wunused-variable]
+  720 | static u32 mpu_last_word, mpu_word_seen;
+      |            ^~~~~~~~~~~~~
+D:\FPGA\VIVADO\2025.2\data\embeddedsw\lib\sw_services\xilffs_v5_5\src\ff.c: In function 'get_ldnumber':
+D:\FPGA\VIVADO\2025.2\data\embeddedsw\lib\sw_services\xilffs_v5_5\src\ff.c:4000:13: warning: unused variable 'vol' [-Wunused-variable]
+ 4000 |         int vol = -1;
+      |             ^~~
+BUILD OK: ps_uart_print_pl_control.elf

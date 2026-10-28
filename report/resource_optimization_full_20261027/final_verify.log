@@ -1,0 +1,1 @@
+TEST_PASS matched control BOOT: XSA hardware + full bitstream + 2 application PT_LOAD segments + 3 FSBL PT_LOAD segments

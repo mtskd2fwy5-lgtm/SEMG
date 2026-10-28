@@ -1,0 +1,398 @@
+{
+  "changed_inputs": [
+    "src/rtl/emg_bandpass.v",
+    "src/rtl/emg_feature_bank.v",
+    "src/rtl/emg_line_filter.v",
+    "src/rtl/emg_window_features.v"
+  ],
+  "inputs": [
+    {
+      "path": "src/rtl/ads1299_spi.v",
+      "baseline": "2e06afa3376312f0f5edee8f423eaa544628278bb2938e1efccedc1c1aa8a8ca",
+      "candidate": "2e06afa3376312f0f5edee8f423eaa544628278bb2938e1efccedc1c1aa8a8ca"
+    },
+    {
+      "path": "src/rtl/ads8698_spi.v",
+      "baseline": "02d5171872d1821f96599c949a92e8661daa263da54eac680251f0f948dc8896",
+      "candidate": "02d5171872d1821f96599c949a92e8661daa263da54eac680251f0f948dc8896"
+    },
+    {
+      "path": "src/rtl/axis_async_fifo.v",
+      "baseline": "fe24aeaf6b3fc90122f3a9dcce98a659034571b35216e17cc113d88325f36a02",
+      "candidate": "fe24aeaf6b3fc90122f3a9dcce98a659034571b35216e17cc113d88325f36a02"
+    },
+    {
+      "path": "src/rtl/axis_packet_mux.v",
+      "baseline": "e9365f1971635ce92faf8f3c838040a80ef66a190839feb05206171ccc44dd40",
+      "candidate": "e9365f1971635ce92faf8f3c838040a80ef66a190839feb05206171ccc44dd40"
+    },
+    {
+      "path": "src/rtl/emg_bandpass.v",
+      "baseline": "948185ececfa2b4a1158274bda0b56f1280c1d9baab4f350640305dd10d924b5",
+      "candidate": "5783eef5f10c4d78faf2ec8782a1b357f5a484d87673b31cc06136948a241334"
+    },
+    {
+      "path": "src/rtl/emg_comb50.v",
+      "baseline": "d2fadd0829ea93dfc06394d3a1262c5ef19bff6690f2894f16381e0266f3a348",
+      "candidate": "d2fadd0829ea93dfc06394d3a1262c5ef19bff6690f2894f16381e0266f3a348"
+    },
+    {
+      "path": "src/rtl/emg_control_constants.vh",
+      "baseline": "cf077f7e7e2a98848b1e725313e2d99ac8eaee67cc762fa4e14896faef2cded9",
+      "candidate": "cf077f7e7e2a98848b1e725313e2d99ac8eaee67cc762fa4e14896faef2cded9"
+    },
+    {
+      "path": "src/rtl/emg_control_inference.v",
+      "baseline": "f2119b7b771b6697ffd8bd2f703b23e6945a6887b3b3c4584e2d01fdac46d83b",
+      "candidate": "f2119b7b771b6697ffd8bd2f703b23e6945a6887b3b3c4584e2d01fdac46d83b"
+    },
+    {
+      "path": "src/rtl/emg_control_policy.v",
+      "baseline": "d9350f6c7929e2adc755ae9187fa8cc4e7905f74da2c37f19431c71ea84b8278",
+      "candidate": "d9350f6c7929e2adc755ae9187fa8cc4e7905f74da2c37f19431c71ea84b8278"
+    },
+    {
+      "path": "src/rtl/emg_data_path.v",
+      "baseline": "5e07cc2d9f78fc50116398af4c418f2a10cc1aaa1f4e9dcb92a5f7cf265c59b7",
+      "candidate": "5e07cc2d9f78fc50116398af4c418f2a10cc1aaa1f4e9dcb92a5f7cf265c59b7"
+    },
+    {
+      "path": "src/rtl/emg_fatigue.v",
+      "baseline": "09b3b1acf0bef50fc471d662767ebd68df7d831a1f54bd2acfc45d64e5c8e8ac",
+      "candidate": "09b3b1acf0bef50fc471d662767ebd68df7d831a1f54bd2acfc45d64e5c8e8ac"
+    },
+    {
+      "path": "src/rtl/emg_feature_bank.v",
+      "baseline": "2f0dd882f42342299df9a427aec01e6d41fd1480d1205f5f9d906480377bc7a1",
+      "candidate": "a32d86053b679333f8ec1ac89e4352bbc1710807b7f2f30fd028a0f33b8c9b58"
+    },
+    {
+      "path": "src/rtl/emg_learning_accel.v",
+      "baseline": "97a37ef69351637154d7f7790b1ccef03fdc16af7bd10fa18896821b7bd11db8",
+      "candidate": "97a37ef69351637154d7f7790b1ccef03fdc16af7bd10fa18896821b7bd11db8"
+    },
+    {
+      "path": "src/rtl/emg_line_filter.v",
+      "baseline": "56c13d1583c3445a5833f0fba6c04ffca92fdd337c36792d5c4656fd4bf9cdfb",
+      "candidate": "4f24c4fcf0218e3331ae6661f4e6cdb1b1b86d42a547fbd6db445b52fcd1536c"
+    },
+    {
+      "path": "src/rtl/emg_nn_infer.v",
+      "baseline": "51997f86b52913680c6312e5ae2bd60fbe348bc86d45a7da9001ce3d743f7fd2",
+      "candidate": "51997f86b52913680c6312e5ae2bd60fbe348bc86d45a7da9001ce3d743f7fd2"
+    },
+    {
+      "path": "src/rtl/emg_notch50.v",
+      "baseline": "32285e74b71882f1cb81a7978ace98822661ada8be12f86a68b285449a4f0bed",
+      "candidate": "32285e74b71882f1cb81a7978ace98822661ada8be12f86a68b285449a4f0bed"
+    },
+    {
+      "path": "src/rtl/emg_pl_control.v",
+      "baseline": "cf67a00daad7c55cd4124a269a6370f629a45dd2a338846c6c3d41ce37883b43",
+      "candidate": "cf67a00daad7c55cd4124a269a6370f629a45dd2a338846c6c3d41ce37883b43"
+    },
+    {
+      "path": "src/rtl/emg_pl_export.v",
+      "baseline": "92d25e10bb7d039b9047351aaf82856050abafe21c171e1cfb69b2b2fd12cc8f",
+      "candidate": "92d25e10bb7d039b9047351aaf82856050abafe21c171e1cfb69b2b2fd12cc8f"
+    },
+    {
+      "path": "src/rtl/emg_pl_export_status.v",
+      "baseline": "7c058364aa86a0335317884c218a1263594e13582c80bb7f1ba67b6202878a39",
+      "candidate": "7c058364aa86a0335317884c218a1263594e13582c80bb7f1ba67b6202878a39"
+    },
+    {
+      "path": "src/rtl/emg_preprocess.v",
+      "baseline": "09404f30e67c8475bff256f1a63781289a4d1d0797e85bebe38fc39f042f00d4",
+      "candidate": "09404f30e67c8475bff256f1a63781289a4d1d0797e85bebe38fc39f042f00d4"
+    },
+    {
+      "path": "src/rtl/emg_window_features.v",
+      "baseline": "1c0c2f0e19be3a37c031fbf8143be75b3547d399ac82afc87978ae1b3c7c48cc",
+      "candidate": "c9e020b9ca05c3cd656bbc116e9a57b39eb0554f47bce8fde9723f292097d6d6"
+    },
+    {
+      "path": "src/rtl/hand_control.v",
+      "baseline": "4cf8590d3d959c70ee4b4a7f348a4ec62fe60dc60016e18e777b133c4d9dc4e7",
+      "candidate": "4cf8590d3d959c70ee4b4a7f348a4ec62fe60dc60016e18e777b133c4d9dc4e7"
+    },
+    {
+      "path": "src/rtl/hand_motion_top.v",
+      "baseline": "2126de5cf70db1feeffe14706f132ce7807083fec32298a1b7a84d21b13b9b75",
+      "candidate": "2126de5cf70db1feeffe14706f132ce7807083fec32298a1b7a84d21b13b9b75"
+    },
+    {
+      "path": "src/rtl/hand_servo_pwm.v",
+      "baseline": "6fea2331f016fbc2086b984ca0494724b706da587806a1fc3301069a56e580e6",
+      "candidate": "6fea2331f016fbc2086b984ca0494724b706da587806a1fc3301069a56e580e6"
+    },
+    {
+      "path": "src/rtl/lcd_clk_fwd.v",
+      "baseline": "39a7aaed722bd2b9b8f870f446ebd239b17b7ee5ea241045f69768fc6142b9f5",
+      "candidate": "39a7aaed722bd2b9b8f870f446ebd239b17b7ee5ea241045f69768fc6142b9f5"
+    },
+    {
+      "path": "src/rtl/lcd_panel_adapter.v",
+      "baseline": "683f0dc1f0690142342fa06fab110a6b15dd3af80698d332ada74dc796f28391",
+      "candidate": "683f0dc1f0690142342fa06fab110a6b15dd3af80698d332ada74dc796f28391"
+    },
+    {
+      "path": "src/rtl/learning_div64.v",
+      "baseline": "42ddadc38445d0769b52f1798a8209f5900e8f92022470f57223b829af66a344",
+      "candidate": "42ddadc38445d0769b52f1798a8209f5900e8f92022470f57223b829af66a344"
+    },
+    {
+      "path": "src/rtl/mpu6050_motion.v",
+      "baseline": "62ac8cb47bc78b37e4e38cc2ad7b7e524cd40746dc347a690778d85151e3b605",
+      "candidate": "62ac8cb47bc78b37e4e38cc2ad7b7e524cd40746dc347a690778d85151e3b605"
+    },
+    {
+      "path": "src/rtl/mpu6050_tilt.v",
+      "baseline": "a5a7084c41162f24005066032409cb1ccaa3269904fb65ac64071afa95623bb0",
+      "candidate": "a5a7084c41162f24005066032409cb1ccaa3269904fb65ac64071afa95623bb0"
+    },
+    {
+      "path": "src/rtl/touch_gt911.v",
+      "baseline": "0e01ba47d4aae3411b0a8c1631561280a627c0750f197e2c562d0beafd578276",
+      "candidate": "0e01ba47d4aae3411b0a8c1631561280a627c0750f197e2c562d0beafd578276"
+    },
+    {
+      "path": "board/constraints/hz_zynq_ads1299.xdc",
+      "baseline": "62109953adf4ffde3a535f5b13491b0bbdb4226bed62c30e04c14d92ef656c71",
+      "candidate": "62109953adf4ffde3a535f5b13491b0bbdb4226bed62c30e04c14d92ef656c71"
+    },
+    {
+      "path": "board/constraints/hz_zynq_ads1299_bd.xdc",
+      "baseline": "2c3f59a2a3d727e3483992fd802771a9f679efbffa00660fc304d91001cb9527",
+      "candidate": "2c3f59a2a3d727e3483992fd802771a9f679efbffa00660fc304d91001cb9527"
+    },
+    {
+      "path": "board/constraints/hz_zynq_clock_groups.xdc",
+      "baseline": "533302753e7dbff7f6b7d78442884c323f7071266b980e9af8b60c1f21c4961a",
+      "candidate": "533302753e7dbff7f6b7d78442884c323f7071266b980e9af8b60c1f21c4961a"
+    },
+    {
+      "path": "board/constraints/hz_zynq_hand.xdc",
+      "baseline": "665d5bf0096ca656fdae4826de1e53746e9e19e527ee6fe3719a8a43fbb693e1",
+      "candidate": "665d5bf0096ca656fdae4826de1e53746e9e19e527ee6fe3719a8a43fbb693e1"
+    },
+    {
+      "path": "board/constraints/hz_zynq_lcd.xdc",
+      "baseline": "0a78bd4b0de1735e6f8a238252a676fbd10c3a86ba7f551a9bbd7e711ed1e81b",
+      "candidate": "0a78bd4b0de1735e6f8a238252a676fbd10c3a86ba7f551a9bbd7e711ed1e81b"
+    },
+    {
+      "path": "board/constraints/hz_zynq_lcd_timing.xdc",
+      "baseline": "b16419ade3e42fd0ca4ac3bff2103b5a0edd0269500238c81076d337e6a8e0bb",
+      "candidate": "b16419ade3e42fd0ca4ac3bff2103b5a0edd0269500238c81076d337e6a8e0bb"
+    }
+  ],
+  "V13": {
+    "resources": {
+      "LUT": 36417.0,
+      "FF": 40463.0,
+      "Slice": 13008.0,
+      "BRAM": 45.5,
+      "DSP": 111.0
+    },
+    "control_sets": 1326.0,
+    "timing": {
+      "WNS_ns": 0.229,
+      "WHS_ns": 0.036,
+      "clocks": {
+        "pl_clk": {
+          "WNS_ns": 8.624,
+          "WHS_ns": 0.056
+        },
+        "clk_fpga_0": {
+          "WNS_ns": 0.397,
+          "WHS_ns": 0.036
+        }
+      }
+    },
+    "hierarchy": {
+      "emg_learning_0": {
+        "LUT": 3237,
+        "FF": 2943,
+        "BRAM36": 2,
+        "BRAM18": 0,
+        "DSP": 6
+      },
+      "u_emg_fatigue": {
+        "LUT": 3719,
+        "FF": 2714,
+        "BRAM36": 16,
+        "BRAM18": 0,
+        "DSP": 12
+      },
+      "u_feature_bank": {
+        "LUT": 10184,
+        "FF": 12560,
+        "BRAM36": 0,
+        "BRAM18": 0,
+        "DSP": 16
+      },
+      "u_notch50": {
+        "LUT": 3754,
+        "FF": 2726,
+        "BRAM36": 2,
+        "BRAM18": 0,
+        "DSP": 55
+      }
+    }
+  },
+  "first_pass": {
+    "resources": {
+      "LUT": 33948.0,
+      "FF": 36991.0,
+      "Slice": 12708.0,
+      "BRAM": 45.5,
+      "DSP": 111.0
+    },
+    "control_sets": 1326.0,
+    "timing": {
+      "WNS_ns": 0.434,
+      "WHS_ns": 0.012,
+      "clocks": {
+        "pl_clk": {
+          "WNS_ns": 8.275,
+          "WHS_ns": 0.063
+        },
+        "clk_fpga_0": {
+          "WNS_ns": 0.539,
+          "WHS_ns": 0.012
+        }
+      }
+    },
+    "hierarchy": {
+      "emg_learning_0": {
+        "LUT": 3245,
+        "FF": 2943,
+        "BRAM36": 2,
+        "BRAM18": 0,
+        "DSP": 6
+      },
+      "u_emg_fatigue": {
+        "LUT": 3722,
+        "FF": 2714,
+        "BRAM36": 16,
+        "BRAM18": 0,
+        "DSP": 12
+      },
+      "u_feature_bank": {
+        "LUT": 7682,
+        "FF": 9088,
+        "BRAM36": 0,
+        "BRAM18": 0,
+        "DSP": 16
+      },
+      "u_notch50": {
+        "LUT": 3754,
+        "FF": 2726,
+        "BRAM36": 2,
+        "BRAM18": 0,
+        "DSP": 55
+      }
+    }
+  },
+  "candidate": {
+    "resources": {
+      "LUT": 25737.0,
+      "FF": 27047.0,
+      "Slice": 9992.0,
+      "BRAM": 45.5,
+      "DSP": 55.0
+    },
+    "control_sets": 1215.0,
+    "timing": {
+      "WNS_ns": 0.254,
+      "WHS_ns": 0.036,
+      "clocks": {
+        "pl_clk": {
+          "WNS_ns": 7.043,
+          "WHS_ns": 0.047
+        },
+        "clk_fpga_0": {
+          "WNS_ns": 0.438,
+          "WHS_ns": 0.036
+        }
+      }
+    },
+    "hierarchy": {
+      "emg_learning_0": {
+        "LUT": 3243,
+        "FF": 2943,
+        "BRAM36": 2,
+        "BRAM18": 0,
+        "DSP": 6
+      },
+      "u_emg_fatigue": {
+        "LUT": 3728,
+        "FF": 2716,
+        "BRAM36": 16,
+        "BRAM18": 0,
+        "DSP": 12
+      },
+      "u_feature_bank": {
+        "LUT": 1539,
+        "FF": 168,
+        "BRAM36": 0,
+        "BRAM18": 0,
+        "DSP": 2
+      },
+      "u_notch50": {
+        "LUT": 1727,
+        "FF": 1700,
+        "BRAM36": 2,
+        "BRAM18": 0,
+        "DSP": 13
+      }
+    }
+  },
+  "bus_skew_min_slack_ns": 9.061,
+  "hardware_handoff_match_ignoring_timestamp": [
+    "design_1.hwh",
+    "design_1_smartconnect_0_0.hwh",
+    "design_1_smartconnect_1_0.hwh",
+    "design_1_smartconnect_learning_0.hwh",
+    "ps7_init.c",
+    "ps7_init.h"
+  ],
+  "learning_max_cycles": {
+    "V13": {
+      "1": 3958,
+      "2": 782,
+      "3": 23863,
+      "4": 77188
+    },
+    "candidate": {
+      "1": 3958,
+      "2": 782,
+      "3": 23863,
+      "4": 77188
+    }
+  },
+  "performance_scope": "cycle-exact RTL/functional netlist and static routed timing; not on-board latency or power",
+  "artifact_hashes": {
+    "build/vivado/hand_motion_reconstruction.runs/impl_1/design_1.bit": "9cd8a133e2d9f45b89a108cdfb7ec8f86721ab5e58f0ced7e918c53eeb2e6ee8",
+    "build/vivado/hand_motion_reconstruction.runs/impl_1/design_1_routed.dcp": "07abfaa70cf2eb85c402ae93404fb0e7eeeb21435b2faf017cbeb53f358fe06b",
+    "build/export/design_1.xsa": "1cf5741859a078a987e345d906b99bd3a4111eb1f50a7cfec467be8e0e2924e8"
+  },
+  "evidence_hashes": {
+    "report/resource_optimization_full_20261027/shared_equiv.log": "e8092cc9d15263520293b97ed64ac2ab6616848fc1c376d78f7323e6177de262",
+    "report/resource_optimization_full_20261027/shared_netlist.log": "c75035a69174947977a656d43b403fbb3ac9893012a56c5a58dc23837942c977",
+    "report/resource_optimization_full_20261027/shared_integrated_netlist.log": "73c8a54d709aa7d65c412804c9f922d7b2cd3a3d83b669db951766bace27a323",
+    "report/resource_optimization_full_20261027/processed_filter.log": "c6485a9994ce5a2a1f59bf9d02da7a248ddefda518ad07bbc70d5d5f90677199",
+    "report/resource_optimization_full_20261027/control_regression.log": "6faf8ae9a70cb6f7d35d859690aa59d514fdaf975ada3dde250071dc807762f2",
+    "report/resource_optimization_full_20261027/full_build.log": "8a8966d4194fabaf48b9015ed308cbef0e2bd7c3931a2f6d2f2dc1a92b6123eb",
+    "report/resource_optimization_full_20261027/learning_regression.log": "3e510b7334d22bf572c0c485da265840b229fd9f06c06ab9bd2b4da0c886f491",
+    "report/resource_optimization_full_20261027/integrated_pl_export.v": "f8029e131490727d8a7a3d9804eab793d6fc5200a5a6f3c91563b72c408ddb6d",
+    "sim/emg_shared_equiv_tb.sv": "38f2c4177fbe1e42eb0c3d2d8c60858c4f2df0ed795921f2328a3f774c58dac9",
+    "sim/emg_shared_netlist_tb.sv": "a5960a4a1adc0fff22e3627c90a5e9eedf3c4dd09ba33c1c9b96e24a022bdfd4",
+    "sim/emg_shared_integrated_netlist_tb.sv": "914b53a0906eb60a2ad2123bc754b7c71a8574e6436119cbec80e21d414a55fe",
+    "sim/emg_learning_accel_tb.sv": "ae6398f8d3442280bda8e94487d1ff4bc7ff6cbc57842d21026cab9104b829d0",
+    "sim/results_learning/learning_vectors.mem": "9f93bf5eba96613570b53f760d7acd2d6ec6d8ea4f76fc9f5fcfdf4a9d33a0ba",
+    "build/scripts/run_shared_equiv_test.ps1": "a766f76956f5cc4f22cbbc7edd16ed9a7ea7ed25a6ded3200f1d0d9ffdb0c27b",
+    "build/scripts/run_shared_netlist_test.ps1": "b0d2aa0118e2ae8ad5ef7ebe5e03f356180fdc9616705a1ca86a9eeb309790de"
+  }
+}

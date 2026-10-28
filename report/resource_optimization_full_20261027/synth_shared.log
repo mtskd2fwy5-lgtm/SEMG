@@ -1,0 +1,806 @@
+#-----------------------------------------------------------
+# Vivado v2025.2 (64-bit)
+# SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025
+# IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025
+# SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025
+# Start of session at: Tue Oct 27 16:01:26 2026
+# Process ID         : 38084
+# Current directory  : D:/FPGA/sEMG-HMRS
+# Command line       : vivado.exe -mode batch -source report/resource_optimization_full_20261027/synth_shared.tcl -log report/resource_optimization_full_20261027/synth_shared.log -journal report/resource_optimization_full_20261027/synth_shared.jou
+# Log file           : D:/FPGA/sEMG-HMRS/report/resource_optimization_full_20261027/synth_shared.log
+# Journal file       : D:/FPGA/sEMG-HMRS\report/resource_optimization_full_20261027/synth_shared.jou
+# Running On         : LAPTOP-VCCV41QO
+# Platform           : Windows Server 2016 or Windows 10
+# Operating System   : 26200
+# Processor Detail   : AMD Ryzen 9 7945HX with Radeon Graphics        
+# CPU Frequency      : 2495 MHz
+# CPU Physical cores : 16
+# CPU Logical cores  : 32
+# Host memory        : 16844 MB
+# Swap memory        : 16844 MB
+# Total Virtual      : 33689 MB
+# Available Virtual  : 9175 MB
+#-----------------------------------------------------------
+INFO: [Common 17-1239] XILINX_LOCAL_USER_DATA is set to 'no'.
+source report/resource_optimization_full_20261027/synth_shared.tcl
+# set root [file normalize [file join [file dirname [info script]] ../..]]
+# set out [file normalize [file dirname [info script]]]
+# foreach top {emg_feature_bank emg_line_filter} {
+#     create_project -in_memory -part xc7z020clg400-2
+#     foreach name {emg_bandpass emg_window_features emg_feature_bank emg_notch50 emg_comb50 emg_line_filter} {
+#         read_verilog $root/src/rtl/$name.v
+#     }
+#     if {$top eq "emg_feature_bank"} {set parameters BYPASS_BANDPASS=1} else {set parameters BANDPASS_ENABLE=1}
+#     synth_design -top $top -part xc7z020clg400-2 -mode out_of_context -generic $parameters
+#     create_clock -name processing_clock -period 40 [get_ports clk]
+#     report_utilization -file $out/${top}_synth_utilization.rpt
+#     write_verilog -force -mode funcsim $out/${top}_synth.v
+#     close_project
+# }
+create_project: Time (s): cpu = 00:00:01 ; elapsed = 00:00:16 . Memory (MB): peak = 314.648 ; gain = 8.770
+Command: synth_design -top emg_feature_bank -part xc7z020clg400-2 -mode out_of_context -generic BYPASS_BANDPASS=1
+Starting synth_design
+Attempting to get a license for feature 'Synthesis' and/or device 'xc7z020'
+INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xc7z020'
+INFO: [Synth 8-7079] Multithreading enabled for synth_design using a maximum of 2 processes.
+INFO: [Synth 8-7078] Launching helper process for spawning children vivado processes
+INFO: [Synth 8-7075] Helper process launched with PID 10200
+---------------------------------------------------------------------------------
+Starting Synthesize : Time (s): cpu = 00:00:05 ; elapsed = 00:00:06 . Memory (MB): peak = 859.672 ; gain = 540.230
+---------------------------------------------------------------------------------
+INFO: [Synth 8-6157] synthesizing module 'emg_feature_bank' [D:/FPGA/sEMG-HMRS/src/rtl/emg_feature_bank.v:17]
+	Parameter BYPASS_BANDPASS bound to: 1 - type: integer 
+INFO: [Synth 8-6157] synthesizing module 'emg_window_features_shared' [D:/FPGA/sEMG-HMRS/src/rtl/emg_window_features.v:267]
+	Parameter CHANNELS bound to: 8 - type: integer 
+	Parameter CHANNEL_BITS bound to: 3 - type: integer 
+	Parameter SAMPLE_WIDTH bound to: 24 - type: integer 
+	Parameter WINDOW_SAMPLES bound to: 400 - type: integer 
+	Parameter HOP_SAMPLES bound to: 100 - type: integer 
+	Parameter RMS_INPUT_SHIFT bound to: 12 - type: integer 
+	Parameter ZC_THRESHOLD bound to: 24'sb000000000000000000000000 
+	Parameter SSC_THRESHOLD bound to: 24'sb000000000000000000000000 
+INFO: [Synth 8-6155] done synthesizing module 'emg_window_features_shared' (0#1) [D:/FPGA/sEMG-HMRS/src/rtl/emg_window_features.v:267]
+INFO: [Synth 8-6155] done synthesizing module 'emg_feature_bank' (0#1) [D:/FPGA/sEMG-HMRS/src/rtl/emg_feature_bank.v:17]
+WARNING: [Synth 8-3917] design emg_feature_bank has port feature_id[3] driven by constant 0
+---------------------------------------------------------------------------------
+Finished Synthesize : Time (s): cpu = 00:00:07 ; elapsed = 00:00:08 . Memory (MB): peak = 984.676 ; gain = 665.234
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Constraint Validation : Time (s): cpu = 00:00:08 ; elapsed = 00:00:09 . Memory (MB): peak = 984.676 ; gain = 665.234
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Loading Part and Timing Information
+---------------------------------------------------------------------------------
+Loading part: xc7z020clg400-2
+---------------------------------------------------------------------------------
+INFO: [Device 21-403] Loading part xc7z020clg400-2
+Finished Loading Part and Timing Information : Time (s): cpu = 00:00:08 ; elapsed = 00:00:09 . Memory (MB): peak = 984.676 ; gain = 665.234
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished RTL Optimization Phase 2 : Time (s): cpu = 00:00:08 ; elapsed = 00:00:09 . Memory (MB): peak = 984.676 ; gain = 665.234
+---------------------------------------------------------------------------------
+No constraint files found.
+---------------------------------------------------------------------------------
+Start RTL Component Statistics 
+---------------------------------------------------------------------------------
+Detailed RTL Component Info : 
++---Adders : 
+	   5 Input   40 Bit       Adders := 3     
+	   2 Input   32 Bit       Adders := 3     
+	   3 Input   25 Bit       Adders := 2     
+	   2 Input   25 Bit       Adders := 3     
+	   2 Input    9 Bit       Adders := 1     
+	   5 Input    9 Bit       Adders := 2     
+	   2 Input    7 Bit       Adders := 4     
+	   2 Input    3 Bit       Adders := 3     
+	   2 Input    2 Bit       Adders := 1     
++---Registers : 
+	               32 Bit    Registers := 5     
+	                8 Bit    Registers := 3     
+	                3 Bit    Registers := 3     
+	                1 Bit    Registers := 2     
++---Muxes : 
+	   2 Input  324 Bit        Muxes := 3     
+	   2 Input   40 Bit        Muxes := 9     
+	   2 Input   32 Bit        Muxes := 13    
+	   5 Input   32 Bit        Muxes := 3     
+	   4 Input   32 Bit        Muxes := 2     
+	   2 Input   25 Bit        Muxes := 3     
+	   2 Input    9 Bit        Muxes := 7     
+	   2 Input    8 Bit        Muxes := 2     
+	   2 Input    7 Bit        Muxes := 7     
+	   2 Input    3 Bit        Muxes := 2     
+	   2 Input    2 Bit        Muxes := 3     
+	   2 Input    1 Bit        Muxes := 9     
+	   3 Input    1 Bit        Muxes := 1     
+---------------------------------------------------------------------------------
+Finished RTL Component Statistics 
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Part Resource Summary
+---------------------------------------------------------------------------------
+Part Resources:
+DSPs: 220 (col length:60)
+BRAMs: 280 (col length: RAMB18 60 RAMB36 30)
+---------------------------------------------------------------------------------
+Finished Part Resource Summary
+---------------------------------------------------------------------------------
+No constraint files found.
+---------------------------------------------------------------------------------
+Start Cross Boundary and Area Optimization
+---------------------------------------------------------------------------------
+DSP Report: Generating DSP next_energy1, operation Mode is: A*B.
+DSP Report: operator next_energy1 is absorbed into DSP next_energy1.
+DSP Report: operator next_energy1 is absorbed into DSP next_energy1.
+DSP Report: Generating DSP next_energy1, operation Mode is: (PCIN>>17)+A*B.
+DSP Report: operator next_energy1 is absorbed into DSP next_energy1.
+DSP Report: operator next_energy1 is absorbed into DSP next_energy1.
+WARNING: [Synth 8-3917] design emg_feature_bank has port feature_id[3] driven by constant 0
+---------------------------------------------------------------------------------
+Finished Cross Boundary and Area Optimization : Time (s): cpu = 00:00:18 ; elapsed = 00:00:24 . Memory (MB): peak = 1315.289 ; gain = 995.848
+---------------------------------------------------------------------------------
+ Sort Area is  next_energy1_0 : 0 0 : 3300 3951 : Used 1 time 0
+ Sort Area is  next_energy1_0 : 0 1 : 651 3951 : Used 1 time 0
+---------------------------------------------------------------------------------
+Start ROM, RAM, DSP, Shift Register and Retiming Reporting
+---------------------------------------------------------------------------------
+
+Distributed RAM: Preliminary Mapping Report (see note below)
++-----------------------------+-----------------------------+----------------+----------------------+-----------------+
+|Module Name                  | RTL Object                  | Inference      | Size (Depth x Width) | Primitives      | 
++-----------------------------+-----------------------------+----------------+----------------------+-----------------+
+|\shared_features.u_features  | contexts_reg                | User Attribute | 8 x 324              | RAM16X1S x 324  | 
+|\shared_features.u_features  | history_reg                 | User Attribute | 32 x 110             | RAM32X1S x 110  | 
+|emg_feature_bank             | shared_capture.hold_mem_reg | User Attribute | 8 x 160              | RAM32M x 27     | 
++-----------------------------+-----------------------------+----------------+----------------------+-----------------+
+
+Note: The table above is a preliminary report that shows the Distributed RAMs at the current stage of the synthesis flow. Some Distributed RAMs may be reimplemented as non Distributed RAM primitives later in the synthesis flow. Multiple instantiated RAMs are reported only once.
+
+DSP: Preliminary Mapping Report (see note below. The ' indicates corresponding REG is set)
++---------------------------+----------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+|Module Name                | DSP Mapping    | A Size | B Size | C Size | D Size | P Size | AREG | BREG | CREG | DREG | ADREG | MREG | PREG | 
++---------------------------+----------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+|emg_window_features_shared | A*B            | 24     | 18     | -      | -      | 48     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|emg_window_features_shared | (PCIN>>17)+A*B | 15     | 7      | -      | -      | 15     | 0    | 0    | -    | -    | -     | 0    | 0    | 
++---------------------------+----------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+
+Note: The table above is a preliminary report that shows the DSPs inferred at the current stage of the synthesis flow. Some DSP may be reimplemented as non DSP primitives later in the synthesis flow. Multiple instantiated DSPs are reported only once.
+---------------------------------------------------------------------------------
+Finished ROM, RAM, DSP, Shift Register and Retiming Reporting
+---------------------------------------------------------------------------------
+No constraint files found.
+---------------------------------------------------------------------------------
+Start Timing Optimization
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Timing Optimization : Time (s): cpu = 00:00:18 ; elapsed = 00:00:24 . Memory (MB): peak = 1322.855 ; gain = 1003.414
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start ROM, RAM, DSP, Shift Register and Retiming Reporting
+---------------------------------------------------------------------------------
+
+Distributed RAM: Final Mapping Report
++-----------------------------+-----------------------------+----------------+----------------------+-----------------+
+|Module Name                  | RTL Object                  | Inference      | Size (Depth x Width) | Primitives      | 
++-----------------------------+-----------------------------+----------------+----------------------+-----------------+
+|\shared_features.u_features  | contexts_reg                | User Attribute | 8 x 324              | RAM16X1S x 324  | 
+|\shared_features.u_features  | history_reg                 | User Attribute | 32 x 110             | RAM32X1S x 110  | 
+|emg_feature_bank             | shared_capture.hold_mem_reg | User Attribute | 8 x 160              | RAM32M x 27     | 
++-----------------------------+-----------------------------+----------------+----------------------+-----------------+
+
+---------------------------------------------------------------------------------
+Finished ROM, RAM, DSP, Shift Register and Retiming Reporting
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Technology Mapping
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Technology Mapping : Time (s): cpu = 00:00:18 ; elapsed = 00:00:24 . Memory (MB): peak = 1323.016 ; gain = 1003.574
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished IO Insertion : Time (s): cpu = 00:00:22 ; elapsed = 00:00:28 . Memory (MB): peak = 1460.695 ; gain = 1141.254
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Instances
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Instances : Time (s): cpu = 00:00:22 ; elapsed = 00:00:28 . Memory (MB): peak = 1460.695 ; gain = 1141.254
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Rebuilding User Hierarchy
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Rebuilding User Hierarchy : Time (s): cpu = 00:00:22 ; elapsed = 00:00:28 . Memory (MB): peak = 1460.695 ; gain = 1141.254
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Ports
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Ports : Time (s): cpu = 00:00:22 ; elapsed = 00:00:28 . Memory (MB): peak = 1460.695 ; gain = 1141.254
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Handling Custom Attributes
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Handling Custom Attributes : Time (s): cpu = 00:00:22 ; elapsed = 00:00:28 . Memory (MB): peak = 1460.695 ; gain = 1141.254
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Nets
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Nets : Time (s): cpu = 00:00:22 ; elapsed = 00:00:28 . Memory (MB): peak = 1460.695 ; gain = 1141.254
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Writing Synthesis Report
+---------------------------------------------------------------------------------
+
+DSP Final Report (the ' indicates corresponding REG is set)
++---------------------------+--------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+|Module Name                | DSP Mapping  | A Size | B Size | C Size | D Size | P Size | AREG | BREG | CREG | DREG | ADREG | MREG | PREG | 
++---------------------------+--------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+|emg_window_features_shared | A*B          | 30     | 17     | -      | -      | 48     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|emg_window_features_shared | PCIN>>17+A*B | 30     | 18     | -      | -      | 15     | 0    | 0    | -    | -    | -     | 0    | 0    | 
++---------------------------+--------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+
+
+Report BlackBoxes: 
++-+--------------+----------+
+| |BlackBox name |Instances |
++-+--------------+----------+
++-+--------------+----------+
+
+Report Cell Usage: 
++------+---------+------+
+|      |Cell     |Count |
++------+---------+------+
+|1     |CARRY4   |   116|
+|2     |DSP48E1  |     2|
+|3     |LUT1     |    75|
+|4     |LUT2     |   472|
+|5     |LUT3     |   268|
+|6     |LUT4     |   207|
+|7     |LUT5     |   334|
+|8     |LUT6     |   290|
+|9     |MUXF7    |     3|
+|10    |RAM16X1S |   323|
+|11    |RAM32M   |    20|
+|12    |RAM32X1S |   110|
+|13    |FDRE     |   168|
++------+---------+------+
+
+Report Instance Areas: 
++------+-------------------------------+---------------------------+------+
+|      |Instance                       |Module                     |Cells |
++------+-------------------------------+---------------------------+------+
+|1     |top                            |                           |  2388|
+|2     |  \shared_features.u_features  |emg_window_features_shared |  2233|
++------+-------------------------------+---------------------------+------+
+---------------------------------------------------------------------------------
+Finished Writing Synthesis Report : Time (s): cpu = 00:00:22 ; elapsed = 00:00:28 . Memory (MB): peak = 1460.695 ; gain = 1141.254
+---------------------------------------------------------------------------------
+Synthesis finished with 0 errors, 0 critical warnings and 2 warnings.
+Synthesis Optimization Runtime : Time (s): cpu = 00:00:22 ; elapsed = 00:00:28 . Memory (MB): peak = 1460.695 ; gain = 1141.254
+Synthesis Optimization Complete : Time (s): cpu = 00:00:22 ; elapsed = 00:00:28 . Memory (MB): peak = 1460.695 ; gain = 1141.254
+INFO: [Project 1-571] Translating synthesized netlist
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.021 . Memory (MB): peak = 1476.723 ; gain = 0.000
+INFO: [Netlist 29-17] Analyzing 574 Unisim elements for replacement
+INFO: [Netlist 29-28] Unisim Transformation completed in 1 CPU seconds
+WARNING: [Netlist 29-101] Netlist 'emg_feature_bank' is not ideal for floorplanning, since the cellview 'emg_window_features_shared' contains a large number of primitives.  Please consider enabling hierarchy in synthesis if you want to do floorplanning.
+INFO: [Project 1-570] Preparing netlist for logic optimization
+INFO: [Opt 31-138] Pushed 0 inverter(s) to 0 load pin(s).
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.002 . Memory (MB): peak = 1596.145 ; gain = 0.000
+INFO: [Project 1-111] Unisim Transformation Summary:
+  A total of 453 instances were transformed.
+  RAM16X1S => RAM32X1S (RAMS32): 323 instances
+  RAM32M => RAM32M (RAMD32(x6), RAMS32(x2)): 20 instances
+  RAM32X1S => RAM32X1S (RAMS32): 110 instances
+
+Synth Design complete | Checksum: 1d6cab93
+INFO: [Common 17-83] Releasing license: Synthesis
+16 Infos, 3 Warnings, 0 Critical Warnings and 0 Errors encountered.
+synth_design completed successfully
+synth_design: Time (s): cpu = 00:00:25 ; elapsed = 00:00:33 . Memory (MB): peak = 1596.145 ; gain = 1281.496
+Command: synth_design -top emg_line_filter -part xc7z020clg400-2 -mode out_of_context -generic BANDPASS_ENABLE=1
+Starting synth_design
+Attempting to get a license for feature 'Synthesis' and/or device 'xc7z020'
+INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xc7z020'
+INFO: [Synth 8-7079] Multithreading enabled for synth_design using a maximum of 2 processes.
+---------------------------------------------------------------------------------
+Starting Synthesize : Time (s): cpu = 00:00:05 ; elapsed = 00:00:06 . Memory (MB): peak = 1596.145 ; gain = 0.000
+---------------------------------------------------------------------------------
+INFO: [Synth 8-6157] synthesizing module 'emg_line_filter' [D:/FPGA/sEMG-HMRS/src/rtl/emg_line_filter.v:5]
+	Parameter BANDPASS_ENABLE bound to: 1 - type: integer 
+INFO: [Synth 8-6157] synthesizing module 'emg_bandpass_shared' [D:/FPGA/sEMG-HMRS/src/rtl/emg_bandpass.v:162]
+	Parameter FRACTION_SAVE bound to: 1 - type: integer 
+	Parameter HP_B0 bound to: 64096 - type: integer 
+	Parameter HP_B1 bound to: -128192 - type: integer 
+	Parameter HP_B2 bound to: 64096 - type: integer 
+	Parameter HP_A1 bound to: -128161 - type: integer 
+	Parameter HP_A2 bound to: 62688 - type: integer 
+	Parameter LP_ALPHA bound to: 9392 - type: integer 
+INFO: [Synth 8-6155] done synthesizing module 'emg_bandpass_shared' (0#1) [D:/FPGA/sEMG-HMRS/src/rtl/emg_bandpass.v:162]
+INFO: [Synth 8-6157] synthesizing module 'emg_notch50' [D:/FPGA/sEMG-HMRS/src/rtl/emg_notch50.v:11]
+INFO: [Synth 8-6155] done synthesizing module 'emg_notch50' (0#1) [D:/FPGA/sEMG-HMRS/src/rtl/emg_notch50.v:11]
+INFO: [Synth 8-6157] synthesizing module 'emg_comb50' [D:/FPGA/sEMG-HMRS/src/rtl/emg_comb50.v:8]
+INFO: [Synth 8-155] case statement is not full and has no default [D:/FPGA/sEMG-HMRS/src/rtl/emg_comb50.v:62]
+INFO: [Synth 8-6155] done synthesizing module 'emg_comb50' (0#1) [D:/FPGA/sEMG-HMRS/src/rtl/emg_comb50.v:8]
+INFO: [Synth 8-6155] done synthesizing module 'emg_line_filter' (0#1) [D:/FPGA/sEMG-HMRS/src/rtl/emg_line_filter.v:5]
+---------------------------------------------------------------------------------
+Finished Synthesize : Time (s): cpu = 00:00:07 ; elapsed = 00:00:08 . Memory (MB): peak = 1596.145 ; gain = 0.000
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Constraint Validation : Time (s): cpu = 00:00:07 ; elapsed = 00:00:08 . Memory (MB): peak = 1596.145 ; gain = 0.000
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Loading Part and Timing Information
+---------------------------------------------------------------------------------
+Loading part: xc7z020clg400-2
+---------------------------------------------------------------------------------
+Finished Loading Part and Timing Information : Time (s): cpu = 00:00:07 ; elapsed = 00:00:08 . Memory (MB): peak = 1596.145 ; gain = 0.000
+---------------------------------------------------------------------------------
+INFO: [Synth 8-802] inferred FSM for state register 'state_reg' in module 'emg_notch50'
+INFO: [Synth 8-802] inferred FSM for state register 'state_reg' in module 'emg_comb50'
+---------------------------------------------------------------------------------------------------
+                   State |                     New Encoding |                Previous Encoding 
+---------------------------------------------------------------------------------------------------
+                    IDLE |                             0001 |                               00
+                MULTIPLY |                             0010 |                               01
+              ACCUMULATE |                             0100 |                               10
+                  COMMIT |                             1000 |                               11
+---------------------------------------------------------------------------------------------------
+INFO: [Synth 8-3354] encoded FSM with state register 'state_reg' using encoding 'one-hot' in module 'emg_notch50'
+---------------------------------------------------------------------------------------------------
+                   State |                     New Encoding |                Previous Encoding 
+---------------------------------------------------------------------------------------------------
+                    IDLE |                              000 |                              000
+              DIFFERENCE |                              001 |                              001
+                  MULT_X |                              010 |                              010
+                   SUM_X |                              011 |                              011
+                  MULT_Y |                              100 |                              100
+                   SUM_Y |                              101 |                              101
+                  COMMIT |                              110 |                              110
+---------------------------------------------------------------------------------------------------
+INFO: [Synth 8-3354] encoded FSM with state register 'state_reg' using encoding 'sequential' in module 'emg_comb50'
+---------------------------------------------------------------------------------
+Finished RTL Optimization Phase 2 : Time (s): cpu = 00:00:07 ; elapsed = 00:00:09 . Memory (MB): peak = 1596.145 ; gain = 0.000
+---------------------------------------------------------------------------------
+No constraint files found.
+---------------------------------------------------------------------------------
+Start RTL Component Statistics 
+---------------------------------------------------------------------------------
+Detailed RTL Component Info : 
++---Adders : 
+	   2 Input   69 Bit       Adders := 4     
+	   2 Input   42 Bit       Adders := 1     
+	   2 Input   41 Bit       Adders := 2     
+	   3 Input   25 Bit       Adders := 1     
+	   2 Input   10 Bit       Adders := 2     
+	   2 Input    7 Bit       Adders := 2     
+	   2 Input    3 Bit       Adders := 1     
++---Registers : 
+	               69 Bit    Registers := 2     
+	               66 Bit    Registers := 1     
+	               65 Bit    Registers := 1     
+	               64 Bit    Registers := 1     
+	               40 Bit    Registers := 34    
+	               24 Bit    Registers := 4     
+	               18 Bit    Registers := 5     
+	               16 Bit    Registers := 6     
+	                8 Bit    Registers := 1     
+	                7 Bit    Registers := 16    
+	                3 Bit    Registers := 6     
+	                1 Bit    Registers := 6     
++---Multipliers : 
+	              26x40  Multipliers := 1     
+	              25x40  Multipliers := 1     
++---RAMs : 
+	              40K Bit	(640 X 64 bit)          RAMs := 1     
++---Muxes : 
+	   4 Input   69 Bit        Muxes := 1     
+	   7 Input   69 Bit        Muxes := 1     
+	   2 Input   48 Bit        Muxes := 2     
+	   2 Input   45 Bit        Muxes := 1     
+	   2 Input   44 Bit        Muxes := 1     
+	   2 Input   40 Bit        Muxes := 5     
+	   7 Input   40 Bit        Muxes := 1     
+	   5 Input   26 Bit        Muxes := 1     
+	   2 Input   25 Bit        Muxes := 1     
+	   2 Input   24 Bit        Muxes := 5     
+	   2 Input   16 Bit        Muxes := 1     
+	   2 Input   15 Bit        Muxes := 1     
+	   2 Input    8 Bit        Muxes := 1     
+	   4 Input    4 Bit        Muxes := 1     
+	   2 Input    4 Bit        Muxes := 1     
+	   4 Input    3 Bit        Muxes := 1     
+	   7 Input    3 Bit        Muxes := 1     
+	   2 Input    1 Bit        Muxes := 19    
+	   4 Input    1 Bit        Muxes := 13    
+	   7 Input    1 Bit        Muxes := 25    
+---------------------------------------------------------------------------------
+Finished RTL Component Statistics 
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Part Resource Summary
+---------------------------------------------------------------------------------
+Part Resources:
+DSPs: 220 (col length:60)
+BRAMs: 280 (col length: RAMB18 60 RAMB36 30)
+---------------------------------------------------------------------------------
+Finished Part Resource Summary
+---------------------------------------------------------------------------------
+No constraint files found.
+---------------------------------------------------------------------------------
+Start Cross Boundary and Area Optimization
+---------------------------------------------------------------------------------
+DSP Report: Generating DSP hp_acc_w2, operation Mode is: A*B.
+DSP Report: operator hp_acc_w2 is absorbed into DSP hp_acc_w2.
+DSP Report: Generating DSP hp_acc_w1, operation Mode is: A*B.
+DSP Report: operator hp_acc_w1 is absorbed into DSP hp_acc_w1.
+DSP Report: Generating DSP hp_acc_w3, operation Mode is: A*B.
+DSP Report: operator hp_acc_w3 is absorbed into DSP hp_acc_w3.
+DSP Report: Generating DSP hp_acc_w, operation Mode is: PCIN+A*B.
+DSP Report: operator hp_acc_w is absorbed into DSP hp_acc_w.
+DSP Report: operator hp_acc_w4 is absorbed into DSP hp_acc_w.
+DSP Report: Generating DSP hp_acc_w, operation Mode is: PCIN+A*B.
+DSP Report: operator hp_acc_w is absorbed into DSP hp_acc_w.
+DSP Report: operator hp_acc_w4 is absorbed into DSP hp_acc_w.
+DSP Report: Generating DSP lp_prod_w, operation Mode is: C+(D-A)*B.
+DSP Report: operator lp_prod_w is absorbed into DSP lp_prod_w.
+DSP Report: operator lp_prod_w0 is absorbed into DSP lp_prod_w.
+DSP Report: operator lp_diff_w is absorbed into DSP lp_prod_w.
+DSP Report: Generating DSP product_q0, operation Mode is: A*B.
+DSP Report: operator product_q0 is absorbed into DSP product_q0.
+DSP Report: operator product_q0 is absorbed into DSP product_q0.
+DSP Report: Generating DSP product_q_reg, operation Mode is: (PCIN>>17)+A*B.
+DSP Report: register product_q_reg is absorbed into DSP product_q_reg.
+DSP Report: operator product_q0 is absorbed into DSP product_q_reg.
+DSP Report: operator product_q0 is absorbed into DSP product_q_reg.
+DSP Report: Generating DSP product_q0, operation Mode is: A*B.
+DSP Report: operator product_q0 is absorbed into DSP product_q0.
+DSP Report: operator product_q0 is absorbed into DSP product_q0.
+DSP Report: Generating DSP product_q_reg, operation Mode is: (PCIN>>17)+A*B.
+DSP Report: register product_q_reg is absorbed into DSP product_q_reg.
+DSP Report: operator product_q0 is absorbed into DSP product_q_reg.
+DSP Report: operator product_q0 is absorbed into DSP product_q_reg.
+DSP Report: Generating DSP product_q_reg, operation Mode is: (A*B2)'.
+DSP Report: register product_q_reg is absorbed into DSP product_q_reg.
+DSP Report: register product_q_reg is absorbed into DSP product_q_reg.
+DSP Report: operator product_q0 is absorbed into DSP product_q_reg.
+DSP Report: operator product_q0 is absorbed into DSP product_q_reg.
+DSP Report: Generating DSP product_q0, operation Mode is: A*B2.
+DSP Report: register product_q0 is absorbed into DSP product_q0.
+DSP Report: operator product_q0 is absorbed into DSP product_q0.
+DSP Report: operator product_q0 is absorbed into DSP product_q0.
+DSP Report: Generating DSP product_q_reg, operation Mode is: (PCIN>>17)+A*B2.
+DSP Report: register product_q_reg is absorbed into DSP product_q_reg.
+DSP Report: register product_q_reg is absorbed into DSP product_q_reg.
+DSP Report: operator product_q0 is absorbed into DSP product_q_reg.
+DSP Report: operator product_q0 is absorbed into DSP product_q_reg.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[47]) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[46]) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[45]) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[44]) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[43]) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[42]) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[41]) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[40]) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[39]) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[38]) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[37]) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[36]) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[35]) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[34]) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[33]) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[32]) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[31]) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[30]) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[29]) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[28]) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[27]) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[26]) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[25]) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[24]) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[23]) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[22]) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[21]) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[20]) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[19]) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[18]) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[17]) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[47]__0) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[46]__0) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[45]__0) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[44]__0) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[43]__0) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[42]__0) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[41]__0) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[40]__0) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[39]__0) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[38]__0) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[37]__0) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[36]__0) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[35]__0) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[34]__0) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[33]__0) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[32]__0) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[31]__0) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[30]__0) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[29]__0) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[28]__0) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[27]__0) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[26]__0) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[25]__0) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[24]__0) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[23]__0) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[22]__0) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[21]__0) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[20]__0) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[19]__0) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[18]__0) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[17]__0) is unused and will be removed from module emg_notch50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[47]) is unused and will be removed from module emg_comb50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[46]) is unused and will be removed from module emg_comb50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[45]) is unused and will be removed from module emg_comb50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[44]) is unused and will be removed from module emg_comb50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[43]) is unused and will be removed from module emg_comb50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[42]) is unused and will be removed from module emg_comb50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[41]) is unused and will be removed from module emg_comb50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[40]) is unused and will be removed from module emg_comb50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[39]) is unused and will be removed from module emg_comb50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[38]) is unused and will be removed from module emg_comb50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[37]) is unused and will be removed from module emg_comb50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[36]) is unused and will be removed from module emg_comb50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[35]) is unused and will be removed from module emg_comb50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[34]) is unused and will be removed from module emg_comb50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[33]) is unused and will be removed from module emg_comb50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[32]) is unused and will be removed from module emg_comb50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[31]) is unused and will be removed from module emg_comb50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[30]) is unused and will be removed from module emg_comb50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[29]) is unused and will be removed from module emg_comb50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[28]) is unused and will be removed from module emg_comb50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[27]) is unused and will be removed from module emg_comb50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[26]) is unused and will be removed from module emg_comb50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[25]) is unused and will be removed from module emg_comb50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[24]) is unused and will be removed from module emg_comb50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[23]) is unused and will be removed from module emg_comb50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[22]) is unused and will be removed from module emg_comb50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[21]) is unused and will be removed from module emg_comb50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[20]) is unused and will be removed from module emg_comb50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[19]) is unused and will be removed from module emg_comb50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[18]) is unused and will be removed from module emg_comb50.
+WARNING: [Synth 8-3332] Sequential element (product_q_reg[17]) is unused and will be removed from module emg_comb50.
+---------------------------------------------------------------------------------
+Finished Cross Boundary and Area Optimization : Time (s): cpu = 00:00:14 ; elapsed = 00:00:16 . Memory (MB): peak = 1596.145 ; gain = 0.000
+---------------------------------------------------------------------------------
+ Sort Area is  hp_acc_w3_0 : 0 0 : 3117 9626 : Used 1 time 0
+ Sort Area is  hp_acc_w3_0 : 0 1 : 3253 9626 : Used 1 time 0
+ Sort Area is  hp_acc_w3_0 : 0 2 : 3256 9626 : Used 1 time 0
+ Sort Area is  product_q0_e : 0 0 : 3424 6911 : Used 1 time 0
+ Sort Area is  product_q0_e : 0 1 : 3487 6911 : Used 1 time 0
+ Sort Area is  product_q0_b : 0 0 : 3434 5289 : Used 1 time 0
+ Sort Area is  product_q0_b : 0 1 : 1855 5289 : Used 1 time 0
+ Sort Area is  product_q0_8 : 0 0 : 3101 4791 : Used 1 time 0
+ Sort Area is  product_q0_8 : 0 1 : 1690 4791 : Used 1 time 0
+ Sort Area is  hp_acc_w1_4 : 0 0 : 3117 3117 : Used 1 time 0
+ Sort Area is  hp_acc_w2_5 : 0 0 : 3117 3117 : Used 1 time 0
+ Sort Area is  lp_prod_w_6 : 0 0 : 3092 3092 : Used 1 time 0
+ Sort Area is  product_q_reg_11 : 0 0 : 1072 1072 : Used 1 time 0
+---------------------------------------------------------------------------------
+Start ROM, RAM, DSP, Shift Register and Retiming Reporting
+---------------------------------------------------------------------------------
+
+Block RAM: Preliminary Mapping Report (see note below)
++------------+-------------+------------------------+---+---+------------------------+---+---+------------------+--------+--------+
+|Module Name | RTL Object  | PORT A (Depth x Width) | W | R | PORT B (Depth x Width) | W | R | Ports driving FF | RAMB18 | RAMB36 | 
++------------+-------------+------------------------+---+---+------------------------+---+---+------------------+--------+--------+
+|comb        | history_reg | 640 x 64(READ_FIRST)   | W |   | 640 x 64(WRITE_FIRST)  |   | R | Port A and B     | 0      | 2      | 
++------------+-------------+------------------------+---+---+------------------------+---+---+------------------+--------+--------+
+
+Note: The table above is a preliminary report that shows the Block RAMs at the current stage of the synthesis flow. Some Block RAMs may be reimplemented as non Block RAM primitives later in the synthesis flow. Multiple instantiated Block RAMs are reported only once. 
+
+Distributed RAM: Preliminary Mapping Report (see note below)
++----------------------------+--------------+----------------+----------------------+-----------------+
+|Module Name                 | RTL Object   | Inference      | Size (Depth x Width) | Primitives      | 
++----------------------------+--------------+----------------+----------------------+-----------------+
+|\final_bandpass.u_bandpass  | contexts_reg | User Attribute | 8 x 151              | RAM16X1S x 151  | 
++----------------------------+--------------+----------------+----------------------+-----------------+
+
+Note: The table above is a preliminary report that shows the Distributed RAMs at the current stage of the synthesis flow. Some Distributed RAMs may be reimplemented as non Distributed RAM primitives later in the synthesis flow. Multiple instantiated RAMs are reported only once.
+
+DSP: Preliminary Mapping Report (see note below. The ' indicates corresponding REG is set)
++--------------------+-----------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+|Module Name         | DSP Mapping     | A Size | B Size | C Size | D Size | P Size | AREG | BREG | CREG | DREG | ADREG | MREG | PREG | 
++--------------------+-----------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+|emg_bandpass_shared | A*B             | 24     | 18     | -      | -      | 42     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|emg_bandpass_shared | A*B             | 24     | 18     | -      | -      | 42     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|emg_bandpass_shared | A*B             | 24     | 18     | -      | -      | 42     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|emg_bandpass_shared | PCIN+A*B        | 24     | 18     | -      | -      | 45     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|emg_bandpass_shared | PCIN+A*B        | 24     | 18     | -      | -      | 45     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|emg_bandpass_shared | C+(D-A)*B       | 24     | 16     | 16     | 24     | 41     | 0    | 0    | 0    | 0    | 0     | 0    | 0    | 
+|emg_notch50         | A*B             | 23     | 18     | -      | -      | 48     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|emg_notch50         | (PCIN>>17)+A*B  | 23     | 9      | -      | -      | 48     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|emg_notch50         | A*B             | 18     | 18     | -      | -      | 48     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|emg_notch50         | (PCIN>>17)+A*B  | 18     | 9      | -      | -      | 48     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|emg_comb50          | (A*B2)'         | 25     | 6      | -      | -      | 48     | 0    | 1    | -    | -    | -     | 1    | 0    | 
+|emg_comb50          | A*B2            | 25     | 18     | -      | -      | 48     | 0    | 1    | -    | -    | -     | 0    | 0    | 
+|emg_comb50          | (PCIN>>17)+A*B2 | 25     | 18     | -      | -      | 48     | 0    | 1    | -    | -    | -     | 0    | 1    | 
++--------------------+-----------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+
+Note: The table above is a preliminary report that shows the DSPs inferred at the current stage of the synthesis flow. Some DSP may be reimplemented as non DSP primitives later in the synthesis flow. Multiple instantiated DSPs are reported only once.
+---------------------------------------------------------------------------------
+Finished ROM, RAM, DSP, Shift Register and Retiming Reporting
+---------------------------------------------------------------------------------
+No constraint files found.
+---------------------------------------------------------------------------------
+Start Timing Optimization
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Timing Optimization : Time (s): cpu = 00:00:15 ; elapsed = 00:00:16 . Memory (MB): peak = 1596.145 ; gain = 0.000
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start ROM, RAM, DSP, Shift Register and Retiming Reporting
+---------------------------------------------------------------------------------
+
+Block RAM: Final Mapping Report
++------------+-------------+------------------------+---+---+------------------------+---+---+------------------+--------+--------+
+|Module Name | RTL Object  | PORT A (Depth x Width) | W | R | PORT B (Depth x Width) | W | R | Ports driving FF | RAMB18 | RAMB36 | 
++------------+-------------+------------------------+---+---+------------------------+---+---+------------------+--------+--------+
+|comb        | history_reg | 640 x 64(READ_FIRST)   | W |   | 640 x 64(WRITE_FIRST)  |   | R | Port A and B     | 0      | 2      | 
++------------+-------------+------------------------+---+---+------------------------+---+---+------------------+--------+--------+
+
+
+Distributed RAM: Final Mapping Report
++----------------------------+--------------+----------------+----------------------+-----------------+
+|Module Name                 | RTL Object   | Inference      | Size (Depth x Width) | Primitives      | 
++----------------------------+--------------+----------------+----------------------+-----------------+
+|\final_bandpass.u_bandpass  | contexts_reg | User Attribute | 8 x 151              | RAM16X1S x 151  | 
++----------------------------+--------------+----------------+----------------------+-----------------+
+
+---------------------------------------------------------------------------------
+Finished ROM, RAM, DSP, Shift Register and Retiming Reporting
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Technology Mapping
+---------------------------------------------------------------------------------
+INFO: [Synth 8-7052] The timing for the instance comb/history_reg_0 (implemented as a Block RAM) might be sub-optimal as no optional output register could be merged into the ram block. Providing additional output register may help in improving timing.
+INFO: [Synth 8-7052] The timing for the instance comb/history_reg_1 (implemented as a Block RAM) might be sub-optimal as no optional output register could be merged into the ram block. Providing additional output register may help in improving timing.
+---------------------------------------------------------------------------------
+Finished Technology Mapping : Time (s): cpu = 00:00:15 ; elapsed = 00:00:17 . Memory (MB): peak = 1596.145 ; gain = 0.000
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished IO Insertion : Time (s): cpu = 00:00:19 ; elapsed = 00:00:21 . Memory (MB): peak = 1596.145 ; gain = 0.000
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Instances
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Instances : Time (s): cpu = 00:00:19 ; elapsed = 00:00:21 . Memory (MB): peak = 1596.145 ; gain = 0.000
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Rebuilding User Hierarchy
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Rebuilding User Hierarchy : Time (s): cpu = 00:00:19 ; elapsed = 00:00:21 . Memory (MB): peak = 1596.145 ; gain = 0.000
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Ports
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Ports : Time (s): cpu = 00:00:19 ; elapsed = 00:00:21 . Memory (MB): peak = 1596.145 ; gain = 0.000
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Handling Custom Attributes
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Handling Custom Attributes : Time (s): cpu = 00:00:19 ; elapsed = 00:00:21 . Memory (MB): peak = 1596.145 ; gain = 0.000
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Nets
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Nets : Time (s): cpu = 00:00:19 ; elapsed = 00:00:21 . Memory (MB): peak = 1596.145 ; gain = 0.000
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Writing Synthesis Report
+---------------------------------------------------------------------------------
+
+DSP Final Report (the ' indicates corresponding REG is set)
++--------------------+------------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+|Module Name         | DSP Mapping      | A Size | B Size | C Size | D Size | P Size | AREG | BREG | CREG | DREG | ADREG | MREG | PREG | 
++--------------------+------------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+|emg_comb50          | (A*B')'          | 24     | 18     | -      | -      | 48     | 0    | 1    | -    | -    | -     | 0    | 1    | 
+|emg_comb50          | A*B'             | 24     | 17     | -      | -      | 48     | 0    | 1    | -    | -    | -     | 0    | 0    | 
+|emg_comb50          | (PCIN>>17+A*B')' | 24     | 17     | -      | -      | 48     | 0    | 1    | -    | -    | -     | 0    | 1    | 
+|emg_bandpass_shared | A*B              | 30     | 18     | -      | -      | 42     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|emg_bandpass_shared | A*B              | 30     | 18     | -      | -      | 42     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|emg_bandpass_shared | A*B              | 30     | 18     | -      | -      | 42     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|emg_bandpass_shared | PCIN+A'*B        | 30     | 18     | -      | -      | 45     | 1    | 0    | -    | -    | -     | 0    | 0    | 
+|emg_bandpass_shared | PCIN+A*B         | 30     | 18     | -      | -      | 45     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|emg_bandpass_shared | Dynamic          | -      | -      | -      | -      | 41     | -    | -    | -    | -    | 0     | 0    | 0    | 
+|emg_notch50         | A*B              | 30     | 17     | -      | -      | 48     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|emg_notch50         | (PCIN>>17+A*B)'  | 0      | 18     | -      | -      | 48     | 0    | 0    | -    | -    | -     | 0    | 1    | 
+|emg_notch50         | A*B              | 17     | 17     | -      | -      | 48     | 0    | 0    | -    | -    | -     | 0    | 0    | 
+|emg_notch50         | (PCIN>>17+A*B)'  | 0      | 18     | -      | -      | 48     | 0    | 0    | -    | -    | -     | 0    | 1    | 
++--------------------+------------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+
+
+Report BlackBoxes: 
++-+--------------+----------+
+| |BlackBox name |Instances |
++-+--------------+----------+
++-+--------------+----------+
+
+Report Cell Usage: 
++------+---------+------+
+|      |Cell     |Count |
++------+---------+------+
+|1     |CARRY4   |   209|
+|2     |DSP48E1  |    13|
+|3     |LUT1     |   209|
+|4     |LUT2     |   503|
+|5     |LUT3     |   391|
+|6     |LUT4     |   158|
+|7     |LUT5     |    78|
+|8     |LUT6     |   371|
+|9     |MUXF7    |   148|
+|10    |MUXF8    |     1|
+|11    |RAM16X1S |   151|
+|12    |RAMB36E1 |     2|
+|13    |FDRE     |  1639|
+|14    |FDSE     |    45|
++------+---------+------+
+---------------------------------------------------------------------------------
+Finished Writing Synthesis Report : Time (s): cpu = 00:00:19 ; elapsed = 00:00:21 . Memory (MB): peak = 1596.145 ; gain = 0.000
+---------------------------------------------------------------------------------
+Synthesis finished with 0 errors, 0 critical warnings and 93 warnings.
+Synthesis Optimization Runtime : Time (s): cpu = 00:00:19 ; elapsed = 00:00:21 . Memory (MB): peak = 1596.145 ; gain = 0.000
+Synthesis Optimization Complete : Time (s): cpu = 00:00:19 ; elapsed = 00:00:21 . Memory (MB): peak = 1596.145 ; gain = 0.000
+INFO: [Project 1-571] Translating synthesized netlist
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.034 . Memory (MB): peak = 1596.145 ; gain = 0.000
+INFO: [Netlist 29-17] Analyzing 524 Unisim elements for replacement
+INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
+INFO: [Project 1-570] Preparing netlist for logic optimization
+INFO: [Opt 31-138] Pushed 0 inverter(s) to 0 load pin(s).
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.002 . Memory (MB): peak = 1617.352 ; gain = 0.000
+INFO: [Project 1-111] Unisim Transformation Summary:
+  A total of 151 instances were transformed.
+  RAM16X1S => RAM32X1S (RAMS32): 151 instances
+
+Synth Design complete | Checksum: 1e9e8e7d
+INFO: [Common 17-83] Releasing license: Synthesis
+24 Infos, 93 Warnings, 0 Critical Warnings and 0 Errors encountered.
+synth_design completed successfully
+synth_design: Time (s): cpu = 00:00:22 ; elapsed = 00:00:25 . Memory (MB): peak = 1617.352 ; gain = 21.207
+# puts SHARED_SYNTH_COMPLETE
+SHARED_SYNTH_COMPLETE
+INFO: [Common 17-206] Exiting Vivado at Tue Oct 27 16:02:51 2026...

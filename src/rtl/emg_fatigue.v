@@ -216,7 +216,16 @@ module emg_fatigue #(
     reg [10:0] mdf_ch;
     reg [13:0] mdf_sum;
     reg [50:0] grand_total;
-    reg [50:0] spec_acc [0:29];
+    // Six banks match the six packed spectrum levels per output word.
+    // One shared accumulator and six level encoders replace a resettable
+    // 30-entry register array with 30 parallel level encoders.
+    (* ram_style="distributed" *) reg [50:0] spec_bank0[0:4];
+    (* ram_style="distributed" *) reg [50:0] spec_bank1[0:4];
+    (* ram_style="distributed" *) reg [50:0] spec_bank2[0:4];
+    (* ram_style="distributed" *) reg [50:0] spec_bank3[0:4];
+    (* ram_style="distributed" *) reg [50:0] spec_bank4[0:4];
+    (* ram_style="distributed" *) reg [50:0] spec_bank5[0:4];
+    reg [29:0] spec_seen;
     reg [36:0] peak_power;
     reg [10:0] peak_bin;
     reg [15:0] mdf_mean_q;
@@ -279,6 +288,33 @@ module emg_fatigue #(
     wire [36:0] pwr_incr = re_rd * re_rd + im_rd * im_rd;
     wire [12:0] spec_offset = {2'd0, pwr_idx} - 13'd11;
     wire [12:0] spec_idx = (spec_offset * 13'd30) / 13'd220;
+    wire [4:0] spec_slot=spec_idx[4:0];
+    wire [2:0] spec_write_row=spec_slot/6;
+    wire [2:0] spec_write_bank=spec_slot%6;
+    wire [2:0] spec_read_row=(state==P_OUT2) ?
+        ((out_id>=9 && out_id<=13)?out_id-9:0) : spec_write_row;
+    wire [4:0] spec_read_base=spec_read_row*6;
+    wire [50:0] spec_word0=spec_seen[spec_read_base+0] ? spec_bank0[spec_read_row] : 51'd0;
+    wire [50:0] spec_word1=spec_seen[spec_read_base+1] ? spec_bank1[spec_read_row] : 51'd0;
+    wire [50:0] spec_word2=spec_seen[spec_read_base+2] ? spec_bank2[spec_read_row] : 51'd0;
+    wire [50:0] spec_word3=spec_seen[spec_read_base+3] ? spec_bank3[spec_read_row] : 51'd0;
+    wire [50:0] spec_word4=spec_seen[spec_read_base+4] ? spec_bank4[spec_read_row] : 51'd0;
+    wire [50:0] spec_word5=spec_seen[spec_read_base+5] ? spec_bank5[spec_read_row] : 51'd0;
+    reg [50:0] spec_old;
+    always @*begin
+        case(spec_write_bank)
+        0:spec_old=spec_word0;1:spec_old=spec_word1;2:spec_old=spec_word2;
+        3:spec_old=spec_word3;4:spec_old=spec_word4;default:spec_old=spec_word5;
+        endcase
+    end
+    wire [50:0] spec_next=spec_old+pwr_incr;
+    always @(posedge clk)if(rst_n && state==P_P1 && pwr_ph>=2 && pwr_idx>=11 && pwr_idx<=230)begin
+        case(spec_write_bank)
+        0:spec_bank0[spec_write_row]<=spec_next;1:spec_bank1[spec_write_row]<=spec_next;
+        2:spec_bank2[spec_write_row]<=spec_next;3:spec_bank3[spec_write_row]<=spec_next;
+        4:spec_bank4[spec_write_row]<=spec_next;5:spec_bank5[spec_write_row]<=spec_next;
+        endcase
+    end
 
     // slope term: (2i-15) * hist[(hist_ptr + i) mod 16]
     wire [3:0]  hidx = hist_ptr + slope_i;
@@ -303,8 +339,7 @@ module emg_fatigue #(
             pwr_idx <= 11'd0; pwr_ph <= 1'b0;
             total_acc <= 48'd0; cum_acc <= 48'd0; crossed <= 1'b0;
             mdf_ch <= 11'd0; mdf_sum <= 14'd0; grand_total <= 51'd0;
-            for (i = 0; i < 30; i = i + 1)
-                spec_acc[i] <= 51'd0;
+            spec_seen <= 0;
             peak_power <= 37'd0;
             peak_bin <= 11'd0;
             mdf_mean_q <= 16'd0; hist_ptr <= 4'd0; hist_cnt <= 5'd0;
@@ -327,8 +362,7 @@ module emg_fatigue #(
                     ch_cnt     <= 3'd0;
                     mdf_sum    <= 14'd0;
                     grand_total<= 51'd0;
-                    for (i = 0; i < 30; i = i + 1)
-                        spec_acc[i] <= 51'd0;
+                    spec_seen <= 0;
                     peak_power <= 37'd0;
                     peak_bin   <= 11'd0;
                     load_idx   <= 11'd0;
@@ -415,7 +449,7 @@ module emg_fatigue #(
                     // the low-frequency motion baseline.  Bins 11..230 are
                     // mapped uniformly to 30 narrow bands (~14.3 Hz each).
                     if (pwr_idx >= 11'd11 && pwr_idx <= 11'd230)
-                        spec_acc[spec_idx] <= spec_acc[spec_idx] + pwr_incr;
+                        spec_seen[spec_slot] <= 1'b1;
                     if (pwr_idx >= 11'd11 && pwr_idx <= 11'd230 &&
                         pwr_incr > peak_power) begin
                         peak_power <= pwr_incr;
@@ -519,44 +553,44 @@ module emg_fatigue #(
                                      grand_total[45:23]};
                     end else if (out_id == 4'd9) begin
                         out_id   <= 4'd10;
-                        out_data <= {2'd0, power_level(spec_acc[5]),
-                                     power_level(spec_acc[4]),
-                                     power_level(spec_acc[3]),
-                                     power_level(spec_acc[2]),
-                                     power_level(spec_acc[1]),
-                                     power_level(spec_acc[0])};
+                        out_data <= {2'd0, power_level(spec_word5),
+                                     power_level(spec_word4),
+                                     power_level(spec_word3),
+                                     power_level(spec_word2),
+                                     power_level(spec_word1),
+                                     power_level(spec_word0)};
                     end else if (out_id == 4'd10) begin
                         out_id   <= 4'd11;
-                        out_data <= {2'd0, power_level(spec_acc[11]),
-                                     power_level(spec_acc[10]),
-                                     power_level(spec_acc[9]),
-                                     power_level(spec_acc[8]),
-                                     power_level(spec_acc[7]),
-                                     power_level(spec_acc[6])};
+                        out_data <= {2'd0, power_level(spec_word5),
+                                     power_level(spec_word4),
+                                     power_level(spec_word3),
+                                     power_level(spec_word2),
+                                     power_level(spec_word1),
+                                     power_level(spec_word0)};
                     end else if (out_id == 4'd11) begin
                         out_id   <= 4'd12;
-                        out_data <= {2'd0, power_level(spec_acc[17]),
-                                     power_level(spec_acc[16]),
-                                     power_level(spec_acc[15]),
-                                     power_level(spec_acc[14]),
-                                     power_level(spec_acc[13]),
-                                     power_level(spec_acc[12])};
+                        out_data <= {2'd0, power_level(spec_word5),
+                                     power_level(spec_word4),
+                                     power_level(spec_word3),
+                                     power_level(spec_word2),
+                                     power_level(spec_word1),
+                                     power_level(spec_word0)};
                     end else if (out_id == 4'd12) begin
                         out_id   <= 4'd13;
-                        out_data <= {2'd0, power_level(spec_acc[23]),
-                                     power_level(spec_acc[22]),
-                                     power_level(spec_acc[21]),
-                                     power_level(spec_acc[20]),
-                                     power_level(spec_acc[19]),
-                                     power_level(spec_acc[18])};
+                        out_data <= {2'd0, power_level(spec_word5),
+                                     power_level(spec_word4),
+                                     power_level(spec_word3),
+                                     power_level(spec_word2),
+                                     power_level(spec_word1),
+                                     power_level(spec_word0)};
                     end else if (out_id == 4'd13) begin
                         out_id   <= 4'd14;
-                        out_data <= {2'd0, power_level(spec_acc[29]),
-                                     power_level(spec_acc[28]),
-                                     power_level(spec_acc[27]),
-                                     power_level(spec_acc[26]),
-                                     power_level(spec_acc[25]),
-                                     power_level(spec_acc[24])};
+                        out_data <= {2'd0, power_level(spec_word5),
+                                     power_level(spec_word4),
+                                     power_level(spec_word3),
+                                     power_level(spec_word2),
+                                     power_level(spec_word1),
+                                     power_level(spec_word0)};
                     end else if (out_id == 4'd14) begin
                         out_id   <= 4'd15;
                         out_data <= {peak_bin, peak_power[20:0]};

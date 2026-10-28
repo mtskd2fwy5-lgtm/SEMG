@@ -1,0 +1,26 @@
+
+****** Vivado v2025.2 (64-bit)
+  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025
+  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025
+  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025
+  **** Start of session at: Wed Oct 28 20:26:52 2026
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+
+INFO: [Common 17-1239] XILINX_LOCAL_USER_DATA is set to 'no'.
+source build/scripts/stop_imu_impl.tcl
+# set root [file normalize [file join [file dirname [info script]] ../..]]
+# open_project [file join $root build/vivado/hand_motion_reconstruction.xpr]
+Scanning sources...
+Finished scanning sources
+WARNING: [Project 1-5713] Board part '' set for the project  is not found. BoardPart property will be unset. Please select board from latest repo build 
+INFO: [IP_Flow 19-234] Refreshing IP repositories
+INFO: [IP_Flow 19-1704] No user IP repositories specified
+INFO: [IP_Flow 19-2313] Loaded Vivado IP repository 'D:/FPGA/VIVADO/2025.2/Vivado/data/ip'.
+open_project: Time (s): cpu = 00:00:13 ; elapsed = 00:00:39 . Memory (MB): peak = 400.035 ; gain = 92.152
+# stop_runs impl_1
+invalid command name "stop_runs"
+    while executing
+"stop_runs impl_1"
+    (file "build/scripts/stop_imu_impl.tcl" line 3)
+INFO: [Common 17-206] Exiting Vivado at Wed Oct 28 20:27:44 2026...
