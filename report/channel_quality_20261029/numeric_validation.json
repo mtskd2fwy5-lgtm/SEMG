@@ -1,0 +1,92 @@
+{
+  "synthetic": {
+    "windows": 8,
+    "channel_windows": 64,
+    "max_rms_error_counts": 0.9945787768389813,
+    "max_mains_error_percentage_points": 0.08345644198917582,
+    "max_low_band_error_percentage_points": 0.09160139170206491,
+    "max_kurtosis_error": 0.09935040976686196,
+    "median_scores": [
+      100.0,
+      70.0,
+      69.0,
+      70.0,
+      68.0,
+      70.0,
+      95.0,
+      100.0
+    ]
+  },
+  "artifacts": {
+    "windows": 8,
+    "channel_windows": 64,
+    "max_rms_error_counts": 0.9803024989151936,
+    "max_mains_error_percentage_points": 0.09078695431228408,
+    "max_low_band_error_percentage_points": 0.1138811515604882,
+    "max_kurtosis_error": 0.5760503959712878,
+    "median_scores": [
+      100.0,
+      0.0,
+      77.0,
+      85.0,
+      72.0,
+      0.0,
+      94.5,
+      78.0
+    ]
+  },
+  "EMG008": {
+    "windows": 12,
+    "channel_windows": 96,
+    "max_rms_error_counts": 0.9779219999633986,
+    "max_mains_error_percentage_points": 0.09653543272955538,
+    "max_low_band_error_percentage_points": 0.11612307836438163,
+    "max_kurtosis_error": 0.09917014939450439,
+    "median_scores": [
+      100.0,
+      100.0,
+      93.5,
+      100.0,
+      100.0,
+      100.0,
+      100.0,
+      100.0
+    ]
+  },
+  "EMG015": {
+    "windows": 12,
+    "channel_windows": 96,
+    "max_rms_error_counts": 0.9543831426161216,
+    "max_mains_error_percentage_points": 0.04952758696916355,
+    "max_low_band_error_percentage_points": 0.1284060756853478,
+    "max_kurtosis_error": 0.09967473882019391,
+    "median_scores": [
+      96.5,
+      97.0,
+      100.0,
+      98.0,
+      98.5,
+      100.0,
+      100.0,
+      96.0
+    ]
+  },
+  "EMG018_validprefix": {
+    "windows": 12,
+    "channel_windows": 96,
+    "max_rms_error_counts": 0.995484827535881,
+    "max_mains_error_percentage_points": 0.2615199617247924,
+    "max_low_band_error_percentage_points": 0.10964681841338866,
+    "max_kurtosis_error": 0.09943525156557734,
+    "median_scores": [
+      85.0,
+      85.5,
+      78.0,
+      86.0,
+      82.5,
+      79.0,
+      90.0,
+      79.0
+    ]
+  }
+}

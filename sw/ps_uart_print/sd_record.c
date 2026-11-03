@@ -362,3 +362,94 @@ DWORD get_fattime(void)
 {
     return ((DWORD)(2026u-1980u)<<25) | (1u<<21) | (1u<<16);
 }
+
+/* One synchronous stream, outside parser/touch callbacks. */
+static FIL sd_model_file;
+static uint32_t sd_model_open,sd_model_writing;
+static void sd_model_name(uint32_t id,char name[13])
+{
+    uint32_t i;memcpy(name,"HM000000.HDC",13u);
+    for(i=8u;i>2u;){name[--i]=(char)('0'+id%10u);id/=10u;}
+}
+static uint32_t sd_model_id(const char *name,uint32_t *id)
+{
+    uint32_t i,n=0u,v=0u;
+    if(!name)return 0u;
+    while(n<13u && name[n])n++;
+    if(n!=12u || name[0]!='H' || name[1]!='M' || memcmp(name+8,".HDC",5u))return 0u;
+    for(i=2u;i<8u;i++){if(name[i]<'0'||name[i]>'9')return 0u;v=v*10u+(uint32_t)(name[i]-'0');}
+    *id=v;return 1u;
+}
+uint32_t sd_model_transfer(void *data,uint32_t bytes,uint32_t writing)
+{
+    BYTE *p=(BYTE *)data;UINT got,n;FRESULT rc;
+    if(!sd_model_open || writing!=sd_model_writing || (!p && bytes))return 0x302u;
+    while(bytes){
+        n=bytes>4096u?4096u:bytes;got=0u;
+        rc=writing?f_write(&sd_model_file,p,n,&got):f_read(&sd_model_file,p,n,&got);
+        if(rc!=FR_OK)return (uint32_t)rc+1u;
+        if(got!=n)return 0x304u;
+        p+=n;bytes-=n;acquisition_service();
+    }
+    return 0u;
+}
+static uint32_t sd_model_finish(sd_model_stream_fn fn,void *context,uint32_t writing)
+{
+    uint32_t error;FRESULT rc;UINT got=0u;BYTE tail;
+    sd_model_open=1u;sd_model_writing=writing;
+    error=fn(context,writing);
+    if(!error){
+        if(writing){rc=f_sync(&sd_model_file);if(rc!=FR_OK)error=(uint32_t)rc+1u;}
+        else {rc=f_read(&sd_model_file,&tail,1u,&got);
+            if(rc!=FR_OK)error=(uint32_t)rc+1u;else if(got)error=0x304u;}
+    }
+    rc=f_close(&sd_model_file);sd_model_open=0u;
+    if(!error && rc!=FR_OK)error=(uint32_t)rc+1u;
+    return error;
+}
+uint32_t sd_model_save(sd_model_stream_fn fn,void *context,char name[13])
+{
+    uint32_t id;FRESULT rc;
+    if(sd_active || sd_file_open || sd_model_open)return 0x301u;
+    if(!fn || !name)return 0x302u;
+    if(!sd_mount())return 0x300u;
+    for(id=0u;id<1000000u;id++){
+        sd_model_name(id,name);rc=f_open(&sd_model_file,name,FA_CREATE_NEW|FA_WRITE);
+        if(rc==FR_OK)return sd_model_finish(fn,context,1u);
+        if(rc!=FR_EXIST)return (uint32_t)rc+1u;
+        acquisition_service();
+    }
+    return 0x303u;
+}
+uint32_t sd_model_load(const char *name,sd_model_stream_fn fn,void *context)
+{
+    uint32_t id;FRESULT rc;
+    if(sd_active || sd_file_open || sd_model_open)return 0x301u;
+    if(!fn || !sd_model_id(name,&id))return 0x302u;
+    if(!sd_mount())return 0x300u;
+    rc=f_open(&sd_model_file,name,FA_READ);
+    if(rc!=FR_OK)return (uint32_t)rc+1u;
+    return sd_model_finish(fn,context,0u);
+}
+uint32_t sd_model_list(uint32_t after,sd_model_entry *entries,uint32_t capacity,uint32_t *count,uint32_t *more)
+{
+    DIR dir;FILINFO info;FRESULT rc,close_rc;uint32_t id,j,k;
+    if(sd_active || sd_file_open || sd_model_open)return 0x301u;
+    if(!entries || !capacity || capacity>16u || !count || !more)return 0x302u;
+    *count=*more=0u;
+    if(!sd_mount())return 0x300u;
+    rc=f_opendir(&dir,"0:/");if(rc!=FR_OK)return (uint32_t)rc+1u;
+    for(;;){
+        rc=f_readdir(&dir,&info);if(rc!=FR_OK || !info.fname[0])break;
+        acquisition_service();
+        if((info.fattrib&AM_DIR) || !sd_model_id(info.fname,&id) || id<after)continue;
+        for(j=0u;j<*count && entries[j].id<id;j++){}
+        if(*count==capacity)*more=1u;
+        if(j>=capacity)continue;
+        k=*count<capacity?(*count)++:capacity-1u;
+        for(;k>j;k--)entries[k]=entries[k-1u];
+        entries[j].id=id;sd_model_name(id,entries[j].name);
+    }
+    close_rc=f_closedir(&dir);if(rc==FR_OK)rc=close_rc;
+    return rc==FR_OK?0u:(uint32_t)rc+1u;
+}

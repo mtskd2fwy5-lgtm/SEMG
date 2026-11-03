@@ -1,0 +1,423 @@
+{
+  "timestamp_utc": "2026-10-30T12:52:23.026197+00:00",
+  "scope": "Skill package format, portable tools, relative links and local evidence existence/hash. No new FPGA/board or cross-team end-to-end validation.",
+  "tests": [
+    {
+      "command": [
+        "D:\\PYTHON\\python.exe",
+        "-X",
+        "utf8",
+        "D:\\FPGA\\sEMG-HMRS\\skill\\test_portable_tools.py"
+      ],
+      "exit_code": 0,
+      "stdout": "TEST_PASS portable tools: sequence wrap/gap/duplicate/ambiguous-backward, exact signed rails, immutable input, schema rejection, comparable resource delta and stage mismatch refusal\nTEST_PASS CLI: help, JSON output, no overwrite, duplicate headers, small AC on large DC, resource comparison, stage/constraint mismatch refusal\nTEST_PASS portability: copied standalone scripts run outside repository with unrelated working directory\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "D:\\PYTHON\\python.exe",
+        "-X",
+        "utf8",
+        "C:\\Users\\bvcm\\.codex\\skills\\.system\\skill-creator\\scripts\\quick_validate.py",
+        "D:\\FPGA\\sEMG-HMRS\\skill\\fpga-build-release"
+      ],
+      "exit_code": 0,
+      "stdout": "Skill is valid!\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "D:\\PYTHON\\python.exe",
+        "-X",
+        "utf8",
+        "C:\\Users\\bvcm\\.codex\\skills\\.system\\skill-creator\\scripts\\quick_validate.py",
+        "D:\\FPGA\\sEMG-HMRS\\skill\\fpga-design-report"
+      ],
+      "exit_code": 0,
+      "stdout": "Skill is valid!\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "D:\\PYTHON\\python.exe",
+        "-X",
+        "utf8",
+        "C:\\Users\\bvcm\\.codex\\skills\\.system\\skill-creator\\scripts\\quick_validate.py",
+        "D:\\FPGA\\sEMG-HMRS\\skill\\fpga-ps-pl-debug"
+      ],
+      "exit_code": 0,
+      "stdout": "Skill is valid!\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "D:\\PYTHON\\python.exe",
+        "-X",
+        "utf8",
+        "C:\\Users\\bvcm\\.codex\\skills\\.system\\skill-creator\\scripts\\quick_validate.py",
+        "D:\\FPGA\\sEMG-HMRS\\skill\\fpga-stream-validation"
+      ],
+      "exit_code": 0,
+      "stdout": "Skill is valid!\n",
+      "stderr": ""
+    }
+  ],
+  "links": [
+    {
+      "source": "skill\\checklist.md",
+      "target": "fpga-build-release/SKILL.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\data_path_checklist.md",
+      "target": "fpga-build-release/references/equivalence.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\pitfalls.md",
+      "target": "fpga-build-release/references/case-build-parameters.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\pitfalls.md",
+      "target": "fpga-stream-validation/references/case-stream-replay.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\pitfalls.md",
+      "target": "fpga-build-release/references/case-numeric-migration.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\pitfalls.md",
+      "target": "fpga-build-release/references/case-numeric-migration.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\pitfalls.md",
+      "target": "fpga-stream-validation/references/case-stream-replay.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\pitfalls.md",
+      "target": "fpga-stream-validation/references/case-stream-replay.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\pitfalls.md",
+      "target": "fpga-stream-validation/SKILL.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\pitfalls.md",
+      "target": "fpga-build-release/references/case-numeric-migration.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\pitfalls.md",
+      "target": "fpga-ps-pl-debug/references/case-atomic-control.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\pitfalls.md",
+      "target": "fpga-ps-pl-debug/references/case-atomic-control.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\pitfalls.md",
+      "target": "fpga-ps-pl-debug/references/case-ui-scheduling.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\pitfalls.md",
+      "target": "fpga-build-release/references/case-build-parameters.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\pitfalls.md",
+      "target": "fpga-ps-pl-debug/references/case-ui-scheduling.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\pitfalls.md",
+      "target": "fpga-stream-validation/references/case-model-contract.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\pitfalls.md",
+      "target": "fpga-stream-validation/references/case-model-contract.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\pitfalls.md",
+      "target": "fpga-design-report/references/case-report-evidence.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\pitfalls.md",
+      "target": "case_template.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\README.md",
+      "target": "fpga-build-release/SKILL.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\README.md",
+      "target": "fpga-stream-validation/SKILL.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\README.md",
+      "target": "fpga-ps-pl-debug/SKILL.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\README.md",
+      "target": "fpga-design-report/SKILL.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\README.md",
+      "target": "pitfalls.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\README.md",
+      "target": "case_template.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\README.md",
+      "target": "fpga-stream-validation/references/analysis.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\README.md",
+      "target": "fpga-build-release/references/workflow.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\README.md",
+      "target": "evidence_sources.json",
+      "exists": true
+    },
+    {
+      "source": "skill\\README.md",
+      "target": "checklist.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\README.md",
+      "target": "data_path_checklist.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\README.md",
+      "target": "case_template.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\fpga-build-release\\SKILL.md",
+      "target": "references/task-template.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\fpga-build-release\\SKILL.md",
+      "target": "references/workflow.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\fpga-build-release\\SKILL.md",
+      "target": "references/equivalence.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\fpga-build-release\\SKILL.md",
+      "target": "references/case-build-parameters.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\fpga-build-release\\SKILL.md",
+      "target": "references/case-numeric-migration.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\fpga-build-release\\references\\equivalence.md",
+      "target": "case-numeric-migration.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\fpga-build-release\\references\\workflow.md",
+      "target": "case-build-parameters.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\fpga-design-report\\SKILL.md",
+      "target": "references/task-template.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\fpga-design-report\\SKILL.md",
+      "target": "references/report.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\fpga-design-report\\SKILL.md",
+      "target": "references/case-report-evidence.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\fpga-design-report\\references\\report.md",
+      "target": "case-report-evidence.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\fpga-ps-pl-debug\\SKILL.md",
+      "target": "references/task-template.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\fpga-ps-pl-debug\\SKILL.md",
+      "target": "references/control.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\fpga-ps-pl-debug\\SKILL.md",
+      "target": "references/lcd.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\fpga-ps-pl-debug\\SKILL.md",
+      "target": "references/case-atomic-control.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\fpga-ps-pl-debug\\SKILL.md",
+      "target": "references/case-ui-scheduling.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\fpga-ps-pl-debug\\references\\control.md",
+      "target": "case-atomic-control.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\fpga-ps-pl-debug\\references\\lcd.md",
+      "target": "case-ui-scheduling.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\fpga-stream-validation\\SKILL.md",
+      "target": "references/task-template.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\fpga-stream-validation\\SKILL.md",
+      "target": "references/analysis.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\fpga-stream-validation\\SKILL.md",
+      "target": "references/models.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\fpga-stream-validation\\SKILL.md",
+      "target": "references/case-stream-replay.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\fpga-stream-validation\\SKILL.md",
+      "target": "references/case-model-contract.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\fpga-stream-validation\\references\\analysis.md",
+      "target": "case-stream-replay.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\fpga-stream-validation\\references\\models.md",
+      "target": "case-model-contract.md",
+      "exists": true
+    }
+  ],
+  "missing": [],
+  "package_sha256": {
+    "skill/case_template.md": "cb14d6d459da6395ade73cad10a6c59c095c2b38422c86aa223a2dd3b25aa6d2",
+    "skill/checklist.md": "b8a353ce3aa77a9d166710e9e25e09c4fab85d5d82fce4f343bfbe7f79c2774c",
+    "skill/data_path_checklist.md": "3f2d86fd1f8148c715f7f683d06d86a4346563ca0d230b50a660a77bfd45b232",
+    "skill/evidence_sources.json": "7a38221813d70b080aaed20a7691cf8ffe5469fa4bb560abfbf19c5472afb195",
+    "skill/examples/baseline.json": "1defadfd267a6b2eda8d45762d1483786f4db034eb964e9c9491ccbd0c43de16",
+    "skill/examples/candidate.json": "38334323f5f0b2a4826d108ea06851fa7938a4b8dc46e85b306487dd4d4dcc72",
+    "skill/examples/stream.csv": "02be2f4f75263e25d28cb72524dfd5700ebc91c54311b500c9ba20870b4254f2",
+    "skill/fpga-build-release/agents/openai.yaml": "e8f4a88775edd2b252fe8c6a6cc1ae10c1d7686cd4124857b808c15ebd53c62a",
+    "skill/fpga-build-release/references/case-build-parameters.md": "5e6dd113b6a320a812ad4fe520914b491550925c3865749461cfa3c81b1b8458",
+    "skill/fpga-build-release/references/case-numeric-migration.md": "aed1c6e53ec4bf72353a5d984ce282a7dad1425c5773fb8df4e9f069fdd8788e",
+    "skill/fpga-build-release/references/equivalence.md": "4d6376a757f11f35eccddf95ab0f3315df38ec148642f8870f374143aeafe0d4",
+    "skill/fpga-build-release/references/task-template.md": "854cbee508f9a1b4d0d930debe1b76288558ce2c4fd93f6d4a737d48802dcfb3",
+    "skill/fpga-build-release/references/workflow.md": "ee269f9a8c18444d7360661bd022443613537567914bc05f109f11ea83133b19",
+    "skill/fpga-build-release/scripts/compare_resources.py": "1d98f7241e77aed0656bd323273db1024d96fbadb2c963ad27b482884b7705df",
+    "skill/fpga-build-release/SKILL.md": "605708b4a95fb478c41c757f975ad36c1c075205be4b27336e039adcba2f55ea",
+    "skill/fpga-design-report/agents/openai.yaml": "0dbecd62c334a66b967dfe91994646c2065c9f4e959fdca3582b0f6ab9f02955",
+    "skill/fpga-design-report/references/case-report-evidence.md": "e9a082392bd8ae060bb991b9e6891a4215bed707f25335100e114347bbd63123",
+    "skill/fpga-design-report/references/report.md": "75b24a16892ac519c8ad77b33b6bb76523ecb3c428bf07ade344ae5763665ab6",
+    "skill/fpga-design-report/references/task-template.md": "f88efc90a8fc4ecb9a478e82abff062fea7797ab1322170d89ac5299b640b454",
+    "skill/fpga-design-report/SKILL.md": "5b569b2ddb2c8f377ddcb841e5fc2ef93fbd27d7175f0d519f515c0d9e291146",
+    "skill/fpga-ps-pl-debug/agents/openai.yaml": "c924b248d448ec7894385bd1ca10938b02bf4d7e28fe5a8bb109d89bc2ced699",
+    "skill/fpga-ps-pl-debug/references/case-atomic-control.md": "5d57cf26f32791c157cfb963a79a6829ea7a25001735e36c6d2be85edb048444",
+    "skill/fpga-ps-pl-debug/references/case-ui-scheduling.md": "13904746e48fa6b34775346d54f3e2fb6faf0052ff7cdcab2b5bc8b572d09835",
+    "skill/fpga-ps-pl-debug/references/control.md": "d1b9ba88230739d27b9f46203561b755eb3c6c3e93ea637130cda330b5fe07d1",
+    "skill/fpga-ps-pl-debug/references/lcd.md": "276126e656fccb463b5bb6faf8828fde13cebd07a2fa255d509cf1179b7d10b8",
+    "skill/fpga-ps-pl-debug/references/task-template.md": "5302dc79aa93e5ffbdb77605a64f9aef77f85eb40fd9bac7e7d0dbb4313b4a0d",
+    "skill/fpga-ps-pl-debug/SKILL.md": "2617ea0e2f5992001b676ae2effed62349ce88dcd450f25c26f2961f1b173cae",
+    "skill/fpga-stream-validation/agents/openai.yaml": "dc431aef2bc4948e9739b3530a057a34110cd59426f654fcf22f021d8e6ad308",
+    "skill/fpga-stream-validation/references/analysis.md": "928a91222d526315a13deae45e072973bab395900d2361d1adf8a4c2992796b9",
+    "skill/fpga-stream-validation/references/case-model-contract.md": "1421096b3d36fe08d7822950c507b6552c59304812f79e1da6429aee82e273e2",
+    "skill/fpga-stream-validation/references/case-stream-replay.md": "4aa67bbd2c2de584f50d9492496963f925e967767997ebd81936e41dfb126080",
+    "skill/fpga-stream-validation/references/models.md": "d8b5676a9526207b42b07d684e717bea52c3072d7ec768780b229047ca08b62a",
+    "skill/fpga-stream-validation/references/task-template.md": "ed12dacd2e7077d20b43e8c7363587b18772f8abaa23c15125b8ce92a3b36ad1",
+    "skill/fpga-stream-validation/scripts/audit_stream.py": "4ab34d3959af5e9178290ab56c86038334aa23082ef0141505311fa26775a589",
+    "skill/fpga-stream-validation/SKILL.md": "589a2e00f6809b02b3f5541b9c89abd133f82b9b5d1e8c8528f339871ba15e82",
+    "skill/pitfalls.md": "6c38f0a550b8b1dd35dfab5f8deabfe934497ae5cb75fb4254c12b0211bfdf42",
+    "skill/README.md": "e8b160fec0e5dada36a50067d2035a36fe6a6570c252c797759e7b63edffd852",
+    "skill/test_portable_tools.py": "5d02a44207320fb8d175dd10369eb2abd0fc581d2acd4a2579a2fb94215f66fa",
+    "skill/validate_package.py": "7851fadd5e6394e446a988e995acb5cd631bc678421548665f63718fa9c68632"
+  },
+  "evidence_sha256": {
+    "build/build_all.ps1": "f3e61cbe374304ed3f95991e7ddf1c3b974db5e7d5e2e44e5efc3f023a39a55a",
+    "report/ai_collaboration_20261023/guide_review.md": "7b351b91b0578262932bfd85966fcc4efe82bfa92bfcdbf7d4c641b94ad09dd2",
+    "report/channel_quality_20261029/numeric_validation.json": "3f6a9d5a36e38ea17a5bdfd4fab54a2970bba53ba87cabf6afcd48f294be2c1d",
+    "report/emg002_20261030/label_correction.json": "c245645f0508e8208aff5f1c57aeaef26c180ad0ada117308a2e789001218e4a",
+    "report/emg002_20261030/old_model_metrics.json": "d59b07803f9155caafc579145e7c880aea70e2f73f230b60ce0f015feacedf29",
+    "report/emg002_20261030/quality_metrics.json": "c0bc41db11edbc3d63680f354a685d1fbc7c34d443d1638bd46eff5e6d81244c",
+    "report/emg002_20261030/quality_report.md": "d5cad80803226e7f7b06f7336696ca0a85f45221d838c41e2dd83def353095d2",
+    "report/emg002_20261030/single_finger_metrics.json": "86f2af38fca1b57e397f3adf08e75a5490472e9d0cb4aa3b5188f6f9c7569224",
+    "report/emg002_20261030/single_finger_report.md": "f3afc2fde23c74010d85e56cd75e8a9c4eefa42b3ed6d8d0ebabd2e0647d3a4e",
+    "report/fatigue_20261025/README.md": "6580a3728e2d057e9522b7e2217717c50c17d705080505d8d80f8b83652ad9bb",
+    "report/hand_pwm_inverted_20261029/README.md": "da3dc655c13aef3f069beb2261ead923b3a7383a2806ed7d7fb27838c3ecc886",
+    "report/hand_pwm_inverted_20261029/pin_netlist.log": "6e88ced4cd59feec0a04579519cbc4d6426b9066ba4922eb96bdd94a250a55ad",
+    "report/hand_pwm_inverted_20261029/polarity_rtl.log": "3c4253924a23174516bef701165a07f3b71aeb15203cfeb71f9c26145e08b706",
+    "report/hand_simultaneous_home_20261025/README.md": "1a5692b166d26c5b55cd4032b2ace9ee7b64a995dd0fff3063b6ce73dbd8ab7b",
+    "report/hdc_model_sd_20261029/README.md": "ae0a49cef222c8c6f7b2fb9ee17f19df2b739fcce7c60ea86bc7c459a992d0f9",
+    "report/imu_pl_20261028/README.md": "e860697214eb254a67cd34379c704a23ad553e5eac9a2730878452a4ce0f7c26",
+    "report/imu_pl_20261028/float_comparison.json": "c3dbbcd865d23a7ba53860df3b8d43249a541adbcea2fce747716b7f756af775",
+    "report/lcd_responsiveness_20261030/README.md": "a2e98726fbec5d64eddfcf0ae3c56bf0d62a3a54524142991e9cce1b8fa06d79",
+    "report/lcd_responsiveness_20261030/artifacts.json": "787b24d262bc8b33ddbe88dea35ce7a299299489032e88a33aacd708ef04e1a0",
+    "report/lcd_responsiveness_20261030/cpu_test.log": "c1c55404d51ecbaab78d13578da0fe88baecb8363207f6e90fa9bea32c17daf2",
+    "report/lcd_responsiveness_20261030/regression_sources.json": "2800cd5f7b3e498be4a44ef727c8a09542c72ceacecfe3814d89dbe52f079041",
+    "report/line_filter_20261021/validation.md": "3c4d5b09ed25a7bb8bddeefc2af3fb0fb5ef4683101146e6307f32d7d9a179e7",
+    "report/resource_optimization_v15_20261027/README.md": "44351af6000c7ef4b0d6a05677fc28959beb60ca54fdb9b49ec854a4578438cb",
+    "report/resource_optimization_v15_20261027/amd_guide.txt": "26ac56caec00eebd25bddfe6eb94d0ee15da0c33a988137b17b2baf44dda9d01",
+    "report/resource_optimization_v15_20261027/comparison.json": "c232fce460dc11dc02609aa411b6be59376986b34b39d8d5eb6cdfc35e7cb160",
+    "report/resource_optimization_v15_20261027/equivalence.log": "eb24e59834d2b23dd1bd19ea2aed7965b96b88ff3e36d221209be134cd0e2dc4",
+    "report/resource_optimization_v15_20261027/integrated_test.log": "311e6bbe37ab3196b9060f7cc45572a886d627e045db631f33a1b1b5b4ac38c4",
+    "report/resource_optimization_v15_20261027/netlist_test_complete.log": "a3baab3e9510e7c07518040e0d8d734291a661ddeb9b249fc5ea8701840bb851",
+    "tools/scan_literal_b.py": "6f2cac07f6d6094081cec49cb418b45e3a488bf8190327f098ffef1e736e334b",
+    "tools/verify_boot_partition.py": "333f620b03e1ea82e070775e06da6c421bdb69c2c31e5579e106804eeda65ba9",
+    "tools/verify_coeff_regs.py": "dd7631261bcaab75385b6b433f71071c636076020af86f218f0a3dcade99711f"
+  },
+  "passed": true
+}

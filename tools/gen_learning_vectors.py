@@ -23,12 +23,14 @@ def generate(quick=False):
     refs=model.split('synergy_display_ref[3] = {',1)[1].split('}',1)[0]
     assert list(map(int,re.findall(r'(\d+)u',refs)))==[14592,50432,11008],'NMF display reference changed'
     memory=[int(v,16) for v in re.findall(r'0x([0-9a-f]{8})u',(ROOT/'sw/ps_uart_print/hdc_memory.h').read_text())]
-    (ROOT/'data/models/hdc_memory.mem').write_text('\n'.join(f'{v:08x}' for v in memory)+'\n')
-    def encode(e,scale):
-        levels=[min(15,(v*15+max(s,1)//2)//max(s,1)) for v,s in zip(e,scale)]
+    assert len(memory)==4096
+    assert (ROOT/'data/models/hdc_memory.mem').read_text().splitlines()==[f'{v:08x}' for v in memory]
+    def encode(e,scale,levels=32):
+        qlevels=[min(levels-1,(v*(levels-1)+max(s,1)//2)//max(s,1)) for v,s in zip(e,scale)]
+        base=1536 if levels==32 else 0
         q=[]
         for w in range(64):
-            votes=[(~(memory[ch*64+w]^memory[512+levels[ch]*64+w]))&0xffffffff for ch in range(8)]
+            votes=[(~(memory[base+ch*64+w]^memory[base+512+qlevels[ch]*64+w]))&0xffffffff for ch in range(8)]
             q.append(sum((sum((v>>b)&1 for v in votes)>=4)<<b for b in range(32)))
         return q
     es=[[0]*8,[1]*8,[0x7fffffff]*8,[0xffffffff]*8]+[[rng.randrange(0,10**rng.randrange(1,9)) for _ in range(8)] for _ in range(60)]
@@ -48,14 +50,21 @@ def generate(quick=False):
             p=[v+(1 if (q[d//32]>>(d%32))&1 else -1) for d,v in enumerate(p)]
         data += [(p[i]&65535)|((p[i+1]&65535)<<16) for i in range(0,2048,2)]
         protos.append(p)
-    tests=(training if quick else training[::30])+[[0]*8,[0xffffffff]*8]
+    # Netlist mode retains every class and both amplitude boundaries; the
+    # full RTL suite checks four different queries per class.
+    tests=(training[::4] if quick else training[::30])+[[0]*8,[0xffffffff]*8]
     data.append(len(tests))
     for e in tests:
         q=encode(e,scale)
         sims=[sum(v*(1 if (q[d//32]>>(d%32))&1 else -1) for d,v in enumerate(p)) for p in protos]
         order=sorted(range(6),key=lambda c:-sims[c])
-        data+=e+[order[0],(sims[order[0]]-sims[order[1]])*100//491520,sum(a>b for a,b in zip(e,scale))]
-    out=ROOT/'sim/results_learning';out.mkdir(exist_ok=True)
+        data+=e+[order[0],(sims[order[0]]-sims[order[1]])*100//491520,sum(a>b for a,b in zip(e,scale)),(sims[order[0]]-sims[order[1]])*10000//491520]
+    # Legacy Q16 ROM must remain bit-exact, including after running Q32 jobs.
+    legacy_e=[s*(ch+1)//10 for ch,s in enumerate(scale)]
+    q=encode(legacy_e,scale,16)
+    legacy_proto=[1 if (q[d//32]>>(d%32))&1 else -1 for d in range(2048)]
+    data+=legacy_e+[(legacy_proto[i]&65535)|((legacy_proto[i+1]&65535)<<16) for i in range(0,2048,2)]
+    out=ROOT/'sim/results_learning' ;out.mkdir(exist_ok=True)
     (out/'learning_vectors.mem').write_text('\n'.join(f'{v:08x}' for v in data)+'\n')
     print(f'TEST_PASS generated independent golden: {len(es)} NMF, {len(training)} training, {len(tests)} HDC predictions')
 if __name__=='__main__':

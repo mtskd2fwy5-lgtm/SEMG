@@ -25,4 +25,13 @@ uint32_t sd_hdc_save(const char *data,uint32_t bytes,char name[13]);
 uint32_t sd_hand_read(uint32_t slot,void *data,uint32_t bytes);
 uint32_t sd_hand_write(uint32_t slot,const void *data,uint32_t bytes);
 
+/* Streamed, versioned HDC snapshots. Separate from validation CSV. */
+typedef uint32_t (*sd_model_stream_fn)(void *context,uint32_t writing);
+typedef struct { uint32_t id; char name[13]; } sd_model_entry;
+uint32_t sd_model_save(sd_model_stream_fn fn,void *context,char name[13]);
+uint32_t sd_model_load(const char *name,sd_model_stream_fn fn,void *context);
+uint32_t sd_model_transfer(void *data,uint32_t bytes,uint32_t writing);
+/* after=0 starts at the first file; otherwise skip IDs below after. */
+uint32_t sd_model_list(uint32_t after,sd_model_entry *entries,uint32_t capacity,
+                       uint32_t *count,uint32_t *more);
 #endif

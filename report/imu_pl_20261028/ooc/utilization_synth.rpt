@@ -1,7 +1,7 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
 ---------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025
-| Date         : Wed Oct 28 20:25:09 2026
+| Date         : Sat Oct 31 19:06:57 2026
 | Host         : LAPTOP-VCCV41QO running 64-bit major release  (build 9200)
 | Command      : report_utilization -file D:/FPGA/sEMG-HMRS/report/imu_pl_20261028/ooc/utilization_synth.rpt
 | Design       : design_1_mpu_attitude_0_0
@@ -63,8 +63,8 @@ Warning! For any ECO changes, please run place_design if there are unplaced inst
 | 0     |          Yes |           - |            - |
 | 0     |          Yes |           - |          Set |
 | 0     |          Yes |           - |        Reset |
-| 28    |          Yes |         Set |            - |
-| 3687  |          Yes |       Reset |            - |
+| 30    |          Yes |         Set |            - |
+| 3685  |          Yes |       Reset |            - |
 +-------+--------------+-------------+--------------+
 
 
@@ -155,7 +155,7 @@ Warning! For any ECO changes, please run place_design if there are unplaced inst
 +----------+------+---------------------+
 | Ref Name | Used | Functional Category |
 +----------+------+---------------------+
-| FDRE     | 3687 |        Flop & Latch |
+| FDRE     | 3685 |        Flop & Latch |
 | LUT2     | 1474 |                 LUT |
 | LUT6     | 1161 |                 LUT |
 | LUT4     |  527 |                 LUT |
@@ -165,7 +165,7 @@ Warning! For any ECO changes, please run place_design if there are unplaced inst
 | LUT1     |  229 |                 LUT |
 | CARRY4   |  191 |          CarryLogic |
 | MUXF7    |   71 |               MuxFx |
-| FDSE     |   28 |        Flop & Latch |
+| FDSE     |   30 |        Flop & Latch |
 | MUXF8    |   14 |               MuxFx |
 | RAMD32   |   12 |  Distributed Memory |
 | RAMS32   |    4 |  Distributed Memory |

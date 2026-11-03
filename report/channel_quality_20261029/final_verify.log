@@ -1,0 +1,2 @@
+TEST_PASS V18 quality release inherited_sources=100 hardware_artifacts=24 baseline_free
+TEST_PASS matched control BOOT: XSA hardware + full bitstream + 2 application PT_LOAD segments + 3 FSBL PT_LOAD segments

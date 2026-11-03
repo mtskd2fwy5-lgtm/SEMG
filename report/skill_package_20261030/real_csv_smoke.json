@@ -1,0 +1,72 @@
+{
+  "source": "first 10000 data rows of report/emg002_20261030/EMG002_processed.csv",
+  "sha256": "6627774e6e715a9cfd630e5c6de89df90d741219a0ba450c0188e2161af302ca",
+  "rows": 10000,
+  "sequence_bits": 16,
+  "forward_missing": 0,
+  "duplicates": 0,
+  "backwards_or_ambiguous": 0,
+  "wraps": 0,
+  "events_first50": [],
+  "signal_columns": {
+    "channel_0": {
+      "min": -45,
+      "max": 38,
+      "rail_samples": null,
+      "ac_rms_counts": 10.044400780534396,
+      "mean_counts": 0.0036
+    },
+    "channel_1": {
+      "min": -41,
+      "max": 34,
+      "rail_samples": null,
+      "ac_rms_counts": 9.331984738521596,
+      "mean_counts": 0.0078
+    },
+    "channel_2": {
+      "min": -34,
+      "max": 35,
+      "rail_samples": null,
+      "ac_rms_counts": 8.553651907811073,
+      "mean_counts": -0.0352
+    },
+    "channel_3": {
+      "min": -36,
+      "max": 39,
+      "rail_samples": null,
+      "ac_rms_counts": 8.77230195501728,
+      "mean_counts": 0.0471
+    },
+    "channel_4": {
+      "min": -31,
+      "max": 33,
+      "rail_samples": null,
+      "ac_rms_counts": 8.989320899823301,
+      "mean_counts": -0.0176
+    },
+    "channel_5": {
+      "min": -43,
+      "max": 40,
+      "rail_samples": null,
+      "ac_rms_counts": 9.550995338706851,
+      "mean_counts": -0.0298
+    },
+    "channel_6": {
+      "min": -35,
+      "max": 33,
+      "rail_samples": null,
+      "ac_rms_counts": 9.079204189244782,
+      "mean_counts": -0.0123
+    },
+    "channel_7": {
+      "min": -50,
+      "max": 40,
+      "rail_samples": null,
+      "ac_rms_counts": 10.61341507668479,
+      "mean_counts": 0.0179
+    }
+  },
+  "signed_rail_limit": null,
+  "interpretation": "Counts only. Rail absence does not prove analog linearity; counter jumps of half-range or more are ambiguous. No label or real-time reconstruction.",
+  "scope": "Schema/continuity smoke test only; does not repeat full signal-quality analysis. Temp CSV digest covers only this sample."
+}

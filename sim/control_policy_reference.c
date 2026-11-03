@@ -7,6 +7,7 @@
 #define main firmware_main
 #include "../sw/ps_uart_print/main.c"
 #undef main
+#include "hdc_model_sd_mock.h"
 
 unsigned char __dma_buf[1048576];
 int sd_record_start(void) { return 1; }

@@ -69,7 +69,7 @@ typedef unsigned char u8;
 #define PL_CONTROL_ENABLE 0
 #endif
 #if PL_CONTROL_ENABLE
-#define BUILD_TAG "20261028_HAND_CONTROL_HDC_DYNAMIC_IMU_PL_V17"
+#define BUILD_TAG "20261102_HAND_CONTROL_HDC_DYNAMIC_CONTINUOUS_V30"
 #else
 #define BUILD_TAG "20261024_HDC_DISPLAY_V1"
 #endif
@@ -378,6 +378,7 @@ static void dma_restart(void)
  * bring-up commands ('d', 'f', 'r') and report the missing PL stream. */
 static void uart_poll_rx(void);
 static u32 gt_stamp(void);         /* defined below; used by dma_wait */
+static void lcd_analysis_changed(void);
 static void lcd_slice_tick(u32 win_t0);   /* deferred redraw, see LCD block */
 static void touch_tick(void);             /* GT911 poll, defined in LCD block */
 static void ui_touch_press(u32 x, u32 y); /* on-screen menu hit-test */
@@ -391,12 +392,14 @@ static void ui_apply_action(void);
 static u32 ui_action;                     /* applied outside DMA completion */
 static u32 ui_sd_action;
 static u32 ui_rehab_action;
-static u32 ui_hdc_save;
+static u32 ui_hdc_save,ui_hdc_model;
+static void hdc_model_apply(u32 action);
 static void hdc_service(void);
 static void hdc_on_window(const u32 features[40],u16 seq);
 static void hdc_save_report(void);
 static void rehab_service(void);
 static void sd_pair_reset(void);
+static void cq_background_tick(u32 now);
 #define DMA_WAIT_UI 0x80000000u
 static void lcd_show_state(u32 cls, u32 conf, u32 fatigue, u32 gated,
                            i32 tilt, i32 shift);
@@ -415,12 +418,21 @@ static u32 dma_wait(void)
         pl_control_tick();
         rehab_service();
         hdc_service();
-        if (ui_action || ui_sd_action || ui_rehab_action || ui_hdc_save || hand_storage_action)
+        if (ui_action || ui_sd_action || ui_rehab_action || ui_hdc_save || ui_hdc_model || hand_storage_action)
             return DMA_WAIT_UI;
         acquisition_service();
         if (dma_fault) return dma_fault;
         if (dma_head!=dma_tail) return 0u;
+        /* Display/input/control get first use of idle time. Diagnostic FFTs
+         * consume a wall-clock quota, not eight chunks on every poll. */
         lcd_slice_tick(gt_stamp());       /* bounded work, independent of TLAST */
+        acquisition_service();
+        if(dma_fault)return dma_fault;
+        if(dma_head!=dma_tail)return 0u;
+        cq_background_tick(gt_stamp());
+        acquisition_service();
+        if(dma_fault)return dma_fault;
+        if(dma_head!=dma_tail)return 0u;
         if (gt_stamp() - t_service >= 5u * GT_TICKS_PER_MS) {
             uart_poll_rx();
             t_service = gt_stamp();
@@ -765,6 +777,7 @@ static u32 virtual_live_class(void);
 static u32 virtual_live_mapped(u32 cls);
 static const char *hdc_name(u32 cls);
 static u32 hdc_hand_model_ready(void);
+static const char *hdc_status_label(void);
 static void lcd_hand_open(void);
 static void lcd_hand_render(void);
 static void lcd_hand_touch(u32 x,u32 y);
@@ -801,7 +814,6 @@ static void lcd_settings_touch(u32 x,u32 y);
 static u32 sd_pair_dropped;
 static u32 lcd_analysis_focus;
 static u32 lcd_quality_view=1u;
-static void lcd_quality_tick(u32 now);
 static void lcd_wave_toggle(void);
 static u32 lcd_wave_touch(u32 x, u32 y);
 static void lcd_analysis_toggle(void);
@@ -816,6 +828,7 @@ static void lcd_synergy_render(void);
 static void lcd_spectrum_render(void);
 static void lcd_analysis_label(char *dst,u32 cap,const char *prefix,
                                u32 value,const char *suffix);
+static void lcd_analysis_percent_bp(char *dst,u32 cap,const char *prefix,u32 bp);
 
 /* Touch menu dispatches the existing monitor/record and calibration paths.
  * Actions run in the main loop, outside the active DMA wait/parse call. */
@@ -852,6 +865,36 @@ static void lcd_analysis_changed(void)
         lcd_pending = 1u;
 }
 
+/* Diagnostics are on-demand: the FFT worker only runs while a button-
+ * triggered check is in flight, then with up to 2.5 ms per 5 ms while the
+ * page content is static. One idle opportunity drains a budget-bounded
+ * burst of small chunks: the poll loop that reaches this runs far fewer
+ * times per second than the worker needs chunks, so a single 32-step chunk
+ * per opportunity could not drain eight windows inside the check timeout
+ * (the V23 continuous mode was already opportunity-limited, not
+ * quota-limited). The wall-clock quota, not the chunk count, bounds each
+ * burst; the burst also stops as soon as no window remains ready. */
+static u32 cq_budget_t,cq_budget_used,cq_background_calls,cq_chunk_max_ticks;
+static void cq_background_tick(u32 now)
+{
+    u32 start,dt;
+    if(cq_check_tick(now))lcd_analysis_changed();
+    if(!cq_check_state)return;
+    if(now-cq_budget_t>=5u*GT_TICKS_PER_MS) {
+        cq_budget_t=now;cq_budget_used=0u;
+    }
+    if(cq_budget_used>=2500u*(GT_TICKS_PER_MS/1000u))return;
+    start=gt_stamp();
+    do {
+        if(cq_service())lcd_analysis_changed();
+        cq_background_calls++;
+        dt=gt_stamp()-start;
+    } while(cq_work_pending() &&
+            cq_budget_used+dt<2500u*(GT_TICKS_PER_MS/1000u));
+    cq_budget_used+=dt;
+    if(dt>cq_chunk_max_ticks)cq_chunk_max_ticks=dt;
+}
+
 /* One route owns page flags and task exit hooks. Page changes preserve an SD
  * recording; changing the acquisition backend remains an explicit action. */
 enum { UI_MONITOR,UI_WAVE,UI_DATA,UI_SPECTRUM,UI_SD,UI_SYNERGY,
@@ -881,7 +924,7 @@ static void ui_open_page(u32 page)
         if(synergy_feedback.capture==1u || synergy_feedback.capture==2u)
             synergy_feedback.capture=4u;
     }
-    if(page!=UI_HDC)hdc_interrupt(&hdc);
+    if(page!=UI_HDC){hdc_interrupt(&hdc);ui_hdc_model=0u;ui_hdc_save=0u;}
     if(page!=UI_SELFCAL && (selfcal.state==1u || selfcal.state==2u))selfcal_reset(&selfcal);
     /* Pending starts belong to the page on which they were requested. */
     if(page!=UI_SD && ui_sd_action==1u)ui_sd_action=0u;
@@ -1485,6 +1528,22 @@ static u32 dl_mode, lcd_last_build_t;
 static u32 lcd_stream_started, lcd_frozen, lcd_stream_on;
 static u32 lcd_redraw_cnt, lcd_redraw_last_ms, lcd_redraw_max_ms;
 static u32 lcd_present_cnt, lcd_coalesced_cnt, lcd_overflow_cnt;
+/* Content updates observed in VDMA scanout, not the panel's fixed refresh. */
+static u32 lcd_rate_seen,lcd_rate_t,lcd_rate_actual,lcd_rate_changes,lcd_content_fps10;
+static void lcd_rate_tick(u32 now,u32 actual)
+{
+    u32 dt;
+    if(actual>=3u)return;
+    if(!lcd_rate_seen) {
+        lcd_rate_seen=1u;lcd_rate_t=now;lcd_rate_actual=actual;return;
+    }
+    if(actual!=lcd_rate_actual){lcd_rate_actual=actual;lcd_rate_changes++;}
+    dt=now-lcd_rate_t;
+    if(dt>=1000u*GT_TICKS_PER_MS) {
+        lcd_content_fps10=(u32)((uint64_t)lcd_rate_changes*10000u*GT_TICKS_PER_MS/dt);
+        lcd_rate_changes=0u;lcd_rate_t=now;
+    }
+}
 static u32 lcd_buffer_ui[3], lcd_buffer_valid[3];
 static u32 dl_ui_generation;
 static i32 lcd_draw_tilt, lcd_draw_shift;
@@ -1652,9 +1711,10 @@ static void lcd_quad(volatile u8 *fb, const lcd_dl_t *e,
 static void lcd_slice_tick(u32 t0)
 {
     if (LCD_ENABLE != 1u || lcd_frozen) return;
+    if(lcd_stream_started && lcd_stream_on)
+        lcd_rate_tick(t0,VDMA_PARK_CURRENT(VDMA_PARKPTR));
     ui_feedback_tick();
     lcd_wave_tick();
-    lcd_quality_tick(t0);
     if(lcd_synergy_view && synergy_nmf.valid && !synergy_stale_reported &&
        gt_stamp()-synergy_last_t>500u*GT_TICKS_PER_MS) {
         synergy_stale_reported=1u;lcd_pending=1u;
@@ -1878,7 +1938,7 @@ static void lcd_render_pose_content(u32 cls, u32 conf, u32 fatigue, u32 gated,
     if(ui_preview_cls>=0) { safe_cls=(u32)ui_preview_cls;conf=100u;gated=0u; }
     p_rect(0,0,LCD_W,LCD_H,255,255,255);
     p_rect(0,LCD_Y(90),LCD_W,LCD_Y(2),211,222,222);
-    ui_label(LCD_X(28),LCD_Y(12),LCD_X(290),2,31,49,58,"肌电康复实验台");
+    ui_label(LCD_X(28),LCD_Y(12),LCD_X(410),2,31,49,58,"自学习肌电意图解码康复训练系统");
     ui_label(LCD_X(28),LCD_Y(56),LCD_X(280),1,94,112,119,
         lcd_virtual_view?"虚拟手映射":lcd_rehab_view?"康复训练":lcd_hand_view?"机械手控制":lcd_hdc_view?"手势自学习":
         lcd_selfcal_view?"佩戴适配":lcd_settings_view?"显示与设备设置":lcd_sd_view?"SD记录标注":
@@ -1898,7 +1958,7 @@ static void lcd_render_pose_content(u32 cls, u32 conf, u32 fatigue, u32 gated,
     if(lcd_wave_view) { lcd_wave_render();return; }
 
     /* The source is shared with physical mapping, but PWM is armed separately. */
-    if(hand_source_hdc && ui_preview_cls<0)conf=display_cls==UINT32_MAX?0u:virtual_frame_margin;
+    if(hand_source_hdc && ui_preview_cls<0)conf=display_cls==UINT32_MAX?0u:virtual_frame_margin/100u;
     ui_button(LCD_X(300),LCD_Y(99),LCD_X(220),LCD_Y(36),hand_source_hdc?"来源 HDC":"来源 MLP",hand_source_hdc);
     ui_button(LCD_X(540),LCD_Y(99),LCD_X(210),LCD_Y(36),"虚拟手映射",0u);
     if(dl_mode) dl_push(5,LCD_Y(140),LCD_Y(515),0,0,0,0,0);
@@ -1914,7 +1974,10 @@ static void lcd_render_pose_content(u32 cls, u32 conf, u32 fatigue, u32 gated,
     ui_label(LCD_X(42),LCD_Y(205),LCD_X(202),3,31,49,58,display_cls==UINT32_MAX?"等待识别":
         hand_source_hdc && ui_preview_cls<0?hdc_name(display_cls):lcd_pose_names[safe_cls]);
     ui_label(LCD_X(42),LCD_Y(276),LCD_X(202),1,94,112,119,hand_source_hdc && ui_preview_cls<0?"分离裕量":"置信度");
-    lcd_analysis_label(label,sizeof label,"",conf>100u?100u:conf,"%");
+    if(hand_source_hdc && ui_preview_cls<0) {
+        u32 bp=display_cls==UINT32_MAX?0u:virtual_frame_margin;
+        lcd_analysis_percent_bp(label,sizeof label,"",bp);
+    } else lcd_analysis_label(label,sizeof label,"",conf>100u?100u:conf,"%");
     ui_label(LCD_X(42),LCD_Y(307),LCD_X(202),3,31,49,58,label);
     p_rect(LCD_X(42),LCD_Y(352),LCD_X(202),LCD_Y(7),211,222,222);
     if(conf) p_rect(LCD_X(42),LCD_Y(352),(i32)((conf>100u?100u:conf)*LCD_X(202)/100u),LCD_Y(7),57,155,145);
@@ -1941,7 +2004,7 @@ static void lcd_render_pose_content(u32 cls, u32 conf, u32 fatigue, u32 gated,
     p_rect(LCD_X(790),LCD_Y(432),LCD_X(192),1,211,222,222);
     ui_label(LCD_X(790),LCD_Y(454),LCD_X(192),1,94,112,119,PL_CONTROL_ENABLE?"识别状态":"静息门控");
     ui_label(LCD_X(790),LCD_Y(481),LCD_X(192),1,31,49,58,ui_preview_cls>=0?"动作预览":hand_source_hdc?
-        !virtual_frame_ready?"HDC待验证":display_cls==UINT32_MAX?"等待稳定手势":
+        !virtual_frame_ready || display_cls==UINT32_MAX?hdc_status_label():
         !virtual_frame_mapped?"虚拟姿态未映射":"HDC识别跟随":pl_control_status_label(gated));
 
     p_rect(0,LCD_Y(526),LCD_W,1,232,239,239);
@@ -2376,6 +2439,17 @@ static void lcd_analysis_label(char *dst, u32 cap, const char *prefix,
     dst[n] = '\0';
 }
 
+static void lcd_analysis_percent_bp(char *dst,u32 cap,const char *prefix,u32 bp)
+{
+    char fraction[16];u32 n=0u,i=0u;
+    if(!cap)return;
+    lcd_analysis_label(dst,cap,prefix,bp/100u,".");
+    lcd_analysis_label(fraction,sizeof fraction,bp%100u<10u?"0":"",bp%100u,"%");
+    while(n+1u<cap && dst[n])n++;
+    while(fraction[i] && n+1u<cap)dst[n++]=fraction[i++];
+    dst[n]=0;
+}
+
 static void lcd_analysis_label_signed(char *dst, u32 cap, const char *prefix,
                                       i32 value, const char *suffix)
 {
@@ -2417,6 +2491,7 @@ static u32 lcd_analysis_hit(u32 x, u32 y, i32 bx, i32 by, i32 bw, i32 bh)
 #include "lcd_hdc.h"
 #include "lcd_hand.h"
 #include "lcd_virtual.h"
+#include "lcd_hdc_models.h"
 
 static u32 lcd_analysis_touch(u32 x, u32 y)
 {
@@ -3039,7 +3114,8 @@ static void pl_control_tick(void)
     hand_tick(rehab_milliseconds(),lcd_hand_view && !ui_menu_open && g_mode==MODE_MONITOR,
               imu_hand_rotation_deg,mpu_seen && mpu_zero_valid && imu_hand_rotation_valid &&
               (gt_stamp()-mpu_last_sample_t)<(100u*GT_TICKS_PER_MS));
-    if(old_hand!=hand_status_word || old_home!=hand_home_state || old_step!=hand_home_step)
+    /* Transport ACK toggles on keepalives; it is not a visible state change. */
+    if(((old_hand^hand_status_word)&~(1u<<23)) || old_home!=hand_home_state || old_step!=hand_home_step)
         lcd_input_status_changed();
 #if PL_CONTROL_ENABLE
     u32 previous_ready=pl_control_ready();
@@ -3064,6 +3140,21 @@ static void pl_control_result(u32 seq,u32 word)
     pose_active_cls=word&7u;pose_active_conf=(word>>3)&127u;
     pose_active_gated=(word>>10)&1u;
     res_cls=(word>>11)&7u;cal_stage=(word>>21)&3u;
+    {
+        uint32_t c2=0u;
+        u32 now=rehab_milliseconds();
+        u32 valid=synergy_feedback_find(&synergy_feedback,seq,now,&c2) &&
+            synergy_nmf.valid && cal_stage==2u &&
+            g_mode==MODE_MONITOR && pl_control_ready();
+        if(hand_grip_capturing && synergy_feedback.capture>=2u &&
+           synergy_feedback.capture<=3u &&
+           (!valid || pose_active_gated || pose_active_cls!=2u || res_cls!=2u)) {
+            synergy_feedback.capture=4u;synergy_feedback.reference=0u;
+        }
+        if(hand_grip_capturing && synergy_feedback.capture==3u)hand_grip_capturing=0u;
+        hand_grip_observe(now,(u16)seq,c2,synergy_feedback.reference,
+                          !pose_active_gated && res_cls==2u?pose_active_cls:0u,valid);
+    }
     if(pose_active_gated)gated_rows++;
     if(g_mode==MODE_MONITOR) {
         g_tx_data=1u;
@@ -3324,6 +3415,9 @@ static void parse_packet(u32 payload, u32 hdr)
                 lcd_redraw_cnt, lcd_redraw_last_ms, lcd_redraw_max_ms, 0);
         uprintf("[STAT] lcd done=%u pending=%u merged=%u overflow=%u\n",
                 lcd_present_cnt,lcd_pending,lcd_coalesced_cnt,lcd_overflow_cnt);
+        uprintf("[STAT] lcd content_fps10=%u quality_calls=%u chunk_max_us=%u quota_us=%u\n",
+                lcd_content_fps10,cq_background_calls,cq_chunk_max_ticks/(GT_TICKS_PER_MS/1000u),
+                cq_check_state?2500u:0u);
         uprintf("[STAT] touch ok=%u dn=%u press=%u rel=%u\n",
                 touch_seen, touch_dn, touch_press_cnt, touch_rel_cnt);
         uprintf("[STAT] mpu ok=%u p=%d r=%d\n",
@@ -3516,6 +3610,8 @@ static void mpu_zero_start(void)
 static void ui_apply_action(void)
 {
     u32 action=ui_action;
+    u32 hdc_model_pending=ui_hdc_model;
+    ui_hdc_model=0u;
     u32 hdc_save_pending=ui_hdc_save;
     ui_hdc_save=0u;
     u32 sd_action=ui_sd_action;
@@ -3549,7 +3645,8 @@ static void ui_apply_action(void)
         lcd_input_status_changed();
     }
     if(rehab_action_pending)rehab_apply_action(rehab_action_pending);
-    if(hdc_save_pending)hdc_save_report();
+    if(hdc_save_pending && !action && !sd_action && !rehab_action_pending)hdc_save_report();
+    if(hdc_model_pending && !action && !sd_action && !rehab_action_pending)hdc_model_apply(hdc_model_pending);
     if(hand_storage_action) {
         u32 ha=hand_storage_action;hand_storage_action=0u;hand_storage_apply(ha);
     }
@@ -3605,7 +3702,7 @@ static void uart_poll_rx(void)
                                     : "[LCD] OFF (DDR freed for EMG test)\n");
         } else if (c == 'z' && g_mode == MODE_MONITOR) {
             mpu_zero_start();
-            uart_puts("[MPU] palm-up zero: hold forearm still for ~1 s\n");
+            uart_puts("[MPU] current-pose zero: hold forearm still for ~1 s\n");
         } else if (c == 'i' && g_mode == MODE_MONITOR) {
             g_tx_data=1u;
             uart_puts("[IMU] fw=");uart_puts(BUILD_TAG);uart_puts("\n");

@@ -1,0 +1,1262 @@
+hdc_learning_test.c
+D:\FPGA\sEMG-HMRS\sim\hdc_learning_test.c(116): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+TEST_PASS HDC: custom-only classes from empty library, dynamic growth, retained data/mappings, atomic OOM, 18-class held-out prediction, original encoding, immutable live models.
+{
+  "synthetic_parity": {
+    "levels": 32,
+    "median_gap_bp": 32.0,
+    "encoding_prototype_prediction_parity": true,
+    "classes": 8,
+    "test_windows": 257,
+    "hdc_accuracy": 0.023346303501945526,
+    "centroid_accuracy": 0.007782101167315175
+  },
+  "dynamic_parity": {
+    "levels": 32,
+    "median_gap_bp": 42.0,
+    "encoding_prototype_prediction_parity": true,
+    "classes": 23,
+    "test_windows": 257,
+    "hdc_accuracy": 0.0,
+    "centroid_accuracy": 0.0
+  },
+  "close_patterns_Q16": {
+    "levels": 16,
+    "median_gap_bp": 0.0,
+    "encoding_prototype_prediction_parity": true,
+    "classes": 3,
+    "test_windows": 120,
+    "hdc_accuracy": 0.3333333333333333,
+    "centroid_accuracy": 1.0
+  },
+  "close_patterns_Q32": {
+    "levels": 32,
+    "median_gap_bp": 24.0,
+    "encoding_prototype_prediction_parity": true,
+    "classes": 3,
+    "test_windows": 120,
+    "hdc_accuracy": 1.0,
+    "centroid_accuracy": 1.0
+  },
+  "EMG008": {
+    "16": {
+      "levels": 16,
+      "median_gap_bp": 310.0,
+      "encoding_prototype_prediction_parity": true,
+      "classes": 5,
+      "test_windows": 1919,
+      "hdc_accuracy": 0.7748827514330381,
+      "centroid_accuracy": 0.8952579468473163,
+      "hdc": {
+        "windows": 1919,
+        "accuracy": 0.7748827514330381,
+        "macro_f1": 0.7326158388926891,
+        "confusion": [
+          [
+            514,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            261,
+            0,
+            7,
+            15
+          ],
+          [
+            1,
+            1,
+            346,
+            0,
+            39
+          ],
+          [
+            29,
+            249,
+            0,
+            78,
+            68
+          ],
+          [
+            0,
+            0,
+            3,
+            20,
+            288
+          ]
+        ],
+        "counts": [
+          514,
+          283,
+          387,
+          424,
+          311
+        ],
+        "recall": {
+          "rest": 1.0,
+          "open_hand": 0.9222614840989399,
+          "fist": 0.8940568475452196,
+          "wrist_flex": 0.18396226415094338,
+          "wrist_extend": 0.9260450160771704
+        }
+      },
+      "centroid": {
+        "windows": 1919,
+        "accuracy": 0.8952579468473163,
+        "macro_f1": 0.8836545403921017,
+        "confusion": [
+          [
+            514,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            274,
+            0,
+            0,
+            9
+          ],
+          [
+            0,
+            2,
+            364,
+            4,
+            17
+          ],
+          [
+            3,
+            126,
+            0,
+            259,
+            36
+          ],
+          [
+            0,
+            0,
+            4,
+            0,
+            307
+          ]
+        ],
+        "counts": [
+          514,
+          283,
+          387,
+          424,
+          311
+        ],
+        "recall": {
+          "rest": 1.0,
+          "open_hand": 0.9681978798586572,
+          "fist": 0.9405684754521964,
+          "wrist_flex": 0.6108490566037735,
+          "wrist_extend": 0.9871382636655949
+        }
+      }
+    },
+    "32": {
+      "levels": 32,
+      "median_gap_bp": 318.0,
+      "encoding_prototype_prediction_parity": true,
+      "classes": 5,
+      "test_windows": 1919,
+      "hdc_accuracy": 0.7774882751433038,
+      "centroid_accuracy": 0.8952579468473163,
+      "hdc": {
+        "windows": 1919,
+        "accuracy": 0.7774882751433038,
+        "macro_f1": 0.7314981683233305,
+        "confusion": [
+          [
+            514,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            271,
+            0,
+            2,
+            10
+          ],
+          [
+            0,
+            2,
+            343,
+            0,
+            42
+          ],
+          [
+            29,
+            267,
+            0,
+            67,
+            61
+          ],
+          [
+            0,
+            0,
+            2,
+            12,
+            297
+          ]
+        ],
+        "counts": [
+          514,
+          283,
+          387,
+          424,
+          311
+        ],
+        "recall": {
+          "rest": 1.0,
+          "open_hand": 0.9575971731448764,
+          "fist": 0.8863049095607235,
+          "wrist_flex": 0.1580188679245283,
+          "wrist_extend": 0.954983922829582
+        }
+      },
+      "centroid": {
+        "windows": 1919,
+        "accuracy": 0.8952579468473163,
+        "macro_f1": 0.8836545403921017,
+        "confusion": [
+          [
+            514,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            274,
+            0,
+            0,
+            9
+          ],
+          [
+            0,
+            2,
+            364,
+            4,
+            17
+          ],
+          [
+            3,
+            126,
+            0,
+            259,
+            36
+          ],
+          [
+            0,
+            0,
+            4,
+            0,
+            307
+          ]
+        ],
+        "counts": [
+          514,
+          283,
+          387,
+          424,
+          311
+        ],
+        "recall": {
+          "rest": 1.0,
+          "open_hand": 0.9681978798586572,
+          "fist": 0.9405684754521964,
+          "wrist_flex": 0.6108490566037735,
+          "wrist_extend": 0.9871382636655949
+        }
+      }
+    }
+  },
+  "EMG009": {
+    "16": {
+      "levels": 16,
+      "median_gap_bp": 508.0,
+      "encoding_prototype_prediction_parity": true,
+      "classes": 5,
+      "test_windows": 6588,
+      "hdc_accuracy": 0.9502125075895568,
+      "centroid_accuracy": 0.9758652094717668,
+      "hdc": {
+        "windows": 6588,
+        "accuracy": 0.9502125075895568,
+        "macro_f1": 0.9482049071160248,
+        "confusion": [
+          [
+            1367,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            1066,
+            0,
+            0,
+            0
+          ],
+          [
+            15,
+            8,
+            1428,
+            2,
+            7
+          ],
+          [
+            59,
+            71,
+            0,
+            1273,
+            0
+          ],
+          [
+            27,
+            111,
+            4,
+            24,
+            1126
+          ]
+        ],
+        "counts": [
+          1367,
+          1066,
+          1460,
+          1403,
+          1292
+        ],
+        "recall": {
+          "rest": 1.0,
+          "open_hand": 1.0,
+          "fist": 0.9780821917808219,
+          "wrist_flex": 0.9073414112615823,
+          "wrist_extend": 0.871517027863777
+        }
+      },
+      "centroid": {
+        "windows": 6588,
+        "accuracy": 0.9758652094717668,
+        "macro_f1": 0.9744654189808963,
+        "confusion": [
+          [
+            1367,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            1066,
+            0,
+            0,
+            0
+          ],
+          [
+            12,
+            10,
+            1432,
+            2,
+            4
+          ],
+          [
+            3,
+            43,
+            0,
+            1357,
+            0
+          ],
+          [
+            0,
+            67,
+            5,
+            13,
+            1207
+          ]
+        ],
+        "counts": [
+          1367,
+          1066,
+          1460,
+          1403,
+          1292
+        ],
+        "recall": {
+          "rest": 1.0,
+          "open_hand": 1.0,
+          "fist": 0.9808219178082191,
+          "wrist_flex": 0.9672131147540983,
+          "wrist_extend": 0.9342105263157895
+        }
+      }
+    },
+    "32": {
+      "levels": 32,
+      "median_gap_bp": 512.0,
+      "encoding_prototype_prediction_parity": true,
+      "classes": 5,
+      "test_windows": 6588,
+      "hdc_accuracy": 0.9458105646630237,
+      "centroid_accuracy": 0.9758652094717668,
+      "hdc": {
+        "windows": 6588,
+        "accuracy": 0.9458105646630237,
+        "macro_f1": 0.943638133365811,
+        "confusion": [
+          [
+            1367,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            1065,
+            1,
+            0,
+            0
+          ],
+          [
+            16,
+            9,
+            1426,
+            1,
+            8
+          ],
+          [
+            55,
+            102,
+            0,
+            1246,
+            0
+          ],
+          [
+            30,
+            110,
+            3,
+            22,
+            1127
+          ]
+        ],
+        "counts": [
+          1367,
+          1066,
+          1460,
+          1403,
+          1292
+        ],
+        "recall": {
+          "rest": 1.0,
+          "open_hand": 0.99906191369606,
+          "fist": 0.9767123287671233,
+          "wrist_flex": 0.8880969351389879,
+          "wrist_extend": 0.8722910216718266
+        }
+      },
+      "centroid": {
+        "windows": 6588,
+        "accuracy": 0.9758652094717668,
+        "macro_f1": 0.9744654189808963,
+        "confusion": [
+          [
+            1367,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            1066,
+            0,
+            0,
+            0
+          ],
+          [
+            12,
+            10,
+            1432,
+            2,
+            4
+          ],
+          [
+            3,
+            43,
+            0,
+            1357,
+            0
+          ],
+          [
+            0,
+            67,
+            5,
+            13,
+            1207
+          ]
+        ],
+        "counts": [
+          1367,
+          1066,
+          1460,
+          1403,
+          1292
+        ],
+        "recall": {
+          "rest": 1.0,
+          "open_hand": 1.0,
+          "fist": 0.9808219178082191,
+          "wrist_flex": 0.9672131147540983,
+          "wrist_extend": 0.9342105263157895
+        }
+      }
+    }
+  },
+  "EMG012": {
+    "16": {
+      "levels": 16,
+      "median_gap_bp": 105.0,
+      "encoding_prototype_prediction_parity": true,
+      "classes": 5,
+      "test_windows": 5022,
+      "hdc_accuracy": 0.673436877737953,
+      "centroid_accuracy": 0.7911190760653126,
+      "hdc": {
+        "windows": 5022,
+        "accuracy": 0.673436877737953,
+        "macro_f1": 0.6665489304903169,
+        "confusion": [
+          [
+            970,
+            48,
+            83,
+            84,
+            331
+          ],
+          [
+            0,
+            705,
+            1,
+            6,
+            210
+          ],
+          [
+            0,
+            119,
+            780,
+            7,
+            5
+          ],
+          [
+            58,
+            53,
+            55,
+            514,
+            344
+          ],
+          [
+            0,
+            87,
+            116,
+            33,
+            413
+          ]
+        ],
+        "counts": [
+          1516,
+          922,
+          911,
+          1024,
+          649
+        ],
+        "recall": {
+          "rest": 0.6398416886543535,
+          "open_hand": 0.764642082429501,
+          "fist": 0.8562019758507134,
+          "wrist_flex": 0.501953125,
+          "wrist_extend": 0.6363636363636364
+        }
+      },
+      "centroid": {
+        "windows": 5022,
+        "accuracy": 0.7911190760653126,
+        "macro_f1": 0.7580502663574609,
+        "confusion": [
+          [
+            1231,
+            0,
+            146,
+            124,
+            15
+          ],
+          [
+            4,
+            870,
+            18,
+            12,
+            18
+          ],
+          [
+            0,
+            0,
+            907,
+            4,
+            0
+          ],
+          [
+            178,
+            0,
+            112,
+            734,
+            0
+          ],
+          [
+            0,
+            65,
+            217,
+            136,
+            231
+          ]
+        ],
+        "counts": [
+          1516,
+          922,
+          911,
+          1024,
+          649
+        ],
+        "recall": {
+          "rest": 0.8120052770448549,
+          "open_hand": 0.9436008676789588,
+          "fist": 0.995609220636663,
+          "wrist_flex": 0.716796875,
+          "wrist_extend": 0.3559322033898305
+        }
+      }
+    },
+    "32": {
+      "levels": 32,
+      "median_gap_bp": 105.0,
+      "encoding_prototype_prediction_parity": true,
+      "classes": 5,
+      "test_windows": 5022,
+      "hdc_accuracy": 0.7425328554360813,
+      "centroid_accuracy": 0.7911190760653126,
+      "hdc": {
+        "windows": 5022,
+        "accuracy": 0.7425328554360813,
+        "macro_f1": 0.7205527925954441,
+        "confusion": [
+          [
+            1102,
+            40,
+            90,
+            130,
+            154
+          ],
+          [
+            2,
+            789,
+            1,
+            6,
+            124
+          ],
+          [
+            0,
+            112,
+            788,
+            8,
+            3
+          ],
+          [
+            143,
+            51,
+            57,
+            735,
+            38
+          ],
+          [
+            0,
+            89,
+            117,
+            128,
+            315
+          ]
+        ],
+        "counts": [
+          1516,
+          922,
+          911,
+          1024,
+          649
+        ],
+        "recall": {
+          "rest": 0.7269129287598944,
+          "open_hand": 0.8557483731019523,
+          "fist": 0.8649835345773875,
+          "wrist_flex": 0.7177734375,
+          "wrist_extend": 0.48536209553158705
+        }
+      },
+      "centroid": {
+        "windows": 5022,
+        "accuracy": 0.7911190760653126,
+        "macro_f1": 0.7580502663574609,
+        "confusion": [
+          [
+            1231,
+            0,
+            146,
+            124,
+            15
+          ],
+          [
+            4,
+            870,
+            18,
+            12,
+            18
+          ],
+          [
+            0,
+            0,
+            907,
+            4,
+            0
+          ],
+          [
+            178,
+            0,
+            112,
+            734,
+            0
+          ],
+          [
+            0,
+            65,
+            217,
+            136,
+            231
+          ]
+        ],
+        "counts": [
+          1516,
+          922,
+          911,
+          1024,
+          649
+        ],
+        "recall": {
+          "rest": 0.8120052770448549,
+          "open_hand": 0.9436008676789588,
+          "fist": 0.995609220636663,
+          "wrist_flex": 0.716796875,
+          "wrist_extend": 0.3559322033898305
+        }
+      }
+    }
+  },
+  "EMG013": {
+    "16": {
+      "levels": 16,
+      "median_gap_bp": 336.0,
+      "encoding_prototype_prediction_parity": true,
+      "classes": 5,
+      "test_windows": 4675,
+      "hdc_accuracy": 0.6645989304812834,
+      "centroid_accuracy": 0.6346524064171123,
+      "hdc": {
+        "windows": 4675,
+        "accuracy": 0.6645989304812834,
+        "macro_f1": 0.6577901828185015,
+        "confusion": [
+          [
+            1181,
+            0,
+            0,
+            0,
+            103
+          ],
+          [
+            13,
+            789,
+            0,
+            0,
+            39
+          ],
+          [
+            192,
+            0,
+            200,
+            10,
+            271
+          ],
+          [
+            295,
+            0,
+            0,
+            431,
+            45
+          ],
+          [
+            600,
+            0,
+            0,
+            0,
+            506
+          ]
+        ],
+        "counts": [
+          1284,
+          841,
+          673,
+          771,
+          1106
+        ],
+        "recall": {
+          "rest": 0.9197819314641744,
+          "open_hand": 0.9381688466111772,
+          "fist": 0.2971768202080238,
+          "wrist_flex": 0.5590142671854734,
+          "wrist_extend": 0.45750452079566006
+        }
+      },
+      "centroid": {
+        "windows": 4675,
+        "accuracy": 0.6346524064171123,
+        "macro_f1": 0.656429713344865,
+        "confusion": [
+          [
+            852,
+            0,
+            0,
+            0,
+            432
+          ],
+          [
+            0,
+            752,
+            0,
+            0,
+            89
+          ],
+          [
+            8,
+            0,
+            289,
+            156,
+            220
+          ],
+          [
+            130,
+            0,
+            0,
+            447,
+            194
+          ],
+          [
+            469,
+            0,
+            0,
+            10,
+            627
+          ]
+        ],
+        "counts": [
+          1284,
+          841,
+          673,
+          771,
+          1106
+        ],
+        "recall": {
+          "rest": 0.6635514018691588,
+          "open_hand": 0.8941736028537456,
+          "fist": 0.4294205052005943,
+          "wrist_flex": 0.5797665369649806,
+          "wrist_extend": 0.5669077757685352
+        }
+      }
+    },
+    "32": {
+      "levels": 32,
+      "median_gap_bp": 318.0,
+      "encoding_prototype_prediction_parity": true,
+      "classes": 5,
+      "test_windows": 4675,
+      "hdc_accuracy": 0.6645989304812834,
+      "centroid_accuracy": 0.6346524064171123,
+      "hdc": {
+        "windows": 4675,
+        "accuracy": 0.6645989304812834,
+        "macro_f1": 0.6709654617647477,
+        "confusion": [
+          [
+            1120,
+            0,
+            0,
+            0,
+            164
+          ],
+          [
+            1,
+            797,
+            0,
+            0,
+            43
+          ],
+          [
+            116,
+            0,
+            248,
+            2,
+            307
+          ],
+          [
+            280,
+            0,
+            0,
+            434,
+            57
+          ],
+          [
+            598,
+            0,
+            0,
+            0,
+            508
+          ]
+        ],
+        "counts": [
+          1284,
+          841,
+          673,
+          771,
+          1106
+        ],
+        "recall": {
+          "rest": 0.8722741433021807,
+          "open_hand": 0.9476813317479191,
+          "fist": 0.3684992570579495,
+          "wrist_flex": 0.562905317769131,
+          "wrist_extend": 0.4593128390596745
+        }
+      },
+      "centroid": {
+        "windows": 4675,
+        "accuracy": 0.6346524064171123,
+        "macro_f1": 0.656429713344865,
+        "confusion": [
+          [
+            852,
+            0,
+            0,
+            0,
+            432
+          ],
+          [
+            0,
+            752,
+            0,
+            0,
+            89
+          ],
+          [
+            8,
+            0,
+            289,
+            156,
+            220
+          ],
+          [
+            130,
+            0,
+            0,
+            447,
+            194
+          ],
+          [
+            469,
+            0,
+            0,
+            10,
+            627
+          ]
+        ],
+        "counts": [
+          1284,
+          841,
+          673,
+          771,
+          1106
+        ],
+        "recall": {
+          "rest": 0.6635514018691588,
+          "open_hand": 0.8941736028537456,
+          "fist": 0.4294205052005943,
+          "wrist_flex": 0.5797665369649806,
+          "wrist_extend": 0.5669077757685352
+        }
+      }
+    }
+  },
+  "EMG016": {
+    "16": {
+      "levels": 16,
+      "median_gap_bp": 490.0,
+      "encoding_prototype_prediction_parity": true,
+      "classes": 5,
+      "test_windows": 1791,
+      "hdc_accuracy": 0.7922948073701842,
+      "centroid_accuracy": 0.7174762702400893,
+      "hdc": {
+        "windows": 1791,
+        "accuracy": 0.7922948073701842,
+        "macro_f1": 0.697322531718304,
+        "confusion": [
+          [
+            671,
+            0,
+            0,
+            1,
+            0
+          ],
+          [
+            0,
+            269,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            272,
+            0,
+            0
+          ],
+          [
+            178,
+            35,
+            7,
+            23,
+            4
+          ],
+          [
+            0,
+            134,
+            13,
+            0,
+            184
+          ]
+        ],
+        "counts": [
+          672,
+          269,
+          272,
+          247,
+          331
+        ],
+        "recall": {
+          "rest": 0.9985119047619048,
+          "open_hand": 1.0,
+          "fist": 1.0,
+          "wrist_flex": 0.0931174089068826,
+          "wrist_extend": 0.5558912386706949
+        }
+      },
+      "centroid": {
+        "windows": 1791,
+        "accuracy": 0.7174762702400893,
+        "macro_f1": 0.5655922524327527,
+        "confusion": [
+          [
+            672,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            269,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            272,
+            0,
+            0
+          ],
+          [
+            19,
+            202,
+            5,
+            0,
+            21
+          ],
+          [
+            0,
+            236,
+            23,
+            0,
+            72
+          ]
+        ],
+        "counts": [
+          672,
+          269,
+          272,
+          247,
+          331
+        ],
+        "recall": {
+          "rest": 1.0,
+          "open_hand": 1.0,
+          "fist": 1.0,
+          "wrist_flex": 0.0,
+          "wrist_extend": 0.2175226586102719
+        }
+      }
+    },
+    "32": {
+      "levels": 32,
+      "median_gap_bp": 417.0,
+      "encoding_prototype_prediction_parity": true,
+      "classes": 5,
+      "test_windows": 1791,
+      "hdc_accuracy": 0.8503629257398102,
+      "centroid_accuracy": 0.7174762702400893,
+      "hdc": {
+        "windows": 1791,
+        "accuracy": 0.8503629257398102,
+        "macro_f1": 0.7897756445669428,
+        "confusion": [
+          [
+            672,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            269,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            272,
+            0,
+            0
+          ],
+          [
+            25,
+            141,
+            5,
+            73,
+            3
+          ],
+          [
+            0,
+            87,
+            7,
+            0,
+            237
+          ]
+        ],
+        "counts": [
+          672,
+          269,
+          272,
+          247,
+          331
+        ],
+        "recall": {
+          "rest": 1.0,
+          "open_hand": 1.0,
+          "fist": 1.0,
+          "wrist_flex": 0.29554655870445345,
+          "wrist_extend": 0.716012084592145
+        }
+      },
+      "centroid": {
+        "windows": 1791,
+        "accuracy": 0.7174762702400893,
+        "macro_f1": 0.5655922524327527,
+        "confusion": [
+          [
+            672,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            269,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            272,
+            0,
+            0
+          ],
+          [
+            19,
+            202,
+            5,
+            0,
+            21
+          ],
+          [
+            0,
+            236,
+            23,
+            0,
+            72
+          ]
+        ],
+        "counts": [
+          672,
+          269,
+          272,
+          247,
+          331
+        ],
+        "recall": {
+          "rest": 1.0,
+          "open_hand": 1.0,
+          "fist": 1.0,
+          "wrist_flex": 0.0,
+          "wrist_extend": 0.2175226586102719
+        }
+      }
+    }
+  }
+}
+TEST_PASS C/NumPy exact packed-query, all prototypes, predictions, margins and centroid parity; frozen model.

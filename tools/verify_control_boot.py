@@ -9,7 +9,12 @@ import re
 from verify_boot_partition import find_partition
 
 ROOT = Path(__file__).resolve().parents[1]
-TAG = '20261028_HAND_CONTROL_HDC_DYNAMIC_IMU_PL_V17'
+TAG = '20261102_HAND_CONTROL_HDC_DYNAMIC_CONTINUOUS_V30'
+
+
+def read_log(path):
+    b = Path(path).read_bytes()
+    return b.decode('utf-16' if b.startswith((b'\xff\xfe', b'\xfe\xff')) else 'utf-8-sig', errors='replace')
 
 
 def main():
@@ -17,20 +22,186 @@ def main():
     ap.add_argument('--hardware-only',action='store_true')
     ap.add_argument('--application-only',action='store_true')
     ap.add_argument('--tag',default=TAG)
-    ap.add_argument('--report-dir',default='report/imu_pl_20261028')
+    ap.add_argument('--report-dir',default='report/hdc_continuous_20261102')
     args=ap.parse_args()
     tag=args.tag
+    continuous_v30=tag == '20261102_HAND_CONTROL_HDC_DYNAMIC_CONTINUOUS_V30'
+    resolution_v29=tag == '20261102_HAND_CONTROL_HDC_DYNAMIC_RESOLUTION_V29'
+    custom_bridge_v28=tag == '20261101_HAND_CONTROL_HDC_DYNAMIC_CUSTOM_BRIDGE_V28'
+    custom_only_v27=tag == '20261101_HAND_CONTROL_HDC_DYNAMIC_CUSTOM_ONLY_V27'
+    ui_title_v26=tag == '20261101_HAND_CONTROL_HDC_DYNAMIC_SYSTEM_NAME_V26'
+    button_v25=tag == '20261101_HAND_CONTROL_HDC_DYNAMIC_QUALITY_BUTTON_V25'
+    button_v24=tag == '20261101_HAND_CONTROL_HDC_DYNAMIC_QUALITY_BUTTON_V24'
+    zero_v23=tag == '20261031_HAND_CONTROL_HDC_DYNAMIC_IMU_ZERO_V23'
+    grip_v22=tag == '20261031_HAND_CONTROL_HDC_DYNAMIC_SYNERGY_GRIP_V22'
     virtual_v13=tag == '20261026_HAND_CONTROL_HDC_DYNAMIC_V13'
     stability_v16=tag == '20261027_HAND_CONTROL_HDC_DYNAMIC_V16'
+    opto_v20=tag == '20261029_HAND_CONTROL_HDC_DYNAMIC_PWM_OPTO_V20'
+    ui_v21=tag == '20261030_HAND_CONTROL_HDC_DYNAMIC_UI_BUDGET_V21'
+    model_v19=tag == '20261029_HAND_CONTROL_HDC_DYNAMIC_MODEL_SD_V19'
+    quality_v18=tag == '20261029_HAND_CONTROL_HDC_DYNAMIC_QUALITY_V18'
     imu_v17=tag == '20261028_HAND_CONTROL_HDC_DYNAMIC_IMU_PL_V17'
     resource_v15=tag == '20261027_HAND_CONTROL_HDC_DYNAMIC_V15'
     resource_v14=resource_v15 or tag == '20261027_HAND_CONTROL_HDC_DYNAMIC_V14'
-    learning_v12=imu_v17 or stability_v16 or virtual_v13 or resource_v14 or tag == '20261026_HAND_CONTROL_HDC_DYNAMIC_V12'
+    learning_v12=continuous_v30 or resolution_v29 or custom_bridge_v28 or custom_only_v27 or ui_title_v26 or button_v25 or button_v24 or zero_v23 or grip_v22 or ui_v21 or opto_v20 or model_v19 or quality_v18 or imu_v17 or stability_v16 or virtual_v13 or resource_v14 or tag == '20261026_HAND_CONTROL_HDC_DYNAMIC_V12'
     assert tag and all(c.isalnum() or c=='_' for c in tag), 'invalid build tag'
     bit_path = ROOT/'build/vivado/hand_motion_reconstruction.runs/impl_1/design_1.bit'
     elf_path = ROOT/'sw/ps_uart_print/ps_uart_print_pl_control.elf'
     boot_path = ROOT/f'build/boot/BOOT_{tag}.BIN'
     xsa_path = ROOT/'build/export/design_1.xsa'
+    if continuous_v30:
+        from verify_hdc_continuous_release import verify
+        verify(ROOT/args.report_dir)
+    if resolution_v29:
+        from verify_hdc_resolution_release import verify
+        verify(xsa_path)
+    if zero_v23:
+        from verify_imu_zero_release import verify
+        verify(xsa_path)
+    if grip_v22:
+        from verify_grip_release import verify
+        verify(xsa_path)
+    if button_v24:
+        # One-button full-channel quality check: eight channels capture the
+        # same window, the worker runs only while a check is active, and the
+        # eight scores commit together from a single press.
+        report=ROOT/args.report_dir
+        for name,markers in {
+            'quality_test.log':('button-triggered full check with synchronized capture and single commit',),
+            'budget_test.log':('idle-between-checks, press-triggered 2.5ms quota',),
+            'lcd_test.log':('TEST_PASS quality LCD: press-triggered 8-channel check',),
+            'imu_test.log':('TEST_PASS quality LCD: press-triggered 8-channel check',),
+            'hand_test.log':('TEST_PASS hand firmware:',),
+            'learning_workflow_test.log':('TEST_PASS PL backend failures invalidate model and NMF without software fallback',),
+        }.items():
+            text=read_log(report/name)
+            assert all(m in text for m in markers), 'V24 evidence missing: '+name
+            assert not re.search(r'(?im)^(Fatal:|ERROR:|Assertion failed:)', text), 'Failed V24 test: '+name
+        proof=json.loads((report/'regression_sources.json').read_text())
+        for name,digest in proof.items():
+            assert hashlib.sha256((ROOT/name).read_bytes()).hexdigest()==digest, 'Stale V24 source: '+name
+    if button_v25:
+        # Board fix for the one-button check: results latch per channel so a
+        # sequence gap after a channel committed cannot erase it, one idle
+        # opportunity drains a budget-bounded burst of worker chunks so all
+        # eight windows finish inside the check, and the timeout constant
+        # stays inside the u32 tick range.
+        report=ROOT/args.report_dir
+        for name,markers in {
+            'quality_test.log':('button-triggered full check with synchronized capture, gap-tolerant latched results and single commit',),
+            'budget_test.log':('budget-bounded burst draining, single commit, eight-channel burst completion',),
+            'numeric_validation.log':('TEST_PASS baseline-free quality C/NumPy/SciPy numerical validation',),
+            'lcd_test.log':('TEST_PASS quality LCD: press-triggered 8-channel check',),
+            'imu_test.log':('TEST_PASS quality LCD: press-triggered 8-channel check',),
+            'hand_test.log':('TEST_PASS hand firmware:',),
+            'learning_workflow_test.log':('TEST_PASS PL backend failures invalidate model and NMF without software fallback',),
+        }.items():
+            text=read_log(report/name)
+            assert all(m in text for m in markers), 'V25 evidence missing: '+name
+            assert not re.search(r'(?im)^(Fatal:|ERROR:|Assertion failed:)', text), 'Failed V25 test: '+name
+        proof=json.loads((report/'regression_sources.json').read_text())
+        for name,digest in proof.items():
+            assert hashlib.sha256((ROOT/name).read_bytes()).hexdigest()==digest, 'Stale V25 source: '+name
+    if custom_bridge_v28:
+        # A one-class custom library has no rival class: the PL accelerator
+        # reports margin 0 for it, so the live hand/virtual bridge can never
+        # reach a confident decision and used to wait forever. It is now
+        # refused explicitly (>= 2 learned gestures required, with UI hints),
+        # the relax-class 6-of-8 vote asymmetry is gone, and stability is
+        # relaxed: qualified margin 2% -> 1%, 3-of-5 -> 3-of-6 votes,
+        # hold expiry 8 windows/200 ms -> 10 windows/250 ms.
+        report=ROOT/args.report_dir
+        for name,markers in {
+            'quality_test.log':('button-triggered full check with synchronized capture, gap-tolerant latched results and single commit',),
+            'budget_test.log':('budget-bounded burst draining, single commit, eight-channel burst completion',),
+            'numeric_validation.log':('TEST_PASS baseline-free quality C/NumPy/SciPy numerical validation',),
+            'lcd_test.log':('TEST_PASS HDC LCD: real parser, eight custom classes, independent validation, frozen custom6/7/8 live hand bridge',),
+            'imu_test.log':('TEST_PASS HDC LCD: real parser, eight custom classes, independent validation, frozen custom6/7/8 live hand bridge',),
+            'hand_test.log':('TEST_PASS hand bridge: one-class library refused, uniform 3-of-6 stability for every custom class',
+                             'TEST_PASS HDC stability: isolated error/abstention, rival hysteresis, 75ms clean transition, 250ms ambiguity STOP, uniform custom-class debounce',),
+            'learning_workflow_test.log':('TEST_PASS PL backend failures invalidate model and NMF without software fallback',),
+            'hdc_learning_test.log':('custom-only classes from empty library',),
+            'model_test.log':('8-class exact samples/prototypes/centroids',),
+        }.items():
+            text=read_log(report/name)
+            assert all(m in text for m in markers), 'V28 evidence missing: '+name
+            assert not re.search(r'(?im)^(Fatal:|ERROR:|Assertion failed:)', text), 'Failed V28 test: '+name
+        proof=json.loads((report/'regression_sources.json').read_text())
+        for name,digest in proof.items():
+            assert hashlib.sha256((ROOT/name).read_bytes()).hexdigest()==digest, 'Stale V28 source: '+name
+        assert {'sw/ps_uart_print/hdc_learning.h','sw/ps_uart_print/hdc_model_store.h',
+                'sw/ps_uart_print/lcd_hdc.h','sw/ps_uart_print/lcd_hand.h',
+                'sw/ps_uart_print/hand_control.h','sw/ps_uart_print/lcd_virtual.h',
+                'sw/ps_uart_print/lcd_hdc_models.h','sw/ps_uart_print/main.c',
+                'sim/hdc_learning_test.c','sim/hdc_model_store_test.c',
+                'sim/hand_firmware_test.c'}<=proof.keys()
+    if custom_only_v27:
+        # HDC on-board learning is fully custom: hdc_begin() takes the custom
+        # class count directly (no +5 fixed base classes), the 5x5 base-gesture
+        # MLP reference table and its statistics are gone, the SD model
+        # contract moves to 0x07105004, hand-control rows are the three PL
+        # base poses plus custom class c at row c+3 (no wrist hold-over), and
+        # virtual-joint rows start at class 0.
+        report=ROOT/args.report_dir
+        for name,markers in {
+            'quality_test.log':('button-triggered full check with synchronized capture, gap-tolerant latched results and single commit',),
+            'budget_test.log':('budget-bounded burst draining, single commit, eight-channel burst completion',),
+            'numeric_validation.log':('TEST_PASS baseline-free quality C/NumPy/SciPy numerical validation',),
+            'lcd_test.log':('TEST_PASS HDC LCD: real parser, eight custom classes, independent validation, frozen custom6/7/8 live hand bridge',),
+            'imu_test.log':('TEST_PASS HDC LCD: real parser, eight custom classes, independent validation, frozen custom6/7/8 live hand bridge',),
+            'hand_test.log':('TEST_PASS hand firmware:',),
+            'learning_workflow_test.log':('TEST_PASS PL backend failures invalidate model and NMF without software fallback',),
+            'hdc_learning_test.log':('custom-only classes from empty library',),
+            'model_test.log':('8-class exact samples/prototypes/centroids',),
+        }.items():
+            text=read_log(report/name)
+            assert all(m in text for m in markers), 'V27 evidence missing: '+name
+            assert not re.search(r'(?im)^(Fatal:|ERROR:|Assertion failed:)', text), 'Failed V27 test: '+name
+        proof=json.loads((report/'regression_sources.json').read_text())
+        for name,digest in proof.items():
+            assert hashlib.sha256((ROOT/name).read_bytes()).hexdigest()==digest, 'Stale V27 source: '+name
+        assert {'sw/ps_uart_print/hdc_learning.h','sw/ps_uart_print/hdc_model_store.h',
+                'sw/ps_uart_print/lcd_hdc.h','sw/ps_uart_print/lcd_hand.h',
+                'sw/ps_uart_print/hand_control.h','sw/ps_uart_print/lcd_virtual.h',
+                'sw/ps_uart_print/lcd_hdc_models.h','sw/ps_uart_print/main.c',
+                'sim/hdc_learning_test.c','sim/hdc_model_store_test.c'}<=proof.keys()
+    if ui_title_v26:
+        # Display rename only: every page header shows the confirmed system
+        # name "自学习肌电意图解码康复训练系统" at full size. The header
+        # navigation buttons shift right to make room; the settings button
+        # keeps its established touch rectangle. The LCD font regains the
+        # five previously missing glyphs with unchanged metrics.
+        report=ROOT/args.report_dir
+        for name,markers in {
+            'quality_test.log':('button-triggered full check with synchronized capture, gap-tolerant latched results and single commit',),
+            'budget_test.log':('budget-bounded burst draining, single commit, eight-channel burst completion',),
+            'numeric_validation.log':('TEST_PASS baseline-free quality C/NumPy/SciPy numerical validation',),
+            'lcd_test.log':('TEST_PASS quality LCD: press-triggered 8-channel check',),
+            'imu_test.log':('TEST_PASS quality LCD: press-triggered 8-channel check',),
+            'lcd_test.log:feedback':('system title fit',),
+            'imu_test.log:feedback':('system title fit',),
+            'hand_test.log':('TEST_PASS hand firmware:',),
+            'learning_workflow_test.log':('TEST_PASS PL backend failures invalidate model and NMF without software fallback',),
+        }.items():
+            log=name.split(':')[0]
+            text=read_log(report/log)
+            assert all(m in text for m in markers), 'V26 evidence missing: '+name
+            assert not re.search(r'(?im)^(Fatal:|ERROR:|Assertion failed:)', text), 'Failed V26 test: '+name
+        proof=json.loads((report/'regression_sources.json').read_text())
+        for name,digest in proof.items():
+            assert hashlib.sha256((ROOT/name).read_bytes()).hexdigest()==digest, 'Stale V26 source: '+name
+    if ui_v21:
+        from verify_ui_budget_release import verify
+        verify(xsa_path)
+    if opto_v20:
+        from verify_hand_pwm_release import verify
+        verify(xsa_path)
+    if model_v19:
+        from verify_hdc_model_release import verify
+        verify(xsa_path)
+    if quality_v18:
+        from verify_quality_release import verify
+        verify(xsa_path)
     if imu_v17:
         from verify_imu_release import verify
         verify(xsa_path)
@@ -315,7 +486,111 @@ def main():
             'rtl_vectors.log','rtl_mailbox.log','netlist_mailbox.log','mailbox_firmware.log',
             'lcd_test.log','hand_test.log','learning_workflow_test.log','timing_routed.rpt','comparison.json',
             'utilization_routed.rpt','methodology_routed.rpt','bus_skew.rpt','cdc.rpt','resource_table.md')]
+    if quality_v18:
+        paths += [ROOT/p for p in ('tools/verify_quality_release.py','sw/ps_uart_print/channel_quality.h',
+            'sw/ps_uart_print/channel_quality_tables.h','sw/ps_uart_print/lcd_channel_quality.h',
+            'sim/channel_quality_test.c','sim/test_channel_quality_reference.py','sim/lcd_firmware_test.c')]
+        paths += [ROOT/args.report_dir/p for p in ('README.md','regression_sources.json','quality_test.log',
+            'numeric_validation.json','lcd_test.log','hand_test.log','learning_workflow_test.log','baseline/manifest.json')]
+    if model_v19:
+        paths += [ROOT/p for p in ('sw/ps_uart_print/hdc_model_store.h','sw/ps_uart_print/lcd_hdc_models.h',
+            'sw/ps_uart_print/lcd_virtual.h','tools/gen_hz_glyphs.py','tools/verify_hdc_model_release.py',
+            'sim/hdc_model_store_test.c','sim/hdc_model_sd_mock.h','sim/sd_record_platform_mock.h',
+            'sim/control_policy_reference.c','sim/uart_record_firmware_test.c','build/scripts/run_hdc_model_test.ps1',
+            'report/channel_quality_20261029/artifacts.json','report/channel_quality_20261029/regression_sources.json')]
+        paths += [ROOT/args.report_dir/p for p in ('README.md','regression_sources.json','baseline/manifest.json',
+            'model_test.log','sd_test.log','lcd_test.log','hand_test.log','learning_workflow_test.log','uart_test.log')]
+    if opto_v20:
+        paths += [ROOT/p for p in ('sw/ps_uart_print/hdc_model_store.h','sw/ps_uart_print/lcd_hdc_models.h',
+            'sw/ps_uart_print/lcd_virtual.h','sw/ps_uart_print/channel_quality_tables.h',
+            'tools/verify_hand_pwm_release.py','sim/hand_pwm_polarity_tb.sv',
+            'build/scripts/export_hand_pwm_netlist.tcl','build/scripts/run_hand_pwm_polarity_test.ps1')]
+        paths += [ROOT/args.report_dir/p for p in ('README.md','regression_sources.json','baseline/manifest.json',
+            'polarity_rtl.log','pin_rtl.log','pin_netlist.log','hand_test.log','hardware_build.log',
+            'timing_routed.rpt','utilization_routed.rpt','drc.rpt','output_pins.txt')]
     paths=list(dict.fromkeys(paths))
+    if ui_v21:
+        paths += [ROOT/p for p in ('sw/ps_uart_print/channel_quality.h',
+            'tools/verify_ui_budget_release.py','sim/lcd_work_budget_test.c')]
+        paths += [ROOT/args.report_dir/p for p in ('README.md','regression_sources.json',
+            'baseline/manifest.json','quality_test.log','numeric_validation.json',
+            'lcd_test.log','cpu_test.log')]
+    if zero_v23:
+        from verify_imu_zero_release import sources
+        paths += [ROOT/p for p in sources()]
+        paths += [ROOT/args.report_dir/p for p in ('README.md','regression_sources.json',
+            'rtl_test.log','netlist_test.log','lcd_test.log','grip_test.log','feedback_test.log',
+            'mailbox_firmware.log','hand_test.log','learning_workflow_test.log','float_comparison.json',
+            'arm_build.log','hardware_build.log','full_gates.log','timing_routed.rpt',
+            'utilization_routed.rpt','drc.rpt','methodology_routed.rpt')]
+        paths=list(dict.fromkeys(paths))
+    if grip_v22:
+        paths += [ROOT/p for p in ('tools/verify_grip_release.py','sim/hand_grip_test.c',
+            'build/scripts/run_hand_grip_test.ps1','sim/control_policy_reference.c')]
+        paths += [ROOT/args.report_dir/p for p in ('README.md','regression_sources.json',
+            'grip_test.log','hand_test.log','lcd_test.log','arm_build.log','font_test.log')]
+    if continuous_v30:
+        paths += [ROOT/'tools/verify_hdc_continuous_release.py']
+        paths += [ROOT/args.report_dir/p for p in ('README.md','regression_sources.json',
+            'hand_test.log','lcd_test.log','imu_test.log','model_test.log','sd_test.log',
+            'uart_test.log','learning_workflow_test.log')]
+    if resolution_v29:
+        paths += [ROOT/p for p in ('sw/ps_uart_print/hdc_model_store.h',
+            'sw/ps_uart_print/lcd_hdc_models.h','sw/ps_uart_print/lcd_virtual.h',
+            'tools/verify_hdc_resolution_release.py','build/scripts/rebuild_hdc_resolution.tcl',
+            'build/scripts/close_hdc_resolution_timing.tcl',
+            'sim/hdc_model_store_test.c','sim/imu_reference_test.c','sim/hdc_model_sd_mock.h')]
+        paths += [ROOT/args.report_dir/p for p in ('README.md','regression_sources.json',
+            'baseline_sources.json','baseline_artifacts.json','netlist_inputs.json','netlist_vectors.mem',
+            'learning_test.log','learning_netlist_test.log','golden_test.log','golden/replay.json',
+            'lcd_test.log','imu_test.log','hand_test.log','learning_workflow_test.log',
+            'model_test.log','sd_test.log','uart_test.log','arm_build.log','boot_build.log',
+            'hardware_console.log','timing_close_console.log','timing_routed.rpt','utilization_routed.rpt',
+            'utilization_hierarchical.rpt','methodology_routed.rpt','comparison.json','compare_results.py',
+            'xsa_bit_extraction.json','drc_routed.rpt')]
+    if custom_bridge_v28:
+        paths += [ROOT/p for p in ('sw/ps_uart_print/hdc_model_store.h','sw/ps_uart_print/lcd_hdc_models.h',
+            'sim/hdc_model_store_test.c','sim/imu_reference_test.c','sim/pl_learning_workflow_test.c',
+            'sim/hand_firmware_test.c','sim/test_hdc_learning.py',
+            'build/scripts/run_quality_button_test.ps1')]
+        paths += [ROOT/args.report_dir/p for p in ('README.md','regression_sources.json',
+            'baseline/manifest.json','quality_test.log','budget_test.log','numeric_validation.log',
+            'lcd_test.log','imu_test.log','hand_test.log','learning_workflow_test.log',
+            'hdc_learning_test.log','model_test.log','arm_build.log','boot_build.log')]
+    if custom_only_v27:
+        paths += [ROOT/p for p in ('sw/ps_uart_print/hdc_model_store.h','sw/ps_uart_print/lcd_hdc_models.h',
+            'sim/hdc_model_store_test.c','sim/imu_reference_test.c','sim/pl_learning_workflow_test.c',
+            'sim/hand_firmware_test.c','sim/test_hdc_learning.py',
+            'build/scripts/run_quality_button_test.ps1')]
+        paths += [ROOT/args.report_dir/p for p in ('README.md','regression_sources.json',
+            'baseline/manifest.json','quality_test.log','budget_test.log','numeric_validation.log',
+            'lcd_test.log','imu_test.log','hand_test.log','learning_workflow_test.log',
+            'hdc_learning_test.log','model_test.log','arm_build.log','boot_build.log')]
+    if ui_title_v26:
+        paths += [ROOT/p for p in ('sw/ps_uart_print/lcd_home.h',
+            'sw/ps_uart_print/lcd_font_zh.h','tools/gen_hz_glyphs.py',
+            'sim/lcd_firmware_test.c','sim/imu_reference_test.c',
+            'build/scripts/run_quality_button_test.ps1')]
+        paths += [ROOT/args.report_dir/p for p in ('README.md','regression_sources.json',
+            'baseline/manifest.json','quality_test.log','budget_test.log','numeric_validation.log',
+            'lcd_test.log','imu_test.log','hand_test.log','learning_workflow_test.log','arm_build.log',
+            'boot_build.log')]
+    if button_v25:
+        paths += [ROOT/p for p in ('sw/ps_uart_print/channel_quality.h',
+            'sw/ps_uart_print/lcd_channel_quality.h','sim/channel_quality_test.c',
+            'sim/lcd_work_budget_test.c','build/scripts/run_quality_button_test.ps1')]
+        paths += [ROOT/args.report_dir/p for p in ('README.md','regression_sources.json',
+            'baseline/manifest.json','quality_test.log','budget_test.log','numeric_validation.log',
+            'lcd_test.log','imu_test.log','hand_test.log','learning_workflow_test.log','arm_build.log',
+            'boot_build.log')]
+    if button_v24:
+        paths += [ROOT/p for p in ('sw/ps_uart_print/channel_quality.h',
+            'sw/ps_uart_print/lcd_channel_quality.h','sim/channel_quality_test.c',
+            'sim/lcd_work_budget_test.c')]
+        paths += [ROOT/args.report_dir/p for p in ('README.md','regression_sources.json',
+            'baseline/manifest.json','quality_test.log','budget_test.log','lcd_test.log',
+            'imu_test.log','hand_test.log','learning_workflow_test.log','arm_build.log',
+            'boot_build.log')]
     evidence={'date':f'{tag[:4]}-{tag[4:6]}-{tag[6:8]}','tag':tag,'hardware_verified':False,'pwm_connected':False,
         'pl_pwm_ports_present':'HAND_CONTROL' in tag,'physical_wiring_verified':False,
         'hardware_reused_from_v12':reused,

@@ -1,0 +1,2 @@
+TEST_PASS HDC Q32 release: 282 inherited sources, exact Q16/Q32, precise page stability, real synthesized learning and routed system
+TEST_PASS matched control BOOT: XSA hardware + full bitstream + 2 application PT_LOAD segments + 3 FSBL PT_LOAD segments

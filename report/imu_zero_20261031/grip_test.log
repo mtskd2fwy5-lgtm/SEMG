@@ -1,0 +1,3 @@
+hand_grip_test.c
+TEST_PASS synergy grip: signed finger interpolation, clamp/deadband, atomic target, missing/duplicate/gap/wrap, freshness, reference/mapping/MPU guards
+TEST_PASS synergy grip UI: real PL result join, gated release, capture/service, explicit enable, navigation STOP, 800/1024 render

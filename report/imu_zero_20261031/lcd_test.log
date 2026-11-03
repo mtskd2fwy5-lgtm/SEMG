@@ -1,0 +1,49 @@
+lcd_firmware_test.c
+TEST_PASS pose: entry/hold hysteresis, bounded uncertainty, rest debounce, score refresh, accepted P authority.
+TEST_PASS STARTUP: pre-zero/rezero/vertical tracking, noisy zero within 2s.
+TEST_PASS IMU: calibrated-frame lift before/after 600dps flip, arbitrary-pose zero,
+          bias adaptation/2dps yaw, acceleration pulses/XYZ return, gap/seq/timer wrap.
+IMU oracle: max rotation-matrix component error 0.002930 (all checked checkpoints)
+TEST_PASS WRIST: class3 +34 flex toward palm, class4 -34 extend toward back,
+          wrist pivot/forearm fixed, both faces and flipped raised/yawed arm.
+TEST_PASS WAVE DATA: true signed int24, source/channel/header isolation, duplicates,
+          sequence wrap/restart, real-time gap positions, ring wrap, switch reset.
+TEST_PASS FATIGUE LCD: readiness-only refresh, pending distinct from normal, both panels
+TEST_PASS DATA LCD: live MAV bars, raw values, gate/fatigue/gap status, focus, spectrum and return touch.
+TEST_PASS quality LCD: final-waveform ingestion, 8 channels, residual mains/spikes, no baseline, stale, touch drill-down, both panels.
+TEST_PASS SPECTRUM FFT: small/full-scale/DC/zero inputs, peak bin, log-power accuracy.
+TEST_PASS SD LCD: fifth menu entry, capture toggle, action labels, paired raw/notch frames.
+TEST_PASS WAVE LCD: touch CH1-8/source/time/DC/range/pause/return, signed traces,
+          gaps, hold with active input, both panel bounds, fullscale, immutable frames, stale/wrap.
+TEST_PASS UI SETTINGS: text fit/UTF8, both panels, touch controls/reset, page routes, SD continuity.
+TEST_PASS REHAB LCD: setup/touch, blocked recording, real classifier packets, hold/recovery, pause/recalibration, result/CSV/retry, labels unchanged, both panels, GT rollover.
+TEST_PASS SYNERGY LCD: complete-window parser, seq wrap/gap, 10s history, both panels, frame equivalence, unchanged logits/labels, page routes.
+TEST_PASS GRIP LCD: capture/touch/start guard/matched-window hold/missing evidence/CSV/both panels
+TEST_PASS TEXT BASELINE: all font sizes, capitals/digits, descenders, mixed-size rows.
+TEST_PASS VIRTUAL MAPPING: independent 22 joint degrees, editor save/clear/preset/drag, shared MLP-HDC source, stable parser classes, unmapped/stale guards, no implicit PWM, basic rehab truth preserved, both panels.
+TEST_PASS HDC STABILITY UI: actual parser/predictor jitter and zero-margin abstention, common stable class on learning/home pages, alternating ambiguity expires, clipping/model gates, validation unchanged, no implicit PWM
+TEST_PASS HDC MODEL LIBRARY: full snapshot roundtrip, distinct switching, reboot restore, stable predictions, CRC/close rollback, compatible mappings, PWM stop, pagination, navigation cancellation, both panels
+TEST_PASS HDC LCD: real parser, eight classes, independent validation, frozen custom1/2/3 live hand bridge, timeout abort, CSV/retry, original pose/manual labels untouched, both panels.
+TEST_PASS NAV LIFECYCLE: 144 routes, unique page, SD continuity, backend unchanged, orphan actions canceled, capture canceled, immediate pause, explicit group continuation.
+TEST_PASS BUTTON FEEDBACK: selected/unselected shared controls, no held-repeat, visible dwell after present, navigation ownership, restore, timer wrap, exact full/partial pixels, both panels
+TEST_PASS FATIGUE LCD: readiness-only refresh, pending distinct from normal, both panels
+TEST_PASS DATA LCD: live MAV bars, raw values, gate/fatigue/gap status, focus, spectrum and return touch.
+TEST_PASS quality LCD: final-waveform ingestion, 8 channels, residual mains/spikes, no baseline, stale, touch drill-down, both panels.
+TEST_PASS SPECTRUM FFT: small/full-scale/DC/zero inputs, peak bin, log-power accuracy.
+TEST_PASS SD LCD: fifth menu entry, capture toggle, action labels, paired raw/notch frames.
+TEST_PASS WAVE LCD: touch CH1-8/source/time/DC/range/pause/return, signed traces,
+          gaps, hold with active input, both panel bounds, fullscale, immutable frames, stale/wrap.
+TEST_PASS UI SETTINGS: text fit/UTF8, both panels, touch controls/reset, page routes, SD continuity.
+TEST_PASS REHAB LCD: setup/touch, blocked recording, real classifier packets, hold/recovery, pause/recalibration, result/CSV/retry, labels unchanged, both panels, GT rollover.
+TEST_PASS SYNERGY LCD: complete-window parser, seq wrap/gap, 10s history, both panels, frame equivalence, unchanged logits/labels, page routes.
+TEST_PASS GRIP LCD: capture/touch/start guard/matched-window hold/missing evidence/CSV/both panels
+TEST_PASS TEXT BASELINE: all font sizes, capitals/digits, descenders, mixed-size rows.
+TEST_PASS VIRTUAL MAPPING: independent 22 joint degrees, editor save/clear/preset/drag, shared MLP-HDC source, stable parser classes, unmapped/stale guards, no implicit PWM, basic rehab truth preserved, both panels.
+TEST_PASS HDC STABILITY UI: actual parser/predictor jitter and zero-margin abstention, common stable class on learning/home pages, alternating ambiguity expires, clipping/model gates, validation unchanged, no implicit PWM
+TEST_PASS HDC MODEL LIBRARY: full snapshot roundtrip, distinct switching, reboot restore, stable predictions, CRC/close rollback, compatible mappings, PWM stop, pagination, navigation cancellation, both panels
+TEST_PASS HDC LCD: real parser, eight classes, independent validation, frozen custom1/2/3 live hand bridge, timeout abort, CSV/retry, original pose/manual labels untouched, both panels.
+TEST_PASS NAV LIFECYCLE: 144 routes, unique page, SD continuity, backend unchanged, orphan actions canceled, capture canceled, immediate pause, explicit group continuation.
+TEST_PASS BUTTON FEEDBACK: selected/unselected shared controls, no held-repeat, visible dwell after present, navigation ownership, restore, timer wrap, exact full/partial pixels, both panels
+TEST_PASS LCD: continuous updates, buffer ownership, clean ordering, both panels,
+          full/partial equivalence, bounds, timer wrap, repeated taps, calibration, binary UART,
+          quaternion XYZ rotation/flip/rezero, perspective, depth-order independence, animation wrap.

@@ -1,0 +1,9 @@
+{
+  "build/vivado/hand_motion_reconstruction.runs/design_1_emg_learning_0_0_synth_1/design_1_emg_learning_0_0.dcp": "e75b7575378df09e7c9159aaed69c6db18e3b7105206a2907d2bbefe22646f62",
+  "sim/results_learning/learning_synth.v": "656bd2149f9073ef4252f6717dcd7f8f3c85dee6f647a69d2750b28519a3173d",
+  "report/hdc_resolution_20261102/netlist_vectors.mem": "d6c009080693c380463f6c1a29699927bf7c3cbdf82e4cde6297f33978be46b2",
+  "sim/emg_learning_accel_tb.sv": "a7784b8be36353c06077c434fd14550e5f918eb5e9493fe9477cd830298fb8cf",
+  "data/models/hdc_memory.mem": "91d66b193c2a13eaa991074aa2dff1c823d3528d62b845413ddef8b3f92c53d6",
+  "src/rtl/emg_learning_accel.v": "d71a38e2ce0665c6d66b602a4b254367e16c35b24180de1e0f5d506442e5646b",
+  "tools/gen_learning_vectors.py": "646347c4ce3d352b9be4aca6ce2056bcddeb741b494f84294d3dfcef459857fd"
+}

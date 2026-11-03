@@ -1,8 +1,8 @@
 #ifndef LCD_VIRTUAL_H
 #define LCD_VIRTUAL_H
 /* Virtual joint degrees are deliberately independent of servo pulse widths.
- * The library has the same RAM lifetime and transactional growth as HDC. */
-static u32 virtual_row=5u,virtual_group,virtual_joint,virtual_preset;
+ * The mappings are included in explicit HDC SD model snapshots. */
+static u32 virtual_row=0u,virtual_group,virtual_joint,virtual_preset;
 static u32 virtual_drag,virtual_dirty;
 static i32 virtual_draft[22];
 static const char *const virtual_groups[]={"手腕","拇指","食指","中指","无名指","小指"};
@@ -10,7 +10,7 @@ static const u32 virtual_offsets[]={0u,18u,2u,6u,10u,14u};
 static const char *const virtual_joints[]={"根部屈曲","侧向展开","中间关节","末端关节"};
 static u32 virtual_row_available(u32 c)
 {
-    return c>=5u && c<hdc.classes && hdc.fit_n[c]==HDC_FIT_WINDOWS &&
+    return c<hdc.classes && hdc.fit_n[c]==HDC_FIT_WINDOWS &&
         hdc.stage>=HDC_VALIDATE;
 }
 static u32 virtual_live_class(void)
@@ -21,7 +21,7 @@ static u32 virtual_live_class(void)
 }
 static u32 virtual_live_mapped(u32 cls)
 {
-    return cls<5u || (virtual_row_available(cls) && hdc.virtual_mapped[cls]);
+    return virtual_row_available(cls) && hdc.virtual_mapped[cls];
 }
 static void lcd_virtual_sample(void)
 {
@@ -35,8 +35,7 @@ static void lcd_virtual_sample(void)
     if(ui_preview_cls>=0) {lcd_pose_sample((u32)ui_preview_cls);return;}
     if(!hand_source_hdc) {lcd_pose_sample(lcd_state_cls);return;}
     cls=virtual_frame_cls;
-    if(cls<5u)lcd_pose_sample(cls);
-    else if(virtual_live_mapped(cls)) {
+    if(virtual_live_mapped(cls)) {
         for(i=0u;i<22u;i++)target[i]=(i32)hdc.virtual_pose[cls][i];
         lcd_pose_sample_target(cls,target);
     }
@@ -69,21 +68,21 @@ static u32 virtual_next(u32 reverse)
 {
     u32 c;
     if(reverse) {
-        for(c=virtual_row;c>5u;)if(virtual_row_available(--c))return c;
-        for(c=hdc.classes;c>5u;)if(virtual_row_available(--c))return c;
+        for(c=virtual_row;c>0u;)if(virtual_row_available(--c))return c;
+        for(c=hdc.classes;c>0u;)if(virtual_row_available(--c))return c;
     } else {
         for(c=virtual_row+1u;c<hdc.classes;c++)if(virtual_row_available(c))return c;
-        for(c=5u;c<hdc.classes;c++)if(virtual_row_available(c))return c;
+        for(c=0u;c<hdc.classes;c++)if(virtual_row_available(c))return c;
     }
-    return 5u;
+    return 0u;
 }
 static void lcd_virtual_open(void)
 {
     u32 c;
     /* Load before navigation can synchronously draw the destination. */
     if(!virtual_row_available(virtual_row)) {
-        virtual_row=5u;
-        for(c=5u;c<hdc.classes;c++)if(virtual_row_available(c)){virtual_row=c;break;}
+        virtual_row=0u;
+        for(c=0u;c<hdc.classes;c++)if(virtual_row_available(c)){virtual_row=c;break;}
     }
     virtual_load(virtual_row);ui_open_page(UI_VIRTUAL);
 }
@@ -164,7 +163,7 @@ static void lcd_virtual_render(void)
     p_round_rect(LCD_X(760),LCD_Y(190),LCD_X(242),LCD_Y(280),LCD_S(8),243,247,247);
     ui_button(LCD_X(28),LCD_Y(146),LCD_X(245),LCD_Y(40),lcd_pose_names[virtual_preset],0u);
     ui_label(LCD_X(310),LCD_Y(156),LCD_X(670),1,94,112,119,
-        virtual_dirty?"预览 / 未保存":hdc.virtual_mapped[virtual_row]?"已映射 / 本次上电有效":"未映射 / 调整后保存");
+        virtual_dirty?"预览 / 未保存":hdc.virtual_mapped[virtual_row]?"已映射 / 模型库可保存":"未映射 / 调整后保存");
     for(i=0u;i<6u;i++)ui_button(LCD_X(28),LCD_Y(200)+(i32)i*LCD_Y(47),LCD_X(245),LCD_Y(39),virtual_groups[i],i==virtual_group);
     for(i=0u;i<(virtual_group?4u:2u);i++)
         ui_button(LCD_X(770),LCD_Y(205)+(i32)i*LCD_Y(49),LCD_X(225),LCD_Y(40),

@@ -1,0 +1,17 @@
+main.c:1110:13: warning: 'mpu_tilt_update' defined but not used [-Wunused-function]
+ 1110 | static void mpu_tilt_update(void)
+      |             ^~~~~~~~~~~~~~~
+main.c:734:12: warning: 'mpu_last_row_t' defined but not used [-Wunused-variable]
+  734 | static u32 mpu_last_row_t;      /* gt_stamp of the last M-row */
+      |            ^~~~~~~~~~~~~~
+main.c:733:27: warning: 'mpu_word_seen' defined but not used [-Wunused-variable]
+  733 | static u32 mpu_last_word, mpu_word_seen;
+      |                           ^~~~~~~~~~~~~
+main.c:733:12: warning: 'mpu_last_word' defined but not used [-Wunused-variable]
+  733 | static u32 mpu_last_word, mpu_word_seen;
+      |            ^~~~~~~~~~~~~
+D:\FPGA\VIVADO\2025.2\data\embeddedsw\lib\sw_services\xilffs_v5_5\src\ff.c: In function 'get_ldnumber':
+D:\FPGA\VIVADO\2025.2\data\embeddedsw\lib\sw_services\xilffs_v5_5\src\ff.c:4000:13: warning: unused variable 'vol' [-Wunused-variable]
+ 4000 |         int vol = -1;
+      |             ^~~
+BUILD OK: ps_uart_print_pl_control.elf

@@ -1,4 +1,4 @@
-/* Independent pre-migration reference. Generated; never built for ARM. */
+/* Independent float reference. Generated; never built for ARM. */
 static FILE *imu_vector_file;
 static void imu_vector_open(void) {
     if(!imu_vector_file) {imu_vector_file=fopen("imu_float_vectors.txt","w");assert(imu_vector_file);}
@@ -90,20 +90,10 @@ static hand_v3 imu_rotate(imu_quat q,hand_v3 v)
 static i32 imu_dot(hand_v3 a,hand_v3 b) { return (a.x*b.x+a.y*b.y+a.z*b.z)/4096; }
 static void imu_capture_basis(float ax,float ay,float az)
 {
-    hand_v3 f={0,-4096,0};
-    i32 d;
-    imu_up=hand_unit((hand_v3){(i32)(ax*4096),(i32)(ay*4096),(i32)(az*4096)});
-    d=imu_dot(f,imu_up);f=hand_sub(f,hand_scale(imu_up,d,4096));
-    /* At vertical startup, forearm heading is undefined. Use a horizontal
-     * transverse reference for provisional tracking; final zero waits
-     * for the user to hold the forearm forward and nearer horizontal. */
-    if(imu_dot(f,f)<64) {
-        hand_v3 r={-4096,0,0};
-        d=imu_dot(r,imu_up);r=hand_unit(hand_sub(r,hand_scale(imu_up,d,4096)));
-        f=hand_scale(hand_cross(imu_up,r),1,4096);
-    }
-    imu_forward=hand_unit(f);imu_right=hand_unit(hand_cross(imu_forward,imu_up));
-    imu_forward=hand_unit(hand_cross(imu_up,imu_right));
+    (void)ax;(void)ay;(void)az;
+    imu_up=(hand_v3){0,0,-4096};
+    imu_forward=(hand_v3){0,-4096,0};
+    imu_right=(hand_v3){4096,0,0};
 }
 static void lcd_imu_reset(void)
 {
@@ -190,7 +180,7 @@ static void lcd_imu_ingest(u32 a,u32 b,u32 c,u32 word)
             travel+=(imu_zero_acc[i]-imu_zero_anchor[i])*(imu_zero_acc[i]-imu_zero_anchor[i]);
         }
         if(travel>0.0004f)imu_zero_reason|=16u;
-        if(imu_absf(imu_zero_acc[1])>0.9f)imu_zero_reason|=32u;
+
         if(imu_zero_reason) {
             if(mpu_zero_cnt)imu_zero_restarts++;
             mpu_zero_cnt=0;mpu_zero_acc_r=mpu_zero_acc_p=0;

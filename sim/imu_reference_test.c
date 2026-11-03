@@ -9,9 +9,11 @@
 #include <math.h>
 #define LCD_HOST_TEST 1
 #define IMU_REFERENCE_TEST 1
+#define IMU_SENSOR_MODEL_TEST 1
 #define main firmware_main
 #include "../sw/ps_uart_print/main.c"
 #undef main
+#include "hdc_model_sd_mock.h"
 
 unsigned char __dma_buf[1048576];
 static unsigned char frames[3][1024*600*3+64];
@@ -152,7 +154,13 @@ static void expected_frame(void)
  * Sensor columns are X->little finger, Y->elbow, Z->dorsal. Gravity and
  * body gyro come from double-precision rotation matrices, not firmware
  * quaternions or the firmware mapping constants. Renderer z is down. */
-static double physical[9], sensor_bias[3];
+static double physical[9], sensor_bias[3],physical_zero[9];
+static double relative_physical(u32 row,u32 col)
+{
+    u32 k;double v=0;
+    for(k=0;k<3;k++)v+=physical_zero[k*3+row]*physical[k*3+col];
+    return (row==1?1:-1)*v;
+}
 static double matrix_max_error;
 static u32 sensor_seq,sensor_noise;
 static i32 rounded(double x) { return (i32)(x>=0 ? x+0.5 : x-0.5); }
@@ -170,7 +178,8 @@ static void physical_step(u32 axis,double degrees)
 static void sensor_sample(const double *rate, u32 pulse)
 {
     double acc[3]={physical[6],physical[7],physical[8]};
-    i32 a[3],g[3];u32 i;
+    i32 a[3],g[3];u32 i,was_zero=mpu_zero_valid;
+    if(!imu_time_valid)memcpy(physical_zero,physical,sizeof physical);
     if(pulse==1)acc[0]+=0.4; /* Non-gravity acceleration, often changes |a| */
     if(pulse==2) { /* Unit-norm transient: |a| alone is insufficient. */
         double c=cos(0.21),s=sin(0.21),x=acc[0];
@@ -187,6 +196,7 @@ static void sensor_sample(const double *rate, u32 pulse)
         (((u32)a[2]&65535u)<<16)|((u32)g[0]&65535u),
         (((u32)g[1]&65535u)<<16)|((u32)g[2]&65535u),
         0x80000000u|((++sensor_seq&127u)<<24));
+    if(!was_zero && mpu_zero_valid)memcpy(physical_zero,physical,sizeof physical);
 }
 static void physical_motion(u32 axis,double degrees,u32 samples,u32 pulse)
 {
@@ -213,7 +223,7 @@ static void matrix_matches(double tolerance)
 {
     u32 i,j;double worst=0;
     for(i=0;i<3;i++)for(j=0;j<3;j++) {
-        double expected=(i==2?1:-1)*physical[i*3+j];
+        double expected=relative_physical(i,j);
         double e=fabs(lcd_imu_matrix[i*3+j]/4096.0-expected);
         if(e>worst)worst=e;
     }
@@ -249,7 +259,7 @@ static void capture_home(void)
 }
 static i32 wrist_screen_y(void)
 {
-    double a=50.0*3.141592653589793/180.0,qy=-174*physical[4],qz=174*physical[7];
+    double a=50.0*3.141592653589793/180.0,qy=174*relative_physical(1,1),qz=174*relative_physical(2,1);
     double cy=-260+sin(a)*qy-cos(a)*qz,cz=800+cos(a)*qy+sin(a)*qz;
     i32 y;
     memset(lcd_draw_angles,0,sizeof lcd_draw_angles);lcd_hand_snapshot();
@@ -272,28 +282,26 @@ static void test_imu_rotation(void)
     physical_motion(0,5,100,0);assert(!mpu_zero_valid && mpu_zero_cnt<30);
     settle_and_zero();
     physical_home(1,90);stationary_samples(200);
-    assert(!mpu_zero_valid && !mpu_zero_cnt);
+    assert(mpu_zero_valid && mpu_zero_cnt==100);matrix_matches(0.003);
     /* Almost upside-down initialization must retain small real tilt. */
     physical_home(1,1);capture_home();physical_motion(0,20,100,0);
     matrix_matches(0.012);
-    /* All four cases must lift UP: palm/back at capture, before/after
-     * flipping. Assert screen motion as well as physical rotation. */
+    /* Lift in the calibrated frame, before and after a 600deg/s flip. */
     for(palm=0;palm<2;palm++)for(flip=0;flip<2;flip++) {
         physical_home(palm,0);capture_home();
         if(flip)physical_pronation(180,30); /* 600deg/s, beyond old 250 range */
         matrix_matches(0.012);home_y=wrist_screen_y();
-        physical_motion(0,30,100,0);matrix_matches(0.012);
-        assert(lcd_imu_matrix[7]<-1950 && wrist_screen_y()<home_y-25);
-        physical_motion(0,15,50,0);matrix_matches(0.012);wrist_screen_y();
+        physical_motion(0,palm?30:-30,100,0);matrix_matches(0.012);
+        assert(lcd_imu_matrix[7]<-1950 && wrist_screen_y()<=home_y-25);
+        physical_motion(0,palm?15:-15,50,0);matrix_matches(0.012);wrist_screen_y();
         {hand_screen tip=hand_project(hand_camera((hand_v3){-14,213,-8},0));
          assert(tip.y>LCD_Y(110) && tip.y<LCD_Y(520));}
-        physical_motion(0,-45,100,0);
+        physical_motion(0,palm?-45:45,100,0);
         if(flip)physical_pronation(-180,30);
         stationary_samples(200);matrix_matches(0.012);
         assert(imu_clip_count==0);
     }
-    /* Capturing while already raised must keep world up, rather than
-     * making gravity relative to whichever face was shown at capture. */
+    /* Raised and flipped calibration poses both become the same zero. */
     physical_home(1,15);capture_home();home_y=wrist_screen_y();
     physical_motion(0,30,100,0);matrix_matches(0.012);
     /* Perspective motion is smaller near the eye's viewing direction;
@@ -302,7 +310,8 @@ static void test_imu_rotation(void)
     home_y=wrist_screen_y();physical_pronation(180,30);matrix_matches(0.012);
     assert(abs(wrist_screen_y()-home_y)<=3);
     physical_motion(0,-30,100,0);
-    lcd_imu_reset();capture_home();assert(lcd_imu_matrix[8]>3500);
+    lcd_imu_reset();capture_home();assert(lcd_imu_matrix[8]<-4090);
+    assert(abs(imu_hand_rotation_deg)<=1 && imu_hand_rotation_valid);
     /* Noncommuting XYZ movement and acceleration pulses must return
      * without accumulating large post-motion tilt errors. */
     physical_home(1,0);capture_home();
@@ -341,7 +350,7 @@ static void test_imu_rotation(void)
     assert(wrist_screen_y()<home_y-20 && lcd_draw_matrix[7]<-2000);
     lcd_draw_shift=0;
     for(n=0;n<3;n++)imu_bias[n]=0;
-    puts("TEST_PASS IMU: palm/back lift before/after 600dps flip, fixed gravity, moving zero,");
+    puts("TEST_PASS IMU: calibrated-frame lift before/after 600dps flip, arbitrary-pose zero,");
     puts("          bias adaptation/2dps yaw, acceleration pulses/XYZ return, gap/seq/timer wrap.");
     printf("IMU oracle: max rotation-matrix component error %.6f (all checked checkpoints)\n",matrix_max_error);
 }
@@ -656,18 +665,30 @@ static void test_quality_display(void)
 {
     u32 i,ch,n;char name[80];
     memset(channel_quality,0,sizeof channel_quality);
-    cq_reference=cq_ref_failed=0;
+    memset(cq_pending,0,sizeof cq_pending);memset(&cq_worker,0,sizeof cq_worker);
+    memset(cq_write_buffer,0,sizeof cq_write_buffer);memset(cq_result_ok,0,sizeof cq_result_ok);
+    cq_check_state=cq_check_done=cq_check_nodata=cq_check_valid=cq_check_count=cq_result_t=0;
     lcd_wave_view=lcd_spectrum_view=lcd_synergy_view=0;
     ui_open_page(UI_DATA);lcd_quality_view=1;lcd_analysis_focus=0;
-    /* Actual final waveform packets drive all eight channel diagnostics. */
+    /* Streaming alone no longer scores: the page stays idle until pressed. */
     for(n=0;n<4000;n++)for(ch=0;ch<8;ch++) {
         i32 v=(i32)(120.0*sin(2.0*3.141592653589793*(ch==2?50:137)*n/4000.0));
         if(ch==5 && n==100)v=10000;
         lcd_spectrum_ingest((u32)v,0x50000000u|(ch<<24)|n);
     }
-    for(ch=0;ch<8;ch++)assert(channel_quality[ch].valid);
-    for(ch=0;ch<8;ch++)assert(channel_quality[ch].grade==CQ_GRADE_UNKNOWN);
-    assert(channel_quality[2].line10>990);
+    lcd_pending=1;drain_frame();expected_frame();
+    sprintf(name,"quality_idle_%u.ppm",(u32)LCD_W);ppm(name);
+    /* One press checks all eight channels over the same captured window. */
+    press(LCD_X(480),LCD_Y(552));assert(cq_check_state);
+    for(n=0;n<4000;n++)for(ch=0;ch<8;ch++) {
+        i32 v=(i32)(120.0*sin(2.0*3.141592653589793*(ch==2?50:137)*n/4000.0));
+        if(ch==5 && n==100)v=10000;
+        lcd_spectrum_ingest((u32)v,0x50000000u|(ch<<24)|(4000u+n));
+    }
+    for(i=0;i<30000;i++){cq_service();cq_check_tick(gt_stamp());if(!cq_check_state)break;}
+    assert(!cq_check_state);
+    for(ch=0;ch<8;ch++)assert(cq_result_ok[ch] && channel_quality[ch].valid && channel_quality[ch].grade!=CQ_GRADE_UNKNOWN);
+    assert(channel_quality[2].line10>900);
     assert(channel_quality[0].line10<5);
     assert(channel_quality[5].cf10>100);
     lcd_pending=1;drain_frame();expected_frame();
@@ -681,25 +702,17 @@ static void test_quality_display(void)
     lcd_spectrum_view=0;lcd_data_view=1;
     press(LCD_X(860),LCD_Y(110));assert(!lcd_quality_view);
     press(LCD_X(860),LCD_Y(110));assert(lcd_quality_view);
-    press(LCD_X(580),LCD_Y(110));assert(cq_reference);
-    /* Three complete relaxed windows; no shared channel masks may advance
-     * a missing channel's baseline. */
-    for(i=0;i<3;i++)for(n=0;n<4000;n++)for(ch=0;ch<8;ch++) {
-        i32 v=(i32)(120.0*sin(2.0*3.141592653589793*137*n/4000.0));
-        cq_ingest((u32)v,0x50000000u|(ch<<24)|(4000u+i*4000u+n),gt_stamp());
-    }
-    assert(!cq_reference && !cq_ref_failed);
-    for(ch=0;ch<8;ch++)assert(channel_quality[ch].base>80 && channel_quality[ch].base<86);
-    assert(channel_quality[0].grade==CQ_GRADE_A && channel_quality[0].total_score==100u);
-    for(ch=0;ch<8;ch++)assert(channel_quality[ch].grade==CQ_GRADE_A);
+    /* Former reference-capture area is now informational, with no action. */
+    assert(!lcd_quality_touch(LCD_X(580),LCD_Y(110)));
+    assert(channel_quality[0].grade<=CQ_GRADE_B);
+    assert(channel_quality[2].grade==CQ_GRADE_D);
     drain_frame();expected_frame();sprintf(name,"quality_scored_%u.ppm",(u32)LCD_W);ppm(name);
-    test_time+=1501u*GT_TICKS_PER_MS;
-    lcd_quality_tick(gt_stamp());assert(cq_stale_mask==255);
-    assert(strcmp(lcd_quality_status(0,gt_stamp()),"无新数据")==0);
+    /* Results persist after the check; there is no time-based wipe. */
+    assert(strcmp(lcd_quality_status(0),"无新数据")!=0);
     lcd_pending=1;drain_frame();expected_frame();
-    sprintf(name,"quality_stale_%u.ppm",(u32)LCD_W);ppm(name);
+    sprintf(name,"quality_persistent_%u.ppm",(u32)LCD_W);ppm(name);
     lcd_data_view=0;lcd_pending=1;drain_frame();
-    puts("TEST_PASS quality LCD: final-waveform ingestion, 8 channels, residual mains/spikes, baseline, stale, touch drill-down, both panels.");
+    puts("TEST_PASS quality LCD: press-triggered 8-channel check over one window, idle before press, residual mains/spikes, no baseline, persistent results, touch drill-down, both panels.");
 }
 
 static void test_synergy_display(void)
@@ -1181,6 +1194,26 @@ static void test_hdc_stability_ui(void)
     hdc_test_window(6u);
     assert(hdc.latest==6u && hand_hdc_valid && hand_hdc_class==5u);
     hdc_stability_snapshot("hdc_stable");
+    /* A precise 0.50% score gap must survive the actual page lifecycle. */
+    {
+        u32 query[64],clip;
+        memcpy(saved_proto,hdc.proto[6],sizeof saved_proto);
+        memcpy(hdc.proto[6],hdc.proto[5],sizeof saved_proto);
+        memset(mav,0,sizeof mav);mav[5]=10000u;
+        hdc_encode_levels(mav,hdc.scale,query,&clip,hdc.levels);assert(!clip);
+        for(k=0u;k<1230u;k++)
+            hdc.proto[6][k]-=((query[k/32u]>>(k%32u))&1u)?2:-2;
+        hand_hdc_reset();
+        for(k=0u;k<5u;k++)hdc_test_window(5u);
+        assert(!hand_hdc_valid && hdc.latest==5u && hdc.margin==0u && hdc.margin_bp==50u);
+        hdc_test_window(5u);assert(hand_hdc_valid && hand_hdc_class==5u);
+        ui_open_page(UI_MONITOR);ui_recognition_source(1u);
+        for(k=0u;k<6u;k++)hdc_test_window(5u);
+        assert(virtual_live_class()==5u && virtual_hdc_margin==50u && !hand_run);
+        hdc_stability_snapshot("hdc_subpercent_monitor");
+        assert(virtual_frame_cls==5u && virtual_frame_margin==50u);
+        memcpy(hdc.proto[6],saved_proto,sizeof saved_proto);lcd_hdc_open();
+    }
     /* Force an exact score tie through the actual predictor and packet parser.
      * The independent validation table stays untouched by temporal filtering. */
     memcpy(saved_proto,hdc.proto[6],sizeof saved_proto);
@@ -1204,11 +1237,12 @@ static void test_hdc_stability_ui(void)
     for(k=0u;k<3u;k++)hdc_test_window(5u);
     assert(virtual_live_class()==5u);
     hdc.hdc_cm[5][5]=0u;hdc_test_window(5u);
-    assert(!hand_hdc_valid && virtual_live_class()==UINT32_MAX);
+    assert(hdc.latest_valid && !hand_hdc_valid && virtual_live_class()==UINT32_MAX);
+    assert(strcmp(hdc_status_label(),"自定义6未通过")==0);
     hdc.hdc_cm[5][5]=saved_cm;
     assert(hdc_hand_model_ready() && hdc_accuracy(hdc.hdc_cm,8u)==100u);
     assert(!hand_run);lcd_hdc_open();
-    puts("TEST_PASS HDC STABILITY UI: actual parser/predictor jitter and zero-margin abstention, common stable class on learning/home pages, alternating ambiguity expires, clipping/model gates, validation unchanged, no implicit PWM");
+    puts("TEST_PASS HDC STABILITY UI: actual parser/predictor jitter and zero-margin abstention, precise 0.50% gap and 6-of-8 confirmation, common stable class on learning/home pages, alternating ambiguity expires, clipping/model gates, validation unchanged, no implicit PWM");
 }
 static void test_virtual_mapping(void)
 {
@@ -1270,12 +1304,60 @@ static void test_virtual_mapping(void)
     puts("TEST_PASS VIRTUAL MAPPING: independent 22 joint degrees, editor save/clear/preset/drag, shared MLP-HDC source, stable parser classes, unmapped/stale guards, no implicit PWM, basic rehab truth preserved, both panels.");
 }
 
+static void test_hdc_model_library(void)
+{
+    u32 k,pred,gap,clips;uint32_t q[64],e[8];char shot[80];
+    HandProfile profile=hand_profile;int16_t original=hdc.proto[0][0];
+    assert(hdc.stage==HDC_DONE && hdc_hand_model_ready());model_mock_reset();
+    hand_profile_init();hand_profile.cal_mask=4095u;
+    for(k=0;k<6u;k++){hand_profile.low[k]=600u;hand_profile.high[k]=2400u;hdc.hand_pose[5][k]=1500u;}
+    hdc.hand_mapped[5]=1u;
+    memcpy(e,hdc.fit[5][0],sizeof e);hdc_encode(e,hdc.scale,q,&clips);pred=hdc_predict(&hdc,q,&gap);
+    lcd_hdc_open();press(LCD_X(900),LCD_Y(545));assert(hdc_model_view && ui_hdc_model==1u);ui_apply_action();
+    assert(!hdc_model_count);
+    hand_run=3u;press(LCD_X(300),LCD_Y(545));assert(ui_hdc_model==2u);ui_apply_action();
+    assert(model_files_n==1u && hdc_model_status==1u && !hand_run && !hand_hdc_valid && !hdc.latest_valid);
+    assert(model_files[0].size==hdc_model_file_size(8u));
+    /* Save a distinct second snapshot and keep all previous versions. */
+    hdc.proto[0][0]=(int16_t)-original;hdc.scale[0]++;
+    press(LCD_X(300),LCD_Y(545));ui_apply_action();assert(model_files_n==2u);
+    hdc_model_selected=0u;hand_run=3u;press(LCD_X(550),LCD_Y(545));ui_apply_action();
+    assert(!hdc_model_error && hdc.proto[0][0]==original && hdc.hand_mapped[5]);
+    assert(hdc.virtual_mapped[5] && hdc.virtual_pose[5][19]==-100 && !hdc.latest_valid && !hand_hdc_valid && !hand_run);
+    assert(hdc_predict(&hdc,q,&gap)==pred && hdc_hand_model_ready());
+    hdc_model_selected=1u;ui_hdc_model=3u;ui_apply_action();assert(hdc.proto[0][0]==-original);
+    /* Host power-cycle analogue: discard DDR, restore from SD only. */
+    hdc_model_discard(&hdc);memset(&hdc,0,sizeof hdc);hdc_model_selected=0u;ui_hdc_model=3u;ui_apply_action();
+    assert(hdc_hand_model_ready() && hdc.fit_n[5]==120u && hdc.proto[0][0]==original);
+    /* Failed file and close keep the old storage pointer and model. */
+    {void *old=hdc.storage;model_files[1].data[1000]^=1u;
+     hdc_model_selected=1u;ui_hdc_model=3u;ui_apply_action();assert(hdc_model_error && hdc.storage==old);
+     model_files[1].data[1000]^=1u;model_mock_close_error=3u;
+     ui_hdc_model=3u;ui_apply_action();assert(hdc_model_error==3u && hdc.storage==old);model_mock_close_error=0u;}
+    /* Incompatible servo calibration clears only the custom PWM map. */
+    hand_profile.low[1]++;hdc_model_selected=0u;ui_hdc_model=3u;ui_apply_action();
+    assert(!hdc_model_error && hdc_model_status==3u && !hdc.hand_mapped[5] && hdc.virtual_mapped[5]);
+    for(k=0;k<7u;k++){ui_hdc_model=2u;ui_apply_action();assert(!hdc_model_error);}
+    assert(hdc_model_count==6u && hdc_model_more);
+    press(LCD_X(870),LCD_Y(130));ui_apply_action();assert(hdc_model_after==6u && hdc_model_count==3u);
+    press(LCD_X(700),LCD_Y(130));ui_apply_action();assert(hdc_model_after==0u && hdc_model_count==6u);
+    press(LCD_X(200),LCD_Y(200));assert(hdc_model_selected==0u);
+    drain_frame();expected_frame();sprintf(shot,"hdc_models_%u.ppm",(u32)LCD_W);ppm(shot);
+    mock_sd_active=1u;ui_hdc_model=3u;ui_apply_action();assert(sd_record_active() && !ui_hdc_model);mock_sd_active=0u;
+    /* A pending load/save must not execute after page departure. */
+    ui_hdc_model=2u;ui_open_page(UI_SETTINGS);assert(!ui_hdc_model);ui_apply_action();assert(model_files_n==9u);
+    hand_profile=profile;lcd_hdc_open();
+    /* Existing caller verifies append/rebuild after restoration. */
+    model_mock_reset();
+    puts("TEST_PASS HDC MODEL LIBRARY: full snapshot roundtrip, distinct switching, reboot restore, stable predictions, CRC/close rollback, compatible mappings, PWM stop, pagination, navigation cancellation, both panels");
+}
+
 static void test_hdc_ui(void)
 {
     u32 c,t,k,pose,rows,label;char name[80];FILE *csv;
     u32 proto_hash;
     g_mode=MODE_MONITOR;cal_stage=2u;mock_sd_active=0u;
-    rehab.state=RH_IDLE;hdc.stage=HDC_IDLE;hdc_custom=3u;
+    rehab.state=RH_IDLE;hdc.stage=HDC_IDLE;hdc_custom=8u;
     selfcal_reset(&selfcal);feature_seq_seen=0u;hdc_test_seq=65496u;
     ui_open_page(UI_SETTINGS);
     press((u32)LCD_X(400),(u32)LCD_Y(545));assert(lcd_hdc_view);
@@ -1311,7 +1393,7 @@ static void test_hdc_ui(void)
     drain_frame();expected_frame();sprintf(name,"hdc_result_%u.ppm",(u32)LCD_W);ppm(name);
     press((u32)LCD_X(800),(u32)LCD_Y(545));assert(ui_hdc_save);ui_apply_action();
     assert(hdc_saved && !hdc_save_error && mock_hdc_saves && !rehab_csv_overflow);
-    assert(strstr(mock_rehab_csv,"hdc,custom3,custom3,80") && strstr(mock_rehab_csv,"RAM_only_relearn_after_reset"));
+    assert(strstr(mock_rehab_csv,"hdc,custom8,custom8,80") && strstr(mock_rehab_csv,"SD_snapshot_explicit_save_load"));
     sprintf(name,"hdc_report_%u.csv",(u32)LCD_W);csv=fopen(name,"wb");assert(csv);
     fwrite(mock_rehab_csv,1,strlen(mock_rehab_csv),csv);fclose(csv);
     mock_rehab_save_error=7u;hdc_save_report();assert(!hdc_saved && hdc_save_error==7u);
@@ -1329,6 +1411,7 @@ static void test_hdc_ui(void)
     assert(!hand_hdc_valid);lcd_hdc_open();
     test_virtual_mapping();lcd_hdc_open();
     test_hdc_stability_ui();
+    test_hdc_model_library();
     /* Append beyond three custom gestures without mechanical mappings. */
     assert(!hdc.hand_mapped[5]);
     press((u32)LCD_X(500),(u32)LCD_Y(545));
@@ -1345,7 +1428,7 @@ static void test_hdc_ui(void)
     hdc_begin(&hdc,3u);assert(hdc_arm(&hdc,0u));hdc.last_ms=rehab_milliseconds();
     test_time+=300u*GT_TICKS_PER_MS;hdc_service();assert(!hdc.armed);
     ui_open_page(0u);hdc.stage=HDC_IDLE;
-    puts("TEST_PASS HDC LCD: real parser, eight classes, independent validation, frozen custom1/2/3 live hand bridge, timeout abort, CSV/retry, original pose/manual labels untouched, both panels.");
+    puts("TEST_PASS HDC LCD: real parser, eight custom classes, independent validation, frozen custom6/7/8 live hand bridge, timeout abort, CSV/retry, original pose/manual labels untouched, both panels.");
 }
 
 static void test_navigation_lifecycle(void)
@@ -1368,7 +1451,7 @@ static void test_navigation_lifecycle(void)
     ui_rehab_action=1u;ui_home_open();ui_apply_action();assert(rehab.state==RH_IDLE);
     selfcal_begin(&selfcal);assert(selfcal.state==1u);
     ui_open_page(UI_WAVE);assert(selfcal.state!=1u && selfcal.state!=2u);
-    g_mode=MODE_MONITOR;cal_stage=2u;hdc_begin(&hdc,1u);assert(hdc_arm(&hdc,1u));
+    g_mode=MODE_MONITOR;cal_stage=2u;hdc_begin(&hdc,2u);assert(hdc_arm(&hdc,1u));
     ui_open_page(UI_REHAB);assert(!hdc.armed);
     /* Leaving is an immediate pause, before the next service tick. */
     rehab_start(&rehab,0u,2u,5u,1000u,1000u,rehab_milliseconds());
@@ -1444,7 +1527,11 @@ static void test_button_feedback(void)
     test_time+=99u*GT_TICKS_PER_MS;ui_feedback_tick();assert(ui_feedback_active);
     test_time+=GT_TICKS_PER_MS;ui_feedback_tick();assert(!ui_feedback_active);
     drain_frame();expected_frame();test_clock_step=100u*333u;
-    puts("TEST_PASS BUTTON FEEDBACK: selected/unselected shared controls, no held-repeat, visible dwell after present, navigation ownership, restore, timer wrap, exact full/partial pixels, both panels");
+    /* The full system name fits its header box without truncation and
+     * clears the first navigation button on both panel sizes. */
+    assert(ui_text_width("自学习肌电意图解码康复训练系统",2)<=LCD_X(410));
+    assert(LCD_X(28)+ui_text_width("自学习肌电意图解码康复训练系统",2)<LCD_X(440));
+    puts("TEST_PASS BUTTON FEEDBACK: selected/unselected shared controls, no held-repeat, visible dwell after present, navigation ownership, restore, timer wrap, exact full/partial pixels, system title fit, both panels");
 }
 
 int main(void)

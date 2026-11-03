@@ -50,7 +50,7 @@ module emg_learning_accel_tb;
     task arg_set(input [2:0] idx,input [31:0] value);
         begin send(1,{8'd0,value[15:0]});send(2,{8'd0,value[31:16]});send(3,{21'd0,idx});end
     endtask
-    integer max_cycles[0:4];integer proto_hash_before=0,proto_hash_after=0;
+    integer max_cycles[0:6];integer proto_hash_before=0,proto_hash_after=0;
     task run(input [3:0] job,input bit expect_error);
         integer start_cycle;
         begin send(4,{20'd0,job});start_cycle=cycle;
@@ -62,10 +62,11 @@ module emg_learning_accel_tb;
     reg [31:0] vectors[0:32767];integer tests,t,i,c,n;integer ptr;
     initial begin
         for(i=0;i<65536;i=i+1)mem[i]=0;
-        for(i=0;i<5;i=i+1)max_cycles[i]=0;
+        for(i=0;i<7;i=i+1)max_cycles[i]=0;
         $readmemh("learning_vectors.mem",vectors);
         // Let the primitive-library 100 ns global reset settle in netlist mode.
         repeat(32)@(negedge clk);rst_n=1;
+        @(negedge clk);if(status[23:16]!==8'h13)$fatal(1,"learning ABI mismatch");
         arg_set(0,32'h11100000);arg_set(1,32'h11100040);arg_set(2,32'h12000000);
         arg_set(3,32'h11100080);arg_set(4,6);
         tests=vectors[0];ptr=1;
@@ -92,7 +93,7 @@ module emg_learning_accel_tb;
 `else
             for(n=0;n<120;n=n+1)begin
 `endif
-                for(i=0;i<8;i=i+1)mem[60000+i]=vectors[ptr+i];ptr=ptr+8;run(3,0);
+                for(i=0;i<8;i=i+1)mem[60000+i]=vectors[ptr+i];ptr=ptr+8;run(5,0);
             end
             for(i=0;i<1024;i=i+1)if(mem[c*1024+i]!==vectors[ptr+i])
                 $fatal(1,"HDC proto class%0d word%0d got%h exp%h",c,i,mem[c*1024+i],vectors[ptr+i]);
@@ -103,14 +104,23 @@ module emg_learning_accel_tb;
         arg_set(2,32'h12000000);arg_set(4,6);
         tests=vectors[ptr];ptr=ptr+1;
         for(t=0;t<tests;t=t+1)begin
-            for(i=0;i<8;i=i+1)mem[60000+i]=vectors[ptr+i];ptr=ptr+8;run(4,0);
-            for(i=0;i<3;i=i+1)if(mem[60032+i]!==vectors[ptr+i])
+            for(i=0;i<8;i=i+1)mem[60000+i]=vectors[ptr+i];ptr=ptr+8;run(6,0);
+            for(i=0;i<4;i=i+1)if(mem[60032+i]!==vectors[ptr+i])
                 $fatal(1,"HDC prediction %0d field%0d got%d exp%d",t,i,mem[60032+i],vectors[ptr+i]);
-            ptr=ptr+3;
+            ptr=ptr+4;
         end
         for(i=0;i<6144;i=i+1)proto_hash_after=proto_hash_after^mem[i];
         if(proto_hash_before!==proto_hash_after)$fatal(1,"prediction mutated prototypes");
         $display("TEST_PASS HDC prediction margin clipping tie handling and frozen prototype");
+        // Q16 legacy model support after Q32 inference, independent golden.
+        for(i=0;i<6144;i=i+1)mem[i]=0;
+        for(i=0;i<8;i=i+1)mem[60000+i]=vectors[ptr+i];ptr=ptr+8;
+        arg_set(2,32'h12000000);arg_set(4,1);run(3,0);
+        for(i=0;i<1024;i=i+1)if(mem[i]!==vectors[ptr+i])$fatal(1,"legacy Q16 ROM mismatch word%0d",i);
+        ptr=ptr+1024;run(4,0);
+        if(mem[60032]!=0 || mem[60033]!=0 || mem[60035]!=0)$fatal(1,"single-class must not manufacture margin");
+        $display("TEST_PASS legacy Q16 model encoding and single-class zero precise margin");
+        arg_set(4,6);
         for(i=0;i<6144;i=i+1)mem[i]=0;
         run(4,0);
         if(mem[60032]!=0 || mem[60033]!=0)$fatal(1,"equal-score tie must choose first class, margin0");
@@ -133,7 +143,7 @@ module emg_learning_accel_tb;
         hang_reads=0;repeat(20)@(negedge clk);run(1,1);
         $display("TEST_PASS timeout quarantine drains late read without restarting");
 `endif
-        for(i=1;i<5;i=i+1)$display("LEARNING_CYCLES job%0d max=%0d clock=100MHz AXI with variable stalls",i,max_cycles[i]);
+        for(i=1;i<7;i=i+1)$display("LEARNING_CYCLES job%0d max=%0d clock=100MHz AXI with variable stalls",i,max_cycles[i]);
         $display("TEST_PASS learning accelerator complete");$finish;
     end
     initial begin repeat(20)#1000000000;$fatal(1,"watchdog");end

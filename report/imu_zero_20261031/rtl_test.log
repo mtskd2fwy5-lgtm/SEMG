@@ -1,0 +1,99 @@
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/src/rtl/learning_div64.v" into library work
+INFO: [VRFC 10-311] analyzing module learning_div64
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/src/rtl/mpu_attitude_core.v" into library work
+INFO: [VRFC 10-311] analyzing module mpu_attitude_core
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/src/rtl/mpu_attitude.v" into library work
+INFO: [VRFC 10-311] analyzing module mpu_attitude
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/sim/mpu_attitude_mailbox_tb.sv" into library work
+INFO: [VRFC 10-311] analyzing module mpu_attitude_mailbox_tb
+Vivado Simulator v2025.2
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+Running: D:/FPGA/VIVADO/2025.2/Vivado/bin/unwrapped/win64.o/xelab.exe mpu_attitude_mailbox_tb -s imu_rtl_mailbox -debug typical 
+Multi-threading is on. Using 30 slave threads.
+Starting static elaboration
+Pass Through NonSizing Optimizer
+Completed static elaboration
+Starting simulation data flow analysis
+Completed simulation data flow analysis
+Time Resolution for simulation is 1ps
+Compiling module work.learning_div64
+Compiling module work.mpu_attitude_core
+Compiling module work.mpu_attitude
+Compiling module work.mpu_attitude_mailbox_tb
+Built simulation snapshot imu_rtl_mailbox
+
+****** xsim v2025.2 (64-bit)
+  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025
+  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025
+  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025
+  **** Start of session at: Sat Oct 31 19:10:31 2026
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+
+source xsim.dir/imu_rtl_mailbox/xsim_script.tcl
+# xsim {imu_rtl_mailbox} -autoloadwcfg -runall
+Time resolution is 1 ps
+run -all
+TEST_PASS arbitrary-pose recalibration: 60deg capture becomes zero, -30deg follow
+TEST_PASS PL attitude mailbox CDC settling, atomic snapshot, signed read, zero/reconnect and stale timeout
+$finish called at time : 148258060 ns : File "D:/FPGA/sEMG-HMRS/sim/mpu_attitude_mailbox_tb.sv" Line 83
+run: Time (s): cpu = 00:00:00 ; elapsed = 00:00:09 . Memory (MB): peak = 228.230 ; gain = 0.000
+exit
+INFO: [Common 17-206] Exiting xsim at Sat Oct 31 19:10:42 2026...
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/src/rtl/learning_div64.v" into library work
+INFO: [VRFC 10-311] analyzing module learning_div64
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/src/rtl/mpu_attitude_core.v" into library work
+INFO: [VRFC 10-311] analyzing module mpu_attitude_core
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/src/rtl/mpu_attitude.v" into library work
+INFO: [VRFC 10-311] analyzing module mpu_attitude
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/sim/mpu_attitude_vectors_tb.sv" into library work
+INFO: [VRFC 10-311] analyzing module mpu_attitude_vectors_tb
+Vivado Simulator v2025.2
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+Running: D:/FPGA/VIVADO/2025.2/Vivado/bin/unwrapped/win64.o/xelab.exe mpu_attitude_vectors_tb -s imu_rtl_vectors -debug typical 
+Multi-threading is on. Using 30 slave threads.
+Starting static elaboration
+Pass Through NonSizing Optimizer
+Completed static elaboration
+Starting simulation data flow analysis
+Completed simulation data flow analysis
+Time Resolution for simulation is 1ps
+Compiling module work.learning_div64
+Compiling module work.mpu_attitude_core
+Compiling module work.mpu_attitude_vectors_tb
+Built simulation snapshot imu_rtl_vectors
+
+****** xsim v2025.2 (64-bit)
+  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025
+  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025
+  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025
+  **** Start of session at: Sat Oct 31 19:10:47 2026
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+
+source xsim.dir/imu_rtl_vectors/xsim_script.tcl
+# xsim {imu_rtl_vectors} -autoloadwcfg -runall
+Time resolution is 1 ps
+run -all
+attitude vectors        1000 peak_cycles        5941
+attitude vectors        2000 peak_cycles        6103
+attitude vectors        3000 peak_cycles        6103
+attitude vectors        4000 peak_cycles        6103
+attitude vectors        5000 peak_cycles        6112
+attitude vectors        6000 peak_cycles        6112
+attitude vectors        7000 peak_cycles        6112
+attitude vectors        8000 peak_cycles        6112
+attitude vectors        9000 peak_cycles        6112
+attitude vectors       10000 peak_cycles        6112
+attitude vectors       11000 peak_cycles        6112
+attitude vectors       12000 peak_cycles        6112
+attitude vectors       13000 peak_cycles        6112
+TEST_PASS PL attitude bit-exact replay samples=      13528 resets=         32 peak_cycles=       6112
+$finish called at time : 734660880 ns : File "D:/FPGA/sEMG-HMRS/sim/mpu_attitude_vectors_tb.sv" Line 44
+run: Time (s): cpu = 00:00:00 ; elapsed = 00:00:46 . Memory (MB): peak = 227.145 ; gain = 0.000
+exit
+INFO: xsimkernel Simulation Memory Usage: 11412 KB (Peak: 11412 KB), Simulation CPU Usage: 46140 ms
+INFO: [Common 17-206] Exiting xsim at Sat Oct 31 19:11:36 2026...
+TEST_PASS IMU migration regression complete

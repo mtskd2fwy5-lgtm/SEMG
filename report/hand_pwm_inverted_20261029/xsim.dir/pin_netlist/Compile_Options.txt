@@ -1,0 +1,1 @@
+"hand_pwm_polarity_tb" "glbl" -L "unisims_ver" -L "unimacro_ver" -s "pin_netlist" -debug "typical" 

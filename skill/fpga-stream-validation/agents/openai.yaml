@@ -1,0 +1,3 @@
+interface:
+  display_name: "FPGA流式数据验证"
+  short_description: "定位FIFO与DMA丢帧回退，核对流格式和各级处理数据合同"

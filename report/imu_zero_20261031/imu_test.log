@@ -1,0 +1,49 @@
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/src/rtl/learning_div64.v" into library work
+INFO: [VRFC 10-311] analyzing module learning_div64
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/src/rtl/mpu_attitude_core.v" into library work
+INFO: [VRFC 10-311] analyzing module mpu_attitude_core
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/src/rtl/mpu_attitude.v" into library work
+INFO: [VRFC 10-311] analyzing module mpu_attitude
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/sim/mpu_attitude_mailbox_tb.sv" into library work
+INFO: [VRFC 10-311] analyzing module mpu_attitude_mailbox_tb
+Vivado Simulator v2025.2
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+Running: D:/FPGA/VIVADO/2025.2/Vivado/bin/unwrapped/win64.o/xelab.exe mpu_attitude_mailbox_tb -s imu_rtl_mailbox -debug typical 
+Multi-threading is on. Using 30 slave threads.
+Starting static elaboration
+Pass Through NonSizing Optimizer
+Completed static elaboration
+Starting simulation data flow analysis
+Completed simulation data flow analysis
+Time Resolution for simulation is 1ps
+Compiling module work.learning_div64
+Compiling module work.mpu_attitude_core
+Compiling module work.mpu_attitude
+Compiling module work.mpu_attitude_mailbox_tb
+Built simulation snapshot imu_rtl_mailbox
+
+****** xsim v2025.2 (64-bit)
+  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025
+  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025
+  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025
+  **** Start of session at: Sat Oct 31 19:09:28 2026
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+
+source xsim.dir/imu_rtl_mailbox/xsim_script.tcl
+# xsim {imu_rtl_mailbox} -autoloadwcfg -runall
+Time resolution is 1 ps
+run -all
+Fatal: relative negative twist mismatch 7fffffe1
+Time: 48017690 ns  Iteration: 0  Process: /mpu_attitude_mailbox_tb/Initial31_18  Scope: mpu_attitude_mailbox_tb  File: D:/FPGA/sEMG-HMRS/sim/mpu_attitude_mailbox_tb.sv Line: 74
+$finish called at time : 48017690 ns
+exit
+INFO: [Common 17-206] Exiting xsim at Sat Oct 31 19:09:34 2026...
+Attitude functional PASS absent: rtl_mailbox
+At D:\FPGA\sEMG-HMRS\build\scripts\run_imu_test.ps1:41 char:69
++ ...  -SimpleMatch $pass)){throw "Attitude functional PASS absent: $name"}
++                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : OperationStopped: (Attitude functi...nt: rtl_mailbox:String) [], RuntimeException
+    + FullyQualifiedErrorId : Attitude functional PASS absent: rtl_mailbox
+ 

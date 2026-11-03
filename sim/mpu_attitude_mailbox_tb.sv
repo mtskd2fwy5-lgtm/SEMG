@@ -35,7 +35,7 @@ module mpu_attitude_mailbox_tb;
         transaction(2,1,flags);if(flags[3:0]!=15 || flags[14:8]!=100)$fatal(1,"calibration flags %h",flags);
         transaction(2,2,frozen);sample(103);
         transaction(2,2,counter);if(counter!==frozen)$fatal(1,"snapshot changed during read");
-        transaction(2,3,value);if($signed({value[30],value})> -4090)$fatal(1,"signed matrix %h",value);
+        transaction(2,3,value);if($signed({value[30],value[30:0]})> -4090)$fatal(1,"signed matrix %h",value);
         transaction(1,0,value);transaction(2,2,counter);if(counter<=frozen)$fatal(1,"snapshot failed to advance");
         transaction(2,28,value);if(value!=0)$fatal(1,"overrun");
         transaction(2,32,value);if(value!=32'h7fffffff)$fatal(1,"bad index handling");
@@ -51,6 +51,28 @@ module mpu_attitude_mailbox_tb;
         end
         transaction(1,0,value);transaction(2,12,value);
         if(value<58 || value>62)$fatal(1,"60 degree twist mismatch %d",value);
+        // Recalibrate at 60 degrees and verify signed relative movement.
+        @(negedge clk);c=0;
+        transaction(3,0,value);repeat(600)@(negedge clk);
+        for(i=267;i<370;i=i+1)sample(i);
+        transaction(1,0,value);transaction(2,1,flags);
+        if(flags[3:0]!=15)$fatal(1,"tilted recalibration failed");
+        transaction(2,3,value);
+        if($signed({value[30],value[30:0]})> -4090)$fatal(1,"calibrated X zero mismatch");
+        transaction(2,11,value);
+        if($signed({value[30],value[30:0]})> -4090)$fatal(1,"calibrated Z zero mismatch");
+        transaction(2,12,value);
+        if($signed({value[30],value[30:0]})< -1 || $signed({value[30],value[30:0]})>1)$fatal(1,"twist did not rebase to zero");
+        for(i=1;i<=30;i=i+1)begin
+            radians=(60-i)*3.141592653589793/180.0;
+            ax=$rtoi(-$sin(radians)*16384);az=$rtoi(-$cos(radians)*16384);
+            @(negedge clk);a=(ax&65535)<<16;b=(az&65535)<<16;c=32'h0cd00000;
+            sample(369+i);
+        end
+        transaction(1,0,value);transaction(2,12,value);
+        if($signed({value[30],value[30:0]})< -32 || $signed({value[30],value[30:0]})> -28)
+            $fatal(1,"relative negative twist mismatch %h",value);
+        $display("TEST_PASS arbitrary-pose recalibration: 60deg capture becomes zero, -30deg follow");
         @(negedge clk);word=0;repeat(12)@(negedge clk);
         transaction(1,0,value);transaction(2,1,flags);if(flags!=0)$fatal(1,"disconnect retained valid snapshot");
         sample(1);sample(2);

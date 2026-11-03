@@ -1,0 +1,8 @@
+TIMING-16 architectural diagnosis (high confidence)
+Observed: 100 MHz same-clock path from learning divider quotient to results[1], 33 logic levels, -4.908 ns slack.
+Cause: new unsigned 64-bit quotient/100 inferred as a combinational constant-divider network.
+Resolution: reuse the existing sequential divider for integer-percent conversion; two extra states, 65 additional cycles per prediction.
+Intent: preserve exact floor(bp/100), both Q16/Q32, original clocks, watchdog and 25 ms feature cadence.
+Alternatives: a narrower reciprocal network still adds combinational arithmetic; changing clocks or false paths would not repair data timing.
+Verification: independent golden RTL exact parity, actual OOC netlist simulation, full-system route and unmodified timing gates.
+Other methodology warnings must be compared with the preserved matched baseline; no new waivers.

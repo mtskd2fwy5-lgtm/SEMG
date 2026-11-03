@@ -1,29 +1,12 @@
-# Reproducibility Checklist
+# 发布与复现核对表
 
-## Project
+先读 [发布技能](fpga-build-release/SKILL.md)。按本次改动选取核对项，并记录证据位置。
 
-- [ ] Target part is `xc7z020clg400-2`.
-- [ ] `build/create_project.tcl` runs in batch mode.
-- [ ] Source and simulation compile order is visible in Vivado.
-- [ ] Verified XDC is present for the actual carrier board.
-
-## Acquisition
-
-- [ ] ADS1299 schematic and pin map are archived in `board/`.
-- [ ] ADS1299 register setup and 24-bit frame format are checked against the exact device variant.
-- [ ] Reset, chip select, clock and data waveforms are captured.
-- [ ] Fixed-input data is exported to `data/raw/`.
-
-## Algorithm
-
-- [ ] Python/reference implementation exists before RTL optimization.
-- [ ] Filter and feature outputs are compared sample by sample.
-- [ ] Train/test split is recorded by subject or trial.
-- [ ] Model input scale and quantization parameters are versioned.
-
-## Competition package
-
-- [ ] Source, simulation, build scripts and measured results are included.
-- [ ] Resource, timing and latency numbers are measured on the target board.
-- [ ] Demo steps can be executed from a clean checkout.
-- [ ] Report explains design decisions, failed attempts and validation evidence.
+- [ ] 实际器件、工具、约束、模型与运行镜像已确认，基线可追溯。
+- [ ] 数值/接口合同明确；参考、RTL、网表验证覆盖本次改动。
+- [ ] OOC 参数、实际系数和 DSP 常量符合预期。
+- [ ] 资源与时序来自同器件、工具、约束和阶段，原始报告已保存。
+- [ ] 仿真周期、软件耗时、实板响应分别标明方法；Routed 时序报告不是实板测速。
+- [ ] XSA、位流、FSBL、应用加载段、标签与 BOOT 哈希匹配；不变部分有继承证据。
+- [ ] 从干净目录复现的步骤、依赖和数据可获得；本地存在不代表 Git/提交包已包含。
+- [ ] 未覆盖的实板/跨佩戴范围已记录；案例摘要与原始协作记录分开。

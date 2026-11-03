@@ -1,0 +1,179 @@
+{
+  "passed": true,
+  "archived_old_skills": [
+    {
+      "name": "semg-capture-analysis",
+      "backup": "C:\\Users\\bvcm\\.codex\\skill-backups\\20261030-project-specific-v1\\semg-capture-analysis",
+      "prior_hashes_verified": true
+    },
+    {
+      "name": "semg-competition-report",
+      "backup": "C:\\Users\\bvcm\\.codex\\skill-backups\\20261030-project-specific-v1\\semg-competition-report",
+      "prior_hashes_verified": true
+    },
+    {
+      "name": "semg-lcd-hand-debug",
+      "backup": "C:\\Users\\bvcm\\.codex\\skill-backups\\20261030-project-specific-v1\\semg-lcd-hand-debug",
+      "prior_hashes_verified": true
+    },
+    {
+      "name": "semg-release-check",
+      "backup": "C:\\Users\\bvcm\\.codex\\skill-backups\\20261030-project-specific-v1\\semg-release-check",
+      "prior_hashes_verified": true
+    }
+  ],
+  "skills": [
+    {
+      "name": "fpga-build-release",
+      "destination": "C:\\Users\\bvcm\\.codex\\skills\\fpga-build-release",
+      "files": [
+        {
+          "path": "agents/openai.yaml",
+          "sha256": "e8f4a88775edd2b252fe8c6a6cc1ae10c1d7686cd4124857b808c15ebd53c62a",
+          "match": true
+        },
+        {
+          "path": "references/case-semg-equivalence.md",
+          "sha256": "69b87b87e430b5ae688f4145e5294364a2ff32bdd28b993be84dedc3b95edc6f",
+          "match": true
+        },
+        {
+          "path": "references/case-semg-workflow.md",
+          "sha256": "51f9f64ca9f7d5b8c696272b0040d64ccad605991a30401ca868d45151093ee4",
+          "match": true
+        },
+        {
+          "path": "references/equivalence.md",
+          "sha256": "947211b1ab3fe5bc58a81a4981212be6612240a149b068ee5cac310bd0aee248",
+          "match": true
+        },
+        {
+          "path": "references/workflow.md",
+          "sha256": "e778ef4cd58ce1a444c8ee25e58210c4f16797514edc80fe1ed946464d220ac1",
+          "match": true
+        },
+        {
+          "path": "scripts/compare_resources.py",
+          "sha256": "1d98f7241e77aed0656bd323273db1024d96fbadb2c963ad27b482884b7705df",
+          "match": true
+        },
+        {
+          "path": "SKILL.md",
+          "sha256": "f96a0858f8cc519035daf6a92ed750cb46b555d913faa48873bf1a97f5577a7d",
+          "match": true
+        }
+      ],
+      "validator_exit_code": 0,
+      "validator_output": "Skill is valid!\n"
+    },
+    {
+      "name": "fpga-design-report",
+      "destination": "C:\\Users\\bvcm\\.codex\\skills\\fpga-design-report",
+      "files": [
+        {
+          "path": "agents/openai.yaml",
+          "sha256": "0dbecd62c334a66b967dfe91994646c2065c9f4e959fdca3582b0f6ab9f02955",
+          "match": true
+        },
+        {
+          "path": "references/case-semg-report.md",
+          "sha256": "96a9188902c9726255a934c50ef3bd0656d9e007e4dd710a18ce7b4573b737ee",
+          "match": true
+        },
+        {
+          "path": "references/report.md",
+          "sha256": "1011a3fc43d3515f9f6fd49befe180bb02b1dd286a7242771ac0e032fe3c8ca3",
+          "match": true
+        },
+        {
+          "path": "SKILL.md",
+          "sha256": "d2b42982a53dad7f62d092ea5ef6da3445260a2dac5cdcd3a30c1fbdee88bf30",
+          "match": true
+        }
+      ],
+      "validator_exit_code": 0,
+      "validator_output": "Skill is valid!\n"
+    },
+    {
+      "name": "fpga-ps-pl-debug",
+      "destination": "C:\\Users\\bvcm\\.codex\\skills\\fpga-ps-pl-debug",
+      "files": [
+        {
+          "path": "agents/openai.yaml",
+          "sha256": "c924b248d448ec7894385bd1ca10938b02bf4d7e28fe5a8bb109d89bc2ced699",
+          "match": true
+        },
+        {
+          "path": "references/case-semg-hand.md",
+          "sha256": "f7f9b4fea931576d0a138ebde7740979199c5e901248df125a3c6843fcc8493b",
+          "match": true
+        },
+        {
+          "path": "references/case-semg-lcd.md",
+          "sha256": "9171175dce42c0176863a6995c7a07c0a9020af9ecd1844d0951a25d42e6afb6",
+          "match": true
+        },
+        {
+          "path": "references/hand.md",
+          "sha256": "d3439cccc55cf6cc4bc3fbcf1668efb74584c44674e1706d042dccab9c1c0ace",
+          "match": true
+        },
+        {
+          "path": "references/lcd.md",
+          "sha256": "8099eb7cda0f8583cae8dc253634f0f6d90cbca7fa16cc0a032dfed600b34c64",
+          "match": true
+        },
+        {
+          "path": "SKILL.md",
+          "sha256": "6dc8326b7b9b91e4ff06fb5c1557e017dade7550c03038387fbdd31fa678cc21",
+          "match": true
+        }
+      ],
+      "validator_exit_code": 0,
+      "validator_output": "Skill is valid!\n"
+    },
+    {
+      "name": "fpga-stream-validation",
+      "destination": "C:\\Users\\bvcm\\.codex\\skills\\fpga-stream-validation",
+      "files": [
+        {
+          "path": "agents/openai.yaml",
+          "sha256": "dc431aef2bc4948e9739b3530a057a34110cd59426f654fcf22f021d8e6ad308",
+          "match": true
+        },
+        {
+          "path": "references/analysis.md",
+          "sha256": "b096d1079a3339dadd0b1022e473abe934ca3e8de68abcded4809c0dfec64df7",
+          "match": true
+        },
+        {
+          "path": "references/case-semg-analysis.md",
+          "sha256": "e9fea47c34892e63f29beeecfecb1dbf24ce25a5fd089e047273ef3b39bc9f9d",
+          "match": true
+        },
+        {
+          "path": "references/case-semg-models.md",
+          "sha256": "aabb510ad62bfbe40f98dd64f8ebd842ed1e6053920a1be43d46ddfa73e7355f",
+          "match": true
+        },
+        {
+          "path": "references/models.md",
+          "sha256": "792d8b55d1f61a9a4a5f5fd3bbd2f0d1182fc822f7d342bd6edeadcc5383bc98",
+          "match": true
+        },
+        {
+          "path": "scripts/audit_stream.py",
+          "sha256": "4ab34d3959af5e9178290ab56c86038334aa23082ef0141505311fa26775a589",
+          "match": true
+        },
+        {
+          "path": "SKILL.md",
+          "sha256": "2625c40cbd504a4152be6f595494deffa23f6f689ca7a355ad9cb61e1085c217",
+          "match": true
+        }
+      ],
+      "validator_exit_code": 0,
+      "validator_output": "Skill is valid!\n"
+    }
+  ]
+}

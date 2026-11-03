@@ -7,8 +7,25 @@ module hand_control_tb;
  wire [31:0] status;
  reg decision_valid=0,decision_ready=0;
  reg [2:0] decision_class=0;
- wire [5:0] pwm;
- hand_control #(.CLOCK_HZ(1000000),.TIMEOUT_MS(100)) dut(.*);
+ wire [5:0] pwm_pin,pwm;
+ assign pwm=~pwm_pin; // downstream inverting optocoupler, servo side
+ hand_control #(.CLOCK_HZ(1000000),.TIMEOUT_MS(100)) dut(
+  .clk(clk),.axis_clk(axis_clk),.rst_n(rst_n),.axis_rst_n(axis_rst_n),
+  .command(command),.status(status),.decision_valid(decision_valid),
+  .decision_ready(decision_ready),.decision_class(decision_class),.pwm(pwm_pin));
+`ifdef HAND_POLARITY_REFERENCE
+ wire [5:0] reference_pwm;wire [31:0] reference_status;
+ hand_control_active_high_reference #(.CLOCK_HZ(1000000),.TIMEOUT_MS(100)) reference_dut(
+  .clk(clk),.axis_clk(axis_clk),.rst_n(rst_n),.axis_rst_n(axis_rst_n),
+  .command(command),.status(reference_status),.decision_valid(decision_valid),
+  .decision_ready(decision_ready),.decision_class(decision_class),.pwm(reference_pwm));
+ integer reference_cycles=0;
+ always @(negedge clk)begin
+  reference_cycles++;
+  if(reference_cycles>2 && (reference_pwm!==pwm || reference_status!==status))
+   $fatal(1,"optocoupler output/status mismatch from active-high baseline");
+ end
+`endif
  integer n,i,j;
  task automatic ticks(input integer count);
    repeat(count)@(negedge clk);
@@ -24,7 +41,7 @@ module hand_control_tb;
    decision_class=cls;decision_ready=1;decision_valid=1;ticks(1);decision_valid=0;ticks(20);
  endtask
  task automatic off_check;
-   if(pwm!==0 || status[20:19]!=0)$fatal(1,"Expected outputs disabled status=%h pwm=%h",status,pwm);
+   if(pwm_pin!==6'h3f || pwm!==0 || status[20:19]!=0)$fatal(1,"Expected outputs disabled status=%h pwm=%h",status,pwm);
  endtask
  task automatic auto_start(input integer cls);
    beat(cls);cmd(9,0,0,1500);cmd(6,0,0,0);
@@ -57,7 +74,7 @@ module hand_control_tb;
    $fatal(1,"watchdog: test hung");
  end
  initial begin
-   ticks(10);rst_n=1;axis_rst_n=1;ticks(100);off_check();
+   ticks(10);if(pwm_pin!==6'h3f)$fatal(1,"reset must idle HIGH before optocoupler");rst_n=1;axis_rst_n=1;ticks(100);off_check();
    cmd(6,0,0,0);if(!status[21])$fatal(1,"uncalibrated auto accepted");off_check();
    cmd(0,0,0,0);cmd(14,0,0,833);
    if(!status[21])$fatal(1,"uncalibrated home stage accepted");off_check();
@@ -206,6 +223,9 @@ module hand_control_tb;
    cmd(0,0,0,0);cmd(1,0,0,700);
    if(status[15:8]!=0)$fatal(1,"calibration edit retained stale poses");
    $display("TEST_PASS hand control: ACK CDC, boot off, manual isolation, wrist hold, MPU rotation, legacy and direct HDC, atomic five-finger commit, source isolation, four watchdogs, estop");
+`ifdef HAND_POLARITY_REFERENCE
+   $display("TEST_PASS inverted PWM cycle-equivalence: all six pins complement V19, status/targets unchanged cycles=%0d",reference_cycles);
+`endif
    $finish;
  end
 endmodule

@@ -1,0 +1,2 @@
+hdc_model_store_test.c
+TEST_PASS HDC model codec: 12-class exact samples/prototypes/centroids, schema bounds, CRC, truncation/trailing, close rollback, frozen validation, append after load

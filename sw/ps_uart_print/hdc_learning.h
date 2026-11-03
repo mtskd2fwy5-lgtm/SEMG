@@ -1,6 +1,8 @@
 /* PS workflow + DDR storage; ARM production uses PL arithmetic exclusively.
  * User-confirmed labels, no model mutation during validation.
  * Gesture storage grows in DDR; no fixed custom-slot count.
+ * Every class is a user-defined custom gesture; there are no fixed base
+ * classes, so classes==0 is a valid freshly-cleared state.
  */
 #ifndef HDC_LEARNING_H
 #define HDC_LEARNING_H
@@ -28,10 +30,10 @@ typedef struct {
     uint32_t *fit_n,*val_n,scale[8];
     uint32_t (*fit)[HDC_FIT_WINDOWS][8],trial[40][8];
     int16_t (*proto)[HDC_D];
-    uint32_t **hdc_cm,**centroid_cm,mlp_cm[5][5];
-    uint32_t trial_hdc[40],trial_centroid[40],trial_mlp[40],trial_margin[40];
+    uint32_t **hdc_cm,**centroid_cm;
+    uint32_t trial_hdc[40],trial_centroid[40],trial_margin[40];
     uint32_t trial_clip[40],margin_sum,clip_values,validation_values;
-    uint32_t latest,latest_mlp,latest_centroid,margin,latest_valid,clip;
+    uint32_t latest,latest_centroid,margin,latest_valid,clip;
     uint32_t last_ms,seq_seen,interruptions,saturated,completed_ms;
     uint16_t last_seq;
     uint64_t (*centroid_sum)[8];
@@ -40,7 +42,7 @@ typedef struct {
     uint32_t *virtual_mapped;
     uint32_t capacity,storage_bytes,storage_bank,storage_error;
     void *storage;
-    uint32_t accelerator_error;
+    uint32_t accelerator_error,levels,margin_bp;
 } hdc_learning_t;
 
 /* Two linker-reserved banks permit transactional growth: failed allocation
@@ -112,13 +114,13 @@ static uint32_t hdc_reserve(hdc_learning_t *s,uint32_t needed)
 }
 static uint32_t hdc_begin(hdc_learning_t *s,uint32_t custom)
 {
-    hdc_learning_t next={0};uint32_t n=custom+5u;
+    hdc_learning_t next={0};
     next.storage_bank=s->storage_bank;
-    if(custom>UINT32_MAX-5u || !hdc_reserve(&next,n)){s->storage_error=1u;return 0u;}
+    if(!hdc_reserve(&next,custom)){s->storage_error=1u;return 0u;}
 #if !defined(__arm__)
     free(s->storage);
 #endif
-    *s=next;s->classes=n;s->stage=HDC_FIT;return 1u;
+    *s=next;s->classes=custom;s->stage=HDC_FIT;s->levels=32u;return 1u;
 }
 static void hdc_clear_validation(hdc_learning_t *s);
 static uint32_t hdc_append(hdc_learning_t *s)
@@ -141,7 +143,6 @@ static void hdc_clear_validation(hdc_learning_t *s)
         s->val_n[c]=0u;memset(s->hdc_cm[c],0,s->classes*4u);
         memset(s->centroid_cm[c],0,s->classes*4u);
     }
-    memset(s->mlp_cm,0,sizeof s->mlp_cm);
     s->margin_sum=s->clip_values=s->validation_values=s->completed_ms=0u;
 }
 
@@ -171,20 +172,21 @@ static uint32_t hdc_arm(hdc_learning_t *s,uint32_t cls)
 }
 
 #if !PL_LEARNING_ENABLE
-static void hdc_encode(const uint32_t e[8],const uint32_t scale[8],
-                       uint32_t query[64],uint32_t *clipped)
+static void hdc_encode_levels(const uint32_t e[8],const uint32_t scale[8],
+                       uint32_t query[64],uint32_t *clipped,uint32_t levels)
 {
     uint32_t ch,w,level[8],clips=0u;
     for(ch=0u;ch<8u;ch++) {
         uint32_t den=scale[ch]?scale[ch]:1u;
-        uint64_t q=((uint64_t)e[ch]*15u+den/2u)/den;
+        uint64_t q=((uint64_t)e[ch]*(levels-1u)+den/2u)/den;
         if(e[ch]>scale[ch])clips++;
-        level[ch]=q>15u?15u:(uint32_t)q;
+        level[ch]=q>=levels?levels-1u:(uint32_t)q;
     }
     for(w=0u;w<64u;w++) {
         uint32_t b0=0u,b1=0u,b2=0u,b3=0u;
         for(ch=0u;ch<8u;ch++) {
-            uint32_t v=~(hdc_cim[ch][w]^hdc_vim[level[ch]][w]);
+            uint32_t v=~(levels==32u?(hdc_cim32[ch][w]^hdc_vim32[level[ch]][w]):
+                                     (hdc_cim[ch][w]^hdc_vim[level[ch]][w]));
             uint32_t carry=b0&v; b0^=v;
             v=carry;carry=b1&v;b1^=v;
             v=carry;carry=b2&v;b2^=v;b3^=carry;
@@ -193,6 +195,10 @@ static void hdc_encode(const uint32_t e[8],const uint32_t scale[8],
     }
     if(clipped)*clipped=clips;
 }
+/* Kept for existing golden callers; new learning uses Q32. */
+static void hdc_encode(const uint32_t e[8],const uint32_t scale[8],
+                       uint32_t query[64],uint32_t *clipped)
+{ hdc_encode_levels(e,scale,query,clipped,32u); }
 
 static void hdc_add(hdc_learning_t *s,uint32_t cls,const uint32_t q[64])
 {
@@ -205,7 +211,7 @@ static void hdc_add(hdc_learning_t *s,uint32_t cls,const uint32_t q[64])
     }
 }
 
-static uint32_t hdc_predict(const hdc_learning_t *s,const uint32_t q[64],uint32_t *margin)
+static uint32_t hdc_predict_precise(const hdc_learning_t *s,const uint32_t q[64],uint32_t *margin,uint32_t *margin_bp)
 {
     uint32_t c,d,best=0u;
     int32_t top=INT32_MIN,second=INT32_MIN;
@@ -215,9 +221,12 @@ static uint32_t hdc_predict(const hdc_learning_t *s,const uint32_t q[64],uint32_
         if(sim>top){second=top;top=sim;best=c;}else if(sim>second)second=sim;
     }
     /* Percent of maximum possible score difference; NOT a probability. */
-    if(margin)*margin=(uint32_t)(((int64_t)top-second)*100/(2u*HDC_FIT_WINDOWS*HDC_D));
+    {uint32_t bp=s->classes<2u?0u:(uint32_t)(((int64_t)top-second)*10000/(2u*HDC_FIT_WINDOWS*HDC_D));
+     if(margin)*margin=bp/100u;if(margin_bp)*margin_bp=bp;}
     return best;
 }
+static uint32_t hdc_predict(const hdc_learning_t *s,const uint32_t q[64],uint32_t *margin)
+{return hdc_predict_precise(s,q,margin,0);}
 
 #endif /* software golden encoder / prototype arithmetic */
 static uint32_t hdc_centroid_predict(const hdc_learning_t *s,const uint32_t e[8])
@@ -250,11 +259,11 @@ static uint32_t hdc_build_step(hdc_learning_t *s)
     if(s->stage!=HDC_BUILD)return 0u;
     c=s->build_index/HDC_FIT_WINDOWS;n=s->build_index%HDC_FIT_WINDOWS;
 #if PL_LEARNING_ENABLE
-    if(!pl_learning_train(s->fit[c][n],s->scale,s->proto[c],&s->saturated)) {
+    if(!pl_learning_train(s->fit[c][n],s->scale,s->proto[c],s->levels,&s->saturated)) {
         s->accelerator_error=1u;s->stage=HDC_IDLE;hdc_interrupt(s);return 0u;
     }
 #else
-    hdc_encode(s->fit[c][n],s->scale,q,0);hdc_add(s,c,q);
+    hdc_encode_levels(s->fit[c][n],s->scale,q,0,s->levels);hdc_add(s,c,q);
 #endif
     for(ch=0;ch<8;ch++)s->centroid_sum[c][ch]+=
         (uint64_t)s->fit[c][n][ch]*1024u/(s->scale[ch]?s->scale[ch]:1u);
@@ -262,10 +271,9 @@ static uint32_t hdc_build_step(hdc_learning_t *s)
     return 1u;
 }
 
-/* Caller must supply USER-confirmed target via arm; mlp is a same-window
- * reference prediction, never a training label. window seq steps by 40. */
+/* Caller must supply USER-confirmed target via arm; window seq steps by 40. */
 static void hdc_window(hdc_learning_t *s,const uint32_t e[8],uint16_t seq,
-                       uint32_t ms,uint32_t mlp)
+                       uint32_t ms)
 {
     uint32_t c,ch,k,all=1u;
 #if !PL_LEARNING_ENABLE
@@ -277,15 +285,15 @@ static void hdc_window(hdc_learning_t *s,const uint32_t e[8],uint16_t seq,
     s->last_seq=seq;s->last_ms=ms;s->seq_seen=1u;
     if(s->stage>=HDC_VALIDATE) {
 #if PL_LEARNING_ENABLE
-        if(!pl_learning_predict(e,s->scale,&s->proto[0][0],s->classes,&s->latest,&s->margin,&s->clip)) {
+        if(!pl_learning_predict(e,s->scale,&s->proto[0][0],s->classes,s->levels,&s->latest,&s->margin,&s->clip,&s->margin_bp)) {
             s->accelerator_error=1u;s->stage=HDC_IDLE;hdc_interrupt(s);return;
         }
 #else
-        hdc_encode(e,s->scale,q,&s->clip);
-        s->latest=hdc_predict(s,q,&s->margin);
+        hdc_encode_levels(e,s->scale,q,&s->clip,s->levels);
+        s->latest=hdc_predict_precise(s,q,&s->margin,&s->margin_bp);
 #endif
         s->latest_centroid=hdc_centroid_predict(s,e);
-        s->latest_mlp=mlp;s->latest_valid=1u;
+        s->latest_valid=1u;
     }
     if(!s->armed)return;
     if(s->guard){s->guard--;return;}
@@ -293,7 +301,7 @@ static void hdc_window(hdc_learning_t *s,const uint32_t e[8],uint16_t seq,
     if(s->stage==HDC_FIT)for(ch=0;ch<8;ch++)s->trial[k][ch]=e[ch];
     else if(s->stage==HDC_VALIDATE) {
         s->trial_hdc[k]=s->latest;s->trial_centroid[k]=s->latest_centroid;
-        s->trial_mlp[k]=mlp;s->trial_margin[k]=s->margin;s->trial_clip[k]=s->clip;
+        s->trial_margin[k]=s->margin;s->trial_clip[k]=s->clip;
     } else return;
     if(++s->n<HDC_TRIAL_WINDOWS)return;
     if(s->stage==HDC_FIT) {
@@ -323,7 +331,6 @@ static void hdc_window(hdc_learning_t *s,const uint32_t e[8],uint16_t seq,
         for(k=0;k<40;k++) {
             s->hdc_cm[c][s->trial_hdc[k]]++;
             s->centroid_cm[c][s->trial_centroid[k]]++;
-            if(c<5u && s->trial_mlp[k]<5u)s->mlp_cm[c][s->trial_mlp[k]]++;
             s->margin_sum+=s->trial_margin[k];s->clip_values+=s->trial_clip[k];
         }
         s->validation_values+=40u*8u;s->val_n[c]+=40u;

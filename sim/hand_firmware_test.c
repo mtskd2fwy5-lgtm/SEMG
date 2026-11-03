@@ -163,7 +163,7 @@ static void test_live_slider(uint32_t panel)
     tap(LCD_X(972),LCD_Y(328));
     assert(!hand_run && !hand_manual_pending && hand_command_reg==word && hand_pulse==1000u);
     contact(LCD_X(972),LCD_Y(328),0u);hand_profile.cal_mask=4095u;
-    hand_row=5u;saved=hdc.hand_pose[5][1];
+    hand_row=8u;saved=hdc.hand_pose[5][1];
     tap(LCD_X(52)+LCD_X(920)/2,LCD_Y(328));
     assert(hand_pulse==1500u && hand_run==1u && hdc.hand_pose[5][1]==saved);
     contact(LCD_X(52)+LCD_X(920)/2,LCD_Y(328),0u);finish_queue(now+305u);
@@ -172,7 +172,7 @@ static void test_live_slider(uint32_t panel)
     finish_queue(now+310u);
     tap(LCD_X(800),LCD_Y(370));assert(hand_run==1u);
     tap(LCD_X(600),LCD_Y(195));
-    assert(hand_row==6u && !hand_run && !hand_manual_pending);finish_queue(now+320u);
+    assert(hand_row==9u && !hand_run && !hand_manual_pending);finish_queue(now+320u);
     /* A zero-width calibrated range is a fixed target, never division by zero. */
     hand_profile.low[1]=hand_profile.high[1]=1500u;
     tap(LCD_X(972),LCD_Y(328));assert(hand_pulse==1500u && hand_run==1u);
@@ -308,6 +308,78 @@ static void test_boot_home(void)
     hand_home_state=HAND_HOME_IDLE;
     puts("TEST_PASS BOOT HOME: SD latest-valid/CRC fallback, saved rest + exact 833us zero, six disabled stages/one atomic commit/continuous hold, no synthetic classifier/MPU or later target overwrite, time wrap, no repeat, header STOP/ACK timeout/fault cancel, legacy PL and lost group refusal, invalid configuration refusal");
 }
+static void test_hdc_continuous_link(void)
+{
+    uint32_t d,k,mode=0u,host_ms=0u,rot_ms=0u,target_ms=0u,mask=0u;
+    uint32_t staged[6]={0u},committed[6]={0u},commits=0u,ack;
+    uint32_t now=20000u,last_seq_ms=now;uint16_t seq=65496u;
+    hand_stop();finish_queue(now-10u);hand_home_state=HAND_HOME_IDLE;
+    ack=hand_command_reg>>31;
+    assert(hdc_begin(&hdc,2u));hdc.stage=HDC_DONE;
+    for(k=0u;k<2u;k++) {
+        hdc.fit_n[k]=HDC_FIT_WINDOWS;hdc.val_n[k]=HDC_VAL_WINDOWS;
+        hdc.hdc_cm[k][k]=HDC_VAL_WINDOWS;
+    }
+    for(k=0u;k<6u;k++) {
+        hand_profile.low[k]=500u;hand_profile.high[k]=2500u;
+        hdc.hand_pose[0][k]=1400u;hdc.hand_pose[1][k]=1800u;
+    }
+    hand_profile.cal_mask=4095u;hdc.hand_mapped[0]=1u;
+    hand_hdc_reset();
+    for(k=0u;k<3u;k++)
+        hand_hdc_observe(now-75u+k*25u,(uint16_t)(seq-120u+k*40u),0u,1u);
+    hand_rotation_valid=1u;hand_auto_hdc();assert(hand_run==3u);
+    for(d=0u;d<=3500u;d+=5u) {
+        now=20000u+d;
+        /* ACK the actual production driver's previously issued word. Model
+         * all three independent PL leases and atomic five-finger commits. */
+        if(hand_inflight && now-hand_sent_ms>=15u) {
+            uint32_t op=(hand_command_reg>>27)&15u,axis=(hand_command_reg>>16)&7u;
+            ack=hand_command_reg>>31;
+            if(op==0u){mode=0u;mask=0u;}
+            if(op==7u)host_ms=now;
+            if(op==9u)rot_ms=now;
+            if(op==12u){staged[axis]=hand_command_reg&65535u;mask|=1u<<axis;}
+            if(op==13u) {
+                assert(mask==62u);
+                memcpy(committed,staged,sizeof committed);
+                mask=0u;target_ms=now;commits++;
+            }
+            if(op==11u){assert(commits);mode=3u;host_ms=now;}
+        }
+        if(d==2000u)hdc.hand_mapped[1]=1u;
+        if(d%25u==0u) {
+            uint32_t cls=d<1250u || d>=2800u?0u:1u;
+            uint32_t evidence=d>=200u && d<1250u?2u:1u;
+            if(d==1000u)seq=(uint16_t)(seq+40u); /* skipped feature window */
+            hand_hdc_observe(now,seq,cls,evidence);
+            seq=(uint16_t)(seq+40u);last_seq_ms=now;
+        }
+        hand_status_reg=0x48010000u|(mode<<19)|(ack<<23);
+        hand_tick(now,1u,0,1u);
+        assert(hand_run==3u);
+        if(mode==3u) {
+            assert(now-host_ms<250u && now-rot_ms<250u && now-target_ms<250u);
+            for(k=1u;k<6u;k++)assert(committed[k]==committed[1]);
+            if(d>=1400u && d<2000u)assert(committed[1]==1400u);
+            if(d>=2200u && d<2800u)assert(committed[1]==1800u);
+            /* At a deliberately slow 15ms per mailbox command, the old
+             * five-axis transaction must finish before the new one commits. */
+            if(d>=3150u)assert(committed[1]==1400u);
+        }
+    }
+    assert(commits>10u);
+    /* No fresh HDC packets: the user enable is revoked, never auto-rearmed. */
+    hand_status_reg=0x48010000u|(3u<<19)|((hand_command_reg>>31)<<23);
+    hand_tick(last_seq_ms+251u,1u,0,1u);
+    assert(!hand_run);
+    finish_queue(last_seq_ms+252u);
+    hdc.hand_mapped[1]=1u;hand_rotation_valid=1u;
+    for(k=0u;k<3u;k++,seq=(uint16_t)(seq+40u))
+        hand_hdc_observe(last_seq_ms+300u+k*25u,seq,0u,1u);
+    assert(hand_hdc_valid && !hand_run);
+    printf("TEST_PASS HDC continuous link: 3.5s production ACK/leases (15ms ACK latency), %u target commits, ambiguity and sequence skip hold, unmapped hold, mapped atomic switches, dropout stops without rearm\n",commits);
+}
 static void test_hdc_stability(void)
 {
     uint32_t i,now=10000u;uint16_t seq=65496u;
@@ -328,15 +400,16 @@ static void test_hdc_stability(void)
     for(i=0u;i<3u;i++,now+=25u,seq=(uint16_t)(seq+40u))
         hand_hdc_observe(now,seq,38u,1u);
     assert(hand_hdc_valid && hand_hdc_class==38u);
-    /* Continuous weak packets cannot renew the last accepted target forever. */
+    /* Continuous but ambiguous HDC windows keep the last accepted gesture
+     * linked; only a stale stream or hard-invalid data may stop the output. */
     hand_run=3u;
-    for(i=0u;i<8u;i++,now+=25u,seq=(uint16_t)(seq+40u)) {
+    for(i=0u;i<40u;i++,now+=25u,seq=(uint16_t)(seq+40u)) {
         hand_hdc_observe(now,seq,38u,2u);
-        assert(hand_hdc_valid==(i<7u));
+        assert(hand_run==3u);
     }
-    assert(!hand_run && hand_stop_pending);
-    hand_stop_pending=0u;
-    /* Startup abstentions and 3:2 alternating predictions never confirm. */
+    assert(!hand_hdc_valid);
+    hand_run=0u;
+    /* Startup abstentions and 3:3 alternating predictions never confirm. */
     hand_hdc_reset();
     for(i=0u;i<40u;i++,now+=25u,seq=(uint16_t)(seq+40u)) {
         hand_hdc_observe(now,seq,5u+i%2u,1u);assert(!hand_hdc_valid);
@@ -351,11 +424,12 @@ static void test_hdc_stability(void)
         hand_hdc_observe(now,seq,i==3u?6u:5u,i==1u?2u:1u);
         assert(hand_hdc_valid==(i==4u));
     }
-    /* Rest keeps its more conservative six-of-eight confirmation. */
+    /* The removed fixed relax class no longer has a stricter rule: class 0 is
+       an ordinary custom gesture and confirms with the same 3-of-6 vote. */
     hand_hdc_reset();
-    for(i=0u;i<7u;i++,now+=25u,seq=(uint16_t)(seq+40u)) {
+    for(i=0u;i<5u;i++,now+=25u,seq=(uint16_t)(seq+40u)) {
         hand_hdc_observe(now,seq,0u,i==2u?2u:1u);
-        assert(hand_hdc_valid==(i==6u));
+        assert(hand_hdc_valid==(i>=3u));
     }
     assert(hand_hdc_class==0u);
     /* Invalid data (including excessive clipping/model loss) remains hard STOP. */
@@ -371,10 +445,22 @@ static void test_hdc_stability(void)
     hand_hdc_reset();now=20000u;
     for(i=0u;i<3u;i++,now+=25u,seq=(uint16_t)(seq+40u))
         hand_hdc_observe(now,seq,39u,1u);
-    hand_run=3u;hand_hdc_observe(now+175u,seq,39u,2u);
-    assert(!hand_hdc_valid && !hand_run);
-    hand_stop_pending=0u;hand_hdc_reset();
-    puts("TEST_PASS HDC stability: isolated error/abstention, rival hysteresis, 75ms clean transition, 200ms ambiguity STOP, rest debounce, full class IDs, sequence/time wrap, hard invalidation");
+    hand_run=3u;hand_hdc_observe(now+225u,seq,39u,2u);
+    assert(!hand_hdc_valid && hand_run==3u);
+    hand_run=0u;hand_hdc_reset();
+    /* Sub-percent positive margins can confirm, with stronger persistence.
+     * Exact ties retain evidence2 and never count as qualified votes. */
+    for(i=0u;i<8u;i++,now+=25u,seq=(uint16_t)(seq+40u)) {
+        hand_hdc_observe(now,seq,39u,3u);assert(hand_hdc_valid==(i>=5u));
+    }
+    assert(hand_hdc_class==39u);
+    hand_hdc_reset();
+    for(i=0u;i<32u;i++,now+=25u,seq=(uint16_t)(seq+40u)) {
+        hand_hdc_observe(now,seq,38u+i%2u,3u);assert(!hand_hdc_valid);
+    }
+    hand_hdc_reset();
+    puts("TEST_PASS HDC precise stability: six-of-eight weak votes, alternating weak ambiguity rejected, exact ties abstain");
+    puts("TEST_PASS HDC stability: isolated error/abstention, rival hysteresis, 75ms clean transition, 250ms decision expiry with link retained, uniform custom-class debounce, full class IDs, sequence/time wrap, hard invalidation");
 }
 
 int main(void)
@@ -443,7 +529,12 @@ int main(void)
     hand_tick(3500,1,0,0);assert(!hand_run && hand_qread==hand_qwrite);
     assert((hand_command_reg&0x7fffffffu)==0u);finish_queue(3501);
     // A validated frozen model is required; the bridge never uses UI targets.
-    assert(hdc_begin(&hdc,3u));hdc.stage=HDC_VALIDATE;
+    // A one-class library has no rival (PL margin is 0), so it is refused
+    // explicitly instead of silently waiting for a stable gesture.
+    assert(hdc_begin(&hdc,1u));hdc.stage=HDC_DONE;
+    hdc.fit_n[0]=120u;hdc.val_n[0]=80u;hdc.hdc_cm[0][0]=80u;
+    assert(!hdc_hand_model_ready());
+    assert(hdc_begin(&hdc,8u));hdc.stage=HDC_VALIDATE;
     assert(!hdc_hand_model_ready());hdc.stage=HDC_DONE;
     for(i=0;i<8u;i++){hdc.fit_n[i]=120u;hdc.val_n[i]=80u;hdc.hdc_cm[i][i]=80u;}
     assert(hdc_hand_model_ready());hdc.hdc_cm[5][5]=63u;assert(!hdc_hand_model_ready());
@@ -458,16 +549,17 @@ int main(void)
     assert((hand_queue[hand_qwrite-1]&65535u)==1u);
     for(i=0u;i<5u;i++)assert(((hand_queue[hand_qwrite-7u+i]>>27)&15u)==12u);
     finish_queue(3660);
-    assert(((hand_command_reg>>27)&15u)==11u && hand_hdc_sent_generation==hand_hdc_generation);
+    assert(hand_run==3u && hand_hdc_sent_generation==hand_hdc_generation);
     hand_stop();finish_queue(3700);
     hand_hdc_observe(3700u,120u,6u,1u);assert(hand_hdc_class==5u);
     hand_hdc_observe(3725u,160u,6u,1u);assert(hand_hdc_class==5u);
     hand_hdc_observe(3750u,200u,6u,1u);assert(hand_hdc_class==6u);
     hand_hdc_observe(3775u,240u,7u,0u);assert(!hand_hdc_valid);
     for(i=0;i<3u;i++)hand_hdc_observe(3800u+i*25u,(uint16_t)(i*40u),7u,1u);
-    hand_run=3u;hand_hdc_observe(3900u,400u,7u,1u);assert(!hand_run && !hand_hdc_valid);
+    hand_run=3u;hand_hdc_observe(3900u,400u,7u,1u);assert(hand_run==3u && !hand_hdc_valid);
+    hand_stop();
     finish_queue(3901);
-    assert(hand_next_row(2u)==5u && hand_next_row(5u)==6u && hand_next_row(6u)==7u && !hand_next_row(7u));
+    assert(hand_next_row(2u)==3u && hand_next_row(5u)==6u && hand_next_row(6u)==7u && hand_next_row(10u)==0u);
     /* High IDs are targets rather than truncated 3-bit rows. */
     assert(hdc_reserve(&hdc,40u));hdc.classes=40u;hdc.stage=HDC_DONE;
     for(i=8u;i<40u;i++){hdc.fit_n[i]=120u;hdc.val_n[i]=80u;hdc.hdc_cm[i][i]=80u;}
@@ -479,10 +571,16 @@ int main(void)
     for(i=0u;i<5u;i++)assert((hand_queue[hand_qwrite-7u+i]&65535u)==1750u);
     finish_queue(4060u);
     for(i=0u;i<3u;i++)hand_hdc_observe(4100u+i*25u,(uint16_t)(120u+i*40u),38u,1u);
-    ack_tick(4160u);assert(!hand_run && hand_hdc_valid && hand_hdc_class==38u);
-    finish_queue(4161u);hand_auto_hdc();assert(!hand_run);
-    hdc.fit_n[38]=0u;assert(!hand_row_available(38u));
-    assert(hand_next_row(37u)==39u && hand_next_row(39u)==0u);
+    ack_tick(4160u);assert(hand_run==3u && hand_hdc_valid && hand_hdc_class==38u);
+    assert(hand_hdc_target_class==39u); /* Unmapped new class holds safe target. */
+    hand_stop();finish_queue(4161u);hand_auto_hdc();assert(!hand_run);
+    hdc.fit_n[35]=0u;assert(!hand_row_available(38u));
+    assert(hand_next_row(37u)==39u && hand_next_row(39u)==40u && hand_next_row(42u)==0u);
+    /* The first custom class follows the same 3-of-6 rule as every other. */
+    hand_hdc_reset();
+    for(i=0;i<3u;i++)hand_hdc_observe(4200u+i*25u,(uint16_t)(480u+i*40u),0u,1u);
+    assert(hand_hdc_valid && hand_hdc_class==0u);hand_hdc_reset();
+    puts("TEST_PASS hand bridge: one-class library refused, uniform 3-of-6 stability for every custom class");
     hdc.classes=8u;
     for(panel=0;panel<2;panel++) {
         test_live_slider(panel);
@@ -503,13 +601,14 @@ int main(void)
         ui_menu_open=0;hand_view_mode=1;hand_axis=1;hand_row=0;
         ui_touch_press(LCD_X(80),LCD_Y(260));assert(hand_axis==1u);
         for(i=0;i<6u;i++) {
-            static const uint32_t rows[]={1,2,5,6,7,0};
+            static const uint32_t rows[]={1,2,3,4,5,6};
             ui_touch_press(LCD_X(600),LCD_Y(195));assert(hand_row==rows[i]);
         }
         hand_source_hdc=0;
         ui_touch_press(LCD_X(80),LCD_Y(490));assert(hand_source_hdc);
         ui_touch_press(LCD_X(80),LCD_Y(490));assert(!hand_source_hdc);
     }
+    test_hdc_continuous_link();
     test_boot_home();
     puts("TEST_PASS hand firmware: ACK, STOP priority, manual expiry, CRC recovery, MPU quaternion/range/loss, validated HDC/queue/debounce, live mapping, boot homing, both panels");
     return 0;

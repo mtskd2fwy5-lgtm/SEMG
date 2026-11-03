@@ -6,9 +6,11 @@
 // 1/2 stage operand low/high16; 3 commit register0..4; 4 launch job1..4.
 // Registers: input pointer, scale pointer, prototype pointer, output pointer,
 // count (scale: number of 8-word samples; prediction: number of classes).
-// Status: toggle31, busy30, error29, quarantined28, ABI[23:16]=0x12.
+// Status: toggle31, busy30, error29, quarantined28, ABI[23:16]=0x13.
 // Jobs: 1 NMF; 2 extend eight-channel maxima; 3 encode+update one prototype;
-//       4 encode+classify all prototypes (2048 signed int16 per class).
+//       4 legacy Q16 prediction; 5 Q32 training; 6 Q32 prediction.
+// Prediction result3 is the score gap in 0.01 percent units; result1 keeps
+// the legacy integer-percent meaning. Both memories remain immutable.
 module emg_learning_accel #(
     parameter HDC_MEM="d:/FPGA/sEMG-HMRS/data/models/hdc_memory.mem",
     parameter integer WATCHDOG=10000000
@@ -77,7 +79,7 @@ module emg_learning_accel #(
         end
     end
     reg ack,busy,error,poison;
-    assign status={ack,busy,error,poison,4'd0,8'h12,16'd0};
+    assign status={ack,busy,error,poison,4'd0,8'h13,16'd0};
     reg [31:0] arg[0:4];reg [31:0] operand;
     reg [7:0] state,ret_state,div_ret,mul_ret;
     reg [3:0] job;
@@ -95,11 +97,11 @@ module emg_learning_accel #(
     reg [3:0] i,j,k,it;
     reg [31:0] sample,cls;
     reg [10:0] word_idx;
-    reg [3:0] level[0:7];
+    reg [4:0] level[0:7];
     reg [3:0] clips;
-    (* rom_style="block" *) reg [31:0] memory[0:1535];
+    (* rom_style="block" *) reg [31:0] memory[0:4095];
     initial $readmemh(HDC_MEM,memory);
-    reg [10:0] rom_addr;reg [31:0] rom_data,cim_word,b0,b1,b2,b3;
+    reg [11:0] rom_addr;reg [31:0] rom_data,cim_word,b0,b1,b2,b3;
     always @(posedge clk)rom_data<=memory[rom_addr];
     wire [31:0] vote=~(cim_word^rom_data);
     wire [31:0] carry0=b0&vote,carry1=b1&carry0,carry2=b2&carry1;
@@ -169,11 +171,11 @@ module emg_learning_accel #(
                 3:if(command[23:0]<5)arg[command[2:0]]<=operand;else error<=1;
                 4:begin
                     error<=0;
-                    if(command[23:0]>=1 && command[23:0]<=4 &&
+                    if(command[23:0]>=1 && command[23:0]<=6 &&
                        allowed(arg[0]) && allowed(arg[3]) &&
                        (command[23:0]==1 || (allowed(arg[1]) &&
                          (command[23:0]==2 || allowed(arg[2])))) &&
-                       ((command[23:0]!=2 && command[23:0]!=4) || (arg[4]>0 && arg[4]<=16384)))begin
+                       ((command[23:0]!=2 && command[23:0]!=4 && command[23:0]!=6) || (arg[4]>0 && arg[4]<=16384)))begin
                         job<=command[3:0];busy<=1;timer<=0;i<=0;clips<=0;
                         saturations<=0;sample<=0;state<=1;
                     end else error<=1;
@@ -241,15 +243,15 @@ module emg_learning_accel #(
                 63:if(i==7)begin i<=0;if(sample+1==arg[4])begin results[0]<=0;state<=240;end
                     else begin sample<=sample+1;state<=1;end
                     end else begin i<=i+1;state<=60;end
-                70:divide_go({32'd0,e[i]}*15+(scale[i]?scale[i]/2:0),scale[i]?scale[i]:1,71);
+                70:divide_go({32'd0,e[i]}*(job>=5?31:15)+(scale[i]?scale[i]/2:0),scale[i]?scale[i]:1,71);
                 71:begin
-                    level[i]<=quotient>15?15:quotient[3:0];if(e[i]>scale[i])clips<=clips+1;
+                    level[i]<=quotient>(job>=5?31:15)?(job>=5?31:15):quotient[4:0];if(e[i]>scale[i])clips<=clips+1;
                     if(i==7)begin i<=0;word_idx<=0;b0<=0;b1<=0;b2<=0;b3<=0;state<=72;end
                     else begin i<=i+1;state<=70;end
                 end
-                72:begin rom_addr<=i*64+word_idx;state<=73;end
+                72:begin rom_addr<=(job>=5?1536:0)+i*64+word_idx;state<=73;end
                 73:state<=74;
-                74:begin cim_word<=rom_data;rom_addr<=512+level[i]*64+word_idx;state<=75;end
+                74:begin cim_word<=rom_data;rom_addr<=(job>=5?2048:512)+level[i]*64+word_idx;state<=75;end
                 75:state<=76;
                 76:begin b0<=b0^vote;b1<=b1^carry0;b2<=b2^carry1;b3<=b3^carry2;
                     if(i==7)state<=77;else begin i<=i+1;state<=72;end
@@ -260,7 +262,7 @@ module emg_learning_accel #(
                     else begin word_idx<=word_idx+1;state<=72;end
                 end
                 80:read_word(arg[2]+cls*4096+word_idx*4,81);
-                81:if(job==3)begin
+                81:if(job==3 || job==5)begin
                     p0<=$signed({bus_result[15],bus_result[15:0]})+(bit0?17'sd1:-17'sd1);
                     p1<=$signed({bus_result[31],bus_result[31:16]})+(bit1?17'sd1:-17'sd1);
                     state<=82;
@@ -282,12 +284,15 @@ module emg_learning_accel #(
                 end else begin word_idx<=word_idx+1;state<=80;end
                 85:begin
                     results[0]<=best;results[2]<={28'd0,clips};
-                    if(arg[4]==1)begin results[1]<=0;i<=0;state<=240;end
-                    else divide_go(({{32{top[31]}},top}-{{32{second[31]}},second})*100,491520,86);
+                    if(arg[4]==1)begin results[1]<=0;results[3]<=0;i<=0;state<=240;end
+                    else divide_go(({{32{top[31]}},top}-{{32{second[31]}},second})*10000,491520,86);
                 end
-                86:begin results[1]<=quotient[31:0];i<=0;state<=240;end
+                // Reuse the sequential divider: a 64-bit combinational /100
+                // creates an unacceptable path at the real 100 MHz clock.
+                86:begin results[3]<=quotient[31:0];divide_go(quotient,100,87);end
+                87:begin results[1]<=quotient[31:0];i<=0;state<=240;end
                 240:write_word(arg[3]+i*4,results[i],241);
-                241:if(i==(job==1?7:job==2?0:job==3?1:2))begin busy<=0;state<=0;end
+                241:if(i==(job==1?7:job==2?0:(job==3 || job==5)?1:3))begin busy<=0;state<=0;end
                     else begin i<=i+1;state<=240;end
                 250:if(bus_done)begin
                     if(bus_error)begin error<=1;busy<=0;state<=0;end else state<=ret_state;

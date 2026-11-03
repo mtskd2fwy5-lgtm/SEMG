@@ -3,8 +3,8 @@
 # SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025
 # IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025
 # SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025
-# Start of session at: Wed Oct 28 20:25:50 2026
-# Process ID         : 20004
+# Start of session at: Sat Oct 31 19:11:49 2026
+# Process ID         : 35932
 # Current directory  : D:/FPGA/sEMG-HMRS
 # Command line       : xsim.exe -log D:\FPGA\sEMG-HMRS\report\imu_pl_20261028/netlist_mailbox.log -mode tcl -source {xsim.dir/imu_netlist_mailbox/xsim_script.tcl}
 # Log file           : D:/FPGA/sEMG-HMRS/report/imu_pl_20261028/netlist_mailbox.log
@@ -19,15 +19,16 @@
 # Host memory        : 16844 MB
 # Swap memory        : 16844 MB
 # Total Virtual      : 33689 MB
-# Available Virtual  : 13983 MB
+# Available Virtual  : 12721 MB
 #-----------------------------------------------------------
 source xsim.dir/imu_netlist_mailbox/xsim_script.tcl
 # xsim {imu_netlist_mailbox} -autoloadwcfg -runall
 Time resolution is 1 ps
 run -all
+TEST_PASS arbitrary-pose recalibration: 60deg capture becomes zero, -30deg follow
 TEST_PASS synthesized PL attitude calibration, 60deg twist, atomic snapshot, zero and disconnect
-$finish called at time : 20185120 ns : File "D:/FPGA/sEMG-HMRS/sim/mpu_attitude_mailbox_tb.sv" Line 63
-run: Time (s): cpu = 00:00:01 ; elapsed = 00:13:01 . Memory (MB): peak = 230.562 ; gain = 0.000
+$finish called at time : 30167920 ns : File "D:/FPGA/sEMG-HMRS/sim/mpu_attitude_mailbox_tb.sv" Line 85
+run: Time (s): cpu = 00:00:01 ; elapsed = 00:13:35 . Memory (MB): peak = 232.164 ; gain = 0.000
 exit
-INFO: xsimkernel Simulation Memory Usage: 51232 KB (Peak: 51232 KB), Simulation CPU Usage: 764030 ms
-INFO: [Common 17-206] Exiting xsim at Wed Oct 28 20:38:53 2026...
+INFO: xsimkernel Simulation Memory Usage: 51388 KB (Peak: 51388 KB), Simulation CPU Usage: 813390 ms
+INFO: [Common 17-206] Exiting xsim at Sat Oct 31 19:25:26 2026...

@@ -1,0 +1,54 @@
+=== sEMG-HMRS guarded build pipeline ===
+repo : D:\FPGA\sEMG-HMRS
+mode : reuse existing build + no packaging
+expected params (from RTL): HP_B0=64096 HP_B1=-128192 HP_B2=64096 HP_A1=-128161 HP_A2=62688 LP_ALPHA=9392
+
+[Gate 1] OOC synth runme.log: parameter binding vs RTL
+
+[G2 netlist-decode] tools\verify_coeff_regs.py
+
+[G3 literal-B scan] tools\scan_literal_b.py
+
+[Gate 4] Routed timing
+
+=== Gate summary ===
+  G1 coeff-bind      PASS  design_1_emg_pl_export_0_7_synth_1: all 6 guarded parameters bound as declared in RTL
+  G2 netlist-decode  PASS  exit=0 RESULT: ALL COEFFICIENT REGISTERS CORRECT
+  G3 literal-B scan  PASS  exit=0 RESULT: OK - zero unexpected literal-B DSPs, zero bad-value hits
+  G4 timing          PASS  design_1_timing_summary_routed.rpt: all constraints met (WNS=0.512 WHS=0.036)
+
+PIPELINE RESULT: ALL GATES PASS
+  bitstream : D:\FPGA\sEMG-HMRS\build\vivado\hand_motion_reconstruction.runs\impl_1\design_1.bit  (4,045,684 bytes, 2026/10/29 22:19:30)
+TEST_PASS V21 UI scheduling: inherited V20 PL/models/control, unchanged score math, CPU/LCD/quality regression
+TEST_PASS PL-control XSA interface and bitstream match
+main.c:1126:13: warning: 'mpu_tilt_update' defined but not used [-Wunused-function]
+ 1126 | static void mpu_tilt_update(void)
+      |             ^~~~~~~~~~~~~~~
+main.c:733:12: warning: 'mpu_last_row_t' defined but not used [-Wunused-variable]
+  733 | static u32 mpu_last_row_t;      /* gt_stamp of the last M-row */
+      |            ^~~~~~~~~~~~~~
+main.c:732:27: warning: 'mpu_word_seen' defined but not used [-Wunused-variable]
+  732 | static u32 mpu_last_word, mpu_word_seen;
+      |                           ^~~~~~~~~~~~~
+main.c:732:12: warning: 'mpu_last_word' defined but not used [-Wunused-variable]
+  732 | static u32 mpu_last_word, mpu_word_seen;
+      |            ^~~~~~~~~~~~~
+D:\FPGA\VIVADO\2025.2\data\embeddedsw\lib\sw_services\xilffs_v5_5\src\ff.c: In function 'get_ldnumber':
+D:\FPGA\VIVADO\2025.2\data\embeddedsw\lib\sw_services\xilffs_v5_5\src\ff.c:4000:13: warning: unused variable 'vol' [-Wunused-variable]
+ 4000 |         int vol = -1;
+      |             ^~~
+BUILD OK: ps_uart_print_pl_control.elf
+TEST_PASS V21 UI scheduling: inherited V20 PL/models/control, unchanged score math, CPU/LCD/quality regression
+TEST_PASS application build tag matches requested BOOT tag
+
+
+****** Bootgen v2025.2
+  **** Build date : Oct 23 2025-12:54:55
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+
+
+[INFO]   : Bootimage generated successfully
+
+TEST_PASS V21 UI scheduling: inherited V20 PL/models/control, unchanged score math, CPU/LCD/quality regression
+TEST_PASS matched control BOOT: XSA hardware + full bitstream + 2 application PT_LOAD segments + 3 FSBL PT_LOAD segments

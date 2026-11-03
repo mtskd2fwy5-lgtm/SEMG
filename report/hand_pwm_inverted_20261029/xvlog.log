@@ -1,0 +1,6 @@
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/src/rtl/hand_servo_pwm.v" into library work
+INFO: [VRFC 10-311] analyzing module hand_servo_pwm
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/src/rtl/hand_control.v" into library work
+INFO: [VRFC 10-311] analyzing module hand_control
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/sim/hand_pwm_polarity_tb.sv" into library work
+INFO: [VRFC 10-311] analyzing module hand_pwm_polarity_tb

@@ -1,13 +1,18 @@
 #ifndef LCD_HAND_H
 #define LCD_HAND_H
 static const char *const hand_axis_names[]={"MPU旋转","拇指","食指","中指","无名指","小指"};
+static const char *const hand_base_names[]={"放松","张手","握拳"};
+/* Rows 0-2 are the PL base poses shared with hand_upload; every learned HDC
+ * custom class c occupies row c+3. There are no fixed base classes anymore. */
 static uint32_t hand_row_available(uint32_t row)
 {
-    return row<3u || (row>=5u && row<hdc.classes &&
-        hdc.fit_n[row]==HDC_FIT_WINDOWS && hdc.stage>=HDC_VALIDATE);
+    return row<3u || (row>=3u && row-3u<hdc.classes &&
+        hdc.fit_n[row-3u]==HDC_FIT_WINDOWS && hdc.stage>=HDC_VALIDATE);
 }
 static uint32_t *hand_row_pose(uint32_t row)
-{return row<3u?hand_profile.pose[row]:hdc.hand_pose[row];}
+{return row<3u?hand_profile.pose[row]:hdc.hand_pose[row-3u];}
+static const char *hand_row_name(uint32_t row)
+{return row<3u?hand_base_names[row]:hdc_name(row-3u);}
 static uint32_t hand_mapping_pulse(uint32_t row,uint32_t axis)
 {
     uint32_t p=hand_row_pose(row)[axis],low=500u,high=2500u;
@@ -22,7 +27,7 @@ static uint32_t hand_mapping_pulse(uint32_t row,uint32_t axis)
 static uint32_t hand_row_mapped(uint32_t row)
 {
     if(!hand_row_available(row))return 0u;
-    return row<3u?((hand_profile.row_mask>>row)&1u):hdc.hand_mapped[row];
+    return row<3u?((hand_profile.row_mask>>row)&1u):hdc.hand_mapped[row-3u];
 }
 static void hand_row_enable(uint32_t row,uint32_t enable)
 {
@@ -30,32 +35,27 @@ static void hand_row_enable(uint32_t row,uint32_t enable)
     if(row<3u) {
         if(enable)hand_profile.row_mask|=1u<<row;
         else hand_profile.row_mask&=~(1u<<row);
-    } else hdc.hand_mapped[row]=enable;
+    } else hdc.hand_mapped[row-3u]=enable;
 }
 static void hand_invalidate_mappings(void)
 {
-    u32 c;hand_profile.row_mask=0u;hand_hdc_pose_valid=0u;
-    for(c=5u;c<hdc.classes;c++)hdc.hand_mapped[c]=0u;
+    u32 c;hand_profile.row_mask=0u;
+    for(c=0u;c<hdc.classes;c++)hdc.hand_mapped[c]=0u;
 }
 static uint32_t hand_next_row(uint32_t row)
 {
     uint32_t c;if(row<2u)return row+1u;
-    for(c=row<5u?5u:row+1u;c<hdc.classes;c++)if(hand_row_available(c))return c;
+    for(c=row<3u?3u:row+1u;c<hdc.classes+3u;c++)if(hand_row_available(c))return c;
     return 0u;
 }
 static uint32_t hand_hdc_get_pose(uint32_t cls,uint32_t pose[6])
 {
     uint32_t i,*target;
-    if(cls==3u || cls==4u) {
-        if(hand_hdc_pose_valid){memcpy(pose,hand_hdc_pose,sizeof hand_hdc_pose);return 1u;}
-        cls=0u;
-    }
-    if(!hand_row_mapped(cls))return 0u;
-    target=hand_row_pose(cls);
+    if(cls>=hdc.classes || !hand_row_mapped(cls+3u))return 0u;
+    target=hand_row_pose(cls+3u);
     for(i=1u;i<6u;i++)
         if(target[i]<hand_profile.low[i] || target[i]>hand_profile.high[i])return 0u;
-    memcpy(pose,target,6u*sizeof(uint32_t));
-    memcpy(hand_hdc_pose,pose,sizeof hand_hdc_pose);hand_hdc_pose_valid=1u;return 1u;
+    memcpy(pose,target,6u*sizeof(uint32_t));return 1u;
 }
 static void lcd_hand_open(void)
 {
@@ -78,8 +78,7 @@ static void hand_storage_apply(uint32_t action)
         hand_profile=(!vb || (va && (int32_t)(a.generation-b.generation)>0))?a:b;
         /* A loaded profile may have different travel limits. Custom mappings
          * belong to the RAM library and must be reconfirmed against them. */
-        {uint32_t k;for(k=5u;k<hdc.classes;k++)hdc.hand_mapped[k]=0u;}
-        hand_hdc_pose_valid=0u;
+        {uint32_t k;for(k=0u;k<hdc.classes;k++)hdc.hand_mapped[k]=0u;}
         hand_upload();hand_io_error=0u;
     } else {
         c=hand_profile;
@@ -154,12 +153,39 @@ static void lcd_hand_touch(u32 x,u32 y)
 {
     u32 i;
     if(lcd_wave_hit(x,y,LCD_X(790),LCD_Y(110),LCD_X(205),LCD_Y(48))) {
+        if(hand_grip_capturing)synergy_feedback.capture=4u;
+        hand_grip_capturing=0u;
         hand_stop();return;
+    }
+    if(hand_view_mode==1u && lcd_wave_hit(x,y,LCD_X(675),LCD_Y(478),LCD_X(320),LCD_Y(34))) {
+        hand_stop();hand_view_mode=2u;goto changed;
+    }
+    if(lcd_wave_hit(x,y,LCD_X(535),LCD_Y(175),LCD_X(220),LCD_Y(48)) && hand_view_mode!=1u) {
+        hand_stop();hand_view_mode=2u;goto changed;
     }
     /* Navigation always cancels single-axis tests before changing a target. */
     for(i=0;i<2u;i++)if(lcd_wave_hit(x,y,LCD_X(28)+(i32)i*LCD_X(248),LCD_Y(175),LCD_X(235),LCD_Y(48))) {
         hand_stop();hand_view_mode=i;if(i && hand_axis==0u)hand_axis=1u;
         hand_pulse=i?hand_mapping_pulse(hand_row,hand_axis):1500u;
+        goto changed;
+    }
+    if(hand_view_mode==2u) {
+        if(lcd_wave_hit(x,y,LCD_X(28),LCD_Y(420),LCD_X(300),LCD_Y(48))) {
+            if(g_mode!=MODE_MONITOR || cal_stage!=2u || !pl_control_ready())return;
+            hand_stop();hand_grip_valid=hand_grip_seen=0u;hand_grip_capturing=1u;
+            synergy_feedback_capture(&synergy_feedback,rehab_milliseconds());goto changed;
+        }
+        if(lcd_wave_hit(x,y,LCD_X(350),LCD_Y(420),LCD_X(300),LCD_Y(48))) {
+            if(g_mode==MODE_MONITOR && cal_stage==2u && pl_control_ready())
+                hand_auto_grip(rehab_milliseconds());
+            goto changed;
+        }
+        if(lcd_wave_hit(x,y,LCD_X(675),LCD_Y(420),LCD_X(320),LCD_Y(48))) {
+            if(hand_grip_capturing)synergy_feedback.capture=4u;
+            hand_grip_capturing=0u;
+            hand_stop();goto changed;
+        }
+        if(lcd_wave_hit(x,y,LCD_X(675),LCD_Y(522),LCD_X(320),LCD_Y(54)))ui_open_page(UI_SETTINGS);
         goto changed;
     }
     for(i=0;i<6u;i++)if(lcd_wave_hit(x,y,LCD_X(28)+(i32)i*LCD_X(162),LCD_Y(237),LCD_X(151),LCD_Y(48))) {
@@ -245,12 +271,36 @@ static void lcd_hand_render(void)
     ui_label(LCD_X(28),LCD_Y(112),LCD_X(740),2,31,49,58,"机械手 / MPU 左45度 右225度");
     ui_button(LCD_X(790),LCD_Y(110),LCD_X(205),LCD_Y(48),"停止输出",hand_busy());
     ui_button(LCD_X(28),LCD_Y(175),LCD_X(235),LCD_Y(48),"逐轴标定",!hand_view_mode);
-    ui_button(LCD_X(276),LCD_Y(175),LCD_X(235),LCD_Y(48),"动作映射",hand_view_mode);
+    ui_button(LCD_X(276),LCD_Y(175),LCD_X(235),LCD_Y(48),"动作映射",hand_view_mode==1u);
+    if(hand_view_mode==2u) {
+        u32 fresh=hand_grip_valid && rehab_milliseconds()-hand_grip_ms<=75u;
+        ui_button(LCD_X(535),LCD_Y(175),LCD_X(220),LCD_Y(48),"协同抓握",1u);
+        ui_label(LCD_X(28),LCD_Y(245),LCD_X(968),2,31,49,58,
+                 hand_run==4u?"抓握联动中":hand_grip_capturing?"保持舒适抓握":"协同抓握已停止");
+        lcd_analysis_label(s,sizeof s,"抓握目标 ",fresh?hand_grip_percent:0u,"%");
+        ui_label(LCD_X(28),LCD_Y(300),LCD_X(968),2,25,120,111,s);
+        p_rect(LCD_X(28),LCD_Y(350),LCD_X(968),LCD_Y(24),220,230,230);
+        if(fresh && hand_grip_percent)p_rect(LCD_X(28),LCD_Y(350),
+            (i32)(hand_grip_percent*(u32)LCD_X(968)/100u),LCD_Y(24),25,150,130);
+        ui_button(LCD_X(28),LCD_Y(420),LCD_X(300),LCD_Y(48),"采集舒适抓握",hand_grip_capturing);
+        ui_button(LCD_X(350),LCD_Y(420),LCD_X(300),LCD_Y(48),"启用协同抓握",hand_run==4u);
+        ui_button(LCD_X(675),LCD_Y(420),LCD_X(320),LCD_Y(48),"停止抓握",0u);
+        ui_label(LCD_X(28),LCD_Y(480),LCD_X(968),1,70,95,110,
+            hand_grip_capturing?"保持舒适用力 3.5 秒":
+            synergy_feedback.capture==4u?"参考采集失败，请重试":
+            !synergy_feedback.reference?"请先采集舒适抓握参考":
+            !hand_grip_mapped()?"请完成标定及放松、握拳映射":
+            !hand_rotation_valid?"等待 MPU 有效姿态":
+            !fresh?"等待有效协同数据":"相对用力反馈 / 非实际握力");
+        lcd_analysis_label(s,sizeof s,"C2参考 ",(synergy_feedback.reference+128u)>>8,"");
+        ui_label(LCD_X(28),LCD_Y(532),LCD_X(620),1,70,95,110,s);
+        ui_button(LCD_X(675),LCD_Y(522),LCD_X(320),LCD_Y(54),"返回设置",0u);
+        return;
+    }
     if(hand_view_mode) {
-        ui_button(LCD_X(535),LCD_Y(175),LCD_X(220),LCD_Y(48),hdc_name(hand_row),1u);
+        ui_button(LCD_X(535),LCD_Y(175),LCD_X(220),LCD_Y(48),hand_row_name(hand_row),1u);
         ui_button(LCD_X(790),LCD_Y(175),LCD_X(205),LCD_Y(48),"禁用此类",!hand_row_mapped(hand_row));
-    } else ui_label(LCD_X(535),LCD_Y(188),LCD_X(460),1,25,120,111,
-                   hand_run==1u?"当前轴驱动中":"调整后同步驱动");
+    } else ui_button(LCD_X(535),LCD_Y(175),LCD_X(220),LCD_Y(48),"协同抓握",0u);
     for(i=0;i<6u;i++)ui_button(LCD_X(28)+(i32)i*LCD_X(162),LCD_Y(237),LCD_X(151),LCD_Y(48),hand_axis_names[i],hand_axis==i);
     lcd_analysis_label(a,sizeof a,"PWM ",hand_pulse,hand_view_mode?" us / 已存 ":" us");
     if(hand_view_mode)lcd_analysis_label(s,sizeof s,a,hand_row_pose(hand_row)[hand_axis],"");
@@ -279,20 +329,24 @@ static void lcd_hand_render(void)
     }
     ui_button(LCD_X(28),LCD_Y(420),LCD_X(300),LCD_Y(48),hand_view_mode?"记录本轴目标":"驱动当前轴 1 秒",hand_run==1u);
     ui_button(LCD_X(350),LCD_Y(420),LCD_X(300),LCD_Y(48),hand_view_mode?"确认五指映射":"记录脉宽下限",hand_view_mode?hand_row_mapped(hand_row):((hand_profile.cal_mask>>hand_axis)&1u));
-    ui_button(LCD_X(675),LCD_Y(420),LCD_X(320),LCD_Y(48),hand_view_mode?(hand_source_hdc?"启用 HDC 联动":"启用 PL 联动"):"记录脉宽上限",hand_view_mode?(mode>=2u):((hand_profile.cal_mask>>(hand_axis+6u))&1u));
+    ui_button(LCD_X(675),LCD_Y(420),LCD_X(320),LCD_Y(48),hand_view_mode?
+              (hand_run>=2u?"联动中":hand_source_hdc?"启用 HDC 联动":"启用 PL 联动"):
+              "记录脉宽上限",hand_view_mode?(hand_run>=2u):((hand_profile.cal_mask>>(hand_axis+6u))&1u));
     lcd_analysis_label(s,sizeof s,mode==3u?"HDC CAL:":mode==2u?"PL CAL:":mode==1u?"TEST CAL:":"OFF CAL:",hand_profile.cal_mask," MAP:");
     lcd_analysis_label(a,sizeof a,s,hand_profile.row_mask," LINK:");
     lcd_analysis_label(s,sizeof s,a,hand_link_error," IO:");
     lcd_analysis_label(a,sizeof a,s,hand_io_error,(hand_status_word&0x600000u)?" FAULT":"");
     ui_button(LCD_X(28),LCD_Y(478),LCD_X(300),LCD_Y(34),hand_source_hdc?"来源 HDC / 点击切换":"来源 PL / 点击切换",hand_source_hdc);
-    ui_label(LCD_X(350),LCD_Y(483),LCD_X(645),1,70,95,110,
+    ui_label(LCD_X(350),LCD_Y(483),LCD_X(305),1,70,95,110,
              !hand_view_mode?"滑块粗调 / 按钮微调":
              !hand_rotation_valid?"等待 MPU 校准 / 有效数据":
-             hand_source_hdc && !hdc_hand_model_ready()?"HDC 未完成验证 / 各类需达 80%":
+             hand_source_hdc && !hdc_hand_model_ready()?(hdc.classes<2u?"仅1类手势 / 至少2类才能联动":"HDC 未完成验证 / 各类需达 80%"):
              hand_profile.cal_mask!=4095u?"请先完成六路脉宽标定":
-             hand_source_hdc && !hand_hdc_valid?"等待稳定 HDC 手势":
-             hand_source_hdc && hand_hdc_class!=3u && hand_hdc_class!=4u && !hand_row_mapped(hand_hdc_class)?"当前手势未映射 / 仅识别":
+             hand_source_hdc && !hand_hdc_valid?(hand_run==3u?"等待手势 / 保持姿态":hdc_status_label()):
+             hand_source_hdc && !hand_row_mapped(hand_hdc_class+3u)?
+                (hand_run==3u?"手势未映射 / 保持姿态":"当前手势未映射 / 仅识别"):
              !hand_source_hdc && (hand_profile.row_mask&7u)!=7u?"请完成放松/张手/握拳映射":a);
+    if(hand_view_mode==1u)ui_button(LCD_X(675),LCD_Y(478),LCD_X(320),LCD_Y(34),"协同抓握",0u);
     ui_button(LCD_X(28),LCD_Y(522),LCD_X(300),LCD_Y(54),"读取 SD 标定",0u);
     ui_button(LCD_X(350),LCD_Y(522),LCD_X(300),LCD_Y(54),"保存 SD 标定",0u);
     ui_button(LCD_X(675),LCD_Y(522),LCD_X(320),LCD_Y(54),"返回设置",0u);

@@ -8,6 +8,8 @@
 #define REHAB_MAX_TRIALS 40u
 #define REHAB_SUPPORT_MIN 50u
 #define REHAB_STALE_MS 250u
+#define REHAB_EFFORT_LOWER_PERCENT 70u
+#define REHAB_EFFORT_UPPER_PERCENT 130u
 enum { RH_IDLE, RH_CALIBRATE, RH_RELAX, RH_CUE, RH_HOLD, RH_RECOVER, RH_PAUSED, RH_DONE, RH_GROUP_REST };
 enum { RH_REASON_NONE, RH_REASON_USER, RH_REASON_DATA, RH_REASON_CAL, RH_REASON_RELAX };
 typedef struct {
@@ -158,8 +160,8 @@ static void rehab_observe(rehab_training_t *r,uint32_t now,uint32_t seq,
               support>=REHAB_SUPPORT_MIN && !gated;
         if(r->effort_enabled && r->target==2u) {
             uint32_t in_band=r->effort_valid && r->effort_reference &&
-                (uint64_t)r->effort_c2*100u>=(uint64_t)r->effort_reference*80u &&
-                (uint64_t)r->effort_c2*100u<=(uint64_t)r->effort_reference*120u;
+                (uint64_t)r->effort_c2*100u>=(uint64_t)r->effort_reference*REHAB_EFFORT_LOWER_PERCENT &&
+                (uint64_t)r->effort_c2*100u<=(uint64_t)r->effort_reference*REHAB_EFFORT_UPPER_PERCENT;
             r->effort_samples++;
             if(match && in_band)r->effort_in_band++;
             match=match && in_band;

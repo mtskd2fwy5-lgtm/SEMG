@@ -1,0 +1,3 @@
+interface:
+  display_name: "FPGA与处理器联调"
+  short_description: "排查寄存器应答、快照缓存、显示调度和输出状态之间的异常"

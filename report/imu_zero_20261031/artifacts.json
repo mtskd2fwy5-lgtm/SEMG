@@ -1,0 +1,1305 @@
+{
+  "date": "2026-10-31",
+  "tag": "20261031_HAND_CONTROL_HDC_DYNAMIC_IMU_ZERO_V23",
+  "hardware_verified": false,
+  "pwm_connected": false,
+  "pl_pwm_ports_present": true,
+  "physical_wiring_verified": false,
+  "hardware_reused_from_v12": [],
+  "hardware_reused_from_v15": [],
+  "application_inherited_from_v13": [],
+  "application_inherited_from_v15": [],
+  "application_changes_from_v15": [],
+  "pl_partition": {
+    "transform": "wordrev",
+    "header": 120,
+    "offset": 134656,
+    "bytes": 4045564
+  },
+  "application_load_checks": [
+    {
+      "load_address": "0x10000000",
+      "elf_file_bytes": 202744,
+      "boot_offset": "0x3fc900",
+      "match": true
+    },
+    {
+      "load_address": "0x10034000",
+      "elf_file_bytes": 721176,
+      "boot_offset": "0x42e100",
+      "match": true
+    }
+  ],
+  "fsbl_load_checks": [
+    {
+      "load_address": "0x0",
+      "elf_file_bytes": 82648,
+      "boot_offset": "0x1700",
+      "match": true
+    },
+    {
+      "load_address": "0x18000",
+      "elf_file_bytes": 16404,
+      "boot_offset": "0x19700",
+      "match": true
+    },
+    {
+      "load_address": "0x1f614",
+      "elf_file_bytes": 224,
+      "boot_offset": "0x20d14",
+      "match": true
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "build\\vivado\\hand_motion_reconstruction.runs\\impl_1\\design_1.bit",
+      "bytes": 4045684,
+      "sha256": "62eded5ffcde255f49d0a6fae21926c180fcaebf6191747e5c906d4b5007757c"
+    },
+    {
+      "path": "sw\\ps_uart_print\\ps_uart_print_pl_control.elf",
+      "bytes": 965568,
+      "sha256": "36e41348c0061acca884b81ed27b3b08f395e62612f6d842fea17b9ef8841938"
+    },
+    {
+      "path": "build\\boot\\BOOT_20261031_HAND_CONTROL_HDC_DYNAMIC_IMU_ZERO_V23.BIN",
+      "bytes": 5104152,
+      "sha256": "db7de9f8362fe84025f7253125fe4259fcda5f6716983c22d707f46839464469"
+    },
+    {
+      "path": "build\\export\\design_1.xsa",
+      "bytes": 1463568,
+      "sha256": "7abbf014d9bea519e1cbcf769dd920ed70be45b9ee3cfb6bb1215d9ccf3184eb"
+    },
+    {
+      "path": "board\\constraints\\hz_zynq_lcd.xdc",
+      "bytes": 8347,
+      "sha256": "0a78bd4b0de1735e6f8a238252a676fbd10c3a86ba7f551a9bbd7e711ed1e81b"
+    },
+    {
+      "path": "board\\constraints\\hz_zynq_lcd_timing.xdc",
+      "bytes": 1677,
+      "sha256": "b16419ade3e42fd0ca4ac3bff2103b5a0edd0269500238c81076d337e6a8e0bb"
+    },
+    {
+      "path": "build\\update_project.tcl",
+      "bytes": 4749,
+      "sha256": "49a32f94e4afb60e08235fcd6d596e4bd1937e395b5f57e5e5314bf5df38e961"
+    },
+    {
+      "path": "build\\check_design.tcl",
+      "bytes": 4086,
+      "sha256": "afe2a67b1921989ec141fe056d470b210985a65cdcecfd7dfc259e1828a9d7d2"
+    },
+    {
+      "path": "build\\open_project.tcl",
+      "bytes": 468,
+      "sha256": "dae1d48b6454ea5d3f778c2894de38100c9383b2283fc30582fc8eb3907f1883"
+    },
+    {
+      "path": "src\\rtl\\emg_control_policy.v",
+      "bytes": 9845,
+      "sha256": "d9350f6c7929e2adc755ae9187fa8cc4e7905f74da2c37f19431c71ea84b8278"
+    },
+    {
+      "path": "src\\rtl\\emg_control_inference.v",
+      "bytes": 5412,
+      "sha256": "f2119b7b771b6697ffd8bd2f703b23e6945a6887b3b3c4584e2d01fdac46d83b"
+    },
+    {
+      "path": "src\\rtl\\emg_control_constants.vh",
+      "bytes": 8881,
+      "sha256": "cf077f7e7e2a98848b1e725313e2d99ac8eaee67cc762fa4e14896faef2cded9"
+    },
+    {
+      "path": "src\\rtl\\emg_pl_control.v",
+      "bytes": 4536,
+      "sha256": "cf67a00daad7c55cd4124a269a6370f629a45dd2a338846c6c3d41ce37883b43"
+    },
+    {
+      "path": "src\\rtl\\emg_pl_export.v",
+      "bytes": 17722,
+      "sha256": "92d25e10bb7d039b9047351aaf82856050abafe21c171e1cfb69b2b2fd12cc8f"
+    },
+    {
+      "path": "src\\rtl\\hand_servo_pwm.v",
+      "bytes": 4010,
+      "sha256": "1d48f52df90c58ca3bb5b1ae2e74c7915774732866b468b1a9f0494f0c015678"
+    },
+    {
+      "path": "sw\\ps_uart_print\\main.c",
+      "bytes": 160266,
+      "sha256": "01e40d8c929c0e41775fe9a0b57b81645fd4d147652b18640841f43f6dd7d143"
+    },
+    {
+      "path": "sw\\ps_uart_print\\pl_control.h",
+      "bytes": 2476,
+      "sha256": "39e0860d2c7b2896094e76e503adad4071330a6a74d3a0b8901e372d660aaaff"
+    },
+    {
+      "path": "sw\\ps_uart_print\\synergy_feedback.h",
+      "bytes": 2704,
+      "sha256": "a47794b75a8b504fa6a84e70e0a03acc18eae7c38eb7d8752fa2d20e29a0f90a"
+    },
+    {
+      "path": "sw\\ps_uart_print\\lcd_rehab.h",
+      "bytes": 23567,
+      "sha256": "f5e772785820d7d2a1353503d708c89ac13a6823edb68afe6fadc3114f119937"
+    },
+    {
+      "path": "sw\\ps_uart_print\\rehab_training.h",
+      "bytes": 8273,
+      "sha256": "f5c1423b900e90b72a2243268248068297964cc0f535bcae0decd825cbc5b8c1"
+    },
+    {
+      "path": "sw\\ps_uart_print\\synergy_nmf.h",
+      "bytes": 3519,
+      "sha256": "dc19deb3e13a02b75028689b783eef404a5c60e5dfd90f56dcca85b0fc626167"
+    },
+    {
+      "path": "sw\\ps_uart_print\\synergy_nmf_model.h",
+      "bytes": 526,
+      "sha256": "fcc2e3e365d025ee4e73a50b8c9d78ddc5b81314f59daf2a10ab310bde3e5839"
+    },
+    {
+      "path": "sw\\ps_uart_print\\lcd_font_zh.h",
+      "bytes": 3678141,
+      "sha256": "92ca04f4791bb9d3fe00e58c4a38ad69286da7e3ed7fad72a7579cbbe156b06b"
+    },
+    {
+      "path": "sw\\ps_uart_print\\capture_actions.h",
+      "bytes": 1181,
+      "sha256": "a63e1ed31ba11c01afe50593425e1731ad36019d161b5551256fbaada0473f67"
+    },
+    {
+      "path": "sw\\ps_uart_print\\sd_record.c",
+      "bytes": 15758,
+      "sha256": "f3e80debf6e5d200fcd069ecc09ccb6beb321ae4d8abd9205290a2196cd3fe48"
+    },
+    {
+      "path": "sw\\ps_uart_print\\sd_record.h",
+      "bytes": 1711,
+      "sha256": "34e77526d436e6229a633a93f9bbca1090ee65a90f2ee9f1630aea1b9e4c3e9d"
+    },
+    {
+      "path": "tools\\capture_actions.py",
+      "bytes": 3820,
+      "sha256": "3329fc0ab0b23905f9361f75978a8868a5579854f035e4ce55445ffd0ef1873d"
+    },
+    {
+      "path": "tools\\record_uart.py",
+      "bytes": 23790,
+      "sha256": "59be5821762961a890da4b80cb333d73d5b30127df74d10033a229c71391bf02"
+    },
+    {
+      "path": "tools\\train_gesture_model.py",
+      "bytes": 8594,
+      "sha256": "d6e20398e661fca57ebc542221bee8ad6a6a32207d2b8dbad4c69a5ef7247222"
+    },
+    {
+      "path": "sw\\ps_uart_print\\hdc_learning.h",
+      "bytes": 13415,
+      "sha256": "201cf604647120572aa5ee2c26452cced3eeae3c6618530c434dae1fa25ab542"
+    },
+    {
+      "path": "sw\\ps_uart_print\\hdc_memory.h",
+      "bytes": 18839,
+      "sha256": "ebfcae26e0681c93b0b96a3494acad16b59e2243138f95010934626945cf1e3c"
+    },
+    {
+      "path": "sw\\ps_uart_print\\lcd_hdc.h",
+      "bytes": 14953,
+      "sha256": "40c57556652c107e3bce08da9b55a7188a8cb9cdaf56b5e70a0c17cfa8e3a62f"
+    },
+    {
+      "path": "sw\\ps_uart_print\\lcd_settings.h",
+      "bytes": 4049,
+      "sha256": "edddef7613e78de3eb9580bcd2ceed3507705aef0a96e57798f3d34d2374450b"
+    },
+    {
+      "path": "tools\\gen_hdc_memory.py",
+      "bytes": 1502,
+      "sha256": "082b13c5afd90c277c3d3227d975490e2d8bd28b62bd6621dd5ae8ea6eb60070"
+    },
+    {
+      "path": "sim\\hdc_learning_test.c",
+      "bytes": 6507,
+      "sha256": "d50cc12f234365d57df5ce1e82bc870ce9be19252b5f734e4366bfc0d43326ba"
+    },
+    {
+      "path": "sim\\test_hdc_learning.py",
+      "bytes": 6268,
+      "sha256": "44d988314ecb84c6745b49a4a3928914b6d5736fb7161bbee3dac6e0b6db7ec6"
+    },
+    {
+      "path": "sim\\lcd_firmware_test.c",
+      "bytes": 86818,
+      "sha256": "34991369e293742b29e018747e9c9d6760d35b56dd146b03f4f573d523d68bad"
+    },
+    {
+      "path": "sim\\pl_control_firmware_test.c",
+      "bytes": 6882,
+      "sha256": "786256158f62f1255e0471ade4255fd67094accdaa731160456bc76f6b15af3e"
+    },
+    {
+      "path": "sim\\sd_record_test.c",
+      "bytes": 10549,
+      "sha256": "d3060384b2ec653e2a1536536343fa861c1bdefe90410c66b9ce49513708e8fd"
+    },
+    {
+      "path": "sw\\ps_uart_print\\lcd_home.h",
+      "bytes": 2713,
+      "sha256": "66811f5f2c56f34e0537a66348679005d53ef34e47af186e0a6ee376042b610f"
+    },
+    {
+      "path": "sw\\ps_uart_print\\lcd_waveform.h",
+      "bytes": 11949,
+      "sha256": "25782e933c978369c3ddc5e6092440504413576e94e17e7c54ae749f1b309022"
+    },
+    {
+      "path": "sw\\ps_uart_print\\lcd_channel_quality.h",
+      "bytes": 7319,
+      "sha256": "c0472315e7213fa2ca8e6c8d9de5bf1f194fcb6ad6272482d4e8dcee0fb83ac6"
+    },
+    {
+      "path": "sim\\rehab_training_test.c",
+      "bytes": 5759,
+      "sha256": "5d7ef576bd9591eab5bbea7b1176205a8e88c2523e4c276fd54fa1689035221d"
+    },
+    {
+      "path": "sw\\ps_uart_print\\channel_quality.h",
+      "bytes": 15220,
+      "sha256": "bbdc01657f6f2dc1e5ef99674aaa23493fe7ac4414c6662b600913e9d0c1afb3"
+    },
+    {
+      "path": "sim\\channel_quality_test.c",
+      "bytes": 6305,
+      "sha256": "0e8e5cae6950f61d08065601af15a3076d388d65ddd083bfd9ff068154027a0b"
+    },
+    {
+      "path": "build\\boot\\build_pl_control_boot.ps1",
+      "bytes": 4578,
+      "sha256": "3e5593a06ef48a2a1db5ab2956629861a678c2584f94e6ec9a8b4ff67f1cb468"
+    },
+    {
+      "path": "tools\\verify_control_boot.py",
+      "bytes": 27793,
+      "sha256": "1c0a917607bdff710f49a4402f4fe7720483590da91a1e5ca3315ec73f70cd97"
+    },
+    {
+      "path": "report\\rehab_quality_20261025\\README.md",
+      "bytes": 10272,
+      "sha256": "e9228e908f55e4fa2b37be85ef85211dee257236a553a526857c7f9395c7cedd"
+    },
+    {
+      "path": "src\\rtl\\hand_control.v",
+      "bytes": 13765,
+      "sha256": "e6cb1c86d2adc4362277da5337af54a531975b90483076052f8e099292fc2c45"
+    },
+    {
+      "path": "board\\constraints\\hz_zynq_hand.xdc",
+      "bytes": 1237,
+      "sha256": "2aea667f1a9558b52afdbb8bf39035565f09af9f8f23592dc3a85b05c59f65ec"
+    },
+    {
+      "path": "sw\\ps_uart_print\\hand_control.h",
+      "bytes": 17750,
+      "sha256": "192f5c92b1aaecd639205f4b44544f8f6467ad57ca49e99614cae793b7382d02"
+    },
+    {
+      "path": "sw\\ps_uart_print\\lcd_hand.h",
+      "bytes": 18184,
+      "sha256": "c09d24731ec0c880b9785798ced8216c4100ca373c294393779bd329aef7fe8d"
+    },
+    {
+      "path": "sim\\hand_control_tb.sv",
+      "bytes": 12212,
+      "sha256": "0163d7264b725dd240291ed3f0e849f2144dcf5bff8fe171700b0d2a718d8346"
+    },
+    {
+      "path": "sim\\hand_firmware_test.c",
+      "bytes": 28228,
+      "sha256": "6082675127daf8e1fb6bbff7662cf1f2e4e0fd4e17f6682fe93262272a27e7a7"
+    },
+    {
+      "path": "build\\scripts\\add_hand_control.tcl",
+      "bytes": 5383,
+      "sha256": "a88bc301d15170af5705b5c580438af3847321c3d99516d39880c4d9d92903a8"
+    },
+    {
+      "path": "build\\scripts\\run_hand_control_test.ps1",
+      "bytes": 1205,
+      "sha256": "26ea94235e9a84a59432eb425c0535312c77f4b916f26d5f23afd92604a41eb7"
+    },
+    {
+      "path": "tools\\scan_literal_b.py",
+      "bytes": 5873,
+      "sha256": "6f2cac07f6d6094081cec49cb418b45e3a488bf8190327f098ffef1e736e334b"
+    },
+    {
+      "path": "sim\\test_hand_netlist_gate.py",
+      "bytes": 845,
+      "sha256": "9f39699e9cfa60e796c1109b4790da72174dcb814a0ba1b83d054f03e6ac8602"
+    },
+    {
+      "path": "sw\\ps_uart_print\\lcd_imu_3d.h",
+      "bytes": 5873,
+      "sha256": "246545c32f822435b0ab6d71ced853459191e1484c6bdfcd292ac43c9f5a5b55"
+    },
+    {
+      "path": "src\\rtl\\emg_fatigue.v",
+      "bytes": 31743,
+      "sha256": "b65de6a90d1582196051574963874a4c77458fd4a299c18e8185a9d8cb8409e2"
+    },
+    {
+      "path": "report\\hand_mpu_20261025\\README.md",
+      "bytes": 6776,
+      "sha256": "13276776580e16190a5dc829758c1071fc5fdb0767fbe2de0e6ed109191a1156"
+    },
+    {
+      "path": "sw\\ps_uart_print\\lscript.ld",
+      "bytes": 1673,
+      "sha256": "c665cb9c85752656f369f0aebef648551352623d9673b7d11539cbd5d5b64cef"
+    },
+    {
+      "path": "sw\\ps_uart_print\\display_memory.S",
+      "bytes": 3384,
+      "sha256": "49b478dbf5f5db59c43826764b96d886a13d5b6bb54bc09f769dedff1b072f04"
+    },
+    {
+      "path": "report\\hdc_dynamic_20261025\\README.md",
+      "bytes": 5192,
+      "sha256": "00cc105b498746bc3a6120ee7d1a2ab75e6895362f1c567b3725ffbc1daf11b0"
+    },
+    {
+      "path": "src\\rtl\\emg_learning_accel.v",
+      "bytes": 16835,
+      "sha256": "97a37ef69351637154d7f7790b1ccef03fdc16af7bd10fa18896821b7bd11db8"
+    },
+    {
+      "path": "src\\rtl\\learning_div64.v",
+      "bytes": 994,
+      "sha256": "42ddadc38445d0769b52f1798a8209f5900e8f92022470f57223b829af66a344"
+    },
+    {
+      "path": "src\\rtl\\axis_async_fifo.v",
+      "bytes": 3291,
+      "sha256": "fe24aeaf6b3fc90122f3a9dcce98a659034571b35216e17cc113d88325f36a02"
+    },
+    {
+      "path": "data\\models\\hdc_memory.mem",
+      "bytes": 15360,
+      "sha256": "34ee7193b967e8271b14e11f425fa8142c6ecbdafeac8fd2fbcbd6c3abe4ccdd"
+    },
+    {
+      "path": "sw\\ps_uart_print\\pl_learning.h",
+      "bytes": 4502,
+      "sha256": "af2557453f5ff400b4a1b969ef3d430f1ee5891ea172ece051234253ddc0b5be"
+    },
+    {
+      "path": "sw\\ps_uart_print\\pl_learning_api.h",
+      "bytes": 853,
+      "sha256": "2e73006274926785092606dbd4b68f1775edab36c565064b8e10679a5622472b"
+    },
+    {
+      "path": "build\\scripts\\add_pl_learning.tcl",
+      "bytes": 3889,
+      "sha256": "05c0c339a58f7a68d6f4a89731ffaf411158716c4e0d1b8d47d41ddc26bdbe76"
+    },
+    {
+      "path": "build\\scripts\\run_learning_test.ps1",
+      "bytes": 1303,
+      "sha256": "27bb0f9754e1f86f00d9fe3d32988a9c956087c9cebfbbbd10ebb6afad0d5623"
+    },
+    {
+      "path": "build\\scripts\\run_fifo_test.ps1",
+      "bytes": 740,
+      "sha256": "addb46a0eca717ce94eb343e2a1a623b0d159ab46d1bd3ad83bb7d5159cdfd1f"
+    },
+    {
+      "path": "sim\\emg_learning_accel_tb.sv",
+      "bytes": 7587,
+      "sha256": "ae6398f8d3442280bda8e94487d1ff4bc7ff6cbc57842d21026cab9104b829d0"
+    },
+    {
+      "path": "sim\\axis_async_fifo_tb.sv",
+      "bytes": 2587,
+      "sha256": "310ca5fabd8d4ee9db5038dd9f658f6c26490320a57fff752f667a9c412a6529"
+    },
+    {
+      "path": "tools\\gen_learning_vectors.py",
+      "bytes": 3727,
+      "sha256": "be3e4a15cbd31590381d8334c5707bc5b88599a9afe2ff263ee4530345ccb416"
+    },
+    {
+      "path": "report\\pl_learning_nmf_20261026\\README.md",
+      "bytes": 7151,
+      "sha256": "4f013b406eda34fc076a29b30c553394d498d17dd0a3f3e8adccee54dfa651ae"
+    },
+    {
+      "path": "sim\\pl_learning_workflow_test.c",
+      "bytes": 4265,
+      "sha256": "138a1554900b6bd388a1477f9721c1acee22f57526407f1ec1771479e98b3e57"
+    },
+    {
+      "path": "build\\scripts\\run_learning_netlist_test.ps1",
+      "bytes": 1371,
+      "sha256": "eee747d8a4684a07b115def5f9e849cab4d2a8a6ca84d6cb4a0d6dcba2f41102"
+    },
+    {
+      "path": "build\\scripts\\export_learning_netlist.tcl",
+      "bytes": 345,
+      "sha256": "c26765c980d0fd5979c97cea2b7197f3ca31d00f3c68c3a46c8d55d498e32128"
+    },
+    {
+      "path": "build\\scripts\\update_learning_platform.py",
+      "bytes": 793,
+      "sha256": "89c6169a2484a43b8699ef8e7430932620b6753afa39098ed263da27c9ed5682"
+    },
+    {
+      "path": "report\\pl_learning_nmf_20261026\\learning_test.log",
+      "bytes": 3156,
+      "sha256": "aeb992b9cc6f29ce3a8a046acad3e8be6e7e83d892b6e712fe9036ebaa44aee4"
+    },
+    {
+      "path": "report\\pl_learning_nmf_20261026\\learning_netlist_test.log",
+      "bytes": 6915,
+      "sha256": "17fad9ea2b844321601e1ef53068f876c01f5519d5a7593ee14b2e568d4e72e3"
+    },
+    {
+      "path": "report\\pl_learning_nmf_20261026\\fifo_test.log",
+      "bytes": 1911,
+      "sha256": "e62f2d8943962f89af502a49e3b6cb5ccd1c93540e00e43d42a32e32a5b1210e"
+    },
+    {
+      "path": "report\\pl_learning_nmf_20261026\\full_build.log",
+      "bytes": 163556,
+      "sha256": "336305a7cde9383e0a338db17c8469d16c9caa1f775d7591d90d5a2b33530d16"
+    },
+    {
+      "path": "report\\pl_learning_nmf_20261026\\platform_build.log",
+      "bytes": 33809,
+      "sha256": "18b434bb9e915361957efc7f63e10ff50bb78bb3b406748ff9a2947de6c789f1"
+    },
+    {
+      "path": "report\\pl_learning_nmf_20261026\\arm_build.log",
+      "bytes": 584,
+      "sha256": "a72acf031b9fd7041c7c9d3a06e5d8761ad43234feefd837a88e8f75d47903cf"
+    },
+    {
+      "path": "report\\pl_learning_nmf_20261026\\lcd_test.log",
+      "bytes": 4800,
+      "sha256": "13e3cf16dbd096ae62f354c490fa764924e16f1e962a7ef7cf79cce35798fc2a"
+    },
+    {
+      "path": "report\\pl_learning_nmf_20261026\\control_test.log",
+      "bytes": 11332,
+      "sha256": "cbda67756a0c560f2c0018e24585e843d9dd3ac85eade74738e31bf45ea0e9f0"
+    },
+    {
+      "path": "report\\pl_learning_nmf_20261026\\hand_test.log",
+      "bytes": 3253,
+      "sha256": "e61c47df5bda8c76677c4919a6a458a5cb0ddd6cbfb141cfdd4f8bb068a139da"
+    },
+    {
+      "path": "report\\pl_learning_nmf_20261026\\sd_test.log",
+      "bytes": 374,
+      "sha256": "065778deb48ccea0a88c02a5ab09ec81858a709fbf2f51a3c2accc886d2defbe"
+    },
+    {
+      "path": "report\\pl_learning_nmf_20261026\\hdc_golden_test.log",
+      "bytes": 925,
+      "sha256": "e7b525361fd531f945b0d8ee2b86ec9c46b5e91e1f8c4c5badc3ab4f175f01ad"
+    },
+    {
+      "path": "report\\pl_learning_nmf_20261026\\verification_summary.json",
+      "bytes": 1929,
+      "sha256": "4d881ca68b7a96b7ed4aa2096c1d35fbea9543a8548d53e212b6bf0519bb1430"
+    },
+    {
+      "path": "report\\pl_learning_nmf_20261026\\ip_config.tcldict",
+      "bytes": 445,
+      "sha256": "644ae1c7df4afc09ece705702e811a026a7e14afdc41a539411d88592bb86c01"
+    },
+    {
+      "path": "report\\pl_learning_nmf_20261026\\ip_parameter_sources.json",
+      "bytes": 2183,
+      "sha256": "8e9e47ccb112c6a26b1b253438324c62670e69ad11320ed414c6caabbeb2f216"
+    },
+    {
+      "path": "report\\pl_learning_nmf_20261026\\timing_routed.rpt",
+      "bytes": 2987160,
+      "sha256": "ccd132ca9d277836a30b6caf448bd6bdf3aff1310903017fd833750935b24dfd"
+    },
+    {
+      "path": "report\\pl_learning_nmf_20261026\\utilization_placed.rpt",
+      "bytes": 13271,
+      "sha256": "f24325ed098a3fc2dbcfa6c9859edf4ebbb8487ad93cc2cb2dd5eb5375b52102"
+    },
+    {
+      "path": "report\\work_submission_text_20261026.md",
+      "bytes": 1566,
+      "sha256": "c13441772b6013ca3338ef81a5f3ec76f78297fbbc59b3aaa4e0894df4ed40b1"
+    },
+    {
+      "path": "report\\system_framework_v1_20261024.md",
+      "bytes": 22285,
+      "sha256": "07528a263627909e74fe8b436dc38511a2c9a7ce7c228fc813451445c98f88d5"
+    },
+    {
+      "path": "README.md",
+      "bytes": 12917,
+      "sha256": "aa278f4a6224746bde095fd09b288d6b08534ed5f6bf8591e5e5dd8cd5495c74"
+    },
+    {
+      "path": "build\\vitis_ws\\platform\\export\\platform\\sw\\boot\\fsbl.elf",
+      "bytes": 585596,
+      "sha256": "5dfccbe5a0fc353f858620b061014554507be97596d1a8fcb8acbb607b87a595"
+    },
+    {
+      "path": "build\\vitis_ws\\platform\\zynq_fsbl\\ps7_init.c",
+      "bytes": 385469,
+      "sha256": "cfcf649951cad06d477c398f0d68befe8c2c393f1f0183a4641a4e65b8d1186d"
+    },
+    {
+      "path": "board\\constraints\\hz_zynq_ads1299.xdc",
+      "bytes": 3632,
+      "sha256": "62109953adf4ffde3a535f5b13491b0bbdb4226bed62c30e04c14d92ef656c71"
+    },
+    {
+      "path": "board\\constraints\\hz_zynq_ads1299_bd.xdc",
+      "bytes": 6016,
+      "sha256": "2c3f59a2a3d727e3483992fd802771a9f679efbffa00660fc304d91001cb9527"
+    },
+    {
+      "path": "board\\constraints\\hz_zynq_clock_groups.xdc",
+      "bytes": 720,
+      "sha256": "533302753e7dbff7f6b7d78442884c323f7071266b980e9af8b60c1f21c4961a"
+    },
+    {
+      "path": "board\\constraints\\hz_zynq_imu_clock_groups.xdc",
+      "bytes": 1098,
+      "sha256": "c1f1f9720ecc303dd06800efe18bd797f6ee68e08f3b7db3bca6cc512290d290"
+    },
+    {
+      "path": "build\\scripts\\audit_hand_pwm_routed.tcl",
+      "bytes": 1069,
+      "sha256": "bf193522caba97ccb6ea78bd9382f27af5826f993fcb4bd88d8b715a1c82d2b2"
+    },
+    {
+      "path": "build\\scripts\\audit_imu_zero.tcl",
+      "bytes": 636,
+      "sha256": "1768b74d8cc734673b974e0c202cce3836be1950f43bbe474dd94d1e67721e98"
+    },
+    {
+      "path": "build\\scripts\\export_hand_pwm_netlist.tcl",
+      "bytes": 656,
+      "sha256": "1aab143d5af6680b74dd639ee0367110a3fe667cc9181877b2984ba0a03ea313"
+    },
+    {
+      "path": "build\\scripts\\run_channel_quality_test.ps1",
+      "bytes": 770,
+      "sha256": "4572756fc3df634521bb850f7b725c6dd69aaf3fce3ca5b73dac4bfee3024806"
+    },
+    {
+      "path": "build\\scripts\\run_hand_grip_test.ps1",
+      "bytes": 669,
+      "sha256": "13c1328fae1142e1ed5177b560276eeaf2c15f709fc74563cf4b90ab3894b681"
+    },
+    {
+      "path": "build\\scripts\\run_hand_pwm_polarity_test.ps1",
+      "bytes": 2334,
+      "sha256": "05fa9d4e30d8b09269c9d736a550fe86d06d0903e8a2be9863ab8cea153daa59"
+    },
+    {
+      "path": "build\\scripts\\run_hdc_model_test.ps1",
+      "bytes": 1161,
+      "sha256": "3c1eb65cfb661cb39c9919ec9259632e8030b54d1134876d97b3f7ea3f023adb"
+    },
+    {
+      "path": "build\\scripts\\run_lcd_firmware_test.ps1",
+      "bytes": 708,
+      "sha256": "9a97e5a25c7b346e5a50ac0c1437153c022c79e57dfe8b8312b813581810cf78"
+    },
+    {
+      "path": "data\\models\\fatigue\\dbg_rtl_load_re.mem",
+      "bytes": 130520,
+      "sha256": "c36842109593a2ab3698d5df91f3c5aa2134c1edeced775359a867d59f9bea48"
+    },
+    {
+      "path": "data\\models\\fatigue\\dbg_rtl_ops.mem",
+      "bytes": 394883,
+      "sha256": "e068ba6c85e7b50e64d7c354a2f303dd6482e6b12130a41b413b85742bc3ae11"
+    },
+    {
+      "path": "data\\models\\fatigue\\dbg_rtl_sbuf.mem",
+      "bytes": 97752,
+      "sha256": "b64769d647f4df4447b3afd6a0dfbace9eb0312393605bdc4d95707dd2d3e2b7"
+    },
+    {
+      "path": "data\\models\\fatigue\\dbg_rtl_spec_im.mem",
+      "bytes": 31317,
+      "sha256": "4ee029270ce5d19a649dae9c751d73e8da7dd657a9b51b2ef69e8cd272c3a3e0"
+    },
+    {
+      "path": "data\\models\\fatigue\\dbg_rtl_spec_re.mem",
+      "bytes": 28641,
+      "sha256": "2f99b75108988b85e857140b3bf9fe45f514a37aaa9d5391b3dd8b3f075fc58a"
+    },
+    {
+      "path": "data\\models\\fatigue\\dbg_rtl_tot.mem",
+      "bytes": 72,
+      "sha256": "c0739709f9d56b324ee3bb71f71c489324e1322948bfc61b1535bf10da1892b1"
+    },
+    {
+      "path": "data\\models\\fatigue\\dbg_win0_sbuf.mem",
+      "bytes": 94049,
+      "sha256": "666cb1c0188180f876645389bfc2483b6d46352db941514f11635001022b3bc0"
+    },
+    {
+      "path": "data\\models\\fatigue\\dbg_win0_spec_im.mem",
+      "bytes": 30439,
+      "sha256": "99c354f2406050bb96cd35257dc6432d5797918459f53f6f3f47bd1f0678bfba"
+    },
+    {
+      "path": "data\\models\\fatigue\\dbg_win0_spec_re.mem",
+      "bytes": 29106,
+      "sha256": "f7917bf6521e558e2023730a1c614f964eefc58d5c1fdd2924757b546264b121"
+    },
+    {
+      "path": "data\\models\\fatigue\\dbg_win0_tot.mem",
+      "bytes": 56,
+      "sha256": "e8b7d0657ded1101a750a0e2c1c250cb4b17a66a9b820a18105d7eb2403261fe"
+    },
+    {
+      "path": "data\\models\\fatigue\\tb_fatigue_activity.mem",
+      "bytes": 216,
+      "sha256": "06f2e3a7c88642be7ab248131b9bf6ba0c2600cca1eb81f5682d59906de0d70a"
+    },
+    {
+      "path": "data\\models\\fatigue\\tb_fatigue_exp_data.mem",
+      "bytes": 5760,
+      "sha256": "f9e64ef008ce34e68754260ba5de411d543e20fb1403ce350a117239f21709c7"
+    },
+    {
+      "path": "data\\models\\fatigue\\tb_fatigue_exp_id.mem",
+      "bytes": 1728,
+      "sha256": "d394d01919407c1143ce5dc6e547091e27010788fdcdb4089712d0380d40d348"
+    },
+    {
+      "path": "data\\models\\fatigue\\tb_fatigue_samples.mem",
+      "bytes": 9437184,
+      "sha256": "3d53b63f09443b3576d0fb51eff9fb395975feacacfbc0f04a4155c34d6b1b1b"
+    },
+    {
+      "path": "data\\models\\fatigue\\twiddle2048.mem",
+      "bytes": 10240,
+      "sha256": "cd95d68fd0a65bed0f76308f385b98cc8a17359fb9c96348f3376dc687e009ee"
+    },
+    {
+      "path": "data\\models\\nn_int8\\nn_int8_weights.mem",
+      "bytes": 22362,
+      "sha256": "64a4957d25c8b8a058876a552c4f00c2f267ff996bd70606f01901ec802ef556"
+    },
+    {
+      "path": "data\\models\\nn_int8\\tb_inputs.mem",
+      "bytes": 25600,
+      "sha256": "55d1ee6c7f7aa2d1d2c6e1b5770751bb9fee5e115eacc379e47009177f086cd7"
+    },
+    {
+      "path": "data\\models\\nn_int8\\tb_logits.mem",
+      "bytes": 3200,
+      "sha256": "b96d938d25982819eb65ddc062d3429b90192a193f5c779ca7f86ad6d243ac5b"
+    },
+    {
+      "path": "data\\models\\nn_int8_board_multiwear\\nn_int8_weights.mem",
+      "bytes": 22362,
+      "sha256": "5bb2c512365bc8af6b57835f8d678694fa78427999b085814225f968d66bbe62"
+    },
+    {
+      "path": "data\\models\\nn_int8_board_multiwear\\tb_inputs.mem",
+      "bytes": 23040,
+      "sha256": "3ceff4c2902fa5b6fb5b672908194f5f6416bbadd98abe99e2a93baee6d96ac3"
+    },
+    {
+      "path": "data\\models\\nn_int8_board_multiwear\\tb_logits.mem",
+      "bytes": 2880,
+      "sha256": "e654458694aa8cc34ecb8e93075d12bba853e6e16b9a69b366e76c1ac7e8e4b5"
+    },
+    {
+      "path": "data\\models\\nn_int8_pl_filter\\nn_int8_weights.mem",
+      "bytes": 22362,
+      "sha256": "fb027320af95c49526a7f94bcb2938adcb791010e1a8257d684d445010c1b6de"
+    },
+    {
+      "path": "data\\models\\nn_int8_pl_filter\\tb_inputs.mem",
+      "bytes": 25600,
+      "sha256": "baf2d733ad4aa829be5a5478582a0a64a3221a61ecff26b8d36bf408ca5d237e"
+    },
+    {
+      "path": "data\\models\\nn_int8_pl_filter\\tb_logits.mem",
+      "bytes": 3200,
+      "sha256": "a9846bc9bc4e5217dc796ee312baa17f166607f5fe4a2d3a9b7dbe926a8e68b4"
+    },
+    {
+      "path": "data\\models\\nn_int8_pl_filter_fullstream\\nn_int8_weights.mem",
+      "bytes": 22362,
+      "sha256": "cf213609f1b8fc4405eaf3bff51508c0c9c74acc507b79f1179d7e9a92f043cf"
+    },
+    {
+      "path": "data\\models\\nn_int8_pl_filter_fullstream\\tb_inputs.mem",
+      "bytes": 25600,
+      "sha256": "45ed7ebbc9a3a1554d55ca9025fa3fa2851c98818c8e590c8476a7aa4c5a9901"
+    },
+    {
+      "path": "data\\models\\nn_int8_pl_filter_fullstream\\tb_logits.mem",
+      "bytes": 3200,
+      "sha256": "93f7ae40e1322ffeafe8163f775f7299d643e7dac35e1544cada6eba0a36f374"
+    },
+    {
+      "path": "report\\hand_pwm_inverted_20261029\\README.md",
+      "bytes": 3874,
+      "sha256": "da3dc655c13aef3f069beb2261ead923b3a7383a2806ed7d7fb27838c3ecc886"
+    },
+    {
+      "path": "report\\hand_pwm_inverted_20261029\\arm_build.log",
+      "bytes": 1041,
+      "sha256": "d4835b27d85ec083412ea1bd4415599fc0dce60b3cf84832f7be3e9426cee506"
+    },
+    {
+      "path": "report\\hand_pwm_inverted_20261029\\baseline\\manifest.json",
+      "bytes": 1087,
+      "sha256": "6e1a831e594cef7c6a60f2178c90864502b21350759673bcba9c4d50f3c9f6a5"
+    },
+    {
+      "path": "report\\hand_pwm_inverted_20261029\\bus_skew.rpt",
+      "bytes": 87983,
+      "sha256": "908d7b16587eeb86e41c0e91a35e347492c4290a1c6157cda865eabe22da6b93"
+    },
+    {
+      "path": "report\\hand_pwm_inverted_20261029\\drc.rpt",
+      "bytes": 120790,
+      "sha256": "9c383bad3b5a517bd61742f2bb5c494477842ea62cbe469c9acaecaa3eaf892d"
+    },
+    {
+      "path": "report\\hand_pwm_inverted_20261029\\hand_control_funcsim.v",
+      "bytes": 1053716,
+      "sha256": "69ecccf63d2253c1b54a06cb50da5acd40dfa82450d0bfd00b21369936dedbf6"
+    },
+    {
+      "path": "report\\hand_pwm_inverted_20261029\\hand_control_reference.v",
+      "bytes": 13525,
+      "sha256": "bf2b0bc5d93614e9a10d1a49fa085de0dd289340f083a3e4a0e01b5f5c9e7a22"
+    },
+    {
+      "path": "report\\hand_pwm_inverted_20261029\\hand_test.log",
+      "bytes": 1212,
+      "sha256": "ad480ce0a64a931b8aba94c4621295c2e70918e2f8381c427b0621c86bcb4efe"
+    },
+    {
+      "path": "report\\hand_pwm_inverted_20261029\\hardware_build.log",
+      "bytes": 151614,
+      "sha256": "fa96ac9445e7b84a19cc7d49ca76e50255c567825eaad3155d371fc081bfaf76"
+    },
+    {
+      "path": "report\\hand_pwm_inverted_20261029\\methodology_routed.rpt",
+      "bytes": 6261,
+      "sha256": "ff8e948aed8b4d88e89179a7fb78a747ee505dd76fbb75b306934bda5016a2a6"
+    },
+    {
+      "path": "report\\hand_pwm_inverted_20261029\\netlist_export.log",
+      "bytes": 16776,
+      "sha256": "8726bb90d25ff3d975aa97c3de1bcd4b98fe74c01f54927f29a3838b3c062880"
+    },
+    {
+      "path": "report\\hand_pwm_inverted_20261029\\output_pins.txt",
+      "bytes": 288,
+      "sha256": "9d8294677cf0b30aa2dee6d9a0efe4a0382911618c13a2607677521a884adf3d"
+    },
+    {
+      "path": "report\\hand_pwm_inverted_20261029\\pin_netlist.log",
+      "bytes": 1801,
+      "sha256": "6e88ced4cd59feec0a04579519cbc4d6426b9066ba4922eb96bdd94a250a55ad"
+    },
+    {
+      "path": "report\\hand_pwm_inverted_20261029\\pin_rtl.log",
+      "bytes": 1585,
+      "sha256": "78e959a9b2435e39c2c6baccf81bb99218cd3c1fbc9455d7ea269195b430fd60"
+    },
+    {
+      "path": "report\\hand_pwm_inverted_20261029\\polarity_rtl.log",
+      "bytes": 2143,
+      "sha256": "3c4253924a23174516bef701165a07f3b71aeb15203cfeb71f9c26145e08b706"
+    },
+    {
+      "path": "report\\hand_pwm_inverted_20261029\\routed_audit.log",
+      "bytes": 23530,
+      "sha256": "09a58661c4f15fbc6d3abe0421ac8ded09ac1647741bc823552f28586508df23"
+    },
+    {
+      "path": "report\\hand_pwm_inverted_20261029\\timing_routed.rpt",
+      "bytes": 395951,
+      "sha256": "582697cc35acf350e675eebf89d6d3dbdb01b86918b972c6f3d4302bac1ec5c5"
+    },
+    {
+      "path": "report\\hand_pwm_inverted_20261029\\utilization_routed.rpt",
+      "bytes": 13361,
+      "sha256": "a36f1989efb1fcfcb50201cf070dd1668f6581502f5da6e30853f8fc5f52734a"
+    },
+    {
+      "path": "report\\hdc_model_sd_20261029\\hand_test.log",
+      "bytes": 1212,
+      "sha256": "ad480ce0a64a931b8aba94c4621295c2e70918e2f8381c427b0621c86bcb4efe"
+    },
+    {
+      "path": "report\\hdc_model_sd_20261029\\hdc_models_1024.png",
+      "bytes": 39146,
+      "sha256": "f4adb81254fb73486c86c48a25d238c9d8e15c2c74a637414e977d86cf6e1c9b"
+    },
+    {
+      "path": "report\\hdc_model_sd_20261029\\hdc_models_800.png",
+      "bytes": 33702,
+      "sha256": "c6a1e47828377ff1bfa2e777f521c15646728905ea3bc818cf0df4802260b716"
+    },
+    {
+      "path": "report\\hdc_model_sd_20261029\\lcd_test.log",
+      "bytes": 12218,
+      "sha256": "255d2c3645814719226c2fe0f197809b4980d8f557b9970503a6fe47b3e2eb2b"
+    },
+    {
+      "path": "report\\hdc_model_sd_20261029\\learning_workflow_test.log",
+      "bytes": 323,
+      "sha256": "39caf6ded684a8222f540b7a24124cad90e7257ad02d6fa2e546859871f06c9d"
+    },
+    {
+      "path": "report\\hdc_model_sd_20261029\\model_test.log",
+      "bytes": 191,
+      "sha256": "84919d96a836f5034612f794b9c67e0395ad98bfdc4de928132a4790ace6fb17"
+    },
+    {
+      "path": "report\\hdc_model_sd_20261029\\sd_test.log",
+      "bytes": 520,
+      "sha256": "3cdf14bcb1b5b04661daa806a193cf2725a5d8d2dfb0cad65d355a36eb444cbb"
+    },
+    {
+      "path": "report\\hdc_model_sd_20261029\\uart_test.log",
+      "bytes": 169,
+      "sha256": "ed1252e55e6b31ca235de3f07dd0b4171e3b8df1d023b379888b71fbc0f84b1e"
+    },
+    {
+      "path": "report\\hdc_model_sd_20261029\\README.md",
+      "bytes": 5513,
+      "sha256": "ae0a49cef222c8c6f7b2fb9ee17f19df2b739fcce7c60ea86bc7c459a992d0f9"
+    },
+    {
+      "path": "report\\hdc_model_sd_20261029\\baseline\\manifest.json",
+      "bytes": 1827,
+      "sha256": "11e5edb50b43c0a6915d994bb17e1c000eb61055907b3b58d1340e42a0c156c7"
+    },
+    {
+      "path": "sim\\control_policy_reference.c",
+      "bytes": 3912,
+      "sha256": "b86896e6e51cda936a49d0fb7b5dece4ed2686029723b0af3e115ded3cb28379"
+    },
+    {
+      "path": "sim\\hand_grip_test.c",
+      "bytes": 7753,
+      "sha256": "10a10a711fe0b42cd08f20e5b30c0ce12cef0ce09ebc4134517bba8d04fc6447"
+    },
+    {
+      "path": "sim\\hand_pwm_polarity_tb.sv",
+      "bytes": 2915,
+      "sha256": "c5cb49019ef815b3a048076374a736613b434a4d5332c3ad344756365ea12d2b"
+    },
+    {
+      "path": "sim\\hdc_model_sd_mock.h",
+      "bytes": 2676,
+      "sha256": "0fe41f75ff8c197026f4ef8bf87c360f9898664787adc304b79a4d0d0200f205"
+    },
+    {
+      "path": "sim\\hdc_model_store_test.c",
+      "bytes": 4218,
+      "sha256": "3ed6d4f325e11655308da37dae7819bb6538ac50558bb6781290db0cf6d1f2f2"
+    },
+    {
+      "path": "sim\\imu_float_reference.h",
+      "bytes": 12288,
+      "sha256": "6241fbec2f85b2370634ade51bcea9c0c16efb50f31256826274a8cc80dafd90"
+    },
+    {
+      "path": "sim\\imu_host_model.h",
+      "bytes": 3617,
+      "sha256": "49654d717701e8ecd00a4e60c2f05db7af1bb39f561cedf79f66b189d814ecba"
+    },
+    {
+      "path": "sim\\imu_program.h",
+      "bytes": 31340,
+      "sha256": "28c02b1f137b1d72fb6f75d06d4d110a6ea3463d19978d2bc83e0e511ea672c3"
+    },
+    {
+      "path": "sim\\imu_program.json",
+      "bytes": 6023,
+      "sha256": "2fbc35fcd345e084cbb500ea9f5f8c8157788663b2cc6c7f48858bf4b97a6677"
+    },
+    {
+      "path": "sim\\imu_reference_test.c",
+      "bytes": 86848,
+      "sha256": "2789429f6c329afdd016beeb67160339d92b8bc3ccb3351259c390c2851eaad6"
+    },
+    {
+      "path": "sim\\lcd_work_budget_test.c",
+      "bytes": 2361,
+      "sha256": "06c3440ba010349925891c0e21ea73babcbef3c1ee8e2507810db7fd4e5b1263"
+    },
+    {
+      "path": "sim\\mpu_attitude_mailbox_tb.sv",
+      "bytes": 4837,
+      "sha256": "2e3875fdfcf70e794a101dd1b09eaa351488bac0788f6bf04fad61ccd34864fa"
+    },
+    {
+      "path": "sim\\mpu_attitude_vectors_tb.sv",
+      "bytes": 2581,
+      "sha256": "b492caa0aaaed6d14db58c424f682348b622bd0f93ec86fac7241009b1e3dee6"
+    },
+    {
+      "path": "sim\\sd_record_platform_mock.h",
+      "bytes": 1508,
+      "sha256": "ac3a54b471307e3a66029298e0f1de1e6c9b207d7712de0768dde5c17ca20c76"
+    },
+    {
+      "path": "sim\\synergy_feedback_test.c",
+      "bytes": 3477,
+      "sha256": "b22513304dcf5b729b1c751ea31d7d9dade6972bcd5c12654254fec114aaa7f1"
+    },
+    {
+      "path": "sim\\test_channel_quality_reference.py",
+      "bytes": 5269,
+      "sha256": "e5ba967282f621e37c165af5644c9d783c532811b671015fab171bff6c9ca2e6"
+    },
+    {
+      "path": "sim\\uart_record_firmware_test.c",
+      "bytes": 7015,
+      "sha256": "2b30f41e025853f31250ffa9d4d7777ad8fdf4be8a7034e8b913ede1a5f4ce97"
+    },
+    {
+      "path": "src\\rtl\\ads1299_spi.v",
+      "bytes": 29135,
+      "sha256": "2e06afa3376312f0f5edee8f423eaa544628278bb2938e1efccedc1c1aa8a8ca"
+    },
+    {
+      "path": "src\\rtl\\ads8698_spi.v",
+      "bytes": 1378,
+      "sha256": "02d5171872d1821f96599c949a92e8661daa263da54eac680251f0f948dc8896"
+    },
+    {
+      "path": "src\\rtl\\axis_packet_mux.v",
+      "bytes": 5431,
+      "sha256": "e9365f1971635ce92faf8f3c838040a80ef66a190839feb05206171ccc44dd40"
+    },
+    {
+      "path": "src\\rtl\\emg_bandpass.v",
+      "bytes": 12867,
+      "sha256": "5783eef5f10c4d78faf2ec8782a1b357f5a484d87673b31cc06136948a241334"
+    },
+    {
+      "path": "src\\rtl\\emg_comb50.v",
+      "bytes": 4437,
+      "sha256": "d2fadd0829ea93dfc06394d3a1262c5ef19bff6690f2894f16381e0266f3a348"
+    },
+    {
+      "path": "src\\rtl\\emg_data_path.v",
+      "bytes": 7407,
+      "sha256": "5e07cc2d9f78fc50116398af4c418f2a10cc1aaa1f4e9dcb92a5f7cf265c59b7"
+    },
+    {
+      "path": "src\\rtl\\emg_feature_bank.v",
+      "bytes": 9572,
+      "sha256": "a32d86053b679333f8ec1ac89e4352bbc1710807b7f2f30fd028a0f33b8c9b58"
+    },
+    {
+      "path": "src\\rtl\\emg_line_filter.v",
+      "bytes": 3116,
+      "sha256": "4f24c4fcf0218e3331ae6661f4e6cdb1b1b86d42a547fbd6db445b52fcd1536c"
+    },
+    {
+      "path": "src\\rtl\\emg_nn_infer.v",
+      "bytes": 17698,
+      "sha256": "b14345b75e99de7b8358da998d474b1a021e48a8d814c6f4854bd6a6f73943f2"
+    },
+    {
+      "path": "src\\rtl\\emg_notch50.v",
+      "bytes": 4749,
+      "sha256": "32285e74b71882f1cb81a7978ace98822661ada8be12f86a68b285449a4f0bed"
+    },
+    {
+      "path": "src\\rtl\\emg_pl_export_status.v",
+      "bytes": 2160,
+      "sha256": "7c058364aa86a0335317884c218a1263594e13582c80bb7f1ba67b6202878a39"
+    },
+    {
+      "path": "src\\rtl\\emg_preprocess.v",
+      "bytes": 2508,
+      "sha256": "09404f30e67c8475bff256f1a63781289a4d1d0797e85bebe38fc39f042f00d4"
+    },
+    {
+      "path": "src\\rtl\\emg_window_features.v",
+      "bytes": 22228,
+      "sha256": "c9e020b9ca05c3cd656bbc116e9a57b39eb0554f47bce8fde9723f292097d6d6"
+    },
+    {
+      "path": "src\\rtl\\hand_motion_top.v",
+      "bytes": 1082,
+      "sha256": "2126de5cf70db1feeffe14706f132ce7807083fec32298a1b7a84d21b13b9b75"
+    },
+    {
+      "path": "src\\rtl\\lcd_clk_fwd.v",
+      "bytes": 1055,
+      "sha256": "39a7aaed722bd2b9b8f870f446ebd239b17b7ee5ea241045f69768fc6142b9f5"
+    },
+    {
+      "path": "src\\rtl\\lcd_panel_adapter.v",
+      "bytes": 12378,
+      "sha256": "683f0dc1f0690142342fa06fab110a6b15dd3af80698d332ada74dc796f28391"
+    },
+    {
+      "path": "src\\rtl\\mpu6050_motion.v",
+      "bytes": 476,
+      "sha256": "62ac8cb47bc78b37e4e38cc2ad7b7e524cd40746dc347a690778d85151e3b605"
+    },
+    {
+      "path": "src\\rtl\\mpu6050_tilt.v",
+      "bytes": 27557,
+      "sha256": "a5a7084c41162f24005066032409cb1ccaa3269904fb65ac64071afa95623bb0"
+    },
+    {
+      "path": "src\\rtl\\mpu_attitude.v",
+      "bytes": 3648,
+      "sha256": "a0ff799d1063e8dbc51f86959aedd16ec384e4110efce9e2767c55a4ddc3ddf8"
+    },
+    {
+      "path": "src\\rtl\\mpu_attitude_core.v",
+      "bytes": 7977,
+      "sha256": "b9bc4a56bd2c08de0f51daf63146b25661f2acd5052f9ed34e0cc4089371b775"
+    },
+    {
+      "path": "src\\rtl\\mpu_attitude_regs.vh",
+      "bytes": 3048,
+      "sha256": "aeec6a356d7e8c6ee99d5dba54c6b270328b1202345c90ae2099e752dc60e028"
+    },
+    {
+      "path": "src\\rtl\\mpu_attitude_rom.vh",
+      "bytes": 34233,
+      "sha256": "1175727a34c9285892f3ec750ba6b153513526c1dfc863633b6ae3bf1b11c345"
+    },
+    {
+      "path": "src\\rtl\\touch_gt911.v",
+      "bytes": 20170,
+      "sha256": "0e01ba47d4aae3411b0a8c1631561280a627c0750f197e2c562d0beafd578276"
+    },
+    {
+      "path": "sw\\ps_uart_print\\channel_quality_tables.h",
+      "bytes": 3277,
+      "sha256": "8ca33642da10228a87f0699234893200353fdd96f93fa91d435d2c89531f28dd"
+    },
+    {
+      "path": "sw\\ps_uart_print\\hdc_model_store.h",
+      "bytes": 6143,
+      "sha256": "41041686206f2399aa93a006272211d9f56bc2ad26e10105ef11d334f1448fc4"
+    },
+    {
+      "path": "sw\\ps_uart_print\\lcd_hand_3d.h",
+      "bytes": 12691,
+      "sha256": "0d2a4c28e59d7e19d10eb5e4428c174e2403e988bf823d9bcf0fe76ac2125718"
+    },
+    {
+      "path": "sw\\ps_uart_print\\lcd_hdc_models.h",
+      "bytes": 7235,
+      "sha256": "baf314382c14982768a1de9c6087bb9ca2fe09d5a4d94735abe62b4561d35308"
+    },
+    {
+      "path": "sw\\ps_uart_print\\lcd_ui.h",
+      "bytes": 3076,
+      "sha256": "4c6c7bcb022a5b964c216041a73bb18b1071ff4115c28d549b4048a16f534339"
+    },
+    {
+      "path": "sw\\ps_uart_print\\lcd_virtual.h",
+      "bytes": 8700,
+      "sha256": "2908b30720ad38f0711ec2fc42490c0008057c661c3c8f9ddbcf1ef94283b398"
+    },
+    {
+      "path": "sw\\ps_uart_print\\nn_confidence.h",
+      "bytes": 2021,
+      "sha256": "47a40a1fa9422850244009e8860916731e5dffdaac9defb035da8d01a42d25ff"
+    },
+    {
+      "path": "sw\\ps_uart_print\\pose_contract.h",
+      "bytes": 2213,
+      "sha256": "a3ef9ec8aeb682d6bd2c211ce97401b5de6e51bba2df8ea6a1e830aa33e667af"
+    },
+    {
+      "path": "sw\\ps_uart_print\\sd_support\\bspconfig.h",
+      "bytes": 105,
+      "sha256": "04d02d5606aabd7886fca7edd4fb9ae28e0e6f2a57b0086f2769f3f235009b90"
+    },
+    {
+      "path": "sw\\ps_uart_print\\sd_support\\xparameters.h",
+      "bytes": 174,
+      "sha256": "cf80e3978481b4b4a11b95236c756f6b8313bf11528ef4e2f8b399fc2ae1b033"
+    },
+    {
+      "path": "sw\\ps_uart_print\\selfcal.h",
+      "bytes": 5753,
+      "sha256": "75339ab9cdbaadd2d66192a753529966b82aeedb12103c442bc22e8e3d65d839"
+    },
+    {
+      "path": "sw\\ps_uart_print\\startup.S",
+      "bytes": 911,
+      "sha256": "301e47298af071b9b332dbe4fc48c1b4b2983bd5f125afa0688d6c958707d892"
+    },
+    {
+      "path": "tools\\gen_hz_glyphs.py",
+      "bytes": 3933,
+      "sha256": "1e55fed2d3a6fddf11f23150ed65d69e5d059bdf2baf4e561803ba40fb5f65bb"
+    },
+    {
+      "path": "tools\\gen_imu_microcode.py",
+      "bytes": 14848,
+      "sha256": "aec820eafe24e2e0685c2586e3f97690b9a18ccc079336ccb6477e92b9b8169d"
+    },
+    {
+      "path": "tools\\gen_imu_reference.py",
+      "bytes": 2385,
+      "sha256": "4286a899865ce73ae46db1c817241eb7714a9123abd36e53ffc3680698710590"
+    },
+    {
+      "path": "tools\\imu_fixed_model.py",
+      "bytes": 3050,
+      "sha256": "c467fd8ada594a50746f418966eff214bce68cba216dce8d8f9991c4a3659490"
+    },
+    {
+      "path": "tools\\verify_grip_release.py",
+      "bytes": 3207,
+      "sha256": "d902f4a098bd6e66490da358dd254bde9628880fa38165d9a0c7841eb98946bb"
+    },
+    {
+      "path": "tools\\verify_hand_pwm_release.py",
+      "bytes": 4826,
+      "sha256": "777455e1fd03de6162b5b42ca33a0c968fe64b86b4b0fcad4c75602df006c6c3"
+    },
+    {
+      "path": "tools\\verify_hdc_model_release.py",
+      "bytes": 5080,
+      "sha256": "d2a3517099c5705643d0b001dd1f5a24534500a39ef726b8e49f7c15663c3b65"
+    },
+    {
+      "path": "tools\\verify_imu_vectors.py",
+      "bytes": 2696,
+      "sha256": "fbb74c11778f6f823f2e82f9546db71fff6caae6f1c3000f19a692beecc69fc8"
+    },
+    {
+      "path": "tools\\verify_imu_zero_release.py",
+      "bytes": 4898,
+      "sha256": "dbfedc65e111b61969e759b0e7bcb2532816c6a4980796aa540e474f4f1de130"
+    },
+    {
+      "path": "tools\\verify_quality_release.py",
+      "bytes": 4141,
+      "sha256": "49976e53e033fec73bca42b159a5fc256aa29bed82a03e6a2c9ec17596c3d718"
+    },
+    {
+      "path": "tools\\verify_ui_budget_release.py",
+      "bytes": 2926,
+      "sha256": "7539da25cfe5a715dee35347dd2714bc0c69771911825eb374a48ffd3236c0ad"
+    },
+    {
+      "path": "report\\imu_zero_20261031\\README.md",
+      "bytes": 2257,
+      "sha256": "44dcca46da8ea1d9118464c60046cd6af5e231ca9d8a51c8ab6040268549aadb"
+    },
+    {
+      "path": "report\\imu_zero_20261031\\regression_sources.json",
+      "bytes": 19598,
+      "sha256": "fc1e589c0357da43fb829d37676bf025684f2cbe4950f3611033088e74e01e35"
+    },
+    {
+      "path": "report\\imu_zero_20261031\\rtl_test.log",
+      "bytes": 5600,
+      "sha256": "12c74056b8fbe33b742371ccffb953fed66db297f463c31ec3b63978a3064a31"
+    },
+    {
+      "path": "report\\imu_zero_20261031\\netlist_test.log",
+      "bytes": 4098,
+      "sha256": "0c8517639900afca6463beb11b19f40eb833f3f7414646f5826dcdbcde4e7002"
+    },
+    {
+      "path": "report\\imu_zero_20261031\\lcd_test.log",
+      "bytes": 6108,
+      "sha256": "c0f303526a8f4eeb992949900945f63ba87eff86a0890624560c374354d0a649"
+    },
+    {
+      "path": "report\\imu_zero_20261031\\grip_test.log",
+      "bytes": 302,
+      "sha256": "a6bf31cc4f39c546fd1f2a3af6ef5d13dd05172cf36f1e12ee43aba820ec313e"
+    },
+    {
+      "path": "report\\imu_zero_20261031\\feedback_test.log",
+      "bytes": 128,
+      "sha256": "685e429791c603eb58eef7f4b3d19c74da19cf55b430c317d864a90b5079a1ae"
+    },
+    {
+      "path": "report\\imu_zero_20261031\\mailbox_firmware.log",
+      "bytes": 132,
+      "sha256": "7f87e5a1aaf5baf24dc7a8a9fbcc22b99c6f7242fa8ef62692ef8ff015bdab33"
+    },
+    {
+      "path": "report\\imu_zero_20261031\\hand_test.log",
+      "bytes": 1190,
+      "sha256": "ff0d5814aef0e860bcfcf4a8febfde0bc65b1a87b7a50c1330e0df2d79d9a9bf"
+    },
+    {
+      "path": "report\\imu_zero_20261031\\learning_workflow_test.log",
+      "bytes": 294,
+      "sha256": "19d690f074cf5984e0039f0d0a3b1aff20db8e05ea5663384c287f888edb7ec3"
+    },
+    {
+      "path": "report\\imu_zero_20261031\\float_comparison.json",
+      "bytes": 145,
+      "sha256": "c3dbbcd865d23a7ba53860df3b8d43249a541adbcea2fce747716b7f756af775"
+    },
+    {
+      "path": "report\\imu_zero_20261031\\arm_build.log",
+      "bytes": 1041,
+      "sha256": "ffc4f59ff9d998a82cf55bb6031f483526aaf59a8c9d2b2acf8ee10157ccdda1"
+    },
+    {
+      "path": "report\\imu_zero_20261031\\hardware_build.log",
+      "bytes": 145921,
+      "sha256": "aeb5d273b53ecdf0ea375f3edb587d270a8e66a15ae681c5ca26f0e1cccc44a3"
+    },
+    {
+      "path": "report\\imu_zero_20261031\\full_gates.log",
+      "bytes": 994,
+      "sha256": "24390202da8a435db03f32b85a94cf6fcb7b5e40298a34d53e178572a3c2da18"
+    },
+    {
+      "path": "report\\imu_zero_20261031\\timing_routed.rpt",
+      "bytes": 396747,
+      "sha256": "4581054e1acf964b7aae2e8381f581fde96b719e387f91c30a6d4e114decf68c"
+    },
+    {
+      "path": "report\\imu_zero_20261031\\utilization_routed.rpt",
+      "bytes": 13352,
+      "sha256": "5be8b141e744acec78eb41421a6cbddfda01631e793aea747e00d79e06e4aa6b"
+    },
+    {
+      "path": "report\\imu_zero_20261031\\drc.rpt",
+      "bytes": 115145,
+      "sha256": "846c9e629ce9343a76476881377cb7517e3dd3ea36f3d1d594424e686005b746"
+    },
+    {
+      "path": "report\\imu_zero_20261031\\methodology_routed.rpt",
+      "bytes": 6252,
+      "sha256": "6f38affb5431effb2ee6e9a8524a20519bd85e5c3e41bb054f4c98c6014916d3"
+    }
+  ]
+}

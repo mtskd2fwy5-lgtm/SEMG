@@ -29,7 +29,15 @@ static uint32_t hand_hdc_history[8],hand_hdc_history_ok[8],hand_hdc_head,hand_hd
 static uint32_t hand_hdc_generation,hand_hdc_sent_generation,hand_hdc_ms,hand_hdc_hold,hand_hdc_support_ms;
 static uint32_t hand_hdc_seq_seen;
 static uint16_t hand_hdc_seq;
-static uint32_t hand_hdc_pose[6],hand_hdc_pose_valid;
+/* The enabled mechanical link owns a last accepted, calibrated target.
+ * Classifier abstention may clear the live UI decision without disarming it. */
+static uint32_t hand_hdc_target[6],hand_hdc_target_valid,hand_hdc_target_class;
+static uint32_t hand_hdc_target_ms;
+/* Mode 4 reuses the PL live-target executor (wire mode 3), with PL NMF C2
+ * rather than an HDC class as its source. No change to the PWM protocol. */
+static uint32_t hand_grip_valid,hand_grip_seen,hand_grip_seq,hand_grip_ms;
+static uint32_t hand_grip_percent,hand_grip_generation,hand_grip_sent_generation;
+static uint32_t hand_grip_sent_ms,hand_grip_capturing;
 static uint32_t hand_hdc_get_pose(uint32_t cls,uint32_t pose[6]);
 static uint32_t hand_crc(const HandProfile *p)
 {
@@ -79,6 +87,7 @@ static void hand_stop(void)
        hand_home_state==HAND_HOME_DONE)
         hand_home_state=HAND_HOME_CANCELED;
     hand_run=0u;hand_qread=hand_qwrite=0u;
+    hand_hdc_target_valid=0u;
     hand_manual_pending=hand_slider_drag=0u;
 #if PL_CONTROL_ENABLE
     hand_stop_pending=1u;
@@ -86,47 +95,102 @@ static void hand_stop(void)
     hand_stop_pending=hand_inflight=0u;
 #endif
 }
+static void hand_hdc_history_reset(void)
+{
+    hand_hdc_valid=hand_hdc_size=hand_hdc_head=hand_hdc_hold=0u;
+}
 static void hand_hdc_reset(void)
 {
-    hand_hdc_valid=hand_hdc_size=hand_hdc_head=hand_hdc_hold=hand_hdc_seq_seen=0u;
-    hand_hdc_pose_valid=0u;
+    hand_hdc_seq_seen=0u;hand_hdc_history_reset();
     if(hand_run==3u)hand_stop();
 }
-/* Evidence: 0 = invalid model/data (immediate STOP), 1 = qualified prediction,
- * 2 = low-margin abstention. Votes never modify training/validation results.
- * Confirm 3 of the last 5 windows (rest: 6 of 8), including the current window,
+static void hand_grip_observe(uint32_t now,uint16_t seq,uint32_t c2,
+                              uint32_t reference,uint32_t cls,uint32_t valid)
+{
+    uint32_t continuous=!hand_grip_seen ||
+        ((uint16_t)(seq-hand_grip_seq)==40u && now-hand_grip_ms<=75u);
+    if(hand_grip_seen && seq==hand_grip_seq)return;
+    hand_grip_seen=1u;hand_grip_seq=seq;hand_grip_ms=now;
+    hand_grip_valid=valid && reference>=256u && continuous;
+    hand_grip_percent=0u;
+    if(hand_grip_valid && cls==2u) {
+        uint64_t scaled=(uint64_t)c2*1000u/reference;
+        /* Ten percent dead band; comfortable reference is full mapped grip. */
+        if(scaled>100u)hand_grip_percent=scaled>=1000u?100u:(uint32_t)((scaled-100u)/9u);
+    }
+    if(hand_grip_valid)hand_grip_generation++;
+    else if(hand_run==4u)hand_stop();
+}
+static uint32_t hand_grip_mapped(void)
+{
+    uint32_t i,j;
+    if(hand_profile.cal_mask!=4095u || (hand_profile.row_mask&5u)!=5u)return 0u;
+    for(j=0u;j<3u;j+=2u)for(i=1u;i<6u;i++)
+        if(hand_profile.low[i]>hand_profile.high[i] ||
+           hand_profile.pose[j][i]<hand_profile.low[i] ||
+           hand_profile.pose[j][i]>hand_profile.high[i])return 0u;
+    return 1u;
+}
+static uint32_t hand_grip_pulse(uint32_t axis,uint32_t percent)
+{
+    int32_t open=(int32_t)hand_profile.pose[0][axis];
+    int32_t delta=(int32_t)hand_profile.pose[2][axis]-open;
+    if(percent>100u)percent=100u;
+    return (uint32_t)(open+delta*(int32_t)percent/100);
+}
+/* Evidence: 0 = invalid model/data (immediate STOP), 1 = qualified prediction
+ * (margin >= 1%), 2 = abstention, 3 = weak but nonzero gap (>=0.25%).
+ * Weak evidence needs six of eight agreeing windows with a three-vote lead.
+ * Votes never modify
+ * training/validation results.
+ * Confirm 3 of the last 6 qualified windows, including the current window,
  * with two votes ahead of any rival, or three consecutive strong predictions,
- * to reject a 3:2 oscillation without delaying clean gesture transitions.
- * Unsupported output expires at eight windows or 200 ms, whichever comes first. */
+ * to reject a 3:3 oscillation without delaying clean gesture transitions.
+ * While the feature stream remains fresh, ambiguity holds the last accepted
+ * mapped pose; the independent 250 ms stream watchdog still stops on dropout. */
 static void hand_hdc_observe(uint32_t now,uint16_t seq,uint32_t cls,uint32_t evidence)
 {
-    uint32_t i,j,votes=0u,rival=0u,consecutive=1u,width=cls?5u:8u,qualified=evidence==1u;
-    if(!evidence || evidence>2u) {hand_hdc_reset();return;}
-    if(hand_hdc_seq_seen && (now-hand_hdc_ms>250u || (uint16_t)(seq-hand_hdc_seq)!=40u))
+    /* Every custom class uses the same evidence-dependent rule. No class ID
+     * is implicitly treated as rest or granted a special acceptance path. */
+    uint32_t i,j,votes=0u,rival=0u,consecutive=1u,width=evidence==3u?8u:6u;
+    uint32_t qualified=evidence==1u || evidence==3u,required=evidence==3u?6u:3u;
+    if(!evidence || evidence>3u) {hand_hdc_reset();return;}
+    if(hand_hdc_seq_seen && now-hand_hdc_ms>250u) {
         hand_hdc_reset();
+    } else if(hand_hdc_seq_seen && (uint16_t)(seq-hand_hdc_seq)!=40u) {
+        /* A skipped classifier window restarts transition voting, but does
+         * not cancel a fresh, already accepted live target. The timestamp
+         * watchdog below remains the hard dropout boundary. */
+        if(hand_run==3u)hand_hdc_history_reset();
+        else hand_hdc_reset();
+    }
     hand_hdc_seq_seen=1u;hand_hdc_seq=seq;hand_hdc_ms=now;
     hand_hdc_history[hand_hdc_head]=cls;
-    hand_hdc_history_ok[hand_hdc_head]=qualified;
+    hand_hdc_history_ok[hand_hdc_head]=qualified?evidence:0u;
     hand_hdc_head=(hand_hdc_head+1u)%8u;
     if(hand_hdc_size<8u)hand_hdc_size++;
     if(hand_hdc_size<3u)consecutive=0u;
     for(i=0u;i<hand_hdc_size && i<width;i++) {
         uint32_t slot=(hand_hdc_head+7u-i)%8u;
-        if(i<3u && (!hand_hdc_history_ok[slot] || hand_hdc_history[slot]!=cls))consecutive=0u;
-        if(hand_hdc_history_ok[slot] && hand_hdc_history[slot]==cls)votes++;
-        else if(hand_hdc_history_ok[slot]) {
+        uint32_t usable=hand_hdc_history_ok[slot]==1u ||
+            (evidence==3u && hand_hdc_history_ok[slot]==3u);
+        if(i<3u && (hand_hdc_history_ok[slot]!=1u || hand_hdc_history[slot]!=cls))consecutive=0u;
+        if(usable && hand_hdc_history[slot]==cls)votes++;
+        else if(usable) {
             uint32_t n=0u;
             for(j=0u;j<hand_hdc_size && j<width;j++) {
                 uint32_t other=(hand_hdc_head+7u-j)%8u;
-                if(hand_hdc_history_ok[other] && hand_hdc_history[other]==hand_hdc_history[slot])n++;
+                if((hand_hdc_history_ok[other]==1u || (evidence==3u && hand_hdc_history_ok[other]==3u)) &&
+                   hand_hdc_history[other]==hand_hdc_history[slot])n++;
             }
             if(n>rival)rival=n;
         }
     }
-    if(qualified && votes>=(cls?3u:6u) && (votes>=rival+2u || consecutive)) {
+    if(qualified && votes>=required && (votes>=rival+(evidence==3u?3u:2u) || consecutive)) {
         hand_hdc_class=cls;hand_hdc_valid=1u;hand_hdc_hold=0u;hand_hdc_support_ms=now;
-    } else if(hand_hdc_valid && (++hand_hdc_hold>=8u || now-hand_hdc_support_ms>=200u)) {
-        hand_hdc_reset();return;
+    } else if(hand_hdc_valid && (++hand_hdc_hold>=10u || now-hand_hdc_support_ms>=250u)) {
+        /* Expire the displayed decision, not the explicitly enabled link. */
+        hand_hdc_history_reset();return;
     }
     if(hand_hdc_valid)hand_hdc_generation++;
 }
@@ -193,13 +257,37 @@ static void hand_auto(void)
     hand_rotation_sent=0xffffffffu;
     hand_upload();hand_enqueue(9u,0u,0u,0u);hand_enqueue(6u,0u,0u,0u);hand_run=2u;
 }
-static uint32_t hand_hdc_queue_target(void)
+static void hand_live_queue_target(const uint32_t p[6])
 {
-    uint32_t i,p[6];
-    if(!hand_hdc_get_pose(hand_hdc_class,p))return 0u;
+    uint32_t i;
     for(i=1u;i<6u;i++)hand_enqueue(12u,0u,i,p[i]);
     hand_enqueue(13u,0u,0u,0u);
+}
+static uint32_t hand_hdc_queue_target(void)
+{
+    uint32_t p[6];
+    if(hand_hdc_valid && hand_hdc_get_pose(hand_hdc_class,p)) {
+        memcpy(hand_hdc_target,p,sizeof hand_hdc_target);
+        hand_hdc_target_class=hand_hdc_class;hand_hdc_target_valid=1u;
+    }
+    if(!hand_hdc_target_valid)return 0u;
+    hand_live_queue_target(hand_hdc_target);
+    hand_hdc_target_ms=hand_hdc_ms;
     hand_hdc_sent_generation=hand_hdc_generation;return 1u;
+}
+static void hand_grip_queue_target(uint32_t now)
+{
+    uint32_t i,p[6]={0u};
+    for(i=1u;i<6u;i++)p[i]=hand_grip_pulse(i,hand_grip_percent);
+    hand_live_queue_target(p);
+    hand_grip_sent_generation=hand_grip_generation;hand_grip_sent_ms=now;
+}
+static void hand_auto_grip(uint32_t now)
+{
+    if(hand_busy() || !hand_grip_mapped() || !hand_rotation_valid ||
+       !hand_grip_valid || now-hand_grip_ms>75u || hand_grip_capturing)return;
+    hand_upload();hand_enqueue(9u,0u,0u,0u);
+    hand_grip_queue_target(now);hand_enqueue(11u,0u,0u,1u);hand_run=4u;
 }
 static void hand_auto_hdc(void)
 {
@@ -232,8 +320,11 @@ static void hand_tick(uint32_t now,uint32_t manual_page,int32_t rotation_deg,uin
     if(hand_run>=2u && !rotation_valid)hand_stop();
     if(hand_run==3u) {
         uint32_t p[6];
-        if(!hand_hdc_valid || now-hand_hdc_ms>250u || !hand_hdc_get_pose(hand_hdc_class,p))hand_stop();
+        if(!hand_hdc_seq_seen || now-hand_hdc_ms>250u || !hand_hdc_target_valid ||
+           !hand_hdc_get_pose(hand_hdc_target_class,p))hand_stop();
     }
+    if(hand_run==4u && (!hand_grip_valid || now-hand_grip_ms>75u ||
+                       !hand_grip_mapped()))hand_stop();
     if(hand_run==1u && hand_home_state!=HAND_HOME_DRIVE && hand_home_state!=HAND_HOME_DONE &&
        (!manual_page || (int32_t)(now-hand_test_until)>=0))hand_stop();
     if((w>>24)!=0x48u) {hand_link_error=1u;hand_stop();return;}
@@ -270,6 +361,15 @@ static void hand_tick(uint32_t now,uint32_t manual_page,int32_t rotation_deg,uin
     }
     if(hand_stop_pending) {
         payload=0u;hand_stop_pending=0u;hand_clearing=1u;send=1u;
+    } else if(hand_run>=2u && ((w>>19)&3u)>=2u && now-hand_lease_ms>=80u) {
+        /* A five-axis staged target must not starve independent leases when
+         * firmware work stretches the command/ACK loop. Do not preempt the
+         * initial disabled configuration upload. */
+        payload=hand_word(7u,0u,0u,0u);send=1u;hand_lease_ms=now;
+    } else if(hand_run>=2u && ((w>>19)&3u)>=2u && rotation_valid &&
+              now-hand_rotation_sent_ms>=50u) {
+        payload=hand_word(9u,0u,0u,rotation_us);send=1u;
+        hand_rotation_sent=rotation_us;hand_rotation_sent_ms=now;
     } else if(hand_qread<hand_qwrite) {
         payload=hand_queue[hand_qread++];send=1u;
         if(((payload>>27)&15u)==9u) {
@@ -280,6 +380,7 @@ static void hand_tick(uint32_t now,uint32_t manual_page,int32_t rotation_deg,uin
             payload=hand_word(10u,hand_hdc_class,0u,0u);
             hand_hdc_sent_generation=hand_hdc_generation;
         }
+        if(((payload>>27)&15u)==13u && hand_run==3u)hand_hdc_target_ms=now;
         if(((payload>>27)&15u)==6u || ((payload>>27)&15u)==11u)hand_lease_ms=now;
     } else if(hand_home_state==HAND_HOME_WAIT && !((w>>19)&3u)) {
         if(!(w&2u)){hand_link_error=4u;hand_stop();return;}
@@ -304,9 +405,14 @@ static void hand_tick(uint32_t now,uint32_t manual_page,int32_t rotation_deg,uin
                now-hand_rotation_sent_ms>=50u)) {
         payload=hand_word(9u,0u,0u,rotation_us);send=1u;hand_rotation_sent=rotation_us;
         hand_rotation_sent_ms=now;
-    } else if(hand_run==3u && hand_hdc_valid && hand_hdc_sent_generation!=hand_hdc_generation) {
+    } else if(hand_run==3u && (hand_hdc_sent_generation!=hand_hdc_generation ||
+                             now-hand_hdc_target_ms>=50u)) {
         hand_qread=hand_qwrite=0u;
         if(!hand_hdc_queue_target())hand_stop();
+        else hand_hdc_target_ms=now;
+    } else if(hand_run==4u && hand_grip_sent_generation!=hand_grip_generation &&
+              now-hand_grip_sent_ms>=50u) {
+        hand_qread=hand_qwrite=0u;hand_grip_queue_target(now);
     } else {
         hand_qread=hand_qwrite=0u;
         if(hand_run && now-hand_lease_ms>=80u) {

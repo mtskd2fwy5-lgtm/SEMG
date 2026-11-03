@@ -1,0 +1,39 @@
+In file included from main.c:65:
+channel_quality.h: In function 'cq_ingest':
+channel_quality.h:106:5: warning: this 'if' clause does not guard... [-Wmisleading-indentation]
+  106 |     if(v<q->min_sample)q->min_sample=v;if(v>q->max_sample)q->max_sample=v;
+      |     ^~
+channel_quality.h:106:40: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the 'if'
+  106 |     if(v<q->min_sample)q->min_sample=v;if(v>q->max_sample)q->max_sample=v;
+      |                                        ^~
+channel_quality.h:108:5: warning: this 'if' clause does not guard... [-Wmisleading-indentation]
+  108 |     if(a>q->peak)q->peak=a;if(a>=8304721u)q->near_rail++;
+      |     ^~
+channel_quality.h:108:28: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the 'if'
+  108 |     if(a>q->peak)q->peak=a;if(a>=8304721u)q->near_rail++;
+      |                            ^~
+channel_quality.h: In function 'cq_service':
+channel_quality.h:266:9: warning: this 'if' clause does not guard... [-Wmisleading-indentation]
+  266 |         if(d50>25)d50=50-d50;if(d60>30)d60=60-d60;
+      |         ^~
+channel_quality.h:266:30: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the 'if'
+  266 |         if(d50>25)d50=50-d50;if(d60>30)d60=60-d60;
+      |                              ^~
+main.c: At top level:
+main.c:1109:13: warning: 'mpu_tilt_update' defined but not used [-Wunused-function]
+ 1109 | static void mpu_tilt_update(void)
+      |             ^~~~~~~~~~~~~~~
+main.c:733:12: warning: 'mpu_last_row_t' defined but not used [-Wunused-variable]
+  733 | static u32 mpu_last_row_t;      /* gt_stamp of the last M-row */
+      |            ^~~~~~~~~~~~~~
+main.c:732:27: warning: 'mpu_word_seen' defined but not used [-Wunused-variable]
+  732 | static u32 mpu_last_word, mpu_word_seen;
+      |                           ^~~~~~~~~~~~~
+main.c:732:12: warning: 'mpu_last_word' defined but not used [-Wunused-variable]
+  732 | static u32 mpu_last_word, mpu_word_seen;
+      |            ^~~~~~~~~~~~~
+D:\FPGA\VIVADO\2025.2\data\embeddedsw\lib\sw_services\xilffs_v5_5\src\ff.c: In function 'get_ldnumber':
+D:\FPGA\VIVADO\2025.2\data\embeddedsw\lib\sw_services\xilffs_v5_5\src\ff.c:4000:13: warning: unused variable 'vol' [-Wunused-variable]
+ 4000 |         int vol = -1;
+      |             ^~~
+BUILD OK: ps_uart_print_pl_control.elf

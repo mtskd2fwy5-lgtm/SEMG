@@ -1,0 +1,3 @@
+TEST_PASS PL model restore: DDR prototype roundtrip, next-window accelerator inference, no software fallback
+TEST_PASS PL backend workflow: labels, committed scale, 120/class, frozen validation, dynamic append
+TEST_PASS PL backend failures invalidate model and NMF without software fallback

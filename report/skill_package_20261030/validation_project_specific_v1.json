@@ -1,0 +1,271 @@
+{
+  "timestamp_utc": "2026-10-30T11:57:47.499430+00:00",
+  "scope": "Skill package format, portable tools, relative links and local evidence existence/hash. No new FPGA/board or cross-team end-to-end validation.",
+  "tests": [
+    {
+      "command": [
+        "D:\\PYTHON\\python.exe",
+        "-X",
+        "utf8",
+        "D:\\FPGA\\sEMG-HMRS\\skill\\test_portable_tools.py"
+      ],
+      "exit_code": 0,
+      "stdout": "TEST_PASS portable tools: sequence wrap/gap/duplicate/ambiguous-backward, exact signed rails, immutable input, schema rejection, comparable resource delta and stage mismatch refusal\nTEST_PASS CLI: help, JSON output, no overwrite, duplicate headers, small AC on large DC, resource comparison, stage/constraint mismatch refusal\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "D:\\PYTHON\\python.exe",
+        "-X",
+        "utf8",
+        "C:\\Users\\bvcm\\.codex\\skills\\.system\\skill-creator\\scripts\\quick_validate.py",
+        "D:\\FPGA\\sEMG-HMRS\\skill\\semg-capture-analysis"
+      ],
+      "exit_code": 0,
+      "stdout": "Skill is valid!\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "D:\\PYTHON\\python.exe",
+        "-X",
+        "utf8",
+        "C:\\Users\\bvcm\\.codex\\skills\\.system\\skill-creator\\scripts\\quick_validate.py",
+        "D:\\FPGA\\sEMG-HMRS\\skill\\semg-competition-report"
+      ],
+      "exit_code": 0,
+      "stdout": "Skill is valid!\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "D:\\PYTHON\\python.exe",
+        "-X",
+        "utf8",
+        "C:\\Users\\bvcm\\.codex\\skills\\.system\\skill-creator\\scripts\\quick_validate.py",
+        "D:\\FPGA\\sEMG-HMRS\\skill\\semg-lcd-hand-debug"
+      ],
+      "exit_code": 0,
+      "stdout": "Skill is valid!\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "D:\\PYTHON\\python.exe",
+        "-X",
+        "utf8",
+        "C:\\Users\\bvcm\\.codex\\skills\\.system\\skill-creator\\scripts\\quick_validate.py",
+        "D:\\FPGA\\sEMG-HMRS\\skill\\semg-release-check"
+      ],
+      "exit_code": 0,
+      "stdout": "Skill is valid!\n",
+      "stderr": ""
+    }
+  ],
+  "links": [
+    {
+      "source": "skill\\checklist.md",
+      "target": "semg-release-check/SKILL.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\data_path_checklist.md",
+      "target": "semg-release-check/references/equivalence.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\README.md",
+      "target": "semg-release-check/SKILL.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\README.md",
+      "target": "semg-release-check/references/workflow.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\README.md",
+      "target": "semg-capture-analysis/SKILL.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\README.md",
+      "target": "semg-capture-analysis/references/analysis.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\README.md",
+      "target": "semg-capture-analysis/references/models.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\README.md",
+      "target": "semg-lcd-hand-debug/SKILL.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\README.md",
+      "target": "semg-lcd-hand-debug/references/lcd.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\README.md",
+      "target": "semg-lcd-hand-debug/references/hand.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\README.md",
+      "target": "semg-competition-report/SKILL.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\README.md",
+      "target": "semg-competition-report/references/report.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\README.md",
+      "target": "case_template.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\README.md",
+      "target": "../report/skill_package_20261030/validation.json",
+      "exists": true
+    },
+    {
+      "source": "skill\\README.md",
+      "target": "checklist.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\README.md",
+      "target": "data_path_checklist.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\semg-capture-analysis\\SKILL.md",
+      "target": "references/analysis.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\semg-capture-analysis\\SKILL.md",
+      "target": "references/models.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\semg-competition-report\\SKILL.md",
+      "target": "references/report.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\semg-lcd-hand-debug\\SKILL.md",
+      "target": "references/hand.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\semg-lcd-hand-debug\\SKILL.md",
+      "target": "references/lcd.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\semg-release-check\\SKILL.md",
+      "target": "references/workflow.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\semg-release-check\\SKILL.md",
+      "target": "references/equivalence.md",
+      "exists": true
+    },
+    {
+      "source": "skill\\semg-release-check\\SKILL.md",
+      "target": "references/workflow.md",
+      "exists": true
+    }
+  ],
+  "missing": [],
+  "package_sha256": {
+    "skill/case_template.md": "3f794165c11077002f720e821ad3b2a2d7d12cd7c739c14196064abb3817df17",
+    "skill/checklist.md": "8b9dab5b2169ce72e521ba77f331d2b45c56bf178c34c8178f8ab7b0a3461d87",
+    "skill/data_path_checklist.md": "8af89fab44b041a32a3e3509349261ec85fe2ed5437f188dcfaf616ba7f31e44",
+    "skill/README.md": "64bff6e0eaba99ebcb63c2cc78f8700c08f993a1989b9feb2a19634711f80a69",
+    "skill/semg-capture-analysis/agents/openai.yaml": "ff92c20fca163a623b8920d01a7d896802042fa25ae19bc5f60cf369e2c13a6b",
+    "skill/semg-capture-analysis/references/analysis.md": "94fbd491c637c96178c0e7ca665eeba20b6d2d2c21b480d96df1e8eba0941dfd",
+    "skill/semg-capture-analysis/references/models.md": "80bbc09585a9068528328cafa05592023ec962887e2e1c5b6f1c0af6ff3bae37",
+    "skill/semg-capture-analysis/scripts/audit_stream.py": "2aba362784c98b2de2b2d42bc98dc9f1ccb104e1850ac81e896ed93213c87a20",
+    "skill/semg-capture-analysis/SKILL.md": "0d6da6ad46db0236101a5bb6be436ef4b371839af7d0805ead27fdb03949f94d",
+    "skill/semg-competition-report/agents/openai.yaml": "8751e0b6c391c11af09ad54da5e713e0d6dc4d2704d579bc772271495eddd73d",
+    "skill/semg-competition-report/references/report.md": "2bf364d5fc24a2c1ded7ee762f2551f05b14f5c50bdc8d4bbd1c264dff95e09e",
+    "skill/semg-competition-report/SKILL.md": "786deda7a1b16ce6bc03bfd2ade5f6a777cf3ae2b0d709e8b2420e8b8ac8f09a",
+    "skill/semg-lcd-hand-debug/agents/openai.yaml": "7b15f736c086d1654d8d2b2906c1e3424a008fb8fb5d11d1a5f3a036d84928ea",
+    "skill/semg-lcd-hand-debug/references/hand.md": "8614097d280b05a0abbf824199d91f25d68ebc81804e7eb1f700db484988b6dd",
+    "skill/semg-lcd-hand-debug/references/lcd.md": "b92de7d8075a9c6c3728b75ce53ef404631a112a187e254cbf0b1654ac4d8a7c",
+    "skill/semg-lcd-hand-debug/SKILL.md": "ab94598a47932dcde1efc6c4eba0b56fb1151f4a0f8e4ab4f9a23ce8ca241ef2",
+    "skill/semg-release-check/agents/openai.yaml": "450ade092d2dc9ae98b0dd383d9f3148dd4f2cda52ae22ed52c62a9dfe00bce4",
+    "skill/semg-release-check/references/equivalence.md": "9eb0810b0bb85c4e42481fdad84696d481356a9c7a9c188e5b4a78d1c37243ac",
+    "skill/semg-release-check/references/workflow.md": "a6660b058594b7dc2bebebdbe57454b6eda8572ceaf2de985bfbf0dcb82a9496",
+    "skill/semg-release-check/scripts/compare_resources.py": "1d98f7241e77aed0656bd323273db1024d96fbadb2c963ad27b482884b7705df",
+    "skill/semg-release-check/SKILL.md": "7e1c5f9eed06b61e8c2063e1deb5a19c51ceec5669934605c19526ecc0ccde22",
+    "skill/test_portable_tools.py": "7c3233a1b4dfbc578ed31f623f9d942b5ec1f85dd60ee9b751536f79d74d832b"
+  },
+  "evidence_sha256": {
+    "build/build_all.ps1": "f3e61cbe374304ed3f95991e7ddf1c3b974db5e7d5e2e44e5efc3f023a39a55a",
+    "build/project.psd1": "493e8ba09590f3b799e368f240ffe5e8ad1fdb2f656477cae385c2b69dcee7ce",
+    "build/scripts/run_hand_control_test.ps1": "26ea94235e9a84a59432eb425c0535312c77f4b916f26d5f23afd92604a41eb7",
+    "report/ai_collaboration_20261023/guide_review.md": "7b351b91b0578262932bfd85966fcc4efe82bfa92bfcdbf7d4c641b94ad09dd2",
+    "report/channel_quality_20261029/README.md": "60ce4d3e878daa8f989b11e14b1dff5b305c1d3c5098cd7e0161afb42af1641a",
+    "report/channel_quality_20261029/numeric_validation.json": "3f6a9d5a36e38ea17a5bdfd4fab54a2970bba53ba87cabf6afcd48f294be2c1d",
+    "report/emg001_20261030/test_previous_models.py": "dbe93e0343e52c041e79632c4278334a53e48b25b45412567cd8acf9447c537c",
+    "report/emg002_20261030/label_correction.json": "c245645f0508e8208aff5f1c57aeaef26c180ad0ada117308a2e789001218e4a",
+    "report/emg002_20261030/old_model_metrics.json": "d59b07803f9155caafc579145e7c880aea70e2f73f230b60ce0f015feacedf29",
+    "report/emg002_20261030/quality_metrics.json": "c0bc41db11edbc3d63680f354a685d1fbc7c34d443d1638bd46eff5e6d81244c",
+    "report/emg002_20261030/quality_report.md": "d5cad80803226e7f7b06f7336696ca0a85f45221d838c41e2dd83def353095d2",
+    "report/emg002_20261030/single_finger_metrics.json": "86f2af38fca1b57e397f3adf08e75a5490472e9d0cb4aa3b5188f6f9c7569224",
+    "report/emg002_20261030/single_finger_report.md": "f3afc2fde23c74010d85e56cd75e8a9c4eefa42b3ed6d8d0ebabd2e0647d3a4e",
+    "report/emg002_20261030/test_previous_models.py": "1c54ae9115459ebf217db9a8348768f6b7bdb8f95aaea56a3d6c2d0ac0914fa9",
+    "report/emg018_20261022/EMG018_pose_fix.md": "008526412a74d5c2100bae4f4f1874619fc273651ec2fd0f2bef832c8b88c7c9",
+    "report/hand_pwm_inverted_20261029/README.md": "da3dc655c13aef3f069beb2261ead923b3a7383a2806ed7d7fb27838c3ecc886",
+    "report/hand_pwm_inverted_20261029/pin_netlist.log": "6e88ced4cd59feec0a04579519cbc4d6426b9066ba4922eb96bdd94a250a55ad",
+    "report/hand_pwm_inverted_20261029/polarity_rtl.log": "3c4253924a23174516bef701165a07f3b71aeb15203cfeb71f9c26145e08b706",
+    "report/hand_simultaneous_home_20261025/README.md": "1a5692b166d26c5b55cd4032b2ace9ee7b64a995dd0fff3063b6ce73dbd8ab7b",
+    "report/hdc_model_sd_20261029/README.md": "ae0a49cef222c8c6f7b2fb9ee17f19df2b739fcce7c60ea86bc7c459a992d0f9",
+    "report/hdc_stability_20261027/README.md": "7e9c2d9b0e208464ea41516ecee8a920341eadba9bb71087767f0c32ce1d4d93",
+    "report/imu_pl_20261028/README.md": "e860697214eb254a67cd34379c704a23ad553e5eac9a2730878452a4ce0f7c26",
+    "report/imu_pl_20261028/float_comparison.json": "c3dbbcd865d23a7ba53860df3b8d43249a541adbcea2fce747716b7f756af775",
+    "report/lcd_responsiveness_20261030/README.md": "a2e98726fbec5d64eddfcf0ae3c56bf0d62a3a54524142991e9cce1b8fa06d79",
+    "report/lcd_responsiveness_20261030/artifacts.json": "787b24d262bc8b33ddbe88dea35ce7a299299489032e88a33aacd708ef04e1a0",
+    "report/lcd_responsiveness_20261030/cpu_test.log": "c1c55404d51ecbaab78d13578da0fe88baecb8363207f6e90fa9bea32c17daf2",
+    "report/lcd_responsiveness_20261030/regression_sources.json": "2800cd5f7b3e498be4a44ef727c8a09542c72ceacecfe3814d89dbe52f079041",
+    "report/pl_learning_nmf_20261026/README.md": "4f013b406eda34fc076a29b30c553394d498d17dd0a3f3e8adccee54dfa651ae",
+    "report/resource_optimization_v15_20261027/README.md": "44351af6000c7ef4b0d6a05677fc28959beb60ca54fdb9b49ec854a4578438cb",
+    "report/resource_optimization_v15_20261027/amd_guide.txt": "26ac56caec00eebd25bddfe6eb94d0ee15da0c33a988137b17b2baf44dda9d01",
+    "report/resource_optimization_v15_20261027/comparison.json": "c232fce460dc11dc02609aa411b6be59376986b34b39d8d5eb6cdfc35e7cb160",
+    "report/resource_optimization_v15_20261027/equivalence.log": "eb24e59834d2b23dd1bd19ea2aed7965b96b88ff3e36d221209be134cd0e2dc4",
+    "report/resource_optimization_v15_20261027/integrated_test.log": "311e6bbe37ab3196b9060f7cc45572a886d627e045db631f33a1b1b5b4ac38c4",
+    "report/resource_optimization_v15_20261027/netlist_test_complete.log": "a3baab3e9510e7c07518040e0d8d734291a661ddeb9b249fc5ea8701840bb851",
+    "report/system_framework_v1_20261024.md": "07528a263627909e74fe8b436dc38511a2c9a7ce7c228fc813451445c98f88d5",
+    "sim/hand_firmware_test.c": "6082675127daf8e1fb6bbff7662cf1f2e4e0fd4e17f6682fe93262272a27e7a7",
+    "sim/lcd_firmware_test.c": "d2a28c0e5d51af069ff903c1ee8ccd17042190d04024796a4b07e32f9dcb4745",
+    "sim/lcd_work_budget_test.c": "06c3440ba010349925891c0e21ea73babcbef3c1ee8e2507810db7fd4e5b1263",
+    "sim/pl_learning_workflow_test.c": "138a1554900b6bd388a1477f9721c1acee22f57526407f1ec1771479e98b3e57",
+    "sim/test_lcd_font.py": "2e99923e1feab3a4a0dd97e7178140b27e2f4c3735f00e723cb52d1767f55541",
+    "src/rtl/emg_window_features.v": "c9e020b9ca05c3cd656bbc116e9a57b39eb0554f47bce8fde9723f292097d6d6",
+    "src/rtl/hand_control.v": "e6cb1c86d2adc4362277da5337af54a531975b90483076052f8e099292fc2c45",
+    "sw/ps_uart_print/hand_control.h": "c82557f1e77d5acd55f62a54eaf3a954664473569f6aca190307fdbd41e9e6d4",
+    "sw/ps_uart_print/lcd_ui.h": "4c6c7bcb022a5b964c216041a73bb18b1071ff4115c28d549b4048a16f534339",
+    "sw/ps_uart_print/main.c": "fc00636af689d683a856dcb59a0d22853639253e6afabe424f591d676548f7d4",
+    "sw/ps_uart_print/pl_learning_api.h": "2e73006274926785092606dbd4b68f1775edab36c565064b8e10679a5622472b",
+    "tools/capture_actions.py": "3329fc0ab0b23905f9361f75978a8868a5579854f035e4ce55445ffd0ef1873d",
+    "tools/decode_sd_record.py": "e8b7a5ada389aba398f78c95632da7144ee2328806b9234365afc94b5f8a38eb",
+    "tools/emg_reference.py": "988d0163f7ba332f1f18980e273d4ab4ea06c676f5b9ad1b0d50396b6e87e0d5",
+    "tools/export_board_int8.py": "7263fa5103646dcbfb9b140919900be1d57c96dd2cb23929a72bbd92d1f560f3",
+    "tools/scan_literal_b.py": "6f2cac07f6d6094081cec49cb418b45e3a488bf8190327f098ffef1e736e334b",
+    "tools/train_board_model.py": "c90fa64702b50358d2b98b016f1bd3c9ff188f6e96e6a8b382149685dd282ab1",
+    "tools/verify_boot_partition.py": "333f620b03e1ea82e070775e06da6c421bdb69c2c31e5579e106804eeda65ba9",
+    "tools/verify_coeff_regs.py": "dd7631261bcaab75385b6b433f71071c636076020af86f218f0a3dcade99711f",
+    "tools/verify_control_boot.py": "7a11a17c4a1fe69a8d4f3a9d4e8d45a1a010bd69a67e1cf2595bb7212110a110",
+    "tools/verify_ui_budget_release.py": "7539da25cfe5a715dee35347dd2714bc0c69771911825eb374a48ffd3236c0ad"
+  },
+  "passed": true
+}

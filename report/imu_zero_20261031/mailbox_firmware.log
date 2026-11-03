@@ -1,0 +1,1 @@
+TEST_PASS PS attitude mailbox: frozen frames, signed payload, stale/timeout/ABI/overrun/matrix gates, mid-read zero and disconnect

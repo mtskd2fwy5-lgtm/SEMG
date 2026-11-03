@@ -1,3 +1,4 @@
+TEST_PASS PL attitude consumer: six-axis twist unwrap, -45/+225 limits, reset
 TEST_PASS HDC stability: isolated error/abstention, rival hysteresis, 75ms clean transition, 200ms ambiguity STOP, rest debounce, full class IDs, sequence/time wrap, hard invalidation
 TEST_PASS LIVE SLIDER: touch drag/release, ACK/coalescing, axis isolation, fine step/no-repeat, heartbeat, cancel/fault, limit upload, live base/custom mapping with calibrated clamp and explicit save, zero-width range
 TEST_PASS LIVE SLIDER: touch drag/release, ACK/coalescing, axis isolation, fine step/no-repeat, heartbeat, cancel/fault, limit upload, live base/custom mapping with calibrated clamp and explicit save, zero-width range

@@ -1,0 +1,1 @@
+"hand_pwm_polarity_tb" -s "pin_rtl" -debug "typical" 

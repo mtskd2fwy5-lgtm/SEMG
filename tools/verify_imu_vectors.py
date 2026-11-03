@@ -1,4 +1,4 @@
-"""Compare Q24 sequencer against frozen float reference and emit RTL vectors."""
+"""Compare Q24 against independent float fusion and emit RTL replay vectors."""
 from pathlib import Path
 import json, math, argparse
 from imu_fixed_model import Model,ROOT,ROM

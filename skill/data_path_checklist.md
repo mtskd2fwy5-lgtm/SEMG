@@ -1,11 +1,12 @@
-# PL to PS Checklist
+# 流式数据路径核对表
 
-- [ ] Use `emg_pl_export` as the PL export shell.
-- [ ] Keep `pl_clk` and `axis_clk` as separate clock domains.
-- [ ] Connect one 64-bit AXI-Stream to AXI DMA S2MM.
-- [ ] Configure DMA for 64-bit stream data.
-- [ ] Use an interrupt or polling loop to consume DDR buffers.
-- [ ] Decode packet type from bits 63:60.
-- [ ] Check sequence numbers for dropped packets.
-- [ ] Check all three overflow flags.
-- [ ] Start with a small test stream before enabling EMG processing.
+先读 [数值与接口合同](fpga-build-release/references/equivalence.md)。位宽、地址和标志数量以当前 RTL/固件合同为准。
+
+- [ ] 采样/处理与 AXI 时钟的跨域、复位和 FIFO 清空协调。
+- [ ] AXI-Stream 位宽、packet type、TLAST、DMA S2MM 与 PS 解码一致。
+- [ ] 背压、突发、溢出、重复/缺失和序号回绕有覆盖。
+- [ ] DDR 区域、缓存属性、对齐、DSB、缓冲所有权与链接脚本一致。
+- [ ] 特征/矩阵/姿态快照不混帧；配置代次和 toggle/ACK 有完成/超时定义。
+- [ ] raw、signed processed、包络与特征不混用；采样率/量化/通道与标签合同明确。
+- [ ] 超时、数据过期、模型切换后的显示/控制/停止行为可复现。
+- [ ] 先用参考流验证再扩到整机；数据连续不等于模拟质量正常。

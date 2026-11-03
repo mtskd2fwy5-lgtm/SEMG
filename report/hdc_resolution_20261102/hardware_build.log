@@ -1,0 +1,1623 @@
+#-----------------------------------------------------------
+# Vivado v2025.2 (64-bit)
+# SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025
+# IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025
+# SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025
+# Start of session at: Mon Nov  2 12:34:46 2026
+# Process ID         : 37600
+# Current directory  : D:/FPGA/sEMG-HMRS
+# Command line       : vivado.exe -mode batch -source build/scripts/rebuild_hdc_resolution.tcl -log report/hdc_resolution_20261102/hardware_build.log -journal report/hdc_resolution_20261102/hardware_build.jou
+# Log file           : D:/FPGA/sEMG-HMRS/report/hdc_resolution_20261102/hardware_build.log
+# Journal file       : D:/FPGA/sEMG-HMRS\report/hdc_resolution_20261102/hardware_build.jou
+# Running On         : LAPTOP-VCCV41QO
+# Platform           : Windows Server 2016 or Windows 10
+# Operating System   : 26200
+# Processor Detail   : AMD Ryzen 9 7945HX with Radeon Graphics        
+# CPU Frequency      : 2495 MHz
+# CPU Physical cores : 16
+# CPU Logical cores  : 32
+# Host memory        : 16844 MB
+# Swap memory        : 16844 MB
+# Total Virtual      : 33689 MB
+# Available Virtual  : 9085 MB
+#-----------------------------------------------------------
+INFO: [Common 17-1239] XILINX_LOCAL_USER_DATA is set to 'no'.
+source build/scripts/rebuild_hdc_resolution.tcl
+# set root [file normalize [file join [file dirname [info script]] ../..]]
+# set out [file join $root report/hdc_resolution_20261102]
+# file mkdir $out
+# source [file join $root build/update_project.tcl]
+## set project_root [file normalize [file join [file dirname [info script]] ..]]
+## set project_file [file join $project_root build vivado hand_motion_reconstruction.xpr]
+## if {![file exists $project_file]} {
+##     error "Project does not exist: $project_file"
+## }
+## open_project $project_file
+Scanning sources...
+Finished scanning sources
+WARNING: [Project 1-5713] Board part '' set for the project  is not found. BoardPart property will be unset. Please select board from latest repo build 
+INFO: [IP_Flow 19-234] Refreshing IP repositories
+INFO: [IP_Flow 19-1704] No user IP repositories specified
+INFO: [IP_Flow 19-2313] Loaded Vivado IP repository 'D:/FPGA/VIVADO/2025.2/Vivado/data/ip'.
+open_project: Time (s): cpu = 00:00:07 ; elapsed = 00:00:18 . Memory (MB): peak = 402.051 ; gain = 95.598
+## foreach f [get_files -all -quiet] {
+##     if {![file exists $f] &&
+##         ([file extension $f] eq ".wcfg" ||
+##          [file tail $f] eq "design_1_emg_pl_export_0_4.dcp")} {
+##         puts "Removing obsolete project reference: $f"
+##         remove_files [list $f]
+##     }
+## }
+## set sim_view [get_property XSIM.VIEW [get_filesets sim_1]]
+## if {$sim_view ne "" && ![file exists $sim_view]} {
+##     set_property XSIM.VIEW {} [get_filesets sim_1]
+## }
+## catch { set_property INCREMENTAL_CHECKPOINT {} [get_runs synth_1] }
+## set rtl_files [glob -nocomplain -directory [file join $project_root src rtl] -types f *.v *.sv *.vh]
+## set_property include_dirs [list [file join $project_root src rtl]] [get_filesets sources_1]
+## set_property include_dirs [list [file join $project_root src rtl]] [get_filesets sim_1]
+## set sim_files [glob -nocomplain -directory [file join $project_root sim] -types f *.v *.sv]
+## set xdc_files [glob -nocomplain -directory [file join $project_root board constraints] -types f *.xdc]
+## foreach {fileset candidates} [list sources_1 $rtl_files sim_1 $sim_files constrs_1 $xdc_files] {
+##     foreach candidate $candidates {
+##         if {![llength [get_files -quiet -of_objects [get_filesets $fileset] $candidate]]} {
+##             add_files -norecurse -fileset $fileset [list $candidate]
+##         }
+##     }
+## }
+## set cg_files [get_files -quiet -of [get_filesets constrs_1] *clock_groups*.xdc]
+## if {[llength $cg_files] > 0} {
+##     set_property USED_IN_SYNTHESIS false $cg_files
+## }
+## set lcd_timing [get_files -quiet *hz_zynq_lcd_timing.xdc]
+## set_property USED_IN_SYNTHESIS false $lcd_timing
+## set_property USED_IN_IMPLEMENTATION true $lcd_timing
+## set_property PROCESSING_ORDER LATE $lcd_timing
+## set canonical_bd [file normalize [file join $project_root build vivado \
+##     hand_motion_reconstruction.srcs sources_1 bd design_1 design_1.bd]]
+## set have_canonical 0
+## foreach bd [get_files -quiet *.bd] {
+##     if {[file normalize $bd] eq $canonical_bd} {
+##         set have_canonical 1
+##     } else {
+##         puts "Removing non-canonical BD reference: $bd"
+##         # Wrap single paths in [list]: add_files/remove_files parse their
+##         # argument as a Tcl file list, so a bare path containing spaces
+##         # gets split at the spaces (error 12-172 'D:/FPGA/Hand').
+##         if {[catch {remove_files [list $bd]} msg]} {
+##             puts "  remove_files failed: $msg"
+##         }
+##     }
+## }
+## if {!$have_canonical && [file exists $canonical_bd]} {
+##     add_files -norecurse -fileset sources_1 [list $canonical_bd]
+## }
+## set_property top design_1 [get_filesets sources_1]
+## set_property top ads1299_functional_tb [get_filesets sim_1]
+## update_compile_order -fileset sources_1
+## update_compile_order -fileset sim_1
+update_compile_order: Time (s): cpu = 00:00:04 ; elapsed = 00:00:31 . Memory (MB): peak = 450.023 ; gain = 47.262
+## close_project
+## puts "Updated project: $project_file"
+Updated project: D:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.xpr
+# open_project [file join $root build/vivado/hand_motion_reconstruction.xpr]
+Scanning sources...
+Finished scanning sources
+WARNING: [Project 1-5713] Board part '' set for the project  is not found. BoardPart property will be unset. Please select board from latest repo build 
+INFO: [IP_Flow 19-234] Refreshing IP repositories
+INFO: [IP_Flow 19-1704] No user IP repositories specified
+INFO: [IP_Flow 19-2313] Loaded Vivado IP repository 'D:/FPGA/VIVADO/2025.2/Vivado/data/ip'.
+open_project: Time (s): cpu = 00:00:07 ; elapsed = 00:00:08 . Memory (MB): peak = 476.305 ; gain = 1.449
+# update_compile_order -fileset sources_1
+# open_bd_design D:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.srcs/sources_1/bd/design_1/design_1.bd
+Reading block design file <D:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.srcs/sources_1/bd/design_1/design_1.bd>...
+Adding component instance block -- xilinx.com:ip:processing_system7:5.5 - processing_system7_0
+Adding component instance block -- xilinx.com:ip:proc_sys_reset:5.0 - proc_sys_reset_0
+Adding component instance block -- xilinx.com:ip:smartconnect:1.0 - smartconnect_0
+Adding component instance block -- xilinx.com:ip:axi_dma:7.1 - axi_dma_0
+Adding component instance block -- xilinx.com:ip:smartconnect:1.0 - smartconnect_1
+Adding component instance block -- xilinx.com:ip:proc_sys_reset:5.0 - proc_sys_reset_1
+Adding component instance block -- xilinx.com:ip:axi_vdma:6.3 - axi_vdma_0
+Adding component instance block -- xilinx.com:ip:v_axi4s_vid_out:4.0 - v_axi4s_vid_out_0
+Adding component instance block -- xilinx.com:ip:axi_gpio:2.0 - axi_gpio_0
+Adding component instance block -- xilinx.com:module_ref:lcd_clk_fwd:1.0 - lcd_clk_fwd_0
+Adding component instance block -- xilinx.com:module_ref:lcd_panel_adapter:1.0 - lcd_panel_adapter_0
+Adding component instance block -- xilinx.com:module_ref:touch_gt911:1.0 - touch_gt911_0
+Adding component instance block -- xilinx.com:ip:axi_gpio:2.0 - axi_gpio_1
+Adding component instance block -- xilinx.com:ip:axi_gpio:2.0 - axi_gpio_2
+Adding component instance block -- xilinx.com:module_ref:mpu6050_motion:1.0 - mpu6050_tilt_0
+Adding component instance block -- xilinx.com:ip:axi_gpio:2.0 - axi_gpio_3
+Adding component instance block -- xilinx.com:ip:axi_gpio:2.0 - axi_gpio_4
+Adding component instance block -- xilinx.com:module_ref:emg_pl_control:1.0 - emg_pl_export_0
+Adding component instance block -- xilinx.com:ip:axi_gpio:2.0 - axi_gpio_5
+Adding component instance block -- xilinx.com:module_ref:emg_learning_accel:1.0 - emg_learning_0
+Adding component instance block -- xilinx.com:ip:smartconnect:1.0 - smartconnect_learning
+Adding component instance block -- xilinx.com:ip:axi_gpio:2.0 - axi_gpio_6
+Adding component instance block -- xilinx.com:module_ref:mpu_attitude:1.0 - mpu_attitude_0
+Adding component instance block -- xilinx.com:ip:axi_gpio:2.0 - axi_gpio_7
+Successfully read diagram <design_1> from block design file <D:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.srcs/sources_1/bd/design_1/design_1.bd>
+# validate_bd_design -force
+WARNING: [BD 41-3281] Instance '/processing_system7_0' is connected on both sides by SmartConnects and cannot automatically configure itself to match the endpoints. Please manually configure its AXI interfaces as required for the design.
+WARNING: [BD 41-3281] Instance '/axi_dma_0' is connected on both sides by SmartConnects and cannot automatically configure itself to match the endpoints. Please manually configure its AXI interfaces as required for the design.
+WARNING: [BD 41-3281] Instance '/axi_vdma_0' is connected on both sides by SmartConnects and cannot automatically configure itself to match the endpoints. Please manually configure its AXI interfaces as required for the design.
+INFO: [BD 5-943] Reserving offset range <0x4040_0000 [ 64K ]> from slave interface '/smartconnect_0/S00_AXI' to master interface '/smartconnect_0/M00_AXI'. This will be used by smartconnect on path for routing.
+INFO: [BD 5-943] Reserving offset range <0x4300_0000 [ 64K ]> from slave interface '/smartconnect_0/S00_AXI' to master interface '/smartconnect_0/M01_AXI'. This will be used by smartconnect on path for routing.
+INFO: [BD 5-943] Reserving offset range <0x4120_0000 [ 64K ]> from slave interface '/smartconnect_0/S00_AXI' to master interface '/smartconnect_0/M02_AXI'. This will be used by smartconnect on path for routing.
+INFO: [BD 5-943] Reserving offset range <0x4121_0000 [ 64K ]> from slave interface '/smartconnect_0/S00_AXI' to master interface '/smartconnect_0/M03_AXI'. This will be used by smartconnect on path for routing.
+INFO: [BD 5-943] Reserving offset range <0x4122_0000 [ 64K ]> from slave interface '/smartconnect_0/S00_AXI' to master interface '/smartconnect_0/M04_AXI'. This will be used by smartconnect on path for routing.
+INFO: [BD 5-943] Reserving offset range <0x4123_0000 [ 64K ]> from slave interface '/smartconnect_0/S00_AXI' to master interface '/smartconnect_0/M05_AXI'. This will be used by smartconnect on path for routing.
+INFO: [BD 5-943] Reserving offset range <0x4124_0000 [ 64K ]> from slave interface '/smartconnect_0/S00_AXI' to master interface '/smartconnect_0/M06_AXI'. This will be used by smartconnect on path for routing.
+INFO: [BD 5-943] Reserving offset range <0x4125_0000 [ 64K ]> from slave interface '/smartconnect_0/S00_AXI' to master interface '/smartconnect_0/M07_AXI'. This will be used by smartconnect on path for routing.
+INFO: [BD 5-943] Reserving offset range <0x4126_0000 [ 64K ]> from slave interface '/smartconnect_0/S00_AXI' to master interface '/smartconnect_0/M08_AXI'. This will be used by smartconnect on path for routing.
+INFO: [BD 5-943] Reserving offset range <0x4127_0000 [ 64K ]> from slave interface '/smartconnect_0/S00_AXI' to master interface '/smartconnect_0/M09_AXI'. This will be used by smartconnect on path for routing.
+INFO: [xilinx.com:ip:smartconnect:1.0-1] design_1_smartconnect_0_0: SmartConnect design_1_smartconnect_0_0 is in Low-Area Mode.
+xit::source_ipfile: Time (s): cpu = 00:00:06 ; elapsed = 00:00:07 . Memory (MB): peak = 693.668 ; gain = 24.848
+INFO: [BD 5-943] Reserving offset range <0x0000_0000 [ 512M ]> from slave interface '/smartconnect_1/S00_AXI' to master interface '/smartconnect_1/M00_AXI'. This will be used by smartconnect on path for routing.
+INFO: [BD 5-943] Reserving offset range <0x0000_0000 [ 512M ]> from slave interface '/smartconnect_1/S01_AXI' to master interface '/smartconnect_1/M00_AXI'. This will be used by smartconnect on path for routing.
+INFO: [xilinx.com:ip:smartconnect:1.0-1] design_1_smartconnect_1_0: SmartConnect design_1_smartconnect_1_0 is in High-performance Mode.
+INFO: [BD 5-943] Reserving offset range <0x0000_0000 [ 512M ]> from slave interface '/smartconnect_learning/S00_AXI' to master interface '/smartconnect_learning/M00_AXI'. This will be used by smartconnect on path for routing.
+INFO: [xilinx.com:ip:smartconnect:1.0-1] design_1_smartconnect_learning_0: SmartConnect design_1_smartconnect_learning_0 is in High-performance Mode.
+validate_bd_design: Time (s): cpu = 00:00:17 ; elapsed = 00:00:20 . Memory (MB): peak = 746.133 ; gain = 177.770
+# save_bd_design
+WARNING: [BD 41-2671] The dangling interface net <m00_aw_node_M_AXIS_ARB> will not be written out to the BD file.
+WARNING: [BD 41-2671] The dangling interface net <m01_aw_node_M_AXIS_ARB> will not be written out to the BD file.
+WARNING: [BD 41-2671] The dangling interface net <m02_aw_node_M_AXIS_ARB> will not be written out to the BD file.
+WARNING: [BD 41-2671] The dangling interface net <m03_aw_node_M_AXIS_ARB> will not be written out to the BD file.
+WARNING: [BD 41-2671] The dangling interface net <m04_aw_node_M_AXIS_ARB> will not be written out to the BD file.
+WARNING: [BD 41-2671] The dangling interface net <m05_aw_node_M_AXIS_ARB> will not be written out to the BD file.
+WARNING: [BD 41-2671] The dangling interface net <m06_aw_node_M_AXIS_ARB> will not be written out to the BD file.
+WARNING: [BD 41-2671] The dangling interface net <m07_aw_node_M_AXIS_ARB> will not be written out to the BD file.
+WARNING: [BD 41-2671] The dangling interface net <m08_aw_node_M_AXIS_ARB> will not be written out to the BD file.
+WARNING: [BD 41-2671] The dangling interface net <m09_aw_node_M_AXIS_ARB> will not be written out to the BD file.
+Wrote  : <D:\FPGA\sEMG-HMRS\build\vivado\hand_motion_reconstruction.srcs\sources_1\bd\design_1\design_1.bd> 
+# generate_target all [get_files design_1.bd]
+INFO: [BD 41-1662] The design 'design_1.bd' is already validated. Therefore parameter propagation will not be re-run.
+Verilog Output written to : d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/synth/design_1.v
+Verilog Output written to : d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/sim/design_1.v
+Verilog Output written to : d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/hdl/design_1_wrapper.v
+Exporting to file d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_smartconnect_0_0/bd_0/hw_handoff/design_1_smartconnect_0_0.hwh
+Generated Hardware Definition File d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_smartconnect_0_0/bd_0/synth/design_1_smartconnect_0_0.hwdef
+INFO: [BD 41-1029] Generation completed for the IP Integrator block smartconnect_0 .
+Exporting to file d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_smartconnect_1_0/bd_0/hw_handoff/design_1_smartconnect_1_0.hwh
+Generated Hardware Definition File d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_smartconnect_1_0/bd_0/synth/design_1_smartconnect_1_0.hwdef
+INFO: [BD 41-1029] Generation completed for the IP Integrator block smartconnect_1 .
+Exporting to file d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_smartconnect_learning_0/bd_0/hw_handoff/design_1_smartconnect_learning_0.hwh
+Generated Hardware Definition File d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_smartconnect_learning_0/bd_0/synth/design_1_smartconnect_learning_0.hwdef
+INFO: [BD 41-1029] Generation completed for the IP Integrator block smartconnect_learning .
+Exporting to file d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/hw_handoff/design_1.hwh
+Generated Hardware Definition File d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/synth/design_1.hwdef
+INFO: [BD 41-3262] Generated VHDL Instantiation Template file d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/design_1.vho
+INFO: [BD 41-3262] Generated Verilog Instantiation Template file d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/design_1.veo
+INFO: [BD 41-3262] Generated System Verilog Instantiation Template file d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/design_1_sv.sveo
+WARNING: [Vivado 12-4154] User modified property 'UserDisabled' (with value '0') was detected on 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_processing_system7_0_0/hdl/verilog/processing_system7_v5_5_processing_system7.v'.
+WARNING: [Vivado 12-4154] User modified property 'UserDisabled' (with value '0') was detected on 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_processing_system7_0_0/sim/design_1_processing_system7_0_0.v'.
+WARNING: [Vivado 12-4154] User modified property 'UserDisabled' (with value '0') was detected on 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_processing_system7_0_0/synth/design_1_processing_system7_0_0.v'.
+WARNING: [Vivado 12-4154] User modified property 'UserDisabled' (with value '0') was detected on 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ipshared/4b52/hdl/verilog/processing_system7_v5_5_atc.v'.
+WARNING: [Vivado 12-4154] User modified property 'UserDisabled' (with value '0') was detected on 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ipshared/4b52/hdl/verilog/processing_system7_v5_5_aw_atc.v'.
+WARNING: [Vivado 12-4154] User modified property 'UserDisabled' (with value '0') was detected on 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ipshared/4b52/hdl/verilog/processing_system7_v5_5_b_atc.v'.
+WARNING: [Vivado 12-4154] User modified property 'UserDisabled' (with value '0') was detected on 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ipshared/4b52/hdl/verilog/processing_system7_v5_5_trace_buffer.v'.
+WARNING: [Vivado 12-4154] User modified property 'UserDisabled' (with value '0') was detected on 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ipshared/4b52/hdl/verilog/processing_system7_v5_5_w_atc.v'.
+WARNING: [Vivado 12-4154] User modified property 'UserDisabled' (with value '0') was detected on 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ipshared/9a25/hdl/processing_system7_vip_v1_0_24_apis.v'.
+WARNING: [Vivado 12-4154] User modified property 'UserDisabled' (with value '0') was detected on 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ipshared/9a25/hdl/processing_system7_vip_v1_0_24_axi_acp.v'.
+WARNING: [Vivado 12-4154] User modified property 'UserDisabled' (with value '0') was detected on 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ipshared/9a25/hdl/processing_system7_vip_v1_0_24_axi_gp.v'.
+WARNING: [Vivado 12-4154] User modified property 'UserDisabled' (with value '0') was detected on 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ipshared/9a25/hdl/processing_system7_vip_v1_0_24_axi_hp.v'.
+WARNING: [Vivado 12-4154] User modified property 'UserDisabled' (with value '0') was detected on 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ipshared/9a25/hdl/processing_system7_vip_v1_0_24_local_params.v'.
+WARNING: [Vivado 12-4154] User modified property 'UserDisabled' (with value '0') was detected on 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ipshared/9a25/hdl/processing_system7_vip_v1_0_24_reg_init.v'.
+WARNING: [Vivado 12-4154] User modified property 'UserDisabled' (with value '0') was detected on 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ipshared/9a25/hdl/processing_system7_vip_v1_0_24_reg_params.v'.
+WARNING: [Vivado 12-4154] User modified property 'UserDisabled' (with value '0') was detected on 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ipshared/9a25/hdl/processing_system7_vip_v1_0_24_unused_ports.v'.
+WARNING: [Vivado 12-4154] User modified property 'UserDisabled' (with value '0') was detected on 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ipshared/9a25/hdl/processing_system7_vip_v1_0_vl_rfs.sv'.
+WARNING: [Vivado 12-4154] User modified property 'UserDisabled' (with value '0') was detected on 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ipshared/b16a/hdl/axi_vip_v1_1_vl_rfs.sv'.
+WARNING: [Vivado 12-4154] User modified property 'UserDisabled' (with value '0') was detected on 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ipshared/ec67/hdl/axi_infrastructure_v1_1_vl_rfs.v'.
+WARNING: [Vivado 12-4154] User modified property 'UserDisabled' (with value '0') was detected on 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_smartconnect_0_0/sim/design_1_smartconnect_0_0.sv'.
+WARNING: [Vivado 12-4154] User modified property 'UserDisabled' (with value '0') was detected on 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_smartconnect_0_0/synth/design_1_smartconnect_0_0.v'.
+WARNING: [Vivado 12-4154] User modified property 'UserDisabled' (with value '0') was detected on 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ipshared/b16a/hdl/axi_vip_v1_1_vl_rfs.sv'.
+WARNING: [Vivado 12-4154] User modified property 'UserDisabled' (with value '0') was detected on 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ipshared/bc4b/hdl/axi_register_slice_v2_1_vl_rfs.v'.
+WARNING: [Vivado 12-4154] User modified property 'UserDisabled' (with value '0') was detected on 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ipshared/ec67/hdl/axi_infrastructure_v1_1_vl_rfs.v'.
+WARNING: [Vivado 12-4154] User modified property 'UserDisabled' (with value '0') was detected on 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_smartconnect_1_0/sim/design_1_smartconnect_1_0.sv'.
+WARNING: [Vivado 12-4154] User modified property 'UserDisabled' (with value '0') was detected on 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_smartconnect_1_0/synth/design_1_smartconnect_1_0.v'.
+WARNING: [Vivado 12-4154] User modified property 'UserDisabled' (with value '0') was detected on 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ipshared/b16a/hdl/axi_vip_v1_1_vl_rfs.sv'.
+WARNING: [Vivado 12-4154] User modified property 'UserDisabled' (with value '0') was detected on 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ipshared/bc4b/hdl/axi_register_slice_v2_1_vl_rfs.v'.
+WARNING: [Vivado 12-4154] User modified property 'UserDisabled' (with value '0') was detected on 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ipshared/ec67/hdl/axi_infrastructure_v1_1_vl_rfs.v'.
+WARNING: [Vivado 12-4154] User modified property 'UserDisabled' (with value '0') was detected on 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ipshared/7e8c/hdl/axi_vdma_v6_3_rfs.v'.
+WARNING: [Vivado 12-4154] User modified property 'UserDisabled' (with value '0') was detected on 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ipshared/d654/simulation/fifo_generator_vlog_beh.v'.
+WARNING: [Vivado 12-4154] User modified property 'UserDisabled' (with value '0') was detected on 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_v_axi4s_vid_out_0_0/sim/design_1_v_axi4s_vid_out_0_0.v'.
+WARNING: [Vivado 12-4154] User modified property 'UserDisabled' (with value '0') was detected on 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_v_axi4s_vid_out_0_0/synth/design_1_v_axi4s_vid_out_0_0.v'.
+WARNING: [Vivado 12-4154] User modified property 'UserDisabled' (with value '0') was detected on 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ipshared/4705/hdl/v_vid_in_axi4s_v4_0_vl_rfs.v'.
+WARNING: [Vivado 12-4154] User modified property 'UserDisabled' (with value '0') was detected on 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ipshared/d1ca/hdl/v_axi4s_vid_out_v4_0_vl_rfs.v'.
+WARNING: [Vivado 12-4154] User modified property 'UserDisabled' (with value '0') was detected on 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_lcd_clk_fwd_0_0/sim/design_1_lcd_clk_fwd_0_0.v'.
+WARNING: [Vivado 12-4154] User modified property 'UserDisabled' (with value '0') was detected on 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_lcd_clk_fwd_0_0/synth/design_1_lcd_clk_fwd_0_0.v'.
+WARNING: [Vivado 12-4154] User modified property 'UserDisabled' (with value '0') was detected on 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_lcd_panel_adapter_0_1/sim/design_1_lcd_panel_adapter_0_1.v'.
+WARNING: [Vivado 12-4154] User modified property 'UserDisabled' (with value '0') was detected on 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_lcd_panel_adapter_0_1/synth/design_1_lcd_panel_adapter_0_1.v'.
+WARNING: [Vivado 12-4154] User modified property 'UserDisabled' (with value '0') was detected on 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_touch_gt911_0_0/sim/design_1_touch_gt911_0_0.v'.
+WARNING: [Vivado 12-4154] User modified property 'UserDisabled' (with value '0') was detected on 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_touch_gt911_0_0/synth/design_1_touch_gt911_0_0.v'.
+WARNING: [Vivado 12-4154] User modified property 'UserDisabled' (with value '0') was detected on 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_mpu6050_tilt_0_1/sim/design_1_mpu6050_tilt_0_1.v'.
+WARNING: [Vivado 12-4154] User modified property 'UserDisabled' (with value '0') was detected on 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_mpu6050_tilt_0_1/synth/design_1_mpu6050_tilt_0_1.v'.
+WARNING: [Vivado 12-4152] One or more user modified properties were detected. The reset_target command can be used to reset the targets data which will also reset all target properties.
+generate_target: Time (s): cpu = 00:00:07 ; elapsed = 00:00:18 . Memory (MB): peak = 828.809 ; gain = 82.676
+# close_bd_design [current_bd_design]
+# reset_run design_1_emg_learning_0_0_synth_1
+# reset_run synth_1
+# launch_runs impl_1 -to_step write_bitstream -jobs 8
+INFO: [IP_Flow 19-4993] Using cached IP synthesis design for IP design_1_smartconnect_0_0, cache-ID = 49e5f775103cff33; cache size = 219.206 MB.
+INFO: [IP_Flow 19-4993] Using cached IP synthesis design for IP design_1_smartconnect_1_0, cache-ID = 43c8c34d7dfb15d6; cache size = 219.206 MB.
+INFO: [IP_Flow 19-4993] Using cached IP synthesis design for IP design_1_smartconnect_learning_0, cache-ID = 58c1126bc42c5c7e; cache size = 219.206 MB.
+config_ip_cache: Time (s): cpu = 00:00:07 ; elapsed = 00:00:09 . Memory (MB): peak = 828.809 ; gain = 0.000
+[Mon Nov  2 12:36:52 2026] Launched design_1_emg_learning_0_0_synth_1, synth_1...
+Run output will be captured here:
+design_1_emg_learning_0_0_synth_1: D:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.runs/design_1_emg_learning_0_0_synth_1/runme.log
+synth_1: D:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.runs/synth_1/runme.log
+[Mon Nov  2 12:36:52 2026] Launched impl_1...
+Run output will be captured here: D:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.runs/impl_1/runme.log
+launch_runs: Time (s): cpu = 00:00:08 ; elapsed = 00:00:13 . Memory (MB): peak = 828.809 ; gain = 0.000
+# wait_on_run impl_1
+[Mon Nov  2 12:36:52 2026] Waiting for impl_1 to finish...
+
+*** Running vivado
+    with args -log design_1.vdi -applog -m64 -product Vivado -messageDb vivado.pb -mode batch -source design_1.tcl -notrace
+
+
+
+****** Vivado v2025.2 (64-bit)
+  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025
+  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025
+  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025
+  **** Start of session at: Mon Nov  2 12:39:04 2026
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+
+INFO: [Common 17-1239] XILINX_LOCAL_USER_DATA is set to 'no'.
+source design_1.tcl -notrace
+create_project: Time (s): cpu = 00:00:00 ; elapsed = 00:00:08 . Memory (MB): peak = 313.730 ; gain = 8.801
+INFO: [IP_Flow 19-234] Refreshing IP repositories
+INFO: [IP_Flow 19-1704] No user IP repositories specified
+INFO: [IP_Flow 19-2313] Loaded Vivado IP repository 'D:/FPGA/VIVADO/2025.2/Vivado/data/ip'.
+add_files: Time (s): cpu = 00:00:08 ; elapsed = 00:00:09 . Memory (MB): peak = 412.320 ; gain = 98.590
+Command: link_design -top design_1 -part xc7z020clg400-2
+Design is defaulting to srcset: sources_1
+Design is defaulting to constrset: constrs_1
+INFO: [Device 21-403] Loading part xc7z020clg400-2
+INFO: [Project 1-5699] Read binary netlist with skipMacroContent - 1
+INFO: [Project 1-454] Reading design checkpoint 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_axi_dma_0_0/design_1_axi_dma_0_0.dcp' for cell 'axi_dma_0'
+INFO: [Project 1-454] Reading design checkpoint 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_axi_gpio_0_0/design_1_axi_gpio_0_0.dcp' for cell 'axi_gpio_0'
+INFO: [Project 1-454] Reading design checkpoint 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_axi_gpio_1_0/design_1_axi_gpio_1_0.dcp' for cell 'axi_gpio_1'
+INFO: [Project 1-454] Reading design checkpoint 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_axi_gpio_2_0/design_1_axi_gpio_2_0.dcp' for cell 'axi_gpio_2'
+INFO: [Project 1-454] Reading design checkpoint 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_axi_gpio_3_0/design_1_axi_gpio_3_0.dcp' for cell 'axi_gpio_3'
+INFO: [Project 1-454] Reading design checkpoint 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_axi_gpio_4_0/design_1_axi_gpio_4_0.dcp' for cell 'axi_gpio_4'
+INFO: [Project 1-454] Reading design checkpoint 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_axi_gpio_5_0/design_1_axi_gpio_5_0.dcp' for cell 'axi_gpio_5'
+INFO: [Project 1-454] Reading design checkpoint 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_axi_gpio_6_0/design_1_axi_gpio_6_0.dcp' for cell 'axi_gpio_6'
+INFO: [Project 1-454] Reading design checkpoint 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_axi_gpio_7_0/design_1_axi_gpio_7_0.dcp' for cell 'axi_gpio_7'
+INFO: [Project 1-454] Reading design checkpoint 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_axi_vdma_0_0/design_1_axi_vdma_0_0.dcp' for cell 'axi_vdma_0'
+INFO: [Project 1-454] Reading design checkpoint 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_emg_learning_0_0/design_1_emg_learning_0_0.dcp' for cell 'emg_learning_0'
+INFO: [Project 1-454] Reading design checkpoint 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_emg_pl_export_0_7/design_1_emg_pl_export_0_7.dcp' for cell 'emg_pl_export_0'
+INFO: [Project 1-454] Reading design checkpoint 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_lcd_clk_fwd_0_0/design_1_lcd_clk_fwd_0_0.dcp' for cell 'lcd_clk_fwd_0'
+INFO: [Project 1-454] Reading design checkpoint 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_lcd_panel_adapter_0_1/design_1_lcd_panel_adapter_0_1.dcp' for cell 'lcd_panel_adapter_0'
+INFO: [Project 1-454] Reading design checkpoint 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_mpu6050_tilt_0_1/design_1_mpu6050_tilt_0_1.dcp' for cell 'mpu6050_tilt_0'
+INFO: [Project 1-454] Reading design checkpoint 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_mpu_attitude_0_0/design_1_mpu_attitude_0_0.dcp' for cell 'mpu_attitude_0'
+INFO: [Project 1-454] Reading design checkpoint 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_proc_sys_reset_0_0/design_1_proc_sys_reset_0_0.dcp' for cell 'proc_sys_reset_0'
+INFO: [Project 1-454] Reading design checkpoint 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_proc_sys_reset_1_0/design_1_proc_sys_reset_1_0.dcp' for cell 'proc_sys_reset_1'
+INFO: [Project 1-454] Reading design checkpoint 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_processing_system7_0_0/design_1_processing_system7_0_0.dcp' for cell 'processing_system7_0'
+INFO: [Project 1-454] Reading design checkpoint 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_smartconnect_0_0/design_1_smartconnect_0_0.dcp' for cell 'smartconnect_0'
+INFO: [Project 1-454] Reading design checkpoint 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_smartconnect_1_0/design_1_smartconnect_1_0.dcp' for cell 'smartconnect_1'
+INFO: [Project 1-454] Reading design checkpoint 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_smartconnect_learning_0/design_1_smartconnect_learning_0.dcp' for cell 'smartconnect_learning'
+INFO: [Project 1-454] Reading design checkpoint 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_touch_gt911_0_0/design_1_touch_gt911_0_0.dcp' for cell 'touch_gt911_0'
+INFO: [Project 1-454] Reading design checkpoint 'd:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_v_axi4s_vid_out_0_0/design_1_v_axi4s_vid_out_0_0.dcp' for cell 'v_axi4s_vid_out_0'
+Netlist sorting complete. Time (s): cpu = 00:00:01 ; elapsed = 00:00:01 . Memory (MB): peak = 824.891 ; gain = 0.000
+INFO: [Netlist 29-17] Analyzing 3940 Unisim elements for replacement
+INFO: [Netlist 29-28] Unisim Transformation completed in 1 CPU seconds
+INFO: [Project 1-479] Netlist was created with Vivado 2025.2
+INFO: [Project 1-570] Preparing netlist for logic optimization
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[0]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[0]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[0]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[10]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[10]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[10]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[11]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[11]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[11]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[12]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[12]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[12]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[13]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[13]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[13]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[14]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[14]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[14]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[15]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[15]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[15]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[16]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[16]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[16]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[17]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[17]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[17]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[18]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[18]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[18]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[19]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[19]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[19]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[1]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[1]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[1]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[20]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[20]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[20]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[21]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[21]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[21]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[22]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[22]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[22]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[23]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[23]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[23]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[2]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[2]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[2]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[3]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[3]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[3]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[4]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[4]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[4]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[5]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[5]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[5]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[6]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[6]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[6]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[7]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[7]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[7]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[8]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[8]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[8]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[9]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[9]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[9]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+Parsing XDC File [d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_processing_system7_0_0/design_1_processing_system7_0_0.xdc] for cell 'processing_system7_0/inst'
+Finished Parsing XDC File [d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_processing_system7_0_0/design_1_processing_system7_0_0.xdc] for cell 'processing_system7_0/inst'
+Parsing XDC File [d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_proc_sys_reset_0_0/design_1_proc_sys_reset_0_0_board.xdc] for cell 'proc_sys_reset_0/U0'
+Finished Parsing XDC File [d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_proc_sys_reset_0_0/design_1_proc_sys_reset_0_0_board.xdc] for cell 'proc_sys_reset_0/U0'
+Parsing XDC File [d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_smartconnect_0_0/bd_0/ip/ip_1/bd_48ac_psr_aclk_0_board.xdc] for cell 'smartconnect_0/inst/clk_map/psr_aclk/U0'
+Finished Parsing XDC File [d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_smartconnect_0_0/bd_0/ip/ip_1/bd_48ac_psr_aclk_0_board.xdc] for cell 'smartconnect_0/inst/clk_map/psr_aclk/U0'
+Parsing XDC File [d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_smartconnect_0_0/smartconnect.xdc] for cell 'smartconnect_0/inst'
+Finished Parsing XDC File [d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_smartconnect_0_0/smartconnect.xdc] for cell 'smartconnect_0/inst'
+Parsing XDC File [d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_axi_dma_0_0/design_1_axi_dma_0_0.xdc] for cell 'axi_dma_0/U0'
+Finished Parsing XDC File [d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_axi_dma_0_0/design_1_axi_dma_0_0.xdc] for cell 'axi_dma_0/U0'
+Parsing XDC File [d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_smartconnect_1_0/bd_0/ip/ip_1/bd_88fd_psr_aclk_0_board.xdc] for cell 'smartconnect_1/inst/clk_map/psr_aclk/U0'
+Finished Parsing XDC File [d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_smartconnect_1_0/bd_0/ip/ip_1/bd_88fd_psr_aclk_0_board.xdc] for cell 'smartconnect_1/inst/clk_map/psr_aclk/U0'
+Parsing XDC File [d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_smartconnect_1_0/smartconnect.xdc] for cell 'smartconnect_1/inst'
+Finished Parsing XDC File [d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_smartconnect_1_0/smartconnect.xdc] for cell 'smartconnect_1/inst'
+Parsing XDC File [d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_proc_sys_reset_1_0/design_1_proc_sys_reset_1_0_board.xdc] for cell 'proc_sys_reset_1/U0'
+Finished Parsing XDC File [d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_proc_sys_reset_1_0/design_1_proc_sys_reset_1_0_board.xdc] for cell 'proc_sys_reset_1/U0'
+Parsing XDC File [d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_axi_vdma_0_0/design_1_axi_vdma_0_0.xdc] for cell 'axi_vdma_0/U0'
+Finished Parsing XDC File [d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_axi_vdma_0_0/design_1_axi_vdma_0_0.xdc] for cell 'axi_vdma_0/U0'
+Parsing XDC File [d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_axi_gpio_0_0/design_1_axi_gpio_0_0_board.xdc] for cell 'axi_gpio_0/U0'
+Finished Parsing XDC File [d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_axi_gpio_0_0/design_1_axi_gpio_0_0_board.xdc] for cell 'axi_gpio_0/U0'
+Parsing XDC File [d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_axi_gpio_1_0/design_1_axi_gpio_1_0_board.xdc] for cell 'axi_gpio_1/U0'
+Finished Parsing XDC File [d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_axi_gpio_1_0/design_1_axi_gpio_1_0_board.xdc] for cell 'axi_gpio_1/U0'
+Parsing XDC File [d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_axi_gpio_2_0/design_1_axi_gpio_2_0_board.xdc] for cell 'axi_gpio_2/U0'
+Finished Parsing XDC File [d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_axi_gpio_2_0/design_1_axi_gpio_2_0_board.xdc] for cell 'axi_gpio_2/U0'
+Parsing XDC File [d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_axi_gpio_3_0/design_1_axi_gpio_3_0_board.xdc] for cell 'axi_gpio_3/U0'
+Finished Parsing XDC File [d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_axi_gpio_3_0/design_1_axi_gpio_3_0_board.xdc] for cell 'axi_gpio_3/U0'
+Parsing XDC File [d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_axi_gpio_4_0/design_1_axi_gpio_4_0_board.xdc] for cell 'axi_gpio_4/U0'
+Finished Parsing XDC File [d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_axi_gpio_4_0/design_1_axi_gpio_4_0_board.xdc] for cell 'axi_gpio_4/U0'
+Parsing XDC File [d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_axi_gpio_5_0/design_1_axi_gpio_5_0_board.xdc] for cell 'axi_gpio_5/U0'
+Finished Parsing XDC File [d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_axi_gpio_5_0/design_1_axi_gpio_5_0_board.xdc] for cell 'axi_gpio_5/U0'
+Parsing XDC File [d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_smartconnect_learning_0/bd_0/ip/ip_1/bd_fedc_psr_aclk_0_board.xdc] for cell 'smartconnect_learning/inst/clk_map/psr_aclk/U0'
+Finished Parsing XDC File [d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_smartconnect_learning_0/bd_0/ip/ip_1/bd_fedc_psr_aclk_0_board.xdc] for cell 'smartconnect_learning/inst/clk_map/psr_aclk/U0'
+Parsing XDC File [d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_smartconnect_learning_0/smartconnect.xdc] for cell 'smartconnect_learning/inst'
+Finished Parsing XDC File [d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_smartconnect_learning_0/smartconnect.xdc] for cell 'smartconnect_learning/inst'
+Parsing XDC File [d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_axi_gpio_6_0/design_1_axi_gpio_6_0_board.xdc] for cell 'axi_gpio_6/U0'
+Finished Parsing XDC File [d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_axi_gpio_6_0/design_1_axi_gpio_6_0_board.xdc] for cell 'axi_gpio_6/U0'
+Parsing XDC File [d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_axi_gpio_7_0/design_1_axi_gpio_7_0_board.xdc] for cell 'axi_gpio_7/U0'
+Finished Parsing XDC File [d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_axi_gpio_7_0/design_1_axi_gpio_7_0_board.xdc] for cell 'axi_gpio_7/U0'
+Parsing XDC File [D:/FPGA/sEMG-HMRS/board/constraints/hz_zynq_ads1299_bd.xdc]
+Finished Parsing XDC File [D:/FPGA/sEMG-HMRS/board/constraints/hz_zynq_ads1299_bd.xdc]
+Parsing XDC File [D:/FPGA/sEMG-HMRS/board/constraints/hz_zynq_clock_groups.xdc]
+Finished Parsing XDC File [D:/FPGA/sEMG-HMRS/board/constraints/hz_zynq_clock_groups.xdc]
+Parsing XDC File [D:/FPGA/sEMG-HMRS/board/constraints/hz_zynq_lcd.xdc]
+Finished Parsing XDC File [D:/FPGA/sEMG-HMRS/board/constraints/hz_zynq_lcd.xdc]
+Parsing XDC File [D:/FPGA/sEMG-HMRS/board/constraints/hz_zynq_hand.xdc]
+Finished Parsing XDC File [D:/FPGA/sEMG-HMRS/board/constraints/hz_zynq_hand.xdc]
+Parsing XDC File [D:/FPGA/sEMG-HMRS/board/constraints/hz_zynq_imu_clock_groups.xdc]
+Finished Parsing XDC File [D:/FPGA/sEMG-HMRS/board/constraints/hz_zynq_imu_clock_groups.xdc]
+Parsing XDC File [d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_axi_dma_0_0/design_1_axi_dma_0_0_clocks.xdc] for cell 'axi_dma_0/U0'
+Finished Parsing XDC File [d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_axi_dma_0_0/design_1_axi_dma_0_0_clocks.xdc] for cell 'axi_dma_0/U0'
+Parsing XDC File [d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_axi_vdma_0_0/design_1_axi_vdma_0_0_clocks.xdc] for cell 'axi_vdma_0/U0'
+Finished Parsing XDC File [d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_axi_vdma_0_0/design_1_axi_vdma_0_0_clocks.xdc] for cell 'axi_vdma_0/U0'
+Parsing XDC File [d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_v_axi4s_vid_out_0_0/design_1_v_axi4s_vid_out_0_0_clocks.xdc] for cell 'v_axi4s_vid_out_0/inst'
+Finished Parsing XDC File [d:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_v_axi4s_vid_out_0_0/design_1_v_axi4s_vid_out_0_0_clocks.xdc] for cell 'v_axi4s_vid_out_0/inst'
+Parsing XDC File [D:/FPGA/sEMG-HMRS/board/constraints/hz_zynq_lcd_timing.xdc]
+INFO: [Timing 38-35] Done setting XDC timing constraints. [D:/FPGA/sEMG-HMRS/board/constraints/hz_zynq_lcd_timing.xdc:8]
+INFO: [Timing 38-2] Deriving generated clocks [D:/FPGA/sEMG-HMRS/board/constraints/hz_zynq_lcd_timing.xdc:8]
+create_generated_clock: Time (s): cpu = 00:00:08 ; elapsed = 00:00:07 . Memory (MB): peak = 1636.805 ; gain = 635.551
+Finished Parsing XDC File [D:/FPGA/sEMG-HMRS/board/constraints/hz_zynq_lcd_timing.xdc]
+WARNING: [XPM_CDC_SINGLE: TCL-1000] The source and destination clocks are the same. 
+     Instance: axi_vdma_0/U0/I_RST_MODULE/GEN_RESET_FOR_MM2S.RESET_I/GEN_RESET_FOR_ASYNC.AXIS_RESET_CDC_I 
+  This will add unnecessary latency to the design. Please check the design for the following: 
+ 1) Manually instantiated XPM_CDC modules: AMD recommends that you remove these modules. 
+ 2) AMD IP that contains XPM_CDC modules: Verify the connections to the IP to determine whether you can safely ignore this message.
+ [D:/FPGA/VIVADO/2025.2/Vivado/data/ip/xpm/xpm_cdc/tcl/xpm_cdc_single.tcl:5]
+WARNING: [XPM_CDC_SINGLE: TCL-1000] The source and destination clocks are the same. 
+     Instance: axi_vdma_0/U0/I_RST_MODULE/GEN_RESET_FOR_MM2S.RESET_I/GEN_MIN_FOR_ASYNC.LITE_IDLE_CDC_I 
+  This will add unnecessary latency to the design. Please check the design for the following: 
+ 1) Manually instantiated XPM_CDC modules: AMD recommends that you remove these modules. 
+ 2) AMD IP that contains XPM_CDC modules: Verify the connections to the IP to determine whether you can safely ignore this message.
+ [D:/FPGA/VIVADO/2025.2/Vivado/data/ip/xpm/xpm_cdc/tcl/xpm_cdc_single.tcl:5]
+WARNING: [XPM_CDC_SINGLE: TCL-1000] The source and destination clocks are the same. 
+     Instance: axi_vdma_0/U0/I_RST_MODULE/GEN_RESET_FOR_MM2S.RESET_I/GEN_MIN_FOR_ASYNC.LITE_MIN_CDC_I 
+  This will add unnecessary latency to the design. Please check the design for the following: 
+ 1) Manually instantiated XPM_CDC modules: AMD recommends that you remove these modules. 
+ 2) AMD IP that contains XPM_CDC modules: Verify the connections to the IP to determine whether you can safely ignore this message.
+ [D:/FPGA/VIVADO/2025.2/Vivado/data/ip/xpm/xpm_cdc/tcl/xpm_cdc_single.tcl:5]
+WARNING: [XPM_CDC_SINGLE: TCL-1000] The source and destination clocks are the same. 
+     Instance: axi_vdma_0/U0/I_RST_MODULE/GEN_RESET_FOR_MM2S.RESET_I/GEN_MIN_FOR_ASYNC.AXIS_IDLE_CDC_I 
+  This will add unnecessary latency to the design. Please check the design for the following: 
+ 1) Manually instantiated XPM_CDC modules: AMD recommends that you remove these modules. 
+ 2) AMD IP that contains XPM_CDC modules: Verify the connections to the IP to determine whether you can safely ignore this message.
+ [D:/FPGA/VIVADO/2025.2/Vivado/data/ip/xpm/xpm_cdc/tcl/xpm_cdc_single.tcl:5]
+WARNING: [XPM_CDC_SINGLE: TCL-1000] The source and destination clocks are the same. 
+     Instance: axi_vdma_0/U0/I_RST_MODULE/GEN_RESET_FOR_MM2S.RESET_I/GEN_MIN_FOR_ASYNC.AXIS_MIN_CDC_I 
+  This will add unnecessary latency to the design. Please check the design for the following: 
+ 1) Manually instantiated XPM_CDC modules: AMD recommends that you remove these modules. 
+ 2) AMD IP that contains XPM_CDC modules: Verify the connections to the IP to determine whether you can safely ignore this message.
+ [D:/FPGA/VIVADO/2025.2/Vivado/data/ip/xpm/xpm_cdc/tcl/xpm_cdc_single.tcl:5]
+WARNING: [XPM_CDC_SINGLE: TCL-1000] The source and destination clocks are the same. 
+     Instance: axi_vdma_0/U0/I_RST_MODULE/GEN_RESET_FOR_MM2S.RESET_I/GEN_RESET_FOR_ASYNC.HARD_RESET_CDC_I 
+  This will add unnecessary latency to the design. Please check the design for the following: 
+ 1) Manually instantiated XPM_CDC modules: AMD recommends that you remove these modules. 
+ 2) AMD IP that contains XPM_CDC modules: Verify the connections to the IP to determine whether you can safely ignore this message.
+ [D:/FPGA/VIVADO/2025.2/Vivado/data/ip/xpm/xpm_cdc/tcl/xpm_cdc_single.tcl:5]
+WARNING: [XPM_CDC_SINGLE: TCL-1000] The source and destination clocks are the same. 
+     Instance: axi_vdma_0/U0/AXI_LITE_REG_INTERFACE_I/GEN_MM2S_LITE_CROSSINGS.GEN_MM2S_CROSSINGS_ASYNC.MM2S_INTRPT_CROSSING_I 
+  This will add unnecessary latency to the design. Please check the design for the following: 
+ 1) Manually instantiated XPM_CDC modules: AMD recommends that you remove these modules. 
+ 2) AMD IP that contains XPM_CDC modules: Verify the connections to the IP to determine whether you can safely ignore this message.
+ [D:/FPGA/VIVADO/2025.2/Vivado/data/ip/xpm/xpm_cdc/tcl/xpm_cdc_single.tcl:5]
+INFO: [Project 1-1714] 247 XPM XDC files have been applied to the design.
+INFO: [Opt 31-138] Pushed 0 inverter(s) to 0 load pin(s).
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.028 . Memory (MB): peak = 1636.805 ; gain = 0.000
+INFO: [Project 1-111] Unisim Transformation Summary:
+  A total of 959 instances were transformed.
+  IOBUF => IOBUF (IBUF, OBUFT): 27 instances
+  RAM16X1D => RAM32X1D (RAMD32(x2)): 2 instances
+  RAM16X1S => RAM32X1S (RAMS32): 474 instances
+  RAM32M => RAM32M (RAMD32(x6), RAMS32(x2)): 227 instances
+  RAM32X1D => RAM32X1D (RAMD32(x2)): 14 instances
+  RAM32X1S => RAM32X1S (RAMS32): 110 instances
+  RAM64M => RAM64M (RAMD64E(x4)): 103 instances
+  RAM64X1D => RAM64X1D (RAMD64E(x2)): 2 instances
+
+38 Infos, 79 Warnings, 0 Critical Warnings and 0 Errors encountered.
+link_design completed successfully
+link_design: Time (s): cpu = 00:00:27 ; elapsed = 00:00:30 . Memory (MB): peak = 1636.805 ; gain = 1224.484
+Command: opt_design
+Attempting to get a license for feature 'Implementation' and/or device 'xc7z020'
+INFO: [Common 17-349] Got license for feature 'Implementation' and/or device 'xc7z020'
+Running DRC as a precondition to command opt_design
+
+Starting DRC Task
+INFO: [DRC 23-27] Running DRC with 2 threads
+INFO: [Project 1-461] DRC finished with 0 Errors
+INFO: [Project 1-462] Please refer to the DRC report (report_drc) for more information.
+
+Time (s): cpu = 00:00:01 ; elapsed = 00:00:00.856 . Memory (MB): peak = 1636.805 ; gain = 0.000
+
+Starting Cache Timing Information Task
+INFO: [Timing 38-35] Done setting XDC timing constraints.
+Ending Cache Timing Information Task | Checksum: 1f79ea5bf
+
+Time (s): cpu = 00:00:04 ; elapsed = 00:00:03 . Memory (MB): peak = 1636.805 ; gain = 0.000
+
+Starting Logic Optimization Task
+
+Phase 1 Initialization
+
+Phase 1.1 Core Generation And Design Setup
+Phase 1.1 Core Generation And Design Setup | Checksum: 1f79ea5bf
+
+Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.050 . Memory (MB): peak = 2080.895 ; gain = 0.000
+
+Phase 1.2 Setup Constraints And Sort Netlist
+Phase 1.2 Setup Constraints And Sort Netlist | Checksum: 1f79ea5bf
+
+Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.093 . Memory (MB): peak = 2080.895 ; gain = 0.000
+Phase 1 Initialization | Checksum: 1f79ea5bf
+
+Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.101 . Memory (MB): peak = 2080.895 ; gain = 0.000
+
+Phase 2 Timer Update And Timing Data Collection
+
+Phase 2.1 Detect if minReqCache needed
+Phase 2.1 Detect if minReqCache needed | Checksum: 1f79ea5bf
+
+Time (s): cpu = 00:00:01 ; elapsed = 00:00:00.181 . Memory (MB): peak = 2093.145 ; gain = 12.250
+
+Phase 2.2 Timer Update
+Phase 2.2 Timer Update | Checksum: 1f79ea5bf
+
+Time (s): cpu = 00:00:03 ; elapsed = 00:00:01 . Memory (MB): peak = 2093.145 ; gain = 12.250
+
+Phase 2.3 Timing Data Collection
+Phase 2.3 Timing Data Collection | Checksum: 1f79ea5bf
+
+Time (s): cpu = 00:00:03 ; elapsed = 00:00:01 . Memory (MB): peak = 2093.145 ; gain = 12.250
+Phase 2 Timer Update And Timing Data Collection | Checksum: 1f79ea5bf
+
+Time (s): cpu = 00:00:03 ; elapsed = 00:00:01 . Memory (MB): peak = 2093.145 ; gain = 12.250
+
+Phase 3 Retarget
+INFO: [Opt 31-1851] Number of loadless carry chains removed were: 0
+INFO: [Opt 31-1834] Total Chains To Be Transformed Were: 0 AND Number of Transformed insts Created are: 0
+INFO: [Opt 31-1566] Pulled 16 inverters resulting in an inversion of 138 pins
+INFO: [Opt 31-138] Pushed 27 inverter(s) to 164 load pin(s).
+INFO: [Opt 31-49] Retargeted 0 cell(s).
+Phase 3 Retarget | Checksum: ec1e43c7
+
+Time (s): cpu = 00:00:04 ; elapsed = 00:00:03 . Memory (MB): peak = 2093.145 ; gain = 12.250
+Retarget | Checksum: ec1e43c7
+INFO: [Opt 31-389] Phase Retarget created 136 cells and removed 472 cells
+INFO: [Opt 31-1021] In phase Retarget, 551 netlist objects are constrained preventing optimization. Please run opt_design with -debug_log to get more detail. 
+
+Phase 4 Constant propagation
+INFO: [Opt 31-138] Pushed 1 inverter(s) to 1 load pin(s).
+Phase 4 Constant propagation | Checksum: 14ccb4999
+
+Time (s): cpu = 00:00:04 ; elapsed = 00:00:03 . Memory (MB): peak = 2093.145 ; gain = 12.250
+Constant propagation | Checksum: 14ccb4999
+INFO: [Opt 31-389] Phase Constant propagation created 223 cells and removed 1174 cells
+INFO: [Opt 31-1021] In phase Constant propagation, 512 netlist objects are constrained preventing optimization. Please run opt_design with -debug_log to get more detail. 
+
+Phase 5 Sweep
+INFO: [Constraints 18-11670] Building netlist checker database with flags, 0x8
+Done building netlist checker database: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.030 . Memory (MB): peak = 2093.145 ; gain = 0.000
+INFO: [Constraints 18-11670] Building netlist checker database with flags, 0x8
+Done building netlist checker database: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.030 . Memory (MB): peak = 2093.145 ; gain = 0.000
+Phase 5 Sweep | Checksum: 13a609633
+
+Time (s): cpu = 00:00:07 ; elapsed = 00:00:06 . Memory (MB): peak = 2093.145 ; gain = 12.250
+Sweep | Checksum: 13a609633
+INFO: [Opt 31-389] Phase Sweep created 1 cells and removed 1508 cells
+INFO: [Opt 31-1021] In phase Sweep, 691 netlist objects are constrained preventing optimization. Please run opt_design with -debug_log to get more detail. 
+
+Phase 6 BUFG optimization
+INFO: [Opt 31-194] Inserted BUFG pl_clk_0_IBUF_BUFG_inst to drive 8637 load(s) on clock net pl_clk_0_IBUF_BUFG
+INFO: [Opt 31-193] Inserted 1 BUFG(s) on clock nets
+Phase 6 BUFG optimization | Checksum: 145dd9b88
+
+Time (s): cpu = 00:00:08 ; elapsed = 00:00:07 . Memory (MB): peak = 2093.145 ; gain = 12.250
+BUFG optimization | Checksum: 145dd9b88
+INFO: [Opt 31-662] Phase BUFG optimization created 1 cells of which 1 are BUFGs and removed 0 cells.
+
+Phase 7 Shift Register Optimization
+INFO: [Opt 31-1064] SRL Remap converted 0 SRLs to 0 registers and converted 0 registers of register chains to 0 SRLs
+Phase 7 Shift Register Optimization | Checksum: 145dd9b88
+
+Time (s): cpu = 00:00:08 ; elapsed = 00:00:07 . Memory (MB): peak = 2093.145 ; gain = 12.250
+Shift Register Optimization | Checksum: 145dd9b88
+INFO: [Opt 31-389] Phase Shift Register Optimization created 0 cells and removed 0 cells
+
+Phase 8 Post Processing Netlist
+Phase 8 Post Processing Netlist | Checksum: d5ad6a19
+
+Time (s): cpu = 00:00:09 ; elapsed = 00:00:07 . Memory (MB): peak = 2093.145 ; gain = 12.250
+Post Processing Netlist | Checksum: d5ad6a19
+INFO: [Opt 31-389] Phase Post Processing Netlist created 0 cells and removed 0 cells
+INFO: [Opt 31-1021] In phase Post Processing Netlist, 469 netlist objects are constrained preventing optimization. Please run opt_design with -debug_log to get more detail. 
+
+Phase 9 Finalization
+
+Phase 9.1 Finalizing Design Cores and Updating Shapes
+Phase 9.1 Finalizing Design Cores and Updating Shapes | Checksum: 1239903b8
+
+Time (s): cpu = 00:00:10 ; elapsed = 00:00:08 . Memory (MB): peak = 2093.145 ; gain = 12.250
+
+Phase 9.2 Verifying Netlist Connectivity
+
+Starting Connectivity Check Task
+
+Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.091 . Memory (MB): peak = 2093.145 ; gain = 0.000
+Phase 9.2 Verifying Netlist Connectivity | Checksum: 1239903b8
+
+Time (s): cpu = 00:00:10 ; elapsed = 00:00:08 . Memory (MB): peak = 2093.145 ; gain = 12.250
+Phase 9 Finalization | Checksum: 1239903b8
+
+Time (s): cpu = 00:00:10 ; elapsed = 00:00:08 . Memory (MB): peak = 2093.145 ; gain = 12.250
+Opt_design Change Summary
+=========================
+
+
+-------------------------------------------------------------------------------------------------------------------------
+|  Phase                        |  #Cells created  |  #Cells Removed  |  #Constrained objects preventing optimizations  |
+-------------------------------------------------------------------------------------------------------------------------
+|  Retarget                     |             136  |             472  |                                            551  |
+|  Constant propagation         |             223  |            1174  |                                            512  |
+|  Sweep                        |               1  |            1508  |                                            691  |
+|  BUFG optimization            |               1  |               0  |                                              0  |
+|  Shift Register Optimization  |               0  |               0  |                                              0  |
+|  Post Processing Netlist      |               0  |               0  |                                            469  |
+-------------------------------------------------------------------------------------------------------------------------
+
+
+Ending Logic Optimization Task | Checksum: 1239903b8
+
+Time (s): cpu = 00:00:10 ; elapsed = 00:00:08 . Memory (MB): peak = 2093.145 ; gain = 12.250
+
+Starting Power Optimization Task
+INFO: [Pwropt 34-132] Skipping clock gating for clocks with a period < 2.00 ns.
+INFO: [Pwropt 34-9] Applying IDT optimizations ...
+INFO: [Pwropt 34-10] Applying ODC optimizations ...
+INFO: [Timing 38-35] Done setting XDC timing constraints.
+Running Vector-less Activity Propagation...
+
+Finished Running Vector-less Activity Propagation
+
+
+Starting PowerOpt Patch Enables Task
+INFO: [Pwropt 34-162] WRITE_MODE attribute of 0 BRAM(s) out of a total of 54 has been updated to save power. Run report_power_opt to get a complete listing of the BRAMs updated.
+INFO: [Pwropt 34-201] Structural ODC has moved 2 WE to EN ports
+Number of BRAM Ports augmented: 31 newly gated: 18 Total Ports: 108
+Number of Flops added for Enable Generation: 2
+
+Ending PowerOpt Patch Enables Task | Checksum: 15d5b3095
+
+Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.377 . Memory (MB): peak = 2295.625 ; gain = 0.000
+Ending Power Optimization Task | Checksum: 15d5b3095
+
+Time (s): cpu = 00:00:22 ; elapsed = 00:00:15 . Memory (MB): peak = 2295.625 ; gain = 202.480
+
+Starting Final Cleanup Task
+
+Starting Logic Optimization Task
+INFO: [Timing 38-35] Done setting XDC timing constraints.
+Ending Logic Optimization Task | Checksum: 12b5b5414
+
+Time (s): cpu = 00:00:07 ; elapsed = 00:00:05 . Memory (MB): peak = 2295.625 ; gain = 0.000
+Ending Final Cleanup Task | Checksum: 12b5b5414
+
+Time (s): cpu = 00:00:09 ; elapsed = 00:00:08 . Memory (MB): peak = 2295.625 ; gain = 0.000
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.038 . Memory (MB): peak = 2295.625 ; gain = 0.000
+INFO: [Common 17-83] Releasing license: Implementation
+72 Infos, 79 Warnings, 0 Critical Warnings and 0 Errors encountered.
+opt_design completed successfully
+opt_design: Time (s): cpu = 00:00:49 ; elapsed = 00:00:38 . Memory (MB): peak = 2295.625 ; gain = 658.820
+INFO: [Vivado 12-24828] Executing command : report_drc -file design_1_drc_opted.rpt -pb design_1_drc_opted.pb -rpx design_1_drc_opted.rpx
+Command: report_drc -file design_1_drc_opted.rpt -pb design_1_drc_opted.pb -rpx design_1_drc_opted.rpx
+INFO: [IP_Flow 19-1839] IP Catalog is up to date.
+INFO: [DRC 23-27] Running DRC with 2 threads
+INFO: [Vivado_Tcl 2-168] The results of DRC are in file D:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.runs/impl_1/design_1_drc_opted.rpt.
+report_drc completed successfully
+INFO: [Timing 38-480] Writing timing data to binary archive.
+Wrote PlaceDB: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 2295.625 ; gain = 0.000
+Wrote PulsedLatchDB: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 2295.625 ; gain = 0.000
+Writing XDEF routing.
+Writing XDEF routing logical nets.
+Write ShapeDB Complete: Time (s): cpu = 00:00:01 ; elapsed = 00:00:00.101 . Memory (MB): peak = 2295.625 ; gain = 0.000
+Writing XDEF routing special nets.
+Wrote RouteStorage: Time (s): cpu = 00:00:01 ; elapsed = 00:00:00.101 . Memory (MB): peak = 2295.625 ; gain = 0.000
+Wrote PlaceStorage: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.013 . Memory (MB): peak = 2295.625 ; gain = 0.000
+Wrote Netlist Cache: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.002 . Memory (MB): peak = 2295.625 ; gain = 0.000
+Wrote Device Cache: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.013 . Memory (MB): peak = 2295.625 ; gain = 0.000
+Write Physdb Complete: Time (s): cpu = 00:00:01 ; elapsed = 00:00:00.146 . Memory (MB): peak = 2295.625 ; gain = 0.000
+INFO: [Common 17-1381] The checkpoint 'D:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.runs/impl_1/design_1_opt.dcp' has been generated.
+Command: place_design
+Attempting to get a license for feature 'Implementation' and/or device 'xc7z020'
+INFO: [Common 17-349] Got license for feature 'Implementation' and/or device 'xc7z020'
+INFO: [Common 17-83] Releasing license: Implementation
+INFO: [DRC 23-27] Running DRC with 2 threads
+INFO: [Vivado_Tcl 4-198] DRC finished with 0 Errors
+INFO: [Vivado_Tcl 4-199] Please refer to the DRC report (report_drc) for more information.
+INFO: [Timing 38-35] Done setting XDC timing constraints.
+Running DRC as a precondition to command place_design
+INFO: [DRC 23-27] Running DRC with 2 threads
+INFO: [Vivado_Tcl 4-198] DRC finished with 0 Errors, 42 Warnings
+INFO: [Vivado_Tcl 4-199] Please refer to the DRC report (report_drc) for more information.
+INFO: [Place 30-611] Multithreading enabled for place_design using a maximum of 2 CPUs
+
+Starting Placer Task
+
+Phase 1 Placer Initialization
+
+Phase 1.1 Placer Initialization Netlist Sorting
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.050 . Memory (MB): peak = 2295.625 ; gain = 0.000
+Phase 1.1 Placer Initialization Netlist Sorting | Checksum: 54579fd2
+
+Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.066 . Memory (MB): peak = 2295.625 ; gain = 0.000
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.037 . Memory (MB): peak = 2295.625 ; gain = 0.000
+
+Phase 1.2 IO Placement/ Clock Placement/ Build Placer Device
+Phase 1.2 IO Placement/ Clock Placement/ Build Placer Device | Checksum: 1332c31c9
+
+Time (s): cpu = 00:00:05 ; elapsed = 00:00:04 . Memory (MB): peak = 2295.625 ; gain = 0.000
+
+Phase 1.3 Build Placer Netlist Model
+Phase 1.3 Build Placer Netlist Model | Checksum: 1481de10b
+
+Time (s): cpu = 00:00:21 ; elapsed = 00:00:15 . Memory (MB): peak = 2295.625 ; gain = 0.000
+
+Phase 1.4 Constrain Clocks/Macros
+Phase 1.4 Constrain Clocks/Macros | Checksum: 1481de10b
+
+Time (s): cpu = 00:00:21 ; elapsed = 00:00:15 . Memory (MB): peak = 2295.625 ; gain = 0.000
+Phase 1 Placer Initialization | Checksum: 1481de10b
+
+Time (s): cpu = 00:00:21 ; elapsed = 00:00:16 . Memory (MB): peak = 2295.625 ; gain = 0.000
+
+Phase 2 Global Placement
+
+Phase 2.1 Floorplanning
+Phase 2.1 Floorplanning | Checksum: 144af6235
+
+Time (s): cpu = 00:00:30 ; elapsed = 00:00:21 . Memory (MB): peak = 2295.625 ; gain = 0.000
+
+Phase 2.2 Update Timing before SLR Path Opt
+Phase 2.2 Update Timing before SLR Path Opt | Checksum: 16369862d
+
+Time (s): cpu = 00:00:37 ; elapsed = 00:00:25 . Memory (MB): peak = 2295.625 ; gain = 0.000
+
+Phase 2.3 Post-Processing in Floorplanning
+Phase 2.3 Post-Processing in Floorplanning | Checksum: 16369862d
+
+Time (s): cpu = 00:00:37 ; elapsed = 00:00:25 . Memory (MB): peak = 2295.625 ; gain = 0.000
+
+Phase 2.4 Global Place Phase1
+Phase 2.4 Global Place Phase1 | Checksum: 1a19a1f18
+
+Time (s): cpu = 00:01:33 ; elapsed = 00:00:59 . Memory (MB): peak = 2295.625 ; gain = 0.000
+
+Phase 2.5 Global Place Phase2
+
+Phase 2.5.1 UpdateTiming Before Physical Synthesis
+Phase 2.5.1 UpdateTiming Before Physical Synthesis | Checksum: d2cc249d
+
+Time (s): cpu = 00:01:40 ; elapsed = 00:01:03 . Memory (MB): peak = 2295.625 ; gain = 0.000
+
+Phase 2.5.2 Physical Synthesis In Placer
+INFO: [Physopt 32-1035] Found 4 LUTNM shape to break, 1957 LUT instances to create LUTNM shape
+INFO: [Physopt 32-1044] Break lutnm for timing: one critical 4, two critical 0, total 4, new lutff created 0
+INFO: [Physopt 32-1138] End 1 Pass. Optimized 808 nets or LUTs. Breaked 4 LUTs, combined 804 existing LUTs and moved 0 existing LUT
+INFO: [Physopt 32-65] No nets found for high-fanout optimization.
+INFO: [Physopt 32-232] Optimized 0 net. Created 0 new instance.
+INFO: [Physopt 32-775] End 1 Pass. Optimized 0 net or cell. Created 0 new cell, deleted 0 existing cell and moved 0 existing cell
+INFO: [Physopt 32-456] No candidate cells for DSP register optimization found in the design.
+INFO: [Physopt 32-775] End 2 Pass. Optimized 0 net or cell. Created 0 new cell, deleted 0 existing cell and moved 0 existing cell
+INFO: [Physopt 32-1123] No candidate cells found for Shift Register to Pipeline optimization
+INFO: [Physopt 32-775] End 2 Pass. Optimized 0 net or cell. Created 0 new cell, deleted 0 existing cell and moved 0 existing cell
+INFO: [Physopt 32-1401] No candidate cells found for Shift Register optimization.
+INFO: [Physopt 32-677] No candidate cells for Shift Register optimization found in the design
+INFO: [Physopt 32-775] End 1 Pass. Optimized 0 net or cell. Created 0 new cell, deleted 0 existing cell and moved 0 existing cell
+INFO: [Physopt 32-526] No candidate cells for BRAM register optimization found in the design
+INFO: [Physopt 32-775] End 1 Pass. Optimized 0 net or cell. Created 0 new cell, deleted 0 existing cell and moved 0 existing cell
+INFO: [Physopt 32-846] No candidate cells for URAM register optimization found in the design
+INFO: [Physopt 32-775] End 1 Pass. Optimized 0 net or cell. Created 0 new cell, deleted 0 existing cell and moved 0 existing cell
+INFO: [Physopt 32-846] No candidate cells for URAM register optimization found in the design
+INFO: [Physopt 32-775] End 1 Pass. Optimized 0 net or cell. Created 0 new cell, deleted 0 existing cell and moved 0 existing cell
+INFO: [Physopt 32-949] No candidate nets found for dynamic/static region interface net replication
+INFO: [Physopt 32-775] End 1 Pass. Optimized 0 net or cell. Created 0 new cell, deleted 0 existing cell and moved 0 existing cell
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.035 . Memory (MB): peak = 2295.625 ; gain = 0.000
+
+Summary of Physical Synthesis Optimizations
+============================================
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+|  Optimization                                     |  Added Cells  |  Removed Cells  |  Optimized Cells/Nets  |  Dont Touch  |  Iterations  |  Elapsed   |
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+|  LUT Combining                                    |            4  |            804  |                   808  |           0  |           1  |  00:00:01  |
+|  Retime                                           |            0  |              0  |                     0  |           0  |           1  |  00:00:00  |
+|  Very High Fanout                                 |            0  |              0  |                     0  |           0  |           1  |  00:00:00  |
+|  DSP Register                                     |            0  |              0  |                     0  |           6  |           1  |  00:00:00  |
+|  Shift Register to Pipeline                       |            0  |              0  |                     0  |           0  |           1  |  00:00:00  |
+|  Shift Register                                   |            0  |              0  |                     0  |           0  |           1  |  00:00:00  |
+|  BRAM Register                                    |            0  |              0  |                     0  |           0  |           1  |  00:00:00  |
+|  URAM Register                                    |            0  |              0  |                     0  |           0  |           1  |  00:00:00  |
+|  Dynamic/Static Region Interface Net Replication  |            0  |              0  |                     0  |           0  |           1  |  00:00:00  |
+|  Total                                            |            4  |            804  |                   808  |           6  |           9  |  00:00:02  |
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Phase 2.5.2 Physical Synthesis In Placer | Checksum: 1fb1721fd
+
+Time (s): cpu = 00:01:49 ; elapsed = 00:01:10 . Memory (MB): peak = 2295.625 ; gain = 0.000
+Phase 2.5 Global Place Phase2 | Checksum: 1950472b5
+
+Time (s): cpu = 00:01:51 ; elapsed = 00:01:11 . Memory (MB): peak = 2295.625 ; gain = 0.000
+Phase 2 Global Placement | Checksum: 1950472b5
+
+Time (s): cpu = 00:01:51 ; elapsed = 00:01:11 . Memory (MB): peak = 2295.625 ; gain = 0.000
+
+Phase 3 Detail Placement
+
+Phase 3.1 Commit Multi Column Macros
+Phase 3.1 Commit Multi Column Macros | Checksum: 13731257b
+
+Time (s): cpu = 00:01:58 ; elapsed = 00:01:16 . Memory (MB): peak = 2295.625 ; gain = 0.000
+
+Phase 3.2 Commit Most Macros & LUTRAMs
+Phase 3.2 Commit Most Macros & LUTRAMs | Checksum: 20a5b9f23
+
+Time (s): cpu = 00:02:10 ; elapsed = 00:01:23 . Memory (MB): peak = 2295.625 ; gain = 0.000
+
+Phase 3.3 Area Swap Optimization
+Phase 3.3 Area Swap Optimization | Checksum: 1ffe5582f
+
+Time (s): cpu = 00:02:11 ; elapsed = 00:01:24 . Memory (MB): peak = 2295.625 ; gain = 0.000
+
+Phase 3.4 Pipeline Register Optimization
+Phase 3.4 Pipeline Register Optimization | Checksum: 247b93c08
+
+Time (s): cpu = 00:02:11 ; elapsed = 00:01:24 . Memory (MB): peak = 2295.625 ; gain = 0.000
+
+Phase 3.5 Fast Optimization
+Phase 3.5 Fast Optimization | Checksum: 1fbd9541c
+
+Time (s): cpu = 00:02:24 ; elapsed = 00:01:32 . Memory (MB): peak = 2295.625 ; gain = 0.000
+
+Phase 3.6 Small Shape Detail Placement
+Phase 3.6 Small Shape Detail Placement | Checksum: 1685f69f9
+
+Time (s): cpu = 00:02:42 ; elapsed = 00:01:50 . Memory (MB): peak = 2295.625 ; gain = 0.000
+
+Phase 3.7 Re-assign LUT pins
+Phase 3.7 Re-assign LUT pins | Checksum: 1cbc2932b
+
+Time (s): cpu = 00:02:45 ; elapsed = 00:01:53 . Memory (MB): peak = 2295.625 ; gain = 0.000
+
+Phase 3.8 Pipeline Register Optimization
+Phase 3.8 Pipeline Register Optimization | Checksum: 22966cb0b
+
+Time (s): cpu = 00:02:46 ; elapsed = 00:01:54 . Memory (MB): peak = 2295.625 ; gain = 0.000
+
+Phase 3.9 Fast Optimization
+Phase 3.9 Fast Optimization | Checksum: 16ea474c3
+
+Time (s): cpu = 00:03:05 ; elapsed = 00:02:06 . Memory (MB): peak = 2295.625 ; gain = 0.000
+Phase 3 Detail Placement | Checksum: 16ea474c3
+
+Time (s): cpu = 00:03:05 ; elapsed = 00:02:06 . Memory (MB): peak = 2295.625 ; gain = 0.000
+
+Phase 4 Post Placement Optimization and Clean-Up
+
+Phase 4.1 Post Commit Optimization
+INFO: [Timing 38-35] Done setting XDC timing constraints.
+
+Phase 4.1.1 Post Placement Optimization
+Post Placement Optimization Initialization | Checksum: 143773e2c
+
+Phase 4.1.1.1 BUFG Insertion
+
+Starting Physical Synthesis Task
+
+Phase 1 Physical Synthesis Initialization
+INFO: [Physopt 32-721] Multithreading enabled for phys_opt_design using a maximum of 2 CPUs
+INFO: [Physopt 32-619] Estimated Timing Summary | WNS=-0.667 | TNS=-8.813 |
+Phase 1 Physical Synthesis Initialization | Checksum: 1625b913a
+
+Time (s): cpu = 00:00:03 ; elapsed = 00:00:01 . Memory (MB): peak = 2295.625 ; gain = 0.000
+INFO: [Place 46-33] Processed net emg_pl_export_0/inst/u_core/u_notch50/notch/pl_rst_n_0, BUFG insertion was skipped due to placement/routing conflicts.
+INFO: [Place 46-33] Processed net emg_learning_0/inst/divide/rst_n_0, BUFG insertion was skipped due to placement/routing conflicts.
+INFO: [Place 46-33] Processed net mpu_attitude_0/inst/core/divider/reset_pulse_reg, BUFG insertion was skipped due to placement/routing conflicts.
+INFO: [Place 46-33] Processed net emg_pl_export_0/inst/u_core/g_control.u_control/policy/SR[0], BUFG insertion was skipped due to placement/routing conflicts.
+INFO: [Place 46-56] BUFG insertion identified 4 candidate nets. Inserted BUFG: 0, Replicated BUFG Driver: 0, Skipped due to Placement/Routing Conflicts: 4, Skipped due to Timing Degradation: 0, Skipped due to netlist editing failed: 0.
+Ending Physical Synthesis Task | Checksum: 191c47509
+
+Time (s): cpu = 00:00:05 ; elapsed = 00:00:03 . Memory (MB): peak = 2295.625 ; gain = 0.000
+Phase 4.1.1.1 BUFG Insertion | Checksum: 143773e2c
+
+Time (s): cpu = 00:03:32 ; elapsed = 00:02:23 . Memory (MB): peak = 2295.625 ; gain = 0.000
+
+Phase 4.1.1.2 Post Placement Timing Optimization
+INFO: [Place 30-746] Post Placement Timing Summary WNS=-0.241. For the most accurate timing information please run report_timing.
+Phase 4.1.1.2 Post Placement Timing Optimization | Checksum: 15b8c95a8
+
+Time (s): cpu = 00:04:23 ; elapsed = 00:03:03 . Memory (MB): peak = 2298.988 ; gain = 3.363
+
+Time (s): cpu = 00:04:23 ; elapsed = 00:03:03 . Memory (MB): peak = 2298.988 ; gain = 3.363
+Phase 4.1 Post Commit Optimization | Checksum: 15b8c95a8
+
+Time (s): cpu = 00:04:23 ; elapsed = 00:03:03 . Memory (MB): peak = 2298.988 ; gain = 3.363
+
+Phase 4.2 Post Placement Cleanup
+Phase 4.2 Post Placement Cleanup | Checksum: 15b8c95a8
+
+Time (s): cpu = 00:04:24 ; elapsed = 00:03:04 . Memory (MB): peak = 2298.988 ; gain = 3.363
+
+Phase 4.3 Placer Reporting
+
+Phase 4.3.1 Print Estimated Congestion
+INFO: [Place 30-612] Post-Placement Estimated Congestion 
+ ____________________________________________________
+|           | Global Congestion | Short Congestion  |
+| Direction | Region Size       | Region Size       |
+|___________|___________________|___________________|
+|      North|                1x1|                4x4|
+|___________|___________________|___________________|
+|      South|                1x1|                4x4|
+|___________|___________________|___________________|
+|       East|                1x1|                4x4|
+|___________|___________________|___________________|
+|       West|                1x1|                1x1|
+|___________|___________________|___________________|
+
+Phase 4.3.1 Print Estimated Congestion | Checksum: 15b8c95a8
+
+Time (s): cpu = 00:04:24 ; elapsed = 00:03:04 . Memory (MB): peak = 2298.988 ; gain = 3.363
+Phase 4.3 Placer Reporting | Checksum: 15b8c95a8
+
+Time (s): cpu = 00:04:25 ; elapsed = 00:03:04 . Memory (MB): peak = 2298.988 ; gain = 3.363
+
+Phase 4.4 Final Placement Cleanup
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.064 . Memory (MB): peak = 2298.988 ; gain = 0.000
+
+Time (s): cpu = 00:04:25 ; elapsed = 00:03:04 . Memory (MB): peak = 2298.988 ; gain = 3.363
+Phase 4 Post Placement Optimization and Clean-Up | Checksum: ad42f5ac
+
+Time (s): cpu = 00:04:25 ; elapsed = 00:03:04 . Memory (MB): peak = 2298.988 ; gain = 3.363
+Ending Placer Task | Checksum: 53636374
+
+Time (s): cpu = 00:04:25 ; elapsed = 00:03:05 . Memory (MB): peak = 2298.988 ; gain = 3.363
+119 Infos, 79 Warnings, 0 Critical Warnings and 0 Errors encountered.
+place_design completed successfully
+place_design: Time (s): cpu = 00:04:31 ; elapsed = 00:03:10 . Memory (MB): peak = 2298.988 ; gain = 3.363
+INFO: [Vivado 12-24838] Running report commands "report_control_sets, report_io, report_utilization" in parallel.
+Running report generation with 2 threads.
+INFO: [Vivado 12-24828] Executing command : report_io -file design_1_io_placed.rpt
+report_io: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.149 . Memory (MB): peak = 2298.988 ; gain = 0.000
+INFO: [Vivado 12-24828] Executing command : report_control_sets -verbose -file design_1_control_sets_placed.rpt
+report_control_sets: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.194 . Memory (MB): peak = 2298.988 ; gain = 0.000
+INFO: [Vivado 12-24828] Executing command : report_utilization -file design_1_utilization_placed.rpt -pb design_1_utilization_placed.pb
+INFO: [Timing 38-480] Writing timing data to binary archive.
+Wrote PlaceDB: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 2298.988 ; gain = 0.000
+Wrote PulsedLatchDB: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 2298.988 ; gain = 0.000
+Writing XDEF routing.
+Writing XDEF routing logical nets.
+Writing XDEF routing special nets.
+Wrote RouteStorage: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.100 . Memory (MB): peak = 2298.988 ; gain = 0.000
+Write ShapeDB Complete: Time (s): cpu = 00:00:01 ; elapsed = 00:00:00.246 . Memory (MB): peak = 2305.254 ; gain = 6.266
+Wrote PlaceStorage: Time (s): cpu = 00:00:08 ; elapsed = 00:00:03 . Memory (MB): peak = 2310.492 ; gain = 11.504
+Wrote Netlist Cache: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.101 . Memory (MB): peak = 2310.492 ; gain = 0.000
+Wrote Device Cache: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.016 . Memory (MB): peak = 2310.492 ; gain = 0.000
+Write Physdb Complete: Time (s): cpu = 00:00:08 ; elapsed = 00:00:03 . Memory (MB): peak = 2310.492 ; gain = 11.504
+INFO: [Common 17-1381] The checkpoint 'D:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.runs/impl_1/design_1_placed.dcp' has been generated.
+write_checkpoint: Time (s): cpu = 00:00:11 ; elapsed = 00:00:06 . Memory (MB): peak = 2310.492 ; gain = 11.504
+Command: phys_opt_design
+Attempting to get a license for feature 'Implementation' and/or device 'xc7z020'
+INFO: [Common 17-349] Got license for feature 'Implementation' and/or device 'xc7z020'
+
+Starting Initial Update Timing Task
+
+Time (s): cpu = 00:00:18 ; elapsed = 00:00:11 . Memory (MB): peak = 2310.492 ; gain = 0.000
+INFO: [Vivado_Tcl 4-1435] PhysOpt_Tcl_Interface Runtime Before Starting Physical Synthesis Task | CPU: 19.00s |  WALL: 11.20s
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.036 . Memory (MB): peak = 2310.492 ; gain = 0.000
+
+Starting Physical Synthesis Task
+
+Phase 1 Physical Synthesis Initialization
+INFO: [Physopt 32-721] Multithreading enabled for phys_opt_design using a maximum of 2 CPUs
+INFO: [Physopt 32-619] Estimated Timing Summary | WNS=-0.241 | TNS=-1.661 |
+Phase 1 Physical Synthesis Initialization | Checksum: 11b7db9d2
+
+Time (s): cpu = 00:00:08 ; elapsed = 00:00:06 . Memory (MB): peak = 2333.078 ; gain = 22.586
+INFO: [Physopt 32-619] Estimated Timing Summary | WNS=-0.241 | TNS=-1.661 |
+
+Phase 2 DSP Register Optimization
+INFO: [Physopt 32-456] No candidate cells for DSP register optimization found in the design.
+INFO: [Physopt 32-775] End 2 Pass. Optimized 0 net or cell. Created 0 new cell, deleted 0 existing cell and moved 0 existing cell
+Phase 2 DSP Register Optimization | Checksum: 11b7db9d2
+
+Time (s): cpu = 00:00:09 ; elapsed = 00:00:06 . Memory (MB): peak = 2333.078 ; gain = 22.586
+
+Phase 3 Critical Path Optimization
+INFO: [Physopt 32-619] Estimated Timing Summary | WNS=-0.241 | TNS=-1.661 |
+INFO: [Physopt 32-702] Processed net emg_learning_0/inst/a[29]. Optimizations did not improve timing on the net.
+INFO: [Physopt 32-702] Processed net processing_system7_0/inst/FCLK_CLK_unbuffered[0]. Optimizations did not improve timing on the net.
+INFO: [Physopt 32-702] Processed net emg_learning_0/inst/bus_addr_reg[27]_i_1_n_0. Optimizations did not improve timing on the net.
+INFO: [Physopt 32-702] Processed net emg_learning_0/inst/bus_addr_reg[23]_i_1_n_0. Optimizations did not improve timing on the net.
+INFO: [Physopt 32-608] Optimized 1 net.  Swapped 26 pins.
+INFO: [Physopt 32-735] Processed net emg_learning_0/inst/bus_addr[23]_i_9_n_0. Optimization improves timing on the net.
+INFO: [Physopt 32-619] Estimated Timing Summary | WNS=-0.169 | TNS=-1.099 |
+INFO: [Physopt 32-702] Processed net emg_learning_0/inst/bus_addr[23]_i_9_n_0. Optimizations did not improve timing on the net.
+INFO: [Physopt 32-710] Processed net emg_learning_0/inst/bus_addr[23]_i_9_n_0. Critical path length was reduced through logic transformation on cell emg_learning_0/inst/bus_addr[23]_i_9_comp.
+INFO: [Physopt 32-735] Processed net emg_learning_0/inst/bus_addr[23]_i_5_n_0. Optimization improves timing on the net.
+INFO: [Physopt 32-619] Estimated Timing Summary | WNS=-0.164 | TNS=-1.064 |
+INFO: [Physopt 32-608] Optimized 1 net.  Swapped 24 pins.
+INFO: [Physopt 32-735] Processed net emg_learning_0/inst/bus_addr[23]_i_8_n_0. Optimization improves timing on the net.
+INFO: [Physopt 32-619] Estimated Timing Summary | WNS=-0.164 | TNS=-0.896 |
+INFO: [Physopt 32-702] Processed net emg_learning_0/inst/div_num_reg_n_0_[25]. Optimizations did not improve timing on the net.
+INFO: [Physopt 32-710] Processed net emg_learning_0/inst/divide/state_reg[3]_rep__1[25]. Critical path length was reduced through logic transformation on cell emg_learning_0/inst/divide/div_num[25]_i_1_comp.
+INFO: [Physopt 32-735] Processed net emg_learning_0/inst/divide/div_num[25]_i_3_n_0. Optimization improves timing on the net.
+INFO: [Physopt 32-619] Estimated Timing Summary | WNS=-0.136 | TNS=-0.773 |
+INFO: [Physopt 32-702] Processed net emg_learning_0/inst/bus_addr_reg[19]_i_1_n_0. Optimizations did not improve timing on the net.
+INFO: [Physopt 32-608] Optimized 1 net.  Swapped 26 pins.
+INFO: [Physopt 32-735] Processed net emg_learning_0/inst/bus_addr[19]_i_6_n_0. Optimization improves timing on the net.
+INFO: [Physopt 32-619] Estimated Timing Summary | WNS=-0.133 | TNS=-0.457 |
+INFO: [Physopt 32-702] Processed net emg_learning_0/inst/div_num_reg_n_0_[29]. Optimizations did not improve timing on the net.
+INFO: [Physopt 32-710] Processed net emg_learning_0/inst/divide/state_reg[3]_rep__1[29]. Critical path length was reduced through logic transformation on cell emg_learning_0/inst/divide/div_num[29]_i_1_comp.
+INFO: [Physopt 32-735] Processed net emg_learning_0/inst/divide/div_num[29]_i_3_n_0. Optimization improves timing on the net.
+INFO: [Physopt 32-619] Estimated Timing Summary | WNS=-0.091 | TNS=-0.324 |
+INFO: [Physopt 32-702] Processed net emg_learning_0/inst/div_num_reg_n_0_[20]. Optimizations did not improve timing on the net.
+INFO: [Physopt 32-710] Processed net emg_learning_0/inst/divide/state_reg[3]_rep__1[20]. Critical path length was reduced through logic transformation on cell emg_learning_0/inst/divide/div_num[20]_i_1_comp.
+INFO: [Physopt 32-735] Processed net emg_learning_0/inst/divide/div_num[20]_i_3_n_0. Optimization improves timing on the net.
+INFO: [Physopt 32-619] Estimated Timing Summary | WNS=-0.071 | TNS=-0.233 |
+INFO: [Physopt 32-663] Processed net emg_learning_0/inst/bus_addr[23]_i_5_n_0.  Re-placed instance emg_learning_0/inst/bus_addr[23]_i_5
+INFO: [Physopt 32-735] Processed net emg_learning_0/inst/bus_addr[23]_i_5_n_0. Optimization improves timing on the net.
+INFO: [Physopt 32-619] Estimated Timing Summary | WNS=-0.068 | TNS=-0.224 |
+INFO: [Physopt 32-702] Processed net emg_learning_0/inst/bus_addr[23]_i_8_n_0. Optimizations did not improve timing on the net.
+INFO: [Physopt 32-710] Processed net emg_learning_0/inst/bus_addr[23]_i_8_n_0. Critical path length was reduced through logic transformation on cell emg_learning_0/inst/bus_addr[23]_i_8_comp.
+INFO: [Physopt 32-735] Processed net emg_learning_0/inst/bus_addr[23]_i_4_n_0. Optimization improves timing on the net.
+INFO: [Physopt 32-619] Estimated Timing Summary | WNS=-0.064 | TNS=-0.213 |
+INFO: [Physopt 32-663] Processed net emg_learning_0/inst/bus_addr[19]_i_2_n_0.  Re-placed instance emg_learning_0/inst/bus_addr[19]_i_2
+INFO: [Physopt 32-735] Processed net emg_learning_0/inst/bus_addr[19]_i_2_n_0. Optimization improves timing on the net.
+INFO: [Physopt 32-619] Estimated Timing Summary | WNS=-0.052 | TNS=-0.189 |
+INFO: [Physopt 32-702] Processed net emg_learning_0/inst/bus_addr[19]_i_6_n_0. Optimizations did not improve timing on the net.
+INFO: [Physopt 32-710] Processed net emg_learning_0/inst/bus_addr[19]_i_6_n_0. Critical path length was reduced through logic transformation on cell emg_learning_0/inst/bus_addr[19]_i_6_comp.
+INFO: [Physopt 32-735] Processed net emg_learning_0/inst/bus_addr[19]_i_2_n_0. Optimization improves timing on the net.
+INFO: [Physopt 32-619] Estimated Timing Summary | WNS=-0.041 | TNS=-0.157 |
+INFO: [Physopt 32-663] Processed net emg_learning_0/inst/div_num[25]_i_4_n_0.  Re-placed instance emg_learning_0/inst/div_num[25]_i_4
+INFO: [Physopt 32-735] Processed net emg_learning_0/inst/div_num[25]_i_4_n_0. Optimization improves timing on the net.
+INFO: [Physopt 32-619] Estimated Timing Summary | WNS=-0.036 | TNS=-0.115 |
+INFO: [Physopt 32-608] Optimized 1 net.  Swapped 26 pins.
+INFO: [Physopt 32-735] Processed net emg_learning_0/inst/bus_addr[27]_i_9_n_0. Optimization improves timing on the net.
+INFO: [Physopt 32-619] Estimated Timing Summary | WNS=-0.035 | TNS=-0.113 |
+INFO: [Physopt 32-702] Processed net emg_learning_0/inst/bus_addr[23]_i_6_n_0. Optimizations did not improve timing on the net.
+INFO: [Physopt 32-710] Processed net emg_learning_0/inst/bus_addr[23]_i_6_n_0. Critical path length was reduced through logic transformation on cell emg_learning_0/inst/bus_addr[23]_i_6_comp.
+INFO: [Physopt 32-735] Processed net emg_learning_0/inst/bus_addr[23]_i_2_n_0. Optimization improves timing on the net.
+INFO: [Physopt 32-619] Estimated Timing Summary | WNS=-0.028 | TNS=-0.099 |
+INFO: [Physopt 32-702] Processed net emg_learning_0/inst/bus_addr[19]_i_7_n_0. Optimizations did not improve timing on the net.
+INFO: [Physopt 32-710] Processed net emg_learning_0/inst/bus_addr[19]_i_7_n_0. Critical path length was reduced through logic transformation on cell emg_learning_0/inst/bus_addr[19]_i_7_comp.
+INFO: [Physopt 32-735] Processed net emg_learning_0/inst/bus_addr[19]_i_3_n_0. Optimization improves timing on the net.
+INFO: [Physopt 32-619] Estimated Timing Summary | WNS=-0.026 | TNS=-0.048 |
+INFO: [Physopt 32-702] Processed net emg_learning_0/inst/div_num_reg_n_0_[19]. Optimizations did not improve timing on the net.
+INFO: [Physopt 32-710] Processed net emg_learning_0/inst/divide/state_reg[3]_rep__1[19]. Critical path length was reduced through logic transformation on cell emg_learning_0/inst/divide/div_num[19]_i_1_comp.
+INFO: [Physopt 32-735] Processed net emg_learning_0/inst/divide/div_num[19]_i_3_n_0. Optimization improves timing on the net.
+INFO: [Physopt 32-619] Estimated Timing Summary | WNS=-0.022 | TNS=-0.022 |
+INFO: [Physopt 32-702] Processed net emg_learning_0/inst/div_num_reg_n_0_[21]. Optimizations did not improve timing on the net.
+INFO: [Physopt 32-710] Processed net emg_learning_0/inst/divide/state_reg[3]_rep__1[21]. Critical path length was reduced through logic transformation on cell emg_learning_0/inst/divide/div_num[21]_i_1_comp.
+INFO: [Physopt 32-735] Processed net emg_learning_0/inst/divide/div_num[21]_i_3_n_0. Optimization improves timing on the net.
+INFO: [Physopt 32-619] Estimated Timing Summary | WNS=0.001 | TNS=0.000 |
+INFO: [Physopt 32-619] Estimated Timing Summary | WNS=0.001 | TNS=0.000 |
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.066 . Memory (MB): peak = 2337.930 ; gain = 0.000
+Phase 3 Critical Path Optimization | Checksum: 11b7db9d2
+
+Time (s): cpu = 00:00:13 ; elapsed = 00:00:09 . Memory (MB): peak = 2337.930 ; gain = 27.438
+
+Phase 4 Critical Path Optimization
+INFO: [Physopt 32-619] Estimated Timing Summary | WNS=0.001 | TNS=0.000 |
+INFO: [Physopt 32-619] Estimated Timing Summary | WNS=0.001 | TNS=0.000 |
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.032 . Memory (MB): peak = 2337.930 ; gain = 0.000
+Phase 4 Critical Path Optimization | Checksum: 11b7db9d2
+
+Time (s): cpu = 00:00:13 ; elapsed = 00:00:09 . Memory (MB): peak = 2337.930 ; gain = 27.438
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.050 . Memory (MB): peak = 2337.930 ; gain = 0.000
+INFO: [Physopt 32-603] Post Physical Optimization Timing Summary | WNS=0.001 | TNS=0.000 |
+
+Summary of Physical Synthesis Optimizations
+============================================
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+|  Optimization   |  WNS Gain (ns)  |  TNS Gain (ns)  |  Added Cells  |  Removed Cells  |  Optimized Cells/Nets  |  Dont Touch  |  Iterations  |  Elapsed   |
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+|  DSP Register   |          0.000  |          0.000  |            0  |              0  |                     0  |           6  |           1  |  00:00:00  |
+|  Critical Path  |          0.242  |          1.661  |            0  |              0  |                    17  |           0  |           2  |  00:00:03  |
+|  Total          |          0.242  |          1.661  |            0  |              0  |                    17  |           6  |           3  |  00:00:03  |
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.046 . Memory (MB): peak = 2337.930 ; gain = 0.000
+Ending Physical Synthesis Task | Checksum: 2bd4b0ecc
+
+Time (s): cpu = 00:00:14 ; elapsed = 00:00:10 . Memory (MB): peak = 2337.930 ; gain = 27.438
+INFO: [Common 17-83] Releasing license: Implementation
+204 Infos, 79 Warnings, 0 Critical Warnings and 0 Errors encountered.
+phys_opt_design completed successfully
+phys_opt_design: Time (s): cpu = 00:00:33 ; elapsed = 00:00:21 . Memory (MB): peak = 2337.930 ; gain = 27.438
+INFO: [Timing 38-480] Writing timing data to binary archive.
+Wrote PlaceDB: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 2337.930 ; gain = 0.000
+Wrote PulsedLatchDB: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.001 . Memory (MB): peak = 2337.930 ; gain = 0.000
+Writing XDEF routing.
+Writing XDEF routing logical nets.
+Writing XDEF routing special nets.
+Wrote RouteStorage: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.113 . Memory (MB): peak = 2337.930 ; gain = 0.000
+Write ShapeDB Complete: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.167 . Memory (MB): peak = 2337.930 ; gain = 0.000
+Wrote PlaceStorage: Time (s): cpu = 00:00:08 ; elapsed = 00:00:03 . Memory (MB): peak = 2343.895 ; gain = 5.965
+Wrote Netlist Cache: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.117 . Memory (MB): peak = 2343.895 ; gain = 0.000
+Wrote Device Cache: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.024 . Memory (MB): peak = 2343.895 ; gain = 0.000
+Write Physdb Complete: Time (s): cpu = 00:00:08 ; elapsed = 00:00:03 . Memory (MB): peak = 2343.895 ; gain = 5.965
+INFO: [Common 17-1381] The checkpoint 'D:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.runs/impl_1/design_1_physopt.dcp' has been generated.
+write_checkpoint: Time (s): cpu = 00:00:11 ; elapsed = 00:00:06 . Memory (MB): peak = 2343.895 ; gain = 5.965
+Command: route_design
+Attempting to get a license for feature 'Implementation' and/or device 'xc7z020'
+INFO: [Common 17-349] Got license for feature 'Implementation' and/or device 'xc7z020'
+INFO: [DRC 23-27] Running DRC with 2 threads
+INFO: [Vivado_Tcl 4-198] DRC finished with 0 Errors
+INFO: [Vivado_Tcl 4-199] Please refer to the DRC report (report_drc) for more information.
+
+
+Starting Routing Task
+INFO: [Route 35-254] Multithreading enabled for route_design using a maximum of 2 CPUs
+
+Phase 1 Build RT Design
+Checksum: PlaceDB: b8ef6530 ConstDB: 0 ShapeSum: f8785591 RouteDB: 15f972f0
+Post Restoration Checksum: NetGraph: f60b5038 | NumContArr: 39095789 | Constraints: c2a8fa9d | Timing: c2a8fa9d
+Phase 1 Build RT Design | Checksum: 2b4669cfb
+
+Time (s): cpu = 00:00:50 ; elapsed = 00:00:34 . Memory (MB): peak = 2343.895 ; gain = 0.000
+
+Phase 2 Router Initialization
+
+Phase 2.1 Fix Topology Constraints
+Phase 2.1 Fix Topology Constraints | Checksum: 2b4669cfb
+
+Time (s): cpu = 00:00:51 ; elapsed = 00:00:34 . Memory (MB): peak = 2343.895 ; gain = 0.000
+
+Phase 2.2 Pre Route Cleanup
+Phase 2.2 Pre Route Cleanup | Checksum: 2b4669cfb
+
+Time (s): cpu = 00:00:51 ; elapsed = 00:00:34 . Memory (MB): peak = 2343.895 ; gain = 0.000
+ Number of Nodes with overlaps = 0
+
+Phase 2.3 Update Timing
+Phase 2.3 Update Timing | Checksum: 26127e1fc
+
+Time (s): cpu = 00:01:21 ; elapsed = 00:00:52 . Memory (MB): peak = 2386.637 ; gain = 42.742
+INFO: [Route 35-416] Intermediate Timing Summary | WNS=-0.012 | TNS=-0.026 | WHS=-1.731 | THS=-1654.572|
+
+
+Phase 2.4 Update Timing for Bus Skew
+
+Phase 2.4.1 Update Timing
+Phase 2.4.1 Update Timing | Checksum: 1efaa3e66
+
+Time (s): cpu = 00:01:42 ; elapsed = 00:01:05 . Memory (MB): peak = 2494.285 ; gain = 150.391
+INFO: [Route 35-416] Intermediate Timing Summary | WNS=-0.012 | TNS=0.000  | WHS=-2.524 | THS=-121.036|
+
+Phase 2.4 Update Timing for Bus Skew | Checksum: 218583ce0
+
+Time (s): cpu = 00:01:42 ; elapsed = 00:01:05 . Memory (MB): peak = 2494.285 ; gain = 150.391
+
+Phase 2.5 Soft Constraint Pins - Fast Budgeting
+Phase 2.5 Soft Constraint Pins - Fast Budgeting | Checksum: 218583ce0
+
+Time (s): cpu = 00:01:43 ; elapsed = 00:01:06 . Memory (MB): peak = 2524.449 ; gain = 180.555
+
+Router Utilization Summary
+  Global Vertical Routing Utilization    = 0 %
+  Global Horizontal Routing Utilization  = 0 %
+  Routable Net Status*
+  *Does not include unroutable nets such as driverless and loadless.
+  Run report_route_status for detailed report.
+  Number of Failed Nets               = 53879
+    (Failed Nets is the sum of unrouted and partially routed nets)
+  Number of Unrouted Nets             = 53878
+  Number of Partially Routed Nets     = 1
+  Number of Node Overlaps             = 0
+
+Phase 2 Router Initialization | Checksum: 1dec57d98
+
+Time (s): cpu = 00:01:44 ; elapsed = 00:01:07 . Memory (MB): peak = 2524.449 ; gain = 180.555
+
+Phase 3 Global Routing
+Phase 3 Global Routing | Checksum: 1dec57d98
+
+Time (s): cpu = 00:01:44 ; elapsed = 00:01:07 . Memory (MB): peak = 2524.449 ; gain = 180.555
+
+Phase 4 Initial Routing
+
+Phase 4.1 Initial Net Routing Pass
+Phase 4.1 Initial Net Routing Pass | Checksum: 2baba076f
+
+Time (s): cpu = 00:01:56 ; elapsed = 00:01:13 . Memory (MB): peak = 2524.449 ; gain = 180.555
+Phase 4 Initial Routing | Checksum: 2baba076f
+
+Time (s): cpu = 00:01:56 ; elapsed = 00:01:13 . Memory (MB): peak = 2524.449 ; gain = 180.555
+
+Phase 5 Rip-up And Reroute
+
+Phase 5.1 Global Iteration 0
+ Number of Nodes with overlaps = 4510
+ Number of Nodes with overlaps = 330
+ Number of Nodes with overlaps = 78
+ Number of Nodes with overlaps = 30
+ Number of Nodes with overlaps = 16
+ Number of Nodes with overlaps = 3
+ Number of Nodes with overlaps = 0
+INFO: [Route 35-416] Intermediate Timing Summary | WNS=-0.181 | TNS=-0.726 | WHS=N/A    | THS=N/A    |
+
+Phase 5.1 Global Iteration 0 | Checksum: 3428d67e8
+
+Time (s): cpu = 00:02:35 ; elapsed = 00:01:41 . Memory (MB): peak = 2530.160 ; gain = 186.266
+
+Phase 5.2 Global Iteration 1
+ Number of Nodes with overlaps = 462
+ Number of Nodes with overlaps = 65
+ Number of Nodes with overlaps = 25
+ Number of Nodes with overlaps = 3
+ Number of Nodes with overlaps = 0
+INFO: [Route 35-416] Intermediate Timing Summary | WNS=-0.174 | TNS=-0.567 | WHS=N/A    | THS=N/A    |
+
+Phase 5.2 Global Iteration 1 | Checksum: 1d00fc2fd
+
+Time (s): cpu = 00:02:43 ; elapsed = 00:01:48 . Memory (MB): peak = 2530.160 ; gain = 186.266
+Phase 5 Rip-up And Reroute | Checksum: 1d00fc2fd
+
+Time (s): cpu = 00:02:43 ; elapsed = 00:01:48 . Memory (MB): peak = 2530.160 ; gain = 186.266
+
+Phase 6 Delay and Skew Optimization
+
+Phase 6.1 Delay CleanUp
+
+Phase 6.1.1 Update Timing
+Phase 6.1.1 Update Timing | Checksum: 112483577
+
+Time (s): cpu = 00:02:46 ; elapsed = 00:01:50 . Memory (MB): peak = 2530.160 ; gain = 186.266
+INFO: [Route 35-416] Intermediate Timing Summary | WNS=-0.078 | TNS=-0.078 | WHS=N/A    | THS=N/A    |
+
+ Number of Nodes with overlaps = 0
+Phase 6.1 Delay CleanUp | Checksum: 11cc3319c
+
+Time (s): cpu = 00:02:47 ; elapsed = 00:01:50 . Memory (MB): peak = 2530.160 ; gain = 186.266
+
+Phase 6.2 Clock Skew Optimization
+Phase 6.2 Clock Skew Optimization | Checksum: 11cc3319c
+
+Time (s): cpu = 00:02:47 ; elapsed = 00:01:50 . Memory (MB): peak = 2530.160 ; gain = 186.266
+Phase 6 Delay and Skew Optimization | Checksum: 11cc3319c
+
+Time (s): cpu = 00:02:47 ; elapsed = 00:01:50 . Memory (MB): peak = 2530.160 ; gain = 186.266
+
+Phase 7 Post Hold Fix
+
+Phase 7.1 Hold Fix Iter
+INFO: [Route 35-416] Intermediate Timing Summary | WNS=-0.078 | TNS=-0.078 | WHS=-0.111 | THS=-0.111 |
+
+Phase 7.1 Hold Fix Iter | Checksum: 318ebbcd1
+
+Time (s): cpu = 00:02:51 ; elapsed = 00:01:53 . Memory (MB): peak = 2530.160 ; gain = 186.266
+
+Phase 7.2 Non Free Resource Hold Fix Iter
+Phase 7.2 Non Free Resource Hold Fix Iter | Checksum: 28aabcbf5
+
+Time (s): cpu = 00:02:51 ; elapsed = 00:01:53 . Memory (MB): peak = 2530.160 ; gain = 186.266
+Phase 7 Post Hold Fix | Checksum: 28aabcbf5
+
+Time (s): cpu = 00:02:52 ; elapsed = 00:01:53 . Memory (MB): peak = 2530.160 ; gain = 186.266
+
+Phase 8 Route finalize
+
+Router Utilization Summary
+  Global Vertical Routing Utilization    = 10.4218 %
+  Global Horizontal Routing Utilization  = 14.4724 %
+  Routable Net Status*
+  *Does not include unroutable nets such as driverless and loadless.
+  Run report_route_status for detailed report.
+  Number of Failed Nets               = 0
+    (Failed Nets is the sum of unrouted and partially routed nets)
+  Number of Unrouted Nets             = 0
+  Number of Partially Routed Nets     = 0
+  Number of Node Overlaps             = 0
+
+
+--GLOBAL Congestion:
+Utilization threshold used for congestion level computation: 0.85
+Congestion Report
+North Dir 1x1 Area, Max Cong = 61.2613%, No Congested Regions.
+South Dir 1x1 Area, Max Cong = 70.2703%, No Congested Regions.
+East Dir 1x1 Area, Max Cong = 77.9412%, No Congested Regions.
+West Dir 1x1 Area, Max Cong = 72.0588%, No Congested Regions.
+
+------------------------------
+Reporting congestion hotspots
+------------------------------
+Direction: North
+----------------
+Congested clusters found at Level 0
+Effective congestion level: 0 Aspect Ratio: 1 Sparse Ratio: 0
+Direction: South
+----------------
+Congested clusters found at Level 0
+Effective congestion level: 0 Aspect Ratio: 1 Sparse Ratio: 0
+Direction: East
+----------------
+Congested clusters found at Level 0
+Effective congestion level: 0 Aspect Ratio: 1 Sparse Ratio: 0
+Direction: West
+----------------
+Congested clusters found at Level 0
+Effective congestion level: 0 Aspect Ratio: 1 Sparse Ratio: 0
+
+Phase 8 Route finalize | Checksum: 28aabcbf5
+
+Time (s): cpu = 00:02:52 ; elapsed = 00:01:53 . Memory (MB): peak = 2530.160 ; gain = 186.266
+
+Phase 9 Verifying routed nets
+
+ Verification completed successfully
+Phase 9 Verifying routed nets | Checksum: 28aabcbf5
+
+Time (s): cpu = 00:02:52 ; elapsed = 00:01:53 . Memory (MB): peak = 2530.160 ; gain = 186.266
+
+Phase 10 Depositing Routes
+Phase 10 Depositing Routes | Checksum: 1e275fcb2
+
+Time (s): cpu = 00:03:00 ; elapsed = 00:02:00 . Memory (MB): peak = 2530.160 ; gain = 186.266
+
+Phase 11 Post Process Routing
+Phase 11 Post Process Routing | Checksum: 1e275fcb2
+
+Time (s): cpu = 00:03:00 ; elapsed = 00:02:00 . Memory (MB): peak = 2530.160 ; gain = 186.266
+
+Phase 12 Post Router Timing
+
+Phase 12.1 Update Timing
+Phase 12.1 Update Timing | Checksum: 1e275fcb2
+
+Time (s): cpu = 00:03:03 ; elapsed = 00:02:02 . Memory (MB): peak = 2530.160 ; gain = 186.266
+INFO: [Route 35-57] Estimated Timing Summary | WNS=-0.078 | TNS=-0.078 | WHS=0.052  | THS=0.000  |
+
+WARNING: [Route 35-328] Router estimated timing not met.
+Resolution: For a complete and accurate timing signoff, report_timing_summary must be run after route_design. Alternatively, route_design can be run with the -timing_summary option to enable a complete timing signoff at the end of route_design.
+Phase 12 Post Router Timing | Checksum: 1e275fcb2
+
+Time (s): cpu = 00:03:03 ; elapsed = 00:02:02 . Memory (MB): peak = 2530.160 ; gain = 186.266
+Total Elapsed time in route_design: 121.765 secs
+
+Phase 13 Post-Route Event Processing
+Phase 13 Post-Route Event Processing | Checksum: 28e39e81f
+
+Time (s): cpu = 00:03:04 ; elapsed = 00:02:02 . Memory (MB): peak = 2530.160 ; gain = 186.266
+INFO: [Route 35-16] Router Completed Successfully
+Ending Routing Task | Checksum: 28e39e81f
+
+Time (s): cpu = 00:03:04 ; elapsed = 00:02:02 . Memory (MB): peak = 2530.160 ; gain = 186.266
+
+Routing Is Done.
+INFO: [Common 17-83] Releasing license: Implementation
+220 Infos, 80 Warnings, 0 Critical Warnings and 0 Errors encountered.
+route_design completed successfully
+route_design: Time (s): cpu = 00:03:05 ; elapsed = 00:02:03 . Memory (MB): peak = 2530.160 ; gain = 186.266
+INFO: [Vivado 12-24828] Executing command : report_drc -file design_1_drc_routed.rpt -pb design_1_drc_routed.pb -rpx design_1_drc_routed.rpx
+Command: report_drc -file design_1_drc_routed.rpt -pb design_1_drc_routed.pb -rpx design_1_drc_routed.rpx
+INFO: [IP_Flow 19-1839] IP Catalog is up to date.
+INFO: [DRC 23-27] Running DRC with 2 threads
+INFO: [Vivado_Tcl 2-168] The results of DRC are in file D:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.runs/impl_1/design_1_drc_routed.rpt.
+report_drc completed successfully
+report_drc: Time (s): cpu = 00:00:12 ; elapsed = 00:00:07 . Memory (MB): peak = 2530.160 ; gain = 0.000
+INFO: [Vivado 12-24828] Executing command : report_methodology -file design_1_methodology_drc_routed.rpt -pb design_1_methodology_drc_routed.pb -rpx design_1_methodology_drc_routed.rpx
+Command: report_methodology -file design_1_methodology_drc_routed.rpt -pb design_1_methodology_drc_routed.pb -rpx design_1_methodology_drc_routed.rpx
+INFO: [Timing 38-35] Done setting XDC timing constraints.
+INFO: [DRC 23-133] Running Methodology with 2 threads
+INFO: [Vivado_Tcl 2-1520] The results of Report Methodology are in file D:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.runs/impl_1/design_1_methodology_drc_routed.rpt.
+report_methodology completed successfully
+report_drc: Time (s): cpu = 00:00:38 ; elapsed = 00:00:21 . Memory (MB): peak = 2530.160 ; gain = 0.000
+INFO: [Vivado 12-24828] Executing command : report_timing_summary -max_paths 10 -routable_nets -report_unconstrained -file design_1_timing_summary_routed.rpt -pb design_1_timing_summary_routed.pb -rpx design_1_timing_summary_routed.rpx -warn_on_violation 
+INFO: [Timing 38-35] Done setting XDC timing constraints.
+INFO: [Timing 38-91] UpdateTimingParams: Speed grade: -2, Delay Type: min_max.
+INFO: [Timing 38-191] Multithreading enabled for timing update using a maximum of 2 CPUs
+CRITICAL WARNING: [Timing 38-282] The design failed to meet the timing requirements. Please see the timing summary report for details on the timing violations.
+WARNING: [Timing 38-436] There are set_bus_skew constraint(s) in this design. Please run report_bus_skew to ensure that bus skew requirements are met.
+report_timing_summary: Time (s): cpu = 00:00:11 ; elapsed = 00:00:09 . Memory (MB): peak = 2530.160 ; gain = 0.000
+INFO: [Vivado 12-24838] Running report commands "report_incremental_reuse, report_route_status" in parallel.
+Running report generation with 2 threads.
+INFO: [Vivado 12-24828] Executing command : report_incremental_reuse -file design_1_incremental_reuse_routed.rpt
+INFO: [Vivado_Tcl 4-1062] Incremental flow is disabled. No incremental reuse Info to report.
+INFO: [Vivado 12-24828] Executing command : report_route_status -file design_1_route_status.rpt -pb design_1_route_status.pb
+INFO: [Vivado 12-24828] Executing command : report_power -file design_1_power_routed.rpt -pb design_1_power_summary_routed.pb -rpx design_1_power_routed.rpx
+Command: report_power -file design_1_power_routed.rpt -pb design_1_power_summary_routed.pb -rpx design_1_power_routed.rpx
+Running Vector-less Activity Propagation...
+
+Finished Running Vector-less Activity Propagation
+WARNING: [Power 33-332] Found switching activity that implies high-fanout reset nets being asserted for excessive periods of time which may result in inaccurate power analysis.
+Resolution: To review and fix problems, please run Power Constraints Advisor in the GUI from Tools > Power Constraints Advisor or run report_power with the -advisory option to generate a text report.
+237 Infos, 82 Warnings, 1 Critical Warnings and 0 Errors encountered.
+report_power completed successfully
+report_power: Time (s): cpu = 00:00:16 ; elapsed = 00:00:11 . Memory (MB): peak = 2530.160 ; gain = 0.000
+INFO: [Vivado 12-24828] Executing command : report_clock_utilization -file design_1_clock_utilization_routed.rpt
+INFO: [Vivado 12-24828] Executing command : report_bus_skew -warn_on_violation -file design_1_bus_skew_routed.rpt -pb design_1_bus_skew_routed.pb -rpx design_1_bus_skew_routed.rpx
+INFO: [Timing 38-91] UpdateTimingParams: Speed grade: -2, Delay Type: min_max.
+INFO: [Timing 38-191] Multithreading enabled for timing update using a maximum of 2 CPUs
+generate_parallel_reports: Time (s): cpu = 00:01:20 ; elapsed = 00:00:51 . Memory (MB): peak = 2530.160 ; gain = 0.000
+INFO: [Timing 38-480] Writing timing data to binary archive.
+Wrote PlaceDB: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 2530.160 ; gain = 0.000
+Wrote PulsedLatchDB: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 2530.160 ; gain = 0.000
+Writing XDEF routing.
+Writing XDEF routing logical nets.
+Write ShapeDB Complete: Time (s): cpu = 00:00:01 ; elapsed = 00:00:00.152 . Memory (MB): peak = 2530.160 ; gain = 0.000
+Writing XDEF routing special nets.
+Wrote RouteStorage: Time (s): cpu = 00:00:03 ; elapsed = 00:00:00.643 . Memory (MB): peak = 2538.117 ; gain = 7.957
+Wrote PlaceStorage: Time (s): cpu = 00:00:06 ; elapsed = 00:00:02 . Memory (MB): peak = 2538.117 ; gain = 0.000
+Wrote Netlist Cache: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.111 . Memory (MB): peak = 2538.117 ; gain = 0.000
+Wrote Device Cache: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.023 . Memory (MB): peak = 2538.117 ; gain = 0.000
+Write Physdb Complete: Time (s): cpu = 00:00:09 ; elapsed = 00:00:03 . Memory (MB): peak = 2538.117 ; gain = 7.957
+INFO: [Common 17-1381] The checkpoint 'D:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.runs/impl_1/design_1_routed.dcp' has been generated.
+write_checkpoint: Time (s): cpu = 00:00:11 ; elapsed = 00:00:06 . Memory (MB): peak = 2538.117 ; gain = 7.957
+INFO: [Memdata 28-208] The XPM instance: <v_axi4s_vid_out_0/inst/COUPLER_INST/generate_async_fifo.FIFO_INST/XPM_FIFO_ASYNC_INST/gnuram_async_fifo.xpm_fifo_base_inst/gen_sdpram.xpm_memory_base_inst> is part of IP: <v_axi4s_vid_out_0>. This XPM instance will be excluded from the .mmi because updatemem is prohibited from making changes to an XPM that is part of an IP.
+INFO: [Memdata 28-167] Found XPM memory block smartconnect_learning/inst/s00_nodes/s00_w_node/inst/inst_mi_handler/gen_normal_area.inst_fifo_node_payld/gen_xpm_memory_fifo.inst_fifo/gen_mem_rep[0].inst_xpm_memory/xpm_memory_base_inst with a P_MEMORY_PRIMITIVE property set to distributed. A value of block is required. You will not be able to use the updatemem program to update the bitstream with new data for the smartconnect_learning/inst/s00_nodes/s00_w_node/inst/inst_mi_handler/gen_normal_area.inst_fifo_node_payld/gen_xpm_memory_fifo.inst_fifo/gen_mem_rep[0].inst_xpm_memory/xpm_memory_base_inst block.
+INFO: [Memdata 28-167] Found XPM memory block smartconnect_learning/inst/s00_nodes/s00_r_node/inst/inst_mi_handler/gen_normal_area.inst_fifo_node_payld/gen_xpm_memory_fifo.inst_fifo/gen_mem_rep[0].inst_xpm_memory/xpm_memory_base_inst with a P_MEMORY_PRIMITIVE property set to distributed. A value of block is required. You will not be able to use the updatemem program to update the bitstream with new data for the smartconnect_learning/inst/s00_nodes/s00_r_node/inst/inst_mi_handler/gen_normal_area.inst_fifo_node_payld/gen_xpm_memory_fifo.inst_fifo/gen_mem_rep[0].inst_xpm_memory/xpm_memory_base_inst block.
+INFO: [Memdata 28-167] Found XPM memory block smartconnect_learning/inst/s00_nodes/s00_b_node/inst/inst_mi_handler/gen_normal_area.inst_fifo_node_payld/gen_xpm_memory_fifo.inst_fifo/gen_mem_rep[0].inst_xpm_memory/xpm_memory_base_inst with a P_MEMORY_PRIMITIVE property set to distributed. A value of block is required. You will not be able to use the updatemem program to update the bitstream with new data for the smartconnect_learning/inst/s00_nodes/s00_b_node/inst/inst_mi_handler/gen_normal_area.inst_fifo_node_payld/gen_xpm_memory_fifo.inst_fifo/gen_mem_rep[0].inst_xpm_memory/xpm_memory_base_inst block.
+INFO: [Memdata 28-167] Found XPM memory block smartconnect_learning/inst/s00_nodes/s00_aw_node/inst/inst_mi_handler/gen_normal_area.inst_fifo_node_payld/gen_xpm_memory_fifo.inst_fifo/gen_mem_rep[0].inst_xpm_memory/xpm_memory_base_inst with a P_MEMORY_PRIMITIVE property set to distributed. A value of block is required. You will not be able to use the updatemem program to update the bitstream with new data for the smartconnect_learning/inst/s00_nodes/s00_aw_node/inst/inst_mi_handler/gen_normal_area.inst_fifo_node_payld/gen_xpm_memory_fifo.inst_fifo/gen_mem_rep[0].inst_xpm_memory/xpm_memory_base_inst block.
+INFO: [Memdata 28-167] Found XPM memory block smartconnect_learning/inst/s00_nodes/s00_ar_node/inst/inst_mi_handler/gen_normal_area.inst_fifo_node_payld/gen_xpm_memory_fifo.inst_fifo/gen_mem_rep[0].inst_xpm_memory/xpm_memory_base_inst with a P_MEMORY_PRIMITIVE property set to distributed. A value of block is required. You will not be able to use the updatemem program to update the bitstream with new data for the smartconnect_learning/inst/s00_nodes/s00_ar_node/inst/inst_mi_handler/gen_normal_area.inst_fifo_node_payld/gen_xpm_memory_fifo.inst_fifo/gen_mem_rep[0].inst_xpm_memory/xpm_memory_base_inst block.
+INFO: [Memdata 28-167] Found XPM memory block smartconnect_1/inst/s01_nodes/s01_r_node/inst/inst_mi_handler/gen_normal_area.inst_fifo_node_payld/gen_xpm_memory_fifo.inst_fifo/gen_mem_rep[0].inst_xpm_memory/xpm_memory_base_inst with a P_MEMORY_PRIMITIVE property set to distributed. A value of block is required. You will not be able to use the updatemem program to update the bitstream with new data for the smartconnect_1/inst/s01_nodes/s01_r_node/inst/inst_mi_handler/gen_normal_area.inst_fifo_node_payld/gen_xpm_memory_fifo.inst_fifo/gen_mem_rep[0].inst_xpm_memory/xpm_memory_base_inst block.
+INFO: [Memdata 28-167] Found XPM memory block smartconnect_1/inst/s01_nodes/s01_ar_node/inst/inst_mi_handler/gen_normal_area.inst_fifo_node_payld/gen_xpm_memory_fifo.inst_fifo/gen_mem_rep[0].inst_xpm_memory/xpm_memory_base_inst with a P_MEMORY_PRIMITIVE property set to distributed. A value of block is required. You will not be able to use the updatemem program to update the bitstream with new data for the smartconnect_1/inst/s01_nodes/s01_ar_node/inst/inst_mi_handler/gen_normal_area.inst_fifo_node_payld/gen_xpm_memory_fifo.inst_fifo/gen_mem_rep[0].inst_xpm_memory/xpm_memory_base_inst block.
+INFO: [Memdata 28-167] Found XPM memory block smartconnect_1/inst/s00_nodes/s00_w_node/inst/inst_mi_handler/gen_normal_area.inst_fifo_node_payld/gen_xpm_memory_fifo.inst_fifo/gen_mem_rep[0].inst_xpm_memory/xpm_memory_base_inst with a P_MEMORY_PRIMITIVE property set to distributed. A value of block is required. You will not be able to use the updatemem program to update the bitstream with new data for the smartconnect_1/inst/s00_nodes/s00_w_node/inst/inst_mi_handler/gen_normal_area.inst_fifo_node_payld/gen_xpm_memory_fifo.inst_fifo/gen_mem_rep[0].inst_xpm_memory/xpm_memory_base_inst block.
+INFO: [Memdata 28-167] Found XPM memory block smartconnect_1/inst/s00_nodes/s00_w_node/inst/inst_mi_handler/gen_normal_area.gen_fifo_req.inst_fifo_req/gen_xpm_memory_fifo.inst_fifo/gen_mem_rep[0].inst_xpm_memory/xpm_memory_base_inst with a P_MEMORY_PRIMITIVE property set to distributed. A value of block is required. You will not be able to use the updatemem program to update the bitstream with new data for the smartconnect_1/inst/s00_nodes/s00_w_node/inst/inst_mi_handler/gen_normal_area.gen_fifo_req.inst_fifo_req/gen_xpm_memory_fifo.inst_fifo/gen_mem_rep[0].inst_xpm_memory/xpm_memory_base_inst block.
+INFO: [Memdata 28-167] Found XPM memory block smartconnect_1/inst/s00_nodes/s00_b_node/inst/inst_mi_handler/gen_normal_area.inst_fifo_node_payld/gen_xpm_memory_fifo.inst_fifo/gen_mem_rep[0].inst_xpm_memory/xpm_memory_base_inst with a P_MEMORY_PRIMITIVE property set to distributed. A value of block is required. You will not be able to use the updatemem program to update the bitstream with new data for the smartconnect_1/inst/s00_nodes/s00_b_node/inst/inst_mi_handler/gen_normal_area.inst_fifo_node_payld/gen_xpm_memory_fifo.inst_fifo/gen_mem_rep[0].inst_xpm_memory/xpm_memory_base_inst block.
+INFO: [Memdata 28-167] Found XPM memory block smartconnect_1/inst/s00_nodes/s00_aw_node/inst/inst_mi_handler/gen_normal_area.inst_fifo_node_payld/gen_xpm_memory_fifo.inst_fifo/gen_mem_rep[0].inst_xpm_memory/xpm_memory_base_inst with a P_MEMORY_PRIMITIVE property set to distributed. A value of block is required. You will not be able to use the updatemem program to update the bitstream with new data for the smartconnect_1/inst/s00_nodes/s00_aw_node/inst/inst_mi_handler/gen_normal_area.inst_fifo_node_payld/gen_xpm_memory_fifo.inst_fifo/gen_mem_rep[0].inst_xpm_memory/xpm_memory_base_inst block.
+INFO: [Memdata 28-167] Found XPM memory block smartconnect_1/inst/m00_nodes/m00_w_node/inst/inst_si_handler/gen_si_handler.gen_request_fifos.gen_req_fifo[0].inst_req_fifo/gen_xpm_memory_fifo.inst_fifo/gen_mem_rep[0].inst_xpm_memory/xpm_memory_base_inst with a P_MEMORY_PRIMITIVE property set to distributed. A value of block is required. You will not be able to use the updatemem program to update the bitstream with new data for the smartconnect_1/inst/m00_nodes/m00_w_node/inst/inst_si_handler/gen_si_handler.gen_request_fifos.gen_req_fifo[0].inst_req_fifo/gen_xpm_memory_fifo.inst_fifo/gen_mem_rep[0].inst_xpm_memory/xpm_memory_base_inst block.
+INFO: [Memdata 28-167] Found XPM memory block smartconnect_1/inst/m00_nodes/m00_w_node/inst/inst_mi_handler/gen_normal_area.inst_fifo_node_payld/gen_xpm_memory_fifo.inst_fifo/gen_mem_rep[0].inst_xpm_memory/xpm_memory_base_inst with a P_MEMORY_PRIMITIVE property set to distributed. A value of block is required. You will not be able to use the updatemem program to update the bitstream with new data for the smartconnect_1/inst/m00_nodes/m00_w_node/inst/inst_mi_handler/gen_normal_area.inst_fifo_node_payld/gen_xpm_memory_fifo.inst_fifo/gen_mem_rep[0].inst_xpm_memory/xpm_memory_base_inst block.
+INFO: [Memdata 28-167] Found XPM memory block smartconnect_1/inst/m00_nodes/m00_r_node/inst/inst_mi_handler/gen_normal_area.inst_fifo_node_payld/gen_xpm_memory_fifo.inst_fifo/gen_mem_rep[0].inst_xpm_memory/xpm_memory_base_inst with a P_MEMORY_PRIMITIVE property set to distributed. A value of block is required. You will not be able to use the updatemem program to update the bitstream with new data for the smartconnect_1/inst/m00_nodes/m00_r_node/inst/inst_mi_handler/gen_normal_area.inst_fifo_node_payld/gen_xpm_memory_fifo.inst_fifo/gen_mem_rep[0].inst_xpm_memory/xpm_memory_base_inst block.
+INFO: [Memdata 28-167] Found XPM memory block smartconnect_1/inst/m00_nodes/m00_r_node/inst/inst_mi_handler/gen_normal_area.gen_fifo_req.inst_fifo_req/gen_xpm_memory_fifo.inst_fifo/gen_mem_rep[0].inst_xpm_memory/xpm_memory_base_inst with a P_MEMORY_PRIMITIVE property set to distributed. A value of block is required. You will not be able to use the updatemem program to update the bitstream with new data for the smartconnect_1/inst/m00_nodes/m00_r_node/inst/inst_mi_handler/gen_normal_area.gen_fifo_req.inst_fifo_req/gen_xpm_memory_fifo.inst_fifo/gen_mem_rep[0].inst_xpm_memory/xpm_memory_base_inst block.
+INFO: [Memdata 28-167] Found XPM memory block smartconnect_1/inst/m00_nodes/m00_b_node/inst/inst_mi_handler/gen_normal_area.inst_fifo_node_payld/gen_xpm_memory_fifo.inst_fifo/gen_mem_rep[0].inst_xpm_memory/xpm_memory_base_inst with a P_MEMORY_PRIMITIVE property set to distributed. A value of block is required. You will not be able to use the updatemem program to update the bitstream with new data for the smartconnect_1/inst/m00_nodes/m00_b_node/inst/inst_mi_handler/gen_normal_area.inst_fifo_node_payld/gen_xpm_memory_fifo.inst_fifo/gen_mem_rep[0].inst_xpm_memory/xpm_memory_base_inst block.
+INFO: [Memdata 28-167] Found XPM memory block smartconnect_1/inst/m00_nodes/m00_b_node/inst/inst_mi_handler/gen_normal_area.gen_fifo_req.inst_fifo_req/gen_xpm_memory_fifo.inst_fifo/gen_mem_rep[0].inst_xpm_memory/xpm_memory_base_inst with a P_MEMORY_PRIMITIVE property set to distributed. A value of block is required. You will not be able to use the updatemem program to update the bitstream with new data for the smartconnect_1/inst/m00_nodes/m00_b_node/inst/inst_mi_handler/gen_normal_area.gen_fifo_req.inst_fifo_req/gen_xpm_memory_fifo.inst_fifo/gen_mem_rep[0].inst_xpm_memory/xpm_memory_base_inst block.
+INFO: [Memdata 28-167] Found XPM memory block smartconnect_1/inst/m00_nodes/m00_aw_node/inst/inst_mi_handler/gen_normal_area.inst_fifo_node_payld/gen_xpm_memory_fifo.inst_fifo/gen_mem_rep[0].inst_xpm_memory/xpm_memory_base_inst with a P_MEMORY_PRIMITIVE property set to distributed. A value of block is required. You will not be able to use the updatemem program to update the bitstream with new data for the smartconnect_1/inst/m00_nodes/m00_aw_node/inst/inst_mi_handler/gen_normal_area.inst_fifo_node_payld/gen_xpm_memory_fifo.inst_fifo/gen_mem_rep[0].inst_xpm_memory/xpm_memory_base_inst block.
+INFO: [Memdata 28-167] Found XPM memory block smartconnect_1/inst/m00_nodes/m00_ar_node/inst/inst_mi_handler/gen_normal_area.inst_fifo_node_payld/gen_xpm_memory_fifo.inst_fifo/gen_mem_rep[0].inst_xpm_memory/xpm_memory_base_inst with a P_MEMORY_PRIMITIVE property set to distributed. A value of block is required. You will not be able to use the updatemem program to update the bitstream with new data for the smartconnect_1/inst/m00_nodes/m00_ar_node/inst/inst_mi_handler/gen_normal_area.inst_fifo_node_payld/gen_xpm_memory_fifo.inst_fifo/gen_mem_rep[0].inst_xpm_memory/xpm_memory_base_inst block.
+INFO: [Memdata 28-167] Found XPM memory block smartconnect_0/inst/switchboards/i_nodes/i_w_node/inst/inst_si_handler/gen_si_handler.gen_request_fifos.gen_req_fifo[0].inst_req_fifo/gen_xpm_memory_fifo.inst_fifo/gen_mem_rep[0].inst_xpm_memory/xpm_memory_base_inst with a P_MEMORY_PRIMITIVE property set to distributed. A value of block is required. You will not be able to use the updatemem program to update the bitstream with new data for the smartconnect_0/inst/switchboards/i_nodes/i_w_node/inst/inst_si_handler/gen_si_handler.gen_request_fifos.gen_req_fifo[0].inst_req_fifo/gen_xpm_memory_fifo.inst_fifo/gen_mem_rep[0].inst_xpm_memory/xpm_memory_base_inst block.
+INFO: [Memdata 28-208] The XPM instance: <axi_vdma_0/U0/I_PRMRY_DATAMOVER/GEN_MM2S_FULL.I_MM2S_FULL_WRAPPER/GEN_INCLUDE_MM2S_SF.I_RD_SF/I_DATA_FIFO/BLK_MEM.I_SYNC_FIFOGEN_FIFO/xpm_fifo_base_inst/gen_sdpram.xpm_memory_base_inst> is part of IP: <axi_vdma_0>. This XPM instance will be excluded from the .mmi because updatemem is prohibited from making changes to an XPM that is part of an IP.
+INFO: [Memdata 28-208] The XPM instance: <axi_vdma_0/U0/GEN_SPRT_FOR_MM2S.MM2S_LINEBUFFER_I/GEN_LINEBUF_NO_SOF.GEN_LINEBUFFER.GEN_SYNC_FIFO.I_LINEBUFFER_FIFO/xpm_fifo_sync_inst/xpm_fifo_base_inst/gen_sdpram.xpm_memory_base_inst> is part of IP: <axi_vdma_0>. This XPM instance will be excluded from the .mmi because updatemem is prohibited from making changes to an XPM that is part of an IP.
+INFO: [Memdata 28-167] Found XPM memory block axi_dma_0/U0/I_PRMRY_DATAMOVER/GEN_S2MM_FULL.I_S2MM_FULL_WRAPPER/GEN_ENABLE_INDET_BTT_SF.I_INDET_BTT/I_XD_FIFO/NON_BLK_MEM.I_SYNC_FIFOGEN_FIFO/xpm_fifo_base_inst/gen_sdpram.xpm_memory_base_inst with a P_MEMORY_PRIMITIVE property set to auto. A value of block is required. You will not be able to use the updatemem program to update the bitstream with new data for the axi_dma_0/U0/I_PRMRY_DATAMOVER/GEN_S2MM_FULL.I_S2MM_FULL_WRAPPER/GEN_ENABLE_INDET_BTT_SF.I_INDET_BTT/I_XD_FIFO/NON_BLK_MEM.I_SYNC_FIFOGEN_FIFO/xpm_fifo_base_inst/gen_sdpram.xpm_memory_base_inst block.
+INFO: [Memdata 28-208] The XPM instance: <axi_dma_0/U0/I_PRMRY_DATAMOVER/GEN_S2MM_FULL.I_S2MM_FULL_WRAPPER/GEN_ENABLE_INDET_BTT_SF.I_INDET_BTT/I_DATA_FIFO/BLK_MEM.I_SYNC_FIFOGEN_FIFO/xpm_fifo_base_inst/gen_sdpram.xpm_memory_base_inst> is part of IP: <axi_dma_0>. This XPM instance will be excluded from the .mmi because updatemem is prohibited from making changes to an XPM that is part of an IP.
+Command: write_bitstream -force design_1.bit
+Attempting to get a license for feature 'Implementation' and/or device 'xc7z020'
+INFO: [Common 17-349] Got license for feature 'Implementation' and/or device 'xc7z020'
+Running DRC as a precondition to command write_bitstream
+INFO: [IP_Flow 19-1839] IP Catalog is up to date.
+INFO: [DRC 23-27] Running DRC with 2 threads
+INFO: [Vivado 12-3199] DRC finished with 0 Errors
+INFO: [Vivado 12-3200] Please refer to the DRC report (report_drc) for more information.
+Integrating Hard IP ELF/MEM with the PDI.
+INFO: [Designutils 20-2272] Running write_bitstream with 2 threads.
+Loading data files...
+Loading site data...
+Loading route data...
+Processing options...
+Creating bitmap...
+Creating bitstream...
+Writing bitstream ./design_1.bit...
+INFO: [Vivado 12-1842] Bitgen Completed Successfully.
+INFO: [Common 17-83] Releasing license: Implementation
+276 Infos, 82 Warnings, 1 Critical Warnings and 0 Errors encountered.
+write_bitstream completed successfully
+write_bitstream: Time (s): cpu = 00:00:47 ; elapsed = 00:00:29 . Memory (MB): peak = 2989.379 ; gain = 451.262
+INFO: [Common 17-206] Exiting Vivado at Mon Nov  2 12:47:54 2026...
+[Mon Nov  2 12:47:56 2026] impl_1 finished
+wait_on_runs: Time (s): cpu = 00:00:01 ; elapsed = 00:11:05 . Memory (MB): peak = 828.809 ; gain = 0.000
+# if {[get_property PROGRESS [get_runs impl_1]] ne "100%"} {error "HDC reimplementation failed"}
+# open_run impl_1
+INFO: [Device 21-403] Loading part xc7z020clg400-2
+Netlist sorting complete. Time (s): cpu = 00:00:01 ; elapsed = 00:00:01 . Memory (MB): peak = 1097.012 ; gain = 0.000
+INFO: [Netlist 29-17] Analyzing 3917 Unisim elements for replacement
+INFO: [Netlist 29-28] Unisim Transformation completed in 1 CPU seconds
+INFO: [Project 1-479] Netlist was created with Vivado 2025.2
+INFO: [Project 1-570] Preparing netlist for logic optimization
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[0]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[0]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[0]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[10]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[10]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[10]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[11]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[11]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[11]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[12]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[12]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[12]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[13]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[13]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[13]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[14]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[14]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[14]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[15]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[15]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[15]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[16]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[16]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[16]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[17]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[17]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[17]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[18]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[18]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[18]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[19]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[19]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[19]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[1]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[1]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[1]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[20]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[20]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[20]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[21]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[21]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[21]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[22]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[22]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[22]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[23]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[23]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[23]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[2]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[2]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[2]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[3]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[3]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[3]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[4]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[4]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[4]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[5]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[5]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[5]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[6]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[6]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[6]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[7]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[7]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[7]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[8]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[8]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[8]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[9]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[9]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[9]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+Read ShapeDB Complete: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.108 . Memory (MB): peak = 1261.730 ; gain = 0.000
+INFO: [Timing 38-478] Restoring timing data from binary archive.
+INFO: [Timing 38-479] Binary timing data restore complete.
+INFO: [Project 1-856] Restoring constraints from binary archive.
+INFO: [Project 1-853] Binary constraint restore complete.
+INFO: [Designutils 20-5722] Start Reading Physical Databases.
+Reading placement.
+Read Netlist Cache: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.049 . Memory (MB): peak = 1955.930 ; gain = 0.000
+Reading placer database...
+Read Device Cache: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.013 . Memory (MB): peak = 1955.930 ; gain = 0.000
+Read PlaceDB: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 1955.930 ; gain = 0.000
+Read placeStorage: Time (s): cpu = 00:00:01 ; elapsed = 00:00:01 . Memory (MB): peak = 1955.930 ; gain = 0.000
+Read PulsedLatchDB: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 1955.930 ; gain = 0.000
+Reading routing.
+Read RouteStorage: Time (s): cpu = 00:00:01 ; elapsed = 00:00:00.498 . Memory (MB): peak = 1978.469 ; gain = 22.539
+Read Physdb Files: Time (s): cpu = 00:00:02 ; elapsed = 00:00:02 . Memory (MB): peak = 1978.469 ; gain = 22.539
+Restored from archive | CPU: 2.000000 secs | Memory: 0.000000 MB |
+Finished XDEF File Restore: Time (s): cpu = 00:00:02 ; elapsed = 00:00:02 . Memory (MB): peak = 1978.469 ; gain = 22.539
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.022 . Memory (MB): peak = 2029.012 ; gain = 0.000
+INFO: [Project 1-111] Unisim Transformation Summary:
+  A total of 958 instances were transformed.
+  IOBUF => IOBUF (IBUF, OBUFT): 27 instances
+  RAM16X1D => RAM32X1D (RAMD32(x2)): 2 instances
+  RAM16X1S => RAM32X1S (RAMS32): 474 instances
+  RAM32M => RAM32M (RAMD32(x6), RAMS32(x2)): 227 instances
+  RAM32X1D => RAM32X1D (RAMD32(x2)): 13 instances
+  RAM32X1S => RAM32X1S (RAMS32): 110 instances
+  RAM64M => RAM64M (RAMD64E(x4)): 103 instances
+  RAM64X1D => RAM64X1D (RAMD64E(x2)): 2 instances
+
+open_run: Time (s): cpu = 00:00:19 ; elapsed = 00:00:20 . Memory (MB): peak = 2029.012 ; gain = 1200.203
+# report_timing_summary -file [file join $out timing_routed.rpt]
+INFO: [Timing 38-91] UpdateTimingParams: Speed grade: -2, Delay Type: min_max.
+INFO: [Timing 38-191] Multithreading enabled for timing update using a maximum of 2 CPUs
+WARNING: [Timing 38-436] There are set_bus_skew constraint(s) in this design. Please run report_bus_skew to ensure that bus skew requirements are met.
+report_timing_summary: Time (s): cpu = 00:00:27 ; elapsed = 00:00:16 . Memory (MB): peak = 2226.234 ; gain = 197.223
+# report_utilization -file [file join $out utilization_routed.rpt]
+# report_utilization -hierarchical -file [file join $out utilization_hierarchical.rpt]
+# report_methodology -file [file join $out methodology_routed.rpt]
+Command: report_methodology -file D:/FPGA/sEMG-HMRS/report/hdc_resolution_20261102/methodology_routed.rpt
+INFO: [Timing 38-35] Done setting XDC timing constraints.
+INFO: [DRC 23-133] Running Methodology with 2 threads
+INFO: [Vivado_Tcl 2-1520] The results of Report Methodology are in file D:/FPGA/sEMG-HMRS/report/hdc_resolution_20261102/methodology_routed.rpt.
+report_methodology completed successfully
+report_methodology: Time (s): cpu = 00:00:21 ; elapsed = 00:00:12 . Memory (MB): peak = 2292.543 ; gain = 66.309
+# write_hw_platform -fixed -include_bit -force [file join $root build/export/design_1.xsa]
+INFO: [Projectvivado 1-1918] Creating Hardware Platform: D:/FPGA/sEMG-HMRS/build/export/design_1.xsa ...
+INFO: [Projectvivado 1-1943] The Hardware Platform can be used for Hardware
+INFO: [Projectvivado 1-1941] Successfully created Hardware Platform: D:/FPGA/sEMG-HMRS/build/export/design_1.xsa
+INFO: [Hsi 55-2053] elapsed time for repository (D:/FPGA/VIVADO/2025.2/Vivado/data/embeddedsw) loading 0 seconds
+write_hw_platform: Time (s): cpu = 00:00:06 ; elapsed = 00:00:07 . Memory (MB): peak = 2597.090 ; gain = 304.547
+# close_project
+# puts "TEST_PASS HDC Q32 full-system reimplementation complete"
+TEST_PASS HDC Q32 full-system reimplementation complete
+INFO: [Common 17-206] Exiting Vivado at Mon Nov  2 12:48:55 2026...

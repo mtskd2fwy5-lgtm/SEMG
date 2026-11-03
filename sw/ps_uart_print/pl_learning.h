@@ -27,7 +27,7 @@ static uint32_t pl_learning_job(uint32_t job,const uint32_t args[5])
     uint32_t i,start,dt,w;
     if(pl_learning_offline)return 0u;
     w=LEARN_STATUS;pl_learning_status=w;
-    if(((w>>16)&255u)!=0x12u || (w&0x50000000u)) {
+    if(((w>>16)&255u)!=0x13u || (w&0x50000000u)) {
         pl_learning_offline=1u;pl_learning_failures++;return 0u;
     }
     if(!pl_learning_initialized){pl_learning_toggle=LEARN_COMMAND>>31;pl_learning_initialized=1u;}
@@ -46,7 +46,7 @@ static uint32_t pl_learning_job(uint32_t job,const uint32_t args[5])
     if(pl_learning_offline || (w&0x30000000u)) {pl_learning_failures++;return 0u;}
     // A growing library must still fit the 25 ms feature cadence. Reject
     // an over-budget prediction rather than building a stale control queue.
-    if(job==4u && dt>20u*GT_TICKS_PER_MS){pl_learning_failures++;return 0u;}
+    if((job==4u || job==6u) && dt>20u*GT_TICKS_PER_MS){pl_learning_failures++;return 0u;}
     pl_learning_jobs++;return 1u;
 }
 static uint32_t pl_learning_run(uint32_t job,const uint32_t *e,const uint32_t *scale,
@@ -79,19 +79,20 @@ static uint32_t pl_learning_scale(const uint32_t *samples,uint32_t n,uint32_t sc
     for(i=0;i<8;i++)scale[i]=scratch[16+i];
     return 1u;
 }
-static uint32_t pl_learning_train(const uint32_t e[8],const uint32_t scale[8],int16_t *proto,uint32_t *saturated)
+static uint32_t pl_learning_train(const uint32_t e[8],const uint32_t scale[8],int16_t *proto,uint32_t levels,uint32_t *saturated)
 {
     uint32_t out[8];
-    if(!pl_learning_run(3u,e,scale,proto,1u,out))return 0u;
+    if((levels!=16u && levels!=32u) || !pl_learning_run(levels==32u?5u:3u,e,scale,proto,1u,out))return 0u;
     *saturated+=out[0];return 1u;
 }
 static uint32_t pl_learning_predict(const uint32_t e[8],const uint32_t scale[8],const int16_t *proto,
-                                    uint32_t classes,uint32_t *best,uint32_t *margin,uint32_t *clip)
+                                    uint32_t classes,uint32_t levels,uint32_t *best,uint32_t *margin,uint32_t *clip,uint32_t *margin_bp)
 {
     uint32_t out[8];
-    if(!classes || !pl_learning_run(4u,e,scale,(int16_t *)proto,classes,out))return 0u;
-    if(out[0]>=classes || out[2]>8u)return 0u;
-    *best=out[0];*margin=out[1];*clip=out[2];return 1u;
+    if(!classes || (levels!=16u && levels!=32u) ||
+       !pl_learning_run(levels==32u?6u:4u,e,scale,(int16_t *)proto,classes,out))return 0u;
+    if(out[0]>=classes || out[2]>8u || out[3]>20000u || out[1]!=out[3]/100u)return 0u;
+    *best=out[0];*margin=out[1];*clip=out[2];*margin_bp=out[3];return 1u;
 }
 #endif
 #endif

@@ -1,5 +1,5 @@
 // Generated register locations.
-localparam IMU_START=1080, IMU_WORDS=1151;
+localparam IMU_START=938, IMU_WORDS=1008;
 localparam R_ACC0=0;
 localparam R_ACC1=1;
 localparam R_ACC2=2;

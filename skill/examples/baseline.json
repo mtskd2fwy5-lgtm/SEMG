@@ -1,0 +1,16 @@
+{
+  "metadata": {
+    "target": "example_part",
+    "tool_version": "example_tool",
+    "stage": "routed",
+    "constraints": "example_constraint_hash",
+    "workload": "example_io_clock_algorithm_contract"
+  },
+  "metrics": {
+    "lut": 100,
+    "ff": 200,
+    "dsp": 8,
+    "wns_ns": 0.1,
+    "latency_cycles": 400
+  }
+}

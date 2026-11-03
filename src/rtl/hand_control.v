@@ -56,7 +56,11 @@ module hand_control #(
     wire [5:0] pulses;
     wire [95:0] current_us;
     // Ordinary manual tests isolate one axis. Explicit home commits hold all six.
-    assign pwm=enabled?(pulses & ((mode==1 && !test_group)?(6'b000001<<test_channel):6'b111111)):6'b0;
+    // Board interface uses inverting optocouplers on all six outputs.
+    // Idle/reset/STOP -> FPGA HIGH -> optocoupler LOW at the servo.
+    // Keep internal positive pulse widths and all calibrated targets unchanged.
+    wire [5:0] servo_pwm=enabled?(pulses & ((mode==1 && !test_group)?(6'b000001<<test_channel):6'b111111)):6'b0;
+    assign pwm=~servo_pwm;
     hand_servo_pwm #(.CLOCK_HZ(CLOCK_HZ),.WATCHDOG_MS(TIMEOUT_MS)) generator(
         .clk(clk),.rst_n(rst_n),.enable(enabled),.estop(trip),
         .command_valid(target_valid && enabled),.command_us(target),

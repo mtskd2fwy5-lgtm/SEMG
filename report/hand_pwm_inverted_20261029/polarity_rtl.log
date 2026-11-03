@@ -1,0 +1,35 @@
+#-----------------------------------------------------------
+# xsim v2025.2 (64-bit)
+# SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025
+# IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025
+# SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025
+# Start of session at: Thu Oct 29 22:05:39 2026
+# Process ID         : 44376
+# Current directory  : D:/FPGA/sEMG-HMRS/report/hand_pwm_inverted_20261029
+# Command line       : xsim.exe -log polarity_rtl.log -mode tcl -source {xsim.dir/hand_inverted/xsim_script.tcl}
+# Log file           : D:/FPGA/sEMG-HMRS/report/hand_pwm_inverted_20261029/polarity_rtl.log
+# Journal file       : D:/FPGA/sEMG-HMRS/report/hand_pwm_inverted_20261029\xsim.jou
+# Running On         : LAPTOP-VCCV41QO
+# Platform           : Windows Server 2016 or Windows 10
+# Operating System   : 26200
+# Processor Detail   : AMD Ryzen 9 7945HX with Radeon Graphics        
+# CPU Frequency      : 2495 MHz
+# CPU Physical cores : 16
+# CPU Logical cores  : 32
+# Host memory        : 16844 MB
+# Swap memory        : 25280 MB
+# Total Virtual      : 42125 MB
+# Available Virtual  : 824 MB
+#-----------------------------------------------------------
+source xsim.dir/hand_inverted/xsim_script.tcl
+# xsim {hand_inverted} -autoloadwcfg -runall
+Time resolution is 1 ps
+run -all
+TEST_PASS atomic home: no partial pulses, six same-frame rising edges, exact independent widths, ring/little hold beyond 1 second, STOP/calibration/reset invalidation, single-axis isolation, host watchdog and estop
+TEST_PASS hand control: ACK CDC, boot off, manual isolation, wrist hold, MPU rotation, legacy and direct HDC, atomic five-finger commit, source isolation, four watchdogs, estop
+TEST_PASS inverted PWM cycle-equivalence: all six pins complement V19, status/targets unchanged cycles=2270264
+$finish called at time : 2270265 us : File "D:/FPGA/sEMG-HMRS/sim/hand_control_tb.sv" Line 229
+run: Time (s): cpu = 00:00:00 ; elapsed = 00:00:18 . Memory (MB): peak = 228.191 ; gain = 0.000
+exit
+INFO: xsimkernel Simulation Memory Usage: 11652 KB (Peak: 11652 KB), Simulation CPU Usage: 18578 ms
+INFO: [Common 17-206] Exiting xsim at Thu Oct 29 22:06:03 2026...

@@ -3,9 +3,9 @@
 /* Header labels and destinations stay fixed on every page. */
 static void ui_draw_header(void)
 {
-    ui_button(LCD_X(330),LCD_Y(30),LCD_X(150),LCD_Y(52),"首页",ui_menu_open);
-    ui_button(LCD_X(520),LCD_Y(30),LCD_X(170),LCD_Y(52),"返回",0u);
-    ui_button(LCD_X(700),LCD_Y(30),LCD_X(150),LCD_Y(52),"训练",lcd_rehab_view);
+    ui_button(LCD_X(440),LCD_Y(30),LCD_X(125),LCD_Y(52),"首页",ui_menu_open);
+    ui_button(LCD_X(575),LCD_Y(30),LCD_X(140),LCD_Y(52),"返回",0u);
+    ui_button(LCD_X(725),LCD_Y(30),LCD_X(140),LCD_Y(52),"训练",lcd_rehab_view);
     ui_button(LCD_X(875),LCD_Y(30),LCD_X(133),LCD_Y(52),hand_busy()?"停止":"设置",lcd_settings_view);
 }
 
@@ -18,7 +18,7 @@ static void ui_draw_menu(void)
     static const char *const actions[]={"监测模式","串口记录","静息校准","MPU归零"};
     u32 i;
     p_rect(0,0,LCD_W,LCD_H,255,255,255);
-    ui_label(LCD_X(28),LCD_Y(12),LCD_X(270),2,31,49,58,"肌电康复实验台");
+    ui_label(LCD_X(28),LCD_Y(12),LCD_X(410),2,31,49,58,"自学习肌电意图解码康复训练系统");
     ui_label(LCD_X(28),LCD_Y(56),LCD_X(280),1,94,112,119,
         hand_home_state==HAND_HOME_WAIT || hand_home_state==HAND_HOME_DRIVE?"机械手复位中":
         hand_home_state==HAND_HOME_DONE?"复位目标保持中":

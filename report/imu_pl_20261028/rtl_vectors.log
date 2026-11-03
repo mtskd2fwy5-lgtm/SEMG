@@ -3,8 +3,8 @@
 # SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025
 # IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025
 # SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025
-# Start of session at: Wed Oct 28 20:17:40 2026
-# Process ID         : 29216
+# Start of session at: Sun Nov  1 19:26:48 2026
+# Process ID         : 40564
 # Current directory  : D:/FPGA/sEMG-HMRS
 # Command line       : xsim.exe -log D:\FPGA\sEMG-HMRS\report\imu_pl_20261028/rtl_vectors.log -mode tcl -source {xsim.dir/imu_rtl_vectors/xsim_script.tcl}
 # Log file           : D:/FPGA/sEMG-HMRS/report/imu_pl_20261028/rtl_vectors.log
@@ -19,13 +19,13 @@
 # Host memory        : 16844 MB
 # Swap memory        : 16844 MB
 # Total Virtual      : 33689 MB
-# Available Virtual  : 15302 MB
+# Available Virtual  : 11107 MB
 #-----------------------------------------------------------
 source xsim.dir/imu_rtl_vectors/xsim_script.tcl
 # xsim {imu_rtl_vectors} -autoloadwcfg -runall
 Time resolution is 1 ps
 run -all
-attitude vectors        1000 peak_cycles        5974
+attitude vectors        1000 peak_cycles        5941
 attitude vectors        2000 peak_cycles        6103
 attitude vectors        3000 peak_cycles        6103
 attitude vectors        4000 peak_cycles        6103
@@ -39,8 +39,8 @@ attitude vectors       11000 peak_cycles        6112
 attitude vectors       12000 peak_cycles        6112
 attitude vectors       13000 peak_cycles        6112
 TEST_PASS PL attitude bit-exact replay samples=      13528 resets=         32 peak_cycles=       6112
-$finish called at time : 732799930 ns : File "D:/FPGA/sEMG-HMRS/sim/mpu_attitude_vectors_tb.sv" Line 44
-run: Time (s): cpu = 00:00:01 ; elapsed = 00:01:41 . Memory (MB): peak = 226.188 ; gain = 0.000
+$finish called at time : 734660880 ns : File "D:/FPGA/sEMG-HMRS/sim/mpu_attitude_vectors_tb.sv" Line 44
+run: Time (s): cpu = 00:00:00 ; elapsed = 00:01:09 . Memory (MB): peak = 228.098 ; gain = 0.000
 exit
-INFO: xsimkernel Simulation Memory Usage: 12312 KB (Peak: 12312 KB), Simulation CPU Usage: 99625 ms
-INFO: [Common 17-206] Exiting xsim at Wed Oct 28 20:19:25 2026...
+INFO: xsimkernel Simulation Memory Usage: 13964 KB (Peak: 13964 KB), Simulation CPU Usage: 68405 ms
+INFO: [Common 17-206] Exiting xsim at Sun Nov  1 19:28:08 2026...

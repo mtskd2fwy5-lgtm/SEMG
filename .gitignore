@@ -71,6 +71,33 @@ __pycache__/
 # Scratch space
 tmp/
 
+# Local compiler outputs and regenerated release binaries
+*.exe
+*.obj
+*.pdb
+report/**/*.ppm
+report/**/*.bit
+report/**/*.xsa
+report/**/*.dcp
+report/**/BOOT*.BIN
+report/**/BOOT*.bin
+report/**/*.backup.*
+report/**/*.jou
+
+# Expanded acquisition waves and local reference/report work files
+report/emg*/*.csv
+report/design_report_*/
+report/competition_report_template_*/
+report/poster_*/
+report/vivado_open_warnings_*/
+/AMD_poster_template.pptx
+/*.docx
+/hdc_report_*.csv
+/rehab_report_*.csv
+/imu_float_vectors.txt
+/pose_*.png
+data/metrics/*.png
+
 # Local datasets and generated metrics
 data/raw/*.csv
 data/raw/

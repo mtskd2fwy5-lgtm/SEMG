@@ -88,8 +88,8 @@ int main(void)
     {
         u32 i,features[40]={0},saved_pose=pose_active_cls,saved_rows=res_rows;
         u32 saved_command=control_command_reg,saved_label=lcd_action_label;
-        rehab.state=RH_IDLE;lcd_hdc_open();hdc_begin(&hdc,1u);
-        hdc_mlp_shift=pl_control_sent_shift;assert(hdc_available());
+        rehab.state=RH_IDLE;lcd_hdc_open();hdc_begin(&hdc,6u);
+        assert(hdc_available());
         assert(hdc_arm(&hdc,5u));
         for(i=0;i<80u;i++) {
             time_ticks+=25u*GT_TICKS_PER_MS;features[2]=1000u;

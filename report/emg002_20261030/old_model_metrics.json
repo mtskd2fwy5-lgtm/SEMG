@@ -1,0 +1,1919 @@
+{
+  "source": "D:\\电脑管家迁移文件\\xwechat_files\\wxid_ait3nzfjnd1g22_ae1e\\msg\\file\\2026-10\\EMG002.BIN",
+  "source_sha256": "dcacb950099af4942602fb1c8785e718bdd2ad064bdc726868f3e02225d4f48f",
+  "source_previously_used_for_fitting": false,
+  "frozen_inputs_sha256": {
+    "data\\models\\emg008_009_comprehensive.joblib": "48c71eb915c5e92eb0937edaeb36032aeb90ec339e7944bf83219bcf742bf12f",
+    "data\\models\\emg008_009_multiwear.joblib": "ced33fef338e7bdc36c124e001f4fc109ab476d11bb6fdceec157a94c9bc43eb",
+    "data\\models\\nn_int8_board_multiwear\\quant_params.json": "8ca80b14ecd48907a55c6fe983b472f0382b6beeff3b2a4f4e36e1aeea4819ef",
+    "data\\models\\nn_int8_board_multiwear\\nn_int8_weights.mem": "5bb2c512365bc8af6b57835f8d678694fa78427999b085814225f968d66bbe62",
+    "src\\rtl\\emg_nn_infer.v": "b14345b75e99de7b8358da998d474b1a021e48a8d814c6f4854bd6a6f73943f2",
+    "src\\rtl\\emg_control_policy.v": "d9350f6c7929e2adc755ae9187fa8cc4e7905f74da2c37f19431c71ea84b8278",
+    "src\\rtl\\emg_window_features.v": "c9e020b9ca05c3cd656bbc116e9a57b39eb0554f47bce8fde9723f292097d6d6",
+    "src\\rtl\\emg_control_constants.vh": "cf077f7e7e2a98848b1e725313e2d99ac8eaee67cc762fa4e14896faef2cded9",
+    "sim\\control_policy_reference.c": "b86896e6e51cda936a49d0fb7b5dece4ed2686029723b0af3e115ded3cb28379",
+    "sw\\ps_uart_print\\main.c": "481d4a40b586438771fd0b727cef4157cfc69b58e4be62c72426a1e2a60a256b",
+    "sw\\ps_uart_print\\nn_confidence.h": "47a40a1fa9422850244009e8860916731e5dffdaac9defb035da8d01a42d25ff",
+    "sw\\ps_uart_print\\pose_contract.h": "a3ef9ec8aeb682d6bd2c211ce97401b5de6e51bba2df8ea6a1e830aa33e667af"
+  },
+  "weights_unchanged": true,
+  "classes": [
+    "rest",
+    "open_hand",
+    "fist",
+    "wrist_flex",
+    "wrist_extend"
+  ],
+  "models": {
+    "old_008_009_float": {
+      "stable": {
+        "windows": 6197,
+        "accuracy": 0.6830724544134259,
+        "balanced_accuracy": 0.6264121936277939,
+        "macro_f1": 0.5443050833845415,
+        "recall": [
+          0.9417000445037829,
+          0.03271028037383177,
+          0.9927325581395349,
+          0.9660876757650951,
+          0.19883040935672514
+        ],
+        "support": [
+          2247,
+          856,
+          688,
+          1209,
+          1197
+        ],
+        "confusion": [
+          [
+            2116,
+            0,
+            30,
+            5,
+            96
+          ],
+          [
+            0,
+            28,
+            719,
+            109,
+            0
+          ],
+          [
+            0,
+            0,
+            683,
+            0,
+            5
+          ],
+          [
+            0,
+            0,
+            12,
+            1168,
+            29
+          ],
+          [
+            10,
+            64,
+            885,
+            0,
+            238
+          ]
+        ],
+        "rest_false_action_rate": 0.05829995549621714,
+        "confidence": {
+          "rest": {
+            "median": 98.7738456380508,
+            "p10": 86.16753434710589,
+            "below70_fraction": 0.04183355585224744,
+            "correct_median": 98.91584707421362,
+            "wrong_median": 73.65878498232502
+          },
+          "open_hand": {
+            "median": 92.05179611174307,
+            "p10": 58.184757905729796,
+            "below70_fraction": 0.1939252336448598,
+            "correct_median": 57.55108432630347,
+            "wrong_median": 92.52461877599774
+          },
+          "fist": {
+            "median": 99.99781440249627,
+            "p10": 99.96695831716359,
+            "below70_fraction": 0.0,
+            "correct_median": 99.99779062742311,
+            "wrong_median": 99.99999999999987
+          },
+          "wrist_flex": {
+            "median": 98.13725532907529,
+            "p10": 78.16920056316098,
+            "below70_fraction": 0.06286186931348221,
+            "correct_median": 98.28113555567515,
+            "wrong_median": 58.83980908314243
+          },
+          "wrist_extend": {
+            "median": 72.23655731855744,
+            "p10": 49.940904930805786,
+            "below70_fraction": 0.4553049289891395,
+            "correct_median": 67.72853495682489,
+            "wrong_median": 73.91415238020531
+          }
+        }
+      },
+      "including_boundaries": {
+        "windows": 7581,
+        "accuracy": 0.6492547157367102,
+        "balanced_accuracy": 0.5959244128335913,
+        "macro_f1": 0.524119118067284,
+        "recall": [
+          0.8438661710037175,
+          0.03515625,
+          0.9614485981308412,
+          0.9215686274509803,
+          0.2175824175824176
+        ],
+        "support": [
+          2959,
+          1024,
+          856,
+          1377,
+          1365
+        ],
+        "confusion": [
+          [
+            2497,
+            0,
+            264,
+            25,
+            173
+          ],
+          [
+            36,
+            36,
+            838,
+            111,
+            3
+          ],
+          [
+            4,
+            0,
+            823,
+            3,
+            26
+          ],
+          [
+            2,
+            0,
+            50,
+            1269,
+            56
+          ],
+          [
+            18,
+            66,
+            980,
+            4,
+            297
+          ]
+        ],
+        "rest_false_action_rate": 0.15613382899628248,
+        "confidence": {
+          "rest": {
+            "median": 98.57003316563502,
+            "p10": 78.910271543507,
+            "below70_fraction": 0.06961811422777965,
+            "correct_median": 98.7188775394691,
+            "wrong_median": 87.71393490862104
+          },
+          "open_hand": {
+            "median": 92.52461877599774,
+            "p10": 57.349092308422776,
+            "below70_fraction": 0.1982421875,
+            "correct_median": 58.84543622390651,
+            "wrong_median": 93.42354629783837
+          },
+          "fist": {
+            "median": 99.99745814646477,
+            "p10": 99.91920262129923,
+            "below70_fraction": 0.02102803738317757,
+            "correct_median": 99.99740986474428,
+            "wrong_median": 99.99999999999987
+          },
+          "wrist_flex": {
+            "median": 97.89374322656826,
+            "p10": 74.38365785927603,
+            "below70_fraction": 0.0784313725490196,
+            "correct_median": 98.0472125221555,
+            "wrong_median": 79.35617512252048
+          },
+          "wrist_extend": {
+            "median": 73.96936868975014,
+            "p10": 50.288851983659775,
+            "below70_fraction": 0.4271062271062271,
+            "correct_median": 69.72716325035222,
+            "wrong_median": 75.41644656134488
+          }
+        }
+      },
+      "unsupported_fingers": {
+        "6": {
+          "windows": 440,
+          "predicted_fraction": [
+            0.0,
+            0.0,
+            0.7840909090909091,
+            0.2159090909090909,
+            0.0
+          ],
+          "median_score": 91.17819577978025
+        },
+        "7": {
+          "windows": 313,
+          "predicted_fraction": [
+            0.0,
+            0.3865814696485623,
+            0.5335463258785943,
+            0.003194888178913738,
+            0.07667731629392971
+          ],
+          "median_score": 62.991825410018784
+        },
+        "8": {
+          "windows": 284,
+          "predicted_fraction": [
+            0.01056338028169014,
+            0.0,
+            0.8591549295774648,
+            0.04929577464788732,
+            0.08098591549295775
+          ],
+          "median_score": 85.00364163330315
+        }
+      },
+      "per_bout": [
+        {
+          "start_s": 0.0,
+          "end_s": 7.73925,
+          "true": 0,
+          "majority": 0,
+          "accuracy": 1.0,
+          "median_score": 99.87753477269851
+        },
+        {
+          "start_s": 7.73925,
+          "end_s": 23.85375,
+          "true": 1,
+          "majority": 2,
+          "accuracy": 0.0481283422459893,
+          "median_score": 84.08703723330419
+        },
+        {
+          "start_s": 23.85375,
+          "end_s": 35.5085,
+          "true": 0,
+          "majority": 0,
+          "accuracy": 1.0,
+          "median_score": 99.40293204698574
+        },
+        {
+          "start_s": 35.5085,
+          "end_s": 43.745,
+          "true": 2,
+          "majority": 2,
+          "accuracy": 1.0,
+          "median_score": 99.99263789765163
+        },
+        {
+          "start_s": 43.745,
+          "end_s": 50.955,
+          "true": 0,
+          "majority": 0,
+          "accuracy": 0.9365853658536586,
+          "median_score": 94.54735713861912
+        },
+        {
+          "start_s": 50.955,
+          "end_s": 60.4495,
+          "true": 1,
+          "majority": 2,
+          "accuracy": 0.003389830508474576,
+          "median_score": 98.79563950331281
+        },
+        {
+          "start_s": 60.4495,
+          "end_s": 65.99725,
+          "true": 0,
+          "majority": 4,
+          "accuracy": 0.2028985507246377,
+          "median_score": 73.42746632609182
+        },
+        {
+          "start_s": 65.99725,
+          "end_s": 79.15975,
+          "true": 2,
+          "majority": 2,
+          "accuracy": 0.9887133182844243,
+          "median_score": 99.9989203312193
+        },
+        {
+          "start_s": 79.15975,
+          "end_s": 86.3705,
+          "true": 0,
+          "majority": 0,
+          "accuracy": 1.0,
+          "median_score": 98.74436601383043
+        },
+        {
+          "start_s": 86.3705,
+          "end_s": 100.651,
+          "true": 3,
+          "majority": 3,
+          "accuracy": 0.9221311475409836,
+          "median_score": 95.02117347950633
+        },
+        {
+          "start_s": 100.651,
+          "end_s": 112.38375,
+          "true": 0,
+          "majority": 0,
+          "accuracy": 0.9792207792207792,
+          "median_score": 95.72574510557294
+        },
+        {
+          "start_s": 112.38375,
+          "end_s": 132.01025,
+          "true": 4,
+          "majority": 2,
+          "accuracy": 0.24964336661911554,
+          "median_score": 71.68869395887425
+        },
+        {
+          "start_s": 132.01025,
+          "end_s": 138.6455,
+          "true": 0,
+          "majority": 0,
+          "accuracy": 1.0,
+          "median_score": 98.00513116364036
+        },
+        {
+          "start_s": 138.6455,
+          "end_s": 153.1445,
+          "true": 4,
+          "majority": 2,
+          "accuracy": 0.12701612903225806,
+          "median_score": 73.41814144442807
+        },
+        {
+          "start_s": 153.1445,
+          "end_s": 164.1935,
+          "true": 0,
+          "majority": 0,
+          "accuracy": 1.0,
+          "median_score": 99.37367269026268
+        },
+        {
+          "start_s": 164.1935,
+          "end_s": 184.31725,
+          "true": 3,
+          "majority": 3,
+          "accuracy": 0.9958391123439667,
+          "median_score": 99.0126104110035
+        },
+        {
+          "start_s": 184.31725,
+          "end_s": 191.994,
+          "true": 0,
+          "majority": 0,
+          "accuracy": 1.0,
+          "median_score": 99.03424352811571
+        }
+      ],
+      "switches_within_stable_labels": 450
+    },
+    "old_multiwear_float": {
+      "stable": {
+        "windows": 6197,
+        "accuracy": 0.8634823301597547,
+        "balanced_accuracy": 0.8184212751498172,
+        "macro_f1": 0.815300495834388,
+        "recall": [
+          0.995549621717846,
+          0.991822429906542,
+          0.5232558139534884,
+          0.9975186104218362,
+          0.5839598997493735
+        ],
+        "support": [
+          2247,
+          856,
+          688,
+          1209,
+          1197
+        ],
+        "confusion": [
+          [
+            2237,
+            0,
+            0,
+            10,
+            0
+          ],
+          [
+            0,
+            849,
+            1,
+            6,
+            0
+          ],
+          [
+            3,
+            0,
+            360,
+            0,
+            325
+          ],
+          [
+            3,
+            0,
+            0,
+            1206,
+            0
+          ],
+          [
+            10,
+            488,
+            0,
+            0,
+            699
+          ]
+        ],
+        "rest_false_action_rate": 0.0044503782821539994,
+        "confidence": {
+          "rest": {
+            "median": 99.99988039691857,
+            "p10": 99.90532947586375,
+            "below70_fraction": 0.004895416110369382,
+            "correct_median": 99.99988319806741,
+            "wrong_median": 93.55842220371485
+          },
+          "open_hand": {
+            "median": 99.99983914299071,
+            "p10": 99.47914408802296,
+            "below70_fraction": 0.011682242990654205,
+            "correct_median": 99.99985663672368,
+            "wrong_median": 81.97024863983005
+          },
+          "fist": {
+            "median": 99.48888627177976,
+            "p10": 72.97087565644537,
+            "below70_fraction": 0.08866279069767442,
+            "correct_median": 99.20274296787933,
+            "wrong_median": 99.80427721322643
+          },
+          "wrist_flex": {
+            "median": 99.99999997556053,
+            "p10": 99.99997838443831,
+            "below70_fraction": 0.0016542597187758478,
+            "correct_median": 99.99999997587625,
+            "wrong_median": 65.15485665875148
+          },
+          "wrist_extend": {
+            "median": 99.5949107530369,
+            "p10": 72.01140120866575,
+            "below70_fraction": 0.08939014202172096,
+            "correct_median": 99.92441094053999,
+            "wrong_median": 97.98393940760306
+          }
+        }
+      },
+      "including_boundaries": {
+        "windows": 7581,
+        "accuracy": 0.8146682495712967,
+        "balanced_accuracy": 0.7723361770827217,
+        "macro_f1": 0.7624577292744223,
+        "recall": [
+          0.9080770530584656,
+          0.9384765625,
+          0.4602803738317757,
+          0.9694989106753813,
+          0.5853479853479854
+        ],
+        "support": [
+          2959,
+          1024,
+          856,
+          1377,
+          1365
+        ],
+        "confusion": [
+          [
+            2687,
+            77,
+            74,
+            80,
+            41
+          ],
+          [
+            53,
+            961,
+            1,
+            8,
+            1
+          ],
+          [
+            27,
+            33,
+            394,
+            11,
+            391
+          ],
+          [
+            25,
+            6,
+            11,
+            1335,
+            0
+          ],
+          [
+            34,
+            502,
+            0,
+            30,
+            799
+          ]
+        ],
+        "rest_false_action_rate": 0.09192294694153436,
+        "confidence": {
+          "rest": {
+            "median": 99.9998078330972,
+            "p10": 99.63597967359085,
+            "below70_fraction": 0.011828320378506252,
+            "correct_median": 99.99980551638352,
+            "wrong_median": 99.99986826370173
+          },
+          "open_hand": {
+            "median": 99.99991120956821,
+            "p10": 99.50830119802234,
+            "below70_fraction": 0.0126953125,
+            "correct_median": 99.99993912407248,
+            "wrong_median": 99.97165139682699
+          },
+          "fist": {
+            "median": 99.64483532832753,
+            "p10": 72.9403885514916,
+            "below70_fraction": 0.08995327102803738,
+            "correct_median": 99.2842260047091,
+            "wrong_median": 99.86396621213285
+          },
+          "wrist_flex": {
+            "median": 99.9999999734037,
+            "p10": 99.99993732988719,
+            "below70_fraction": 0.005809731299927378,
+            "correct_median": 99.99999997826284,
+            "wrong_median": 98.11275803203054
+          },
+          "wrist_extend": {
+            "median": 99.68257078021966,
+            "p10": 73.86323209731066,
+            "below70_fraction": 0.08278388278388278,
+            "correct_median": 99.97346715541964,
+            "wrong_median": 98.33774306535716
+          }
+        }
+      },
+      "unsupported_fingers": {
+        "6": {
+          "windows": 440,
+          "predicted_fraction": [
+            0.025,
+            0.75,
+            0.004545454545454545,
+            0.22045454545454546,
+            0.0
+          ],
+          "median_score": 96.54953579592977
+        },
+        "7": {
+          "windows": 313,
+          "predicted_fraction": [
+            0.13738019169329074,
+            0.610223642172524,
+            0.0,
+            0.022364217252396165,
+            0.23003194888178913
+          ],
+          "median_score": 92.47048636204454
+        },
+        "8": {
+          "windows": 284,
+          "predicted_fraction": [
+            0.30633802816901406,
+            0.0,
+            0.0035211267605633804,
+            0.4295774647887324,
+            0.2605633802816901
+          ],
+          "median_score": 91.37850258715963
+        }
+      },
+      "per_bout": [
+        {
+          "start_s": 0.0,
+          "end_s": 7.73925,
+          "true": 0,
+          "majority": 0,
+          "accuracy": 1.0,
+          "median_score": 99.99999942519983
+        },
+        {
+          "start_s": 7.73925,
+          "end_s": 23.85375,
+          "true": 1,
+          "majority": 1,
+          "accuracy": 0.9875222816399287,
+          "median_score": 99.99581384272535
+        },
+        {
+          "start_s": 23.85375,
+          "end_s": 35.5085,
+          "true": 0,
+          "majority": 0,
+          "accuracy": 1.0,
+          "median_score": 99.99997578533315
+        },
+        {
+          "start_s": 35.5085,
+          "end_s": 43.745,
+          "true": 2,
+          "majority": 2,
+          "accuracy": 0.7551020408163265,
+          "median_score": 98.827487607982
+        },
+        {
+          "start_s": 43.745,
+          "end_s": 50.955,
+          "true": 0,
+          "majority": 0,
+          "accuracy": 0.975609756097561,
+          "median_score": 99.99850025116956
+        },
+        {
+          "start_s": 50.955,
+          "end_s": 60.4495,
+          "true": 1,
+          "majority": 1,
+          "accuracy": 1.0,
+          "median_score": 99.99999979617877
+        },
+        {
+          "start_s": 60.4495,
+          "end_s": 65.99725,
+          "true": 0,
+          "majority": 0,
+          "accuracy": 1.0,
+          "median_score": 99.99998684727503
+        },
+        {
+          "start_s": 65.99725,
+          "end_s": 79.15975,
+          "true": 2,
+          "majority": 4,
+          "accuracy": 0.39503386004514673,
+          "median_score": 99.73663107466405
+        },
+        {
+          "start_s": 79.15975,
+          "end_s": 86.3705,
+          "true": 0,
+          "majority": 0,
+          "accuracy": 1.0,
+          "median_score": 99.99939061146556
+        },
+        {
+          "start_s": 86.3705,
+          "end_s": 100.651,
+          "true": 3,
+          "majority": 3,
+          "accuracy": 1.0,
+          "median_score": 99.99999996372918
+        },
+        {
+          "start_s": 100.651,
+          "end_s": 112.38375,
+          "true": 0,
+          "majority": 0,
+          "accuracy": 0.9896103896103896,
+          "median_score": 99.9930618603254
+        },
+        {
+          "start_s": 112.38375,
+          "end_s": 132.01025,
+          "true": 4,
+          "majority": 4,
+          "accuracy": 0.7061340941512125,
+          "median_score": 99.87148950653207
+        },
+        {
+          "start_s": 132.01025,
+          "end_s": 138.6455,
+          "true": 0,
+          "majority": 0,
+          "accuracy": 1.0,
+          "median_score": 99.99935399586779
+        },
+        {
+          "start_s": 138.6455,
+          "end_s": 153.1445,
+          "true": 4,
+          "majority": 1,
+          "accuracy": 0.4112903225806452,
+          "median_score": 98.4827581405813
+        },
+        {
+          "start_s": 153.1445,
+          "end_s": 164.1935,
+          "true": 0,
+          "majority": 0,
+          "accuracy": 0.9972067039106145,
+          "median_score": 99.99997136015017
+        },
+        {
+          "start_s": 164.1935,
+          "end_s": 184.31725,
+          "true": 3,
+          "majority": 3,
+          "accuracy": 0.9958391123439667,
+          "median_score": 99.99999998206961
+        },
+        {
+          "start_s": 184.31725,
+          "end_s": 191.994,
+          "true": 0,
+          "majority": 0,
+          "accuracy": 1.0,
+          "median_score": 99.99994557813659
+        }
+      ],
+      "switches_within_stable_labels": 326
+    },
+    "deployed_INT8_RTL_features": {
+      "stable": {
+        "windows": 6197,
+        "accuracy": 0.8428271744392448,
+        "balanced_accuracy": 0.7618619165276735,
+        "macro_f1": 0.735290009085514,
+        "recall": [
+          0.9968847352024922,
+          0.9731308411214953,
+          0.125,
+          0.9991728701406121,
+          0.7151211361737677
+        ],
+        "support": [
+          2247,
+          856,
+          688,
+          1209,
+          1197
+        ],
+        "confusion": [
+          [
+            2240,
+            0,
+            0,
+            7,
+            0
+          ],
+          [
+            0,
+            833,
+            1,
+            9,
+            13
+          ],
+          [
+            0,
+            0,
+            86,
+            0,
+            602
+          ],
+          [
+            1,
+            0,
+            0,
+            1208,
+            0
+          ],
+          [
+            5,
+            336,
+            0,
+            0,
+            856
+          ]
+        ],
+        "rest_false_action_rate": 0.0031152647975077885,
+        "confidence": {
+          "rest": {
+            "median": 99.0,
+            "p10": 99.0,
+            "below70_fraction": 0.004895416110369382,
+            "correct_median": 99.0,
+            "wrong_median": 82.0
+          },
+          "open_hand": {
+            "median": 99.0,
+            "p10": 96.0,
+            "below70_fraction": 0.030373831775700934,
+            "correct_median": 99.0,
+            "wrong_median": 69.0
+          },
+          "fist": {
+            "median": 99.0,
+            "p10": 87.0,
+            "below70_fraction": 0.040697674418604654,
+            "correct_median": 95.0,
+            "wrong_median": 99.0
+          },
+          "wrist_flex": {
+            "median": 100.0,
+            "p10": 100.0,
+            "below70_fraction": 0.0016542597187758478,
+            "correct_median": 100.0,
+            "wrong_median": 52.0
+          },
+          "wrist_extend": {
+            "median": 99.0,
+            "p10": 75.0,
+            "below70_fraction": 0.07435254803675856,
+            "correct_median": 99.0,
+            "wrong_median": 96.0
+          }
+        }
+      },
+      "including_boundaries": {
+        "windows": 7581,
+        "accuracy": 0.7940904893813481,
+        "balanced_accuracy": 0.7230702996799325,
+        "macro_f1": 0.6912282316345812,
+        "recall": [
+          0.9060493409935789,
+          0.921875,
+          0.11098130841121495,
+          0.9709513435003632,
+          0.7054945054945055
+        ],
+        "support": [
+          2959,
+          1024,
+          856,
+          1377,
+          1365
+        ],
+        "confusion": [
+          [
+            2681,
+            70,
+            19,
+            83,
+            106
+          ],
+          [
+            50,
+            944,
+            1,
+            10,
+            19
+          ],
+          [
+            24,
+            24,
+            95,
+            3,
+            710
+          ],
+          [
+            12,
+            11,
+            13,
+            1337,
+            4
+          ],
+          [
+            30,
+            345,
+            0,
+            27,
+            963
+          ]
+        ],
+        "rest_false_action_rate": 0.09395065900642108,
+        "confidence": {
+          "rest": {
+            "median": 99.0,
+            "p10": 99.0,
+            "below70_fraction": 0.014193984454207503,
+            "correct_median": 99.0,
+            "wrong_median": 100.0
+          },
+          "open_hand": {
+            "median": 99.0,
+            "p10": 97.0,
+            "below70_fraction": 0.02734375,
+            "correct_median": 99.0,
+            "wrong_median": 99.0
+          },
+          "fist": {
+            "median": 99.0,
+            "p10": 86.0,
+            "below70_fraction": 0.04906542056074766,
+            "correct_median": 94.0,
+            "wrong_median": 99.0
+          },
+          "wrist_flex": {
+            "median": 100.0,
+            "p10": 100.0,
+            "below70_fraction": 0.005083514887436456,
+            "correct_median": 100.0,
+            "wrong_median": 98.0
+          },
+          "wrist_extend": {
+            "median": 99.0,
+            "p10": 76.0,
+            "below70_fraction": 0.07179487179487179,
+            "correct_median": 99.0,
+            "wrong_median": 97.0
+          }
+        }
+      },
+      "unsupported_fingers": {
+        "6": {
+          "windows": 440,
+          "predicted_fraction": [
+            0.011363636363636364,
+            0.7113636363636363,
+            0.07954545454545454,
+            0.16136363636363638,
+            0.03636363636363636
+          ],
+          "median_score": 93.0
+        },
+        "7": {
+          "windows": 313,
+          "predicted_fraction": [
+            0.07028753993610223,
+            0.38338658146964855,
+            0.0,
+            0.022364217252396165,
+            0.5239616613418531
+          ],
+          "median_score": 91.0
+        },
+        "8": {
+          "windows": 284,
+          "predicted_fraction": [
+            0.10915492957746478,
+            0.0,
+            0.0035211267605633804,
+            0.4014084507042254,
+            0.4859154929577465
+          ],
+          "median_score": 96.5
+        }
+      },
+      "per_bout": [
+        {
+          "start_s": 0.0,
+          "end_s": 7.73925,
+          "true": 0,
+          "majority": 0,
+          "accuracy": 1.0,
+          "median_score": 100.0
+        },
+        {
+          "start_s": 7.73925,
+          "end_s": 23.85375,
+          "true": 1,
+          "majority": 1,
+          "accuracy": 0.966131907308378,
+          "median_score": 99.0
+        },
+        {
+          "start_s": 23.85375,
+          "end_s": 35.5085,
+          "true": 0,
+          "majority": 0,
+          "accuracy": 1.0,
+          "median_score": 100.0
+        },
+        {
+          "start_s": 35.5085,
+          "end_s": 43.745,
+          "true": 2,
+          "majority": 4,
+          "accuracy": 0.27346938775510204,
+          "median_score": 99.0
+        },
+        {
+          "start_s": 43.745,
+          "end_s": 50.955,
+          "true": 0,
+          "majority": 0,
+          "accuracy": 0.9804878048780488,
+          "median_score": 99.0
+        },
+        {
+          "start_s": 50.955,
+          "end_s": 60.4495,
+          "true": 1,
+          "majority": 1,
+          "accuracy": 0.9864406779661017,
+          "median_score": 99.0
+        },
+        {
+          "start_s": 60.4495,
+          "end_s": 65.99725,
+          "true": 0,
+          "majority": 0,
+          "accuracy": 1.0,
+          "median_score": 100.0
+        },
+        {
+          "start_s": 65.99725,
+          "end_s": 79.15975,
+          "true": 2,
+          "majority": 4,
+          "accuracy": 0.04288939051918736,
+          "median_score": 99.0
+        },
+        {
+          "start_s": 79.15975,
+          "end_s": 86.3705,
+          "true": 0,
+          "majority": 0,
+          "accuracy": 1.0,
+          "median_score": 99.0
+        },
+        {
+          "start_s": 86.3705,
+          "end_s": 100.651,
+          "true": 3,
+          "majority": 3,
+          "accuracy": 1.0,
+          "median_score": 100.0
+        },
+        {
+          "start_s": 100.651,
+          "end_s": 112.38375,
+          "true": 0,
+          "majority": 0,
+          "accuracy": 0.9948051948051948,
+          "median_score": 99.0
+        },
+        {
+          "start_s": 112.38375,
+          "end_s": 132.01025,
+          "true": 4,
+          "majority": 4,
+          "accuracy": 0.7888730385164051,
+          "median_score": 99.0
+        },
+        {
+          "start_s": 132.01025,
+          "end_s": 138.6455,
+          "true": 0,
+          "majority": 0,
+          "accuracy": 1.0,
+          "median_score": 99.0
+        },
+        {
+          "start_s": 138.6455,
+          "end_s": 153.1445,
+          "true": 4,
+          "majority": 4,
+          "accuracy": 0.6108870967741935,
+          "median_score": 98.0
+        },
+        {
+          "start_s": 153.1445,
+          "end_s": 164.1935,
+          "true": 0,
+          "majority": 0,
+          "accuracy": 0.9972067039106145,
+          "median_score": 100.0
+        },
+        {
+          "start_s": 164.1935,
+          "end_s": 184.31725,
+          "true": 3,
+          "majority": 3,
+          "accuracy": 0.9986130374479889,
+          "median_score": 100.0
+        },
+        {
+          "start_s": 184.31725,
+          "end_s": 191.994,
+          "true": 0,
+          "majority": 0,
+          "accuracy": 1.0,
+          "median_score": 100.0
+        }
+      ],
+      "switches_within_stable_labels": 288
+    },
+    "same_INT8_historical_training_features": {
+      "stable": {
+        "windows": 6197,
+        "accuracy": 0.8592867516540261,
+        "balanced_accuracy": 0.814052568844461,
+        "macro_f1": 0.8101265356635272,
+        "recall": [
+          0.9946595460614153,
+          0.9929906542056075,
+          0.5203488372093024,
+          0.9975186104218362,
+          0.5647451963241437
+        ],
+        "support": [
+          2247,
+          856,
+          688,
+          1209,
+          1197
+        ],
+        "confusion": [
+          [
+            2235,
+            0,
+            0,
+            12,
+            0
+          ],
+          [
+            0,
+            850,
+            1,
+            5,
+            0
+          ],
+          [
+            3,
+            0,
+            358,
+            0,
+            327
+          ],
+          [
+            3,
+            0,
+            0,
+            1206,
+            0
+          ],
+          [
+            9,
+            512,
+            0,
+            0,
+            676
+          ]
+        ],
+        "rest_false_action_rate": 0.005340453938584733,
+        "confidence": {
+          "rest": {
+            "median": 99.0,
+            "p10": 99.0,
+            "below70_fraction": 0.004005340453938585,
+            "correct_median": 99.0,
+            "wrong_median": 89.0
+          },
+          "open_hand": {
+            "median": 99.0,
+            "p10": 99.0,
+            "below70_fraction": 0.009345794392523364,
+            "correct_median": 99.0,
+            "wrong_median": 86.0
+          },
+          "fist": {
+            "median": 99.0,
+            "p10": 73.0,
+            "below70_fraction": 0.0872093023255814,
+            "correct_median": 99.0,
+            "wrong_median": 99.0
+          },
+          "wrist_flex": {
+            "median": 100.0,
+            "p10": 100.0,
+            "below70_fraction": 0.0008271298593879239,
+            "correct_median": 100.0,
+            "wrong_median": 80.0
+          },
+          "wrist_extend": {
+            "median": 99.0,
+            "p10": 75.0,
+            "below70_fraction": 0.07602339181286549,
+            "correct_median": 99.0,
+            "wrong_median": 98.0
+          }
+        }
+      },
+      "including_boundaries": {
+        "windows": 7581,
+        "accuracy": 0.8111067141538055,
+        "balanced_accuracy": 0.7689883517955721,
+        "macro_f1": 0.7585276301934182,
+        "recall": [
+          0.9060493409935789,
+          0.939453125,
+          0.4614485981308411,
+          0.9702251270878722,
+          0.5677655677655677
+        ],
+        "support": [
+          2959,
+          1024,
+          856,
+          1377,
+          1365
+        ],
+        "confusion": [
+          [
+            2681,
+            79,
+            73,
+            86,
+            40
+          ],
+          [
+            53,
+            962,
+            1,
+            7,
+            1
+          ],
+          [
+            28,
+            34,
+            395,
+            8,
+            391
+          ],
+          [
+            22,
+            7,
+            11,
+            1336,
+            1
+          ],
+          [
+            35,
+            527,
+            0,
+            28,
+            775
+          ]
+        ],
+        "rest_false_action_rate": 0.09395065900642108,
+        "confidence": {
+          "rest": {
+            "median": 99.0,
+            "p10": 99.0,
+            "below70_fraction": 0.013518080432578574,
+            "correct_median": 99.0,
+            "wrong_median": 99.0
+          },
+          "open_hand": {
+            "median": 99.0,
+            "p10": 99.0,
+            "below70_fraction": 0.01171875,
+            "correct_median": 100.0,
+            "wrong_median": 99.0
+          },
+          "fist": {
+            "median": 99.0,
+            "p10": 73.0,
+            "below70_fraction": 0.08761682242990654,
+            "correct_median": 99.0,
+            "wrong_median": 99.0
+          },
+          "wrist_flex": {
+            "median": 100.0,
+            "p10": 100.0,
+            "below70_fraction": 0.005083514887436456,
+            "correct_median": 100.0,
+            "wrong_median": 98.0
+          },
+          "wrist_extend": {
+            "median": 99.0,
+            "p10": 76.4,
+            "below70_fraction": 0.07326007326007326,
+            "correct_median": 99.0,
+            "wrong_median": 98.0
+          }
+        }
+      },
+      "unsupported_fingers": {
+        "6": {
+          "windows": 440,
+          "predicted_fraction": [
+            0.025,
+            0.759090909090909,
+            0.006818181818181818,
+            0.20909090909090908,
+            0.0
+          ],
+          "median_score": 96.0
+        },
+        "7": {
+          "windows": 313,
+          "predicted_fraction": [
+            0.14376996805111822,
+            0.6357827476038339,
+            0.0,
+            0.022364217252396165,
+            0.19808306709265175
+          ],
+          "median_score": 94.0
+        },
+        "8": {
+          "windows": 284,
+          "predicted_fraction": [
+            0.2746478873239437,
+            0.0,
+            0.0,
+            0.43309859154929575,
+            0.29225352112676056
+          ],
+          "median_score": 93.0
+        }
+      },
+      "per_bout": [
+        {
+          "start_s": 0.0,
+          "end_s": 7.73925,
+          "true": 0,
+          "majority": 0,
+          "accuracy": 1.0,
+          "median_score": 100.0
+        },
+        {
+          "start_s": 7.73925,
+          "end_s": 23.85375,
+          "true": 1,
+          "majority": 1,
+          "accuracy": 0.9893048128342246,
+          "median_score": 99.0
+        },
+        {
+          "start_s": 23.85375,
+          "end_s": 35.5085,
+          "true": 0,
+          "majority": 0,
+          "accuracy": 1.0,
+          "median_score": 100.0
+        },
+        {
+          "start_s": 35.5085,
+          "end_s": 43.745,
+          "true": 2,
+          "majority": 2,
+          "accuracy": 0.7387755102040816,
+          "median_score": 98.0
+        },
+        {
+          "start_s": 43.745,
+          "end_s": 50.955,
+          "true": 0,
+          "majority": 0,
+          "accuracy": 0.975609756097561,
+          "median_score": 99.0
+        },
+        {
+          "start_s": 50.955,
+          "end_s": 60.4495,
+          "true": 1,
+          "majority": 1,
+          "accuracy": 1.0,
+          "median_score": 100.0
+        },
+        {
+          "start_s": 60.4495,
+          "end_s": 65.99725,
+          "true": 0,
+          "majority": 0,
+          "accuracy": 1.0,
+          "median_score": 100.0
+        },
+        {
+          "start_s": 65.99725,
+          "end_s": 79.15975,
+          "true": 2,
+          "majority": 4,
+          "accuracy": 0.39954853273137697,
+          "median_score": 99.0
+        },
+        {
+          "start_s": 79.15975,
+          "end_s": 86.3705,
+          "true": 0,
+          "majority": 0,
+          "accuracy": 1.0,
+          "median_score": 99.0
+        },
+        {
+          "start_s": 86.3705,
+          "end_s": 100.651,
+          "true": 3,
+          "majority": 3,
+          "accuracy": 1.0,
+          "median_score": 100.0
+        },
+        {
+          "start_s": 100.651,
+          "end_s": 112.38375,
+          "true": 0,
+          "majority": 0,
+          "accuracy": 0.9896103896103896,
+          "median_score": 99.0
+        },
+        {
+          "start_s": 112.38375,
+          "end_s": 132.01025,
+          "true": 4,
+          "majority": 4,
+          "accuracy": 0.6932952924393724,
+          "median_score": 99.0
+        },
+        {
+          "start_s": 132.01025,
+          "end_s": 138.6455,
+          "true": 0,
+          "majority": 0,
+          "accuracy": 0.994475138121547,
+          "median_score": 99.0
+        },
+        {
+          "start_s": 138.6455,
+          "end_s": 153.1445,
+          "true": 4,
+          "majority": 1,
+          "accuracy": 0.38306451612903225,
+          "median_score": 98.0
+        },
+        {
+          "start_s": 153.1445,
+          "end_s": 164.1935,
+          "true": 0,
+          "majority": 0,
+          "accuracy": 0.994413407821229,
+          "median_score": 100.0
+        },
+        {
+          "start_s": 164.1935,
+          "end_s": 184.31725,
+          "true": 3,
+          "majority": 3,
+          "accuracy": 0.9958391123439667,
+          "median_score": 100.0
+        },
+        {
+          "start_s": 184.31725,
+          "end_s": 191.994,
+          "true": 0,
+          "majority": 0,
+          "accuracy": 1.0,
+          "median_score": 99.0
+        }
+      ],
+      "switches_within_stable_labels": 343
+    },
+    "deployed_INT8_with_calibration_policy": {
+      "stable": {
+        "windows": 6197,
+        "accuracy": 0.8481523317734387,
+        "balanced_accuracy": 0.7662569699442404,
+        "macro_f1": 0.7350149768342231,
+        "recall": [
+          1.0,
+          1.0,
+          0.1002906976744186,
+          1.0,
+          0.7309941520467836
+        ],
+        "support": [
+          2247,
+          856,
+          688,
+          1209,
+          1197
+        ],
+        "confusion": [
+          [
+            2247,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            856,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            69,
+            0,
+            619
+          ],
+          [
+            0,
+            0,
+            0,
+            1209,
+            0
+          ],
+          [
+            4,
+            318,
+            0,
+            0,
+            875
+          ]
+        ],
+        "rest_false_action_rate": 0.0,
+        "confidence": {
+          "rest": {
+            "median": 99.0,
+            "p10": 99.0,
+            "below70_fraction": 0.007120605251446373,
+            "correct_median": 99.0,
+            "wrong_median": null
+          },
+          "open_hand": {
+            "median": 99.0,
+            "p10": 96.0,
+            "below70_fraction": 0.04322429906542056,
+            "correct_median": 99.0,
+            "wrong_median": null
+          },
+          "fist": {
+            "median": 99.0,
+            "p10": 43.0,
+            "below70_fraction": 0.12645348837209303,
+            "correct_median": 73.0,
+            "wrong_median": 99.0
+          },
+          "wrist_flex": {
+            "median": 100.0,
+            "p10": 100.0,
+            "below70_fraction": 0.0016542597187758478,
+            "correct_median": 100.0,
+            "wrong_median": null
+          },
+          "wrist_extend": {
+            "median": 99.0,
+            "p10": 6.6000000000000085,
+            "below70_fraction": 0.2322472848788638,
+            "correct_median": 99.0,
+            "wrong_median": 90.0
+          }
+        }
+      },
+      "including_boundaries": {
+        "windows": 7581,
+        "accuracy": 0.8043793694763224,
+        "balanced_accuracy": 0.7314330666227296,
+        "macro_f1": 0.6936480742888964,
+        "recall": [
+          0.9182156133828996,
+          0.9560546875,
+          0.0852803738317757,
+          0.9796659404502541,
+          0.717948717948718
+        ],
+        "support": [
+          2959,
+          1024,
+          856,
+          1377,
+          1365
+        ],
+        "confusion": [
+          [
+            2717,
+            66,
+            21,
+            59,
+            96
+          ],
+          [
+            39,
+            979,
+            0,
+            0,
+            6
+          ],
+          [
+            8,
+            35,
+            73,
+            0,
+            740
+          ],
+          [
+            0,
+            14,
+            14,
+            1349,
+            0
+          ],
+          [
+            14,
+            335,
+            0,
+            36,
+            980
+          ]
+        ],
+        "rest_false_action_rate": 0.08178438661710041,
+        "confidence": {
+          "rest": {
+            "median": 99.0,
+            "p10": 99.0,
+            "below70_fraction": 0.034809057113889826,
+            "correct_median": 99.0,
+            "wrong_median": 100.0
+          },
+          "open_hand": {
+            "median": 99.0,
+            "p10": 95.0,
+            "below70_fraction": 0.056640625,
+            "correct_median": 99.0,
+            "wrong_median": 99.0
+          },
+          "fist": {
+            "median": 99.0,
+            "p10": 23.0,
+            "below70_fraction": 0.1542056074766355,
+            "correct_median": 73.0,
+            "wrong_median": 99.0
+          },
+          "wrist_flex": {
+            "median": 100.0,
+            "p10": 100.0,
+            "below70_fraction": 0.021060275962236745,
+            "correct_median": 100.0,
+            "wrong_median": 77.0
+          },
+          "wrist_extend": {
+            "median": 99.0,
+            "p10": 6.0,
+            "below70_fraction": 0.22783882783882783,
+            "correct_median": 99.0,
+            "wrong_median": 89.0
+          }
+        }
+      },
+      "actual_C_reference_rows": 11128,
+      "unsupported_fingers": {
+        "6": {
+          "windows": 440,
+          "predicted_fraction": [
+            0.04318181818181818,
+            0.8204545454545454,
+            0.022727272727272728,
+            0.11363636363636363,
+            0.0
+          ],
+          "median_score": 87.5
+        },
+        "7": {
+          "windows": 313,
+          "predicted_fraction": [
+            0.0,
+            0.4217252396166134,
+            0.0,
+            0.01597444089456869,
+            0.5623003194888179
+          ],
+          "median_score": 83.0
+        },
+        "8": {
+          "windows": 284,
+          "predicted_fraction": [
+            0.0,
+            0.0,
+            0.0,
+            0.36971830985915494,
+            0.6302816901408451
+          ],
+          "median_score": 84.0
+        }
+      },
+      "per_bout": [
+        {
+          "start_s": 0.0,
+          "end_s": 7.73925,
+          "true": 0,
+          "majority": 0,
+          "accuracy": 1.0,
+          "median_score": 100.0
+        },
+        {
+          "start_s": 7.73925,
+          "end_s": 23.85375,
+          "true": 1,
+          "majority": 1,
+          "accuracy": 1.0,
+          "median_score": 99.0
+        },
+        {
+          "start_s": 23.85375,
+          "end_s": 35.5085,
+          "true": 0,
+          "majority": 0,
+          "accuracy": 1.0,
+          "median_score": 100.0
+        },
+        {
+          "start_s": 35.5085,
+          "end_s": 43.745,
+          "true": 2,
+          "majority": 4,
+          "accuracy": 0.23673469387755103,
+          "median_score": 99.0
+        },
+        {
+          "start_s": 43.745,
+          "end_s": 50.955,
+          "true": 0,
+          "majority": 0,
+          "accuracy": 1.0,
+          "median_score": 99.0
+        },
+        {
+          "start_s": 50.955,
+          "end_s": 60.4495,
+          "true": 1,
+          "majority": 1,
+          "accuracy": 1.0,
+          "median_score": 99.0
+        },
+        {
+          "start_s": 60.4495,
+          "end_s": 65.99725,
+          "true": 0,
+          "majority": 0,
+          "accuracy": 1.0,
+          "median_score": 100.0
+        },
+        {
+          "start_s": 65.99725,
+          "end_s": 79.15975,
+          "true": 2,
+          "majority": 4,
+          "accuracy": 0.024830699774266364,
+          "median_score": 99.0
+        },
+        {
+          "start_s": 79.15975,
+          "end_s": 86.3705,
+          "true": 0,
+          "majority": 0,
+          "accuracy": 1.0,
+          "median_score": 99.0
+        },
+        {
+          "start_s": 86.3705,
+          "end_s": 100.651,
+          "true": 3,
+          "majority": 3,
+          "accuracy": 1.0,
+          "median_score": 100.0
+        },
+        {
+          "start_s": 100.651,
+          "end_s": 112.38375,
+          "true": 0,
+          "majority": 0,
+          "accuracy": 1.0,
+          "median_score": 99.0
+        },
+        {
+          "start_s": 112.38375,
+          "end_s": 132.01025,
+          "true": 4,
+          "majority": 4,
+          "accuracy": 0.8288159771754636,
+          "median_score": 99.0
+        },
+        {
+          "start_s": 132.01025,
+          "end_s": 138.6455,
+          "true": 0,
+          "majority": 0,
+          "accuracy": 1.0,
+          "median_score": 99.0
+        },
+        {
+          "start_s": 138.6455,
+          "end_s": 153.1445,
+          "true": 4,
+          "majority": 4,
+          "accuracy": 0.592741935483871,
+          "median_score": 95.0
+        },
+        {
+          "start_s": 153.1445,
+          "end_s": 164.1935,
+          "true": 0,
+          "majority": 0,
+          "accuracy": 1.0,
+          "median_score": 100.0
+        },
+        {
+          "start_s": 164.1935,
+          "end_s": 184.31725,
+          "true": 3,
+          "majority": 3,
+          "accuracy": 1.0,
+          "median_score": 100.0
+        },
+        {
+          "start_s": 184.31725,
+          "end_s": 191.994,
+          "true": 0,
+          "majority": 0,
+          "accuracy": 1.0,
+          "median_score": 100.0
+        }
+      ],
+      "switches_within_stable_labels": 77
+    }
+  },
+  "evaluation": {
+    "sample_rate_hz": 4000,
+    "window_samples": 400,
+    "hop_samples": 100,
+    "stable_trim_s": 1,
+    "scoring": "Only five supported labels count toward accuracy; single-finger labels reported as out-of-taxonomy predictions. Entire mixed final bout excluded from five-class accuracy.",
+    "features": "No additional filtering. Historical float models get historical feature contract. Board INT8 gets current RTL energy shift12 and continuous derivative ownership.",
+    "gate": "Hypothetical calibration at recording start: discard 80 windows, collect16; actual board baseline and selected ring shift were not recorded.",
+    "ring_shift": 0,
+    "window_phase": "Recording start used as window origin; actual PL preexisting window phase unknown.",
+    "confidence": "Uncalibrated model score, not an empirical probability of being correct."
+  },
+  "actual_C_MLP_logits_crosscheck_windows": 128,
+  "calibration": {
+    "all_collection_labels_rest": true,
+    "baseline_mav_sum": [
+      3030,
+      2892,
+      2614,
+      3015,
+      2828,
+      3038,
+      2789,
+      3362
+    ],
+    "thresholds": [
+      9090,
+      8676,
+      7842,
+      9045,
+      8484,
+      9114,
+      8367,
+      10086
+    ],
+    "stable_gate_rate_by_class": [
+      0.0008900756564307966,
+      0.0,
+      0.0,
+      0.0,
+      0.002506265664160401
+    ]
+  },
+  "input_quantization": {
+    "stable_clipped_value_fraction": 0.0,
+    "stable_any_clip_window_fraction": 0.0
+  },
+  "verification": "Model files unchanged; JSON weights regenerate deployed MEM exactly; exact features match independent integer reference on 8 channels; full-stream policy agrees with existing actual C oracle.",
+  "mixed_label": {
+    "start_s": 254.27675,
+    "end_s": 278.2855,
+    "stored_code": 14,
+    "actual_order": [
+      "index_middle_ring_extend",
+      "thumb_index_middle_extend"
+    ],
+    "switch_time_s": null,
+    "policy": "No inferred relabeling; exclude whole bout from per-class metrics/accuracy and supervised training."
+  }
+}

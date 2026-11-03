@@ -1,13 +1,25 @@
 /* Tests the actual recorder/packing/diskio with injectable filesystem/card IO. */
+#ifndef _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS
+#endif
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
 #define SD_RECORD_HOST_TEST 1
 #include "../sw/ps_uart_print/sd_record.c"
 static BYTE file_data[300000];
+static const char *directory_names[]={"HM000007.HDC","HM000001.HDC","HM000009.HDC","HM000003.HDC","HM000005.HDC","HM000002.HDC","HM000008.HDC","HM000004.HDC","HM000006.HDC","EMG000.BIN","HM000x01.HDC","HM000010.HDC","HM000011.HDC","HM000099.HDC.bak"};
+static uint32_t directory_error,directory_close_error;
+FRESULT f_opendir(DIR *d,const char *p){(void)p;d->index=0;return directory_error;}
+FRESULT f_readdir(DIR *d,FILINFO *info){if(directory_error)return directory_error;info->fattrib=0;
+ if(d->index>=sizeof directory_names/sizeof directory_names[0]){info->fname[0]=0;return 0;}
+ strcpy(info->fname,directory_names[d->index++]);if(!strcmp(info->fname,"HM000011.HDC"))info->fattrib=AM_DIR;return 0;}
+FRESULT f_closedir(DIR *d){(void)d;return directory_close_error;}
+static uint32_t model_test_stream(void *context,uint32_t writing)
+{return sd_model_transfer(context,9000u,writing);}
 static UINT read_pos;
 static UINT file_size, open_calls, close_calls, sync_calls, service_calls;
-static int open_error, write_error, sync_error, close_error, short_write;
+static int read_error,open_error, write_error, sync_error, close_error, short_write;
 static uint32_t card_address,card_count;
 u32 Xil_In32(UINTPTR a) { (void)a;return 0; }
 void usleep(unsigned long us) { (void)us; }
@@ -24,12 +36,12 @@ FRESULT f_mount(FATFS *f,const char *p,BYTE m)
 FRESULT f_open(FIL *f,const char *p,BYTE m)
 { (void)f;open_calls++;if(open_error)return open_error;
   if(m==FA_READ){read_pos=0;return FR_OK;}
-  if(!strcmp(p,"EMG000.BIN") || !strcmp(p,"RH000.CSV") || !strcmp(p,"HD000.CSV"))return FR_EXIST;file_size=0;return FR_OK; }
+  if(!strcmp(p,"EMG000.BIN") || !strcmp(p,"RH000.CSV") || !strcmp(p,"HD000.CSV") || !strcmp(p,"HM000000.HDC"))return FR_EXIST;file_size=0;return FR_OK; }
 FRESULT f_write(FIL *f,const void *p,UINT n,UINT *w)
 { (void)f;*w=write_error?0:short_write?n/2:n;assert(file_size+*w<sizeof file_data);
   memcpy(file_data+file_size,p,*w);file_size+=*w;return write_error; }
 FRESULT f_read(FIL *f,void *p,UINT n,UINT *r)
-{(void)f;*r=file_size-read_pos<n?file_size-read_pos:n;memcpy(p,file_data+read_pos,*r);read_pos+=*r;return 0;}
+{(void)f;if(read_error){*r=0;return read_error;}*r=file_size-read_pos<n?file_size-read_pos:n;memcpy(p,file_data+read_pos,*r);read_pos+=*r;return 0;}
 FRESULT f_sync(FIL *f) { (void)f;sync_calls++;return sync_error; }
 FRESULT f_close(FIL *f) { (void)f;close_calls++;return close_error; }
 static int decode24(const BYTE *p)
@@ -103,6 +115,34 @@ int main(void)
         assert(sd_record_start());assert(sd_hand_write(0,expected,sizeof expected)==0x301u);
         assert(sd_hand_read(0,got,sizeof got)==0x301u);assert(sd_record_stop());
         puts("TEST_PASS hand SD: exact length, truncated/extra data, short write, sync/close/open errors, recording exclusion");
+    }
+    {
+        BYTE expected[9000],got[9000];char name[13];sd_model_entry entries[6];uint32_t count,more;
+        memset(expected,0x63,sizeof expected);
+        assert(sd_model_save(model_test_stream,expected,name)==0u && !strcmp(name,"HM000001.HDC"));
+        assert(sd_model_load(name,model_test_stream,got)==0u && !memcmp(got,expected,sizeof got));
+        file_size--;assert(sd_model_load(name,model_test_stream,got)==0x304u);file_size+=2;
+        assert(sd_model_load(name,model_test_stream,got)==0x304u);
+        read_error=1;assert(sd_model_load(name,model_test_stream,got)!=0u);read_error=0;
+        open_error=FR_DENIED;assert(sd_model_save(model_test_stream,expected,name)!=0u);
+        assert(sd_model_load(name,model_test_stream,got)!=0u);open_error=0;
+        assert(sd_model_transfer(got,1u,0u)==0x302u);
+        short_write=1;assert(sd_model_save(model_test_stream,expected,name)==0x304u);short_write=0;
+        sync_error=1;assert(sd_model_save(model_test_stream,expected,name)!=0u);sync_error=0;
+        close_error=1;assert(sd_model_save(model_test_stream,expected,name)!=0u);
+        assert(sd_model_load(name,model_test_stream,got)!=0u);close_error=0;
+        assert(sd_model_load("../HAND0.CFG",model_test_stream,got)==0x302u);
+        assert(sd_record_start());i=open_calls;
+        assert(sd_model_save(model_test_stream,expected,name)==0x301u);
+        assert(sd_model_load(name,model_test_stream,got)==0x301u);
+        assert(sd_model_list(0u,entries,6u,&count,&more)==0x301u && open_calls==i);assert(sd_record_stop());
+        assert(sd_model_list(0u,entries,6u,&count,&more)==0u && count==6u && more);
+        for(i=0;i<6u;i++)assert(entries[i].id==i+1u);
+        assert(sd_model_list(7u,entries,6u,&count,&more)==0u && count==4u && !more);
+        for(i=0;i<4u;i++)assert(entries[i].id==i+7u);
+        directory_error=1;assert(sd_model_list(0u,entries,6u,&count,&more)!=0u);directory_error=0;
+        directory_close_error=1;assert(sd_model_list(0u,entries,6u,&count,&more)!=0u);directory_close_error=0;
+        puts("TEST_PASS model SD IO: chunked exact stream, truncation/trailing, short write, sync/close, recording exclusion, sorted paged directory filtering");
     }
     puts("TEST_PASS sd_record: signed paired frames, wrap, tail flush, periodic sync, no overwrite, IO errors, aligned bounce, SDSC addressing.");
     return 0;

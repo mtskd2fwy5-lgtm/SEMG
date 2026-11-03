@@ -1,0 +1,259 @@
+#-----------------------------------------------------------
+# Vivado v2025.2 (64-bit)
+# SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025
+# IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025
+# SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025
+# Start of session at: Thu Oct 29 21:52:23 2026
+# Process ID         : 3736
+# Current directory  : D:/FPGA/sEMG-HMRS
+# Command line       : vivado.exe -mode batch -source build/scripts/export_hand_pwm_netlist.tcl -log report/hand_pwm_inverted_20261029/netlist_export.log -journal report/hand_pwm_inverted_20261029/netlist_export.jou
+# Log file           : D:/FPGA/sEMG-HMRS/report/hand_pwm_inverted_20261029/netlist_export.log
+# Journal file       : D:/FPGA/sEMG-HMRS\report/hand_pwm_inverted_20261029/netlist_export.jou
+# Running On         : LAPTOP-VCCV41QO
+# Platform           : Windows Server 2016 or Windows 10
+# Operating System   : 26200
+# Processor Detail   : AMD Ryzen 9 7945HX with Radeon Graphics        
+# CPU Frequency      : 2495 MHz
+# CPU Physical cores : 16
+# CPU Logical cores  : 32
+# Host memory        : 16844 MB
+# Swap memory        : 16844 MB
+# Total Virtual      : 33689 MB
+# Available Virtual  : 9776 MB
+#-----------------------------------------------------------
+INFO: [Common 17-1239] XILINX_LOCAL_USER_DATA is set to 'no'.
+source build/scripts/export_hand_pwm_netlist.tcl
+# set root [file normalize [file join [file dirname [info script]] ../..]]
+# set out [file join $root report/hand_pwm_inverted_20261029]
+# create_project -in_memory -part xc7z020clg400-2
+create_project: Time (s): cpu = 00:00:01 ; elapsed = 00:00:20 . Memory (MB): peak = 313.441 ; gain = 7.039
+# read_verilog [list [file join $root src/rtl/hand_servo_pwm.v] [file join $root src/rtl/hand_control.v]]
+# synth_design -top hand_control -mode out_of_context -part xc7z020clg400-2 -generic {CLOCK_HZ=1000000 TIMEOUT_MS=100}
+Command: synth_design -top hand_control -mode out_of_context -part xc7z020clg400-2 -generic {CLOCK_HZ=1000000 TIMEOUT_MS=100}
+Starting synth_design
+Attempting to get a license for feature 'Synthesis' and/or device 'xc7z020'
+INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xc7z020'
+INFO: [Synth 8-7079] Multithreading enabled for synth_design using a maximum of 2 processes.
+INFO: [Synth 8-7078] Launching helper process for spawning children vivado processes
+INFO: [Synth 8-7075] Helper process launched with PID 39348
+---------------------------------------------------------------------------------
+Starting Synthesize : Time (s): cpu = 00:00:06 ; elapsed = 00:00:08 . Memory (MB): peak = 860.746 ; gain = 542.086
+---------------------------------------------------------------------------------
+INFO: [Synth 8-6157] synthesizing module 'hand_control' [D:/FPGA/sEMG-HMRS/src/rtl/hand_control.v:12]
+	Parameter CLOCK_HZ bound to: 1000000 - type: integer 
+	Parameter TIMEOUT_MS bound to: 100 - type: integer 
+INFO: [Synth 8-6157] synthesizing module 'hand_servo_pwm' [D:/FPGA/sEMG-HMRS/src/rtl/hand_servo_pwm.v:6]
+	Parameter CLOCK_HZ bound to: 1000000 - type: integer 
+	Parameter WATCHDOG_MS bound to: 100 - type: integer 
+INFO: [Synth 8-6155] done synthesizing module 'hand_servo_pwm' (0#1) [D:/FPGA/sEMG-HMRS/src/rtl/hand_servo_pwm.v:6]
+INFO: [Synth 8-226] default block is never used [D:/FPGA/sEMG-HMRS/src/rtl/hand_control.v:105]
+INFO: [Synth 8-6155] done synthesizing module 'hand_control' (0#1) [D:/FPGA/sEMG-HMRS/src/rtl/hand_control.v:12]
+WARNING: [Synth 8-6014] Unused sequential element command_ok_reg was removed.  [D:/FPGA/sEMG-HMRS/src/rtl/hand_servo_pwm.v:50]
+WARNING: [Synth 8-6014] Unused sequential element position_reg was removed.  [D:/FPGA/sEMG-HMRS/src/rtl/hand_servo_pwm.v:73]
+WARNING: [Synth 8-6014] Unused sequential element target_reg was removed.  [D:/FPGA/sEMG-HMRS/src/rtl/hand_servo_pwm.v:73]
+WARNING: [Synth 8-6014] Unused sequential element legal_row_reg was removed.  [D:/FPGA/sEMG-HMRS/src/rtl/hand_control.v:133]
+WARNING: [Synth 8-7129] Port command[23] in module hand_control is either unconnected or has no load
+WARNING: [Synth 8-7129] Port command[22] in module hand_control is either unconnected or has no load
+WARNING: [Synth 8-7129] Port command[21] in module hand_control is either unconnected or has no load
+WARNING: [Synth 8-7129] Port command[20] in module hand_control is either unconnected or has no load
+WARNING: [Synth 8-7129] Port command[19] in module hand_control is either unconnected or has no load
+---------------------------------------------------------------------------------
+Finished Synthesize : Time (s): cpu = 00:00:08 ; elapsed = 00:00:11 . Memory (MB): peak = 1000.656 ; gain = 681.996
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Constraint Validation : Time (s): cpu = 00:00:09 ; elapsed = 00:00:12 . Memory (MB): peak = 1000.656 ; gain = 681.996
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Loading Part and Timing Information
+---------------------------------------------------------------------------------
+Loading part: xc7z020clg400-2
+---------------------------------------------------------------------------------
+INFO: [Device 21-403] Loading part xc7z020clg400-2
+Finished Loading Part and Timing Information : Time (s): cpu = 00:00:09 ; elapsed = 00:00:12 . Memory (MB): peak = 1000.656 ; gain = 681.996
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished RTL Optimization Phase 2 : Time (s): cpu = 00:00:11 ; elapsed = 00:00:13 . Memory (MB): peak = 1000.656 ; gain = 681.996
+---------------------------------------------------------------------------------
+No constraint files found.
+---------------------------------------------------------------------------------
+Start RTL Component Statistics 
+---------------------------------------------------------------------------------
+Detailed RTL Component Info : 
++---Adders : 
+	   2 Input   32 Bit       Adders := 1     
+	   3 Input   17 Bit       Adders := 12    
+	   2 Input   17 Bit       Adders := 4     
+	   2 Input   16 Bit       Adders := 12    
+	   2 Input   15 Bit       Adders := 1     
+	   2 Input    1 Bit       Adders := 1     
++---Registers : 
+	               96 Bit    Registers := 11    
+	               80 Bit    Registers := 2     
+	               32 Bit    Registers := 6     
+	               16 Bit    Registers := 19    
+	               15 Bit    Registers := 1     
+	                8 Bit    Registers := 1     
+	                6 Bit    Registers := 4     
+	                5 Bit    Registers := 1     
+	                3 Bit    Registers := 4     
+	                2 Bit    Registers := 1     
+	                1 Bit    Registers := 19    
++---Muxes : 
+	   4 Input   96 Bit        Muxes := 1     
+	   2 Input   96 Bit        Muxes := 7     
+	  15 Input   96 Bit        Muxes := 2     
+	   2 Input   80 Bit        Muxes := 4     
+	  15 Input   80 Bit        Muxes := 1     
+	   3 Input   32 Bit        Muxes := 1     
+	   2 Input   32 Bit        Muxes := 1     
+	   2 Input   17 Bit        Muxes := 12    
+	   2 Input   16 Bit        Muxes := 36    
+	   2 Input    8 Bit        Muxes := 2     
+	  15 Input    8 Bit        Muxes := 2     
+	   2 Input    6 Bit        Muxes := 25    
+	  15 Input    6 Bit        Muxes := 3     
+	   2 Input    5 Bit        Muxes := 4     
+	  15 Input    5 Bit        Muxes := 1     
+	  15 Input    3 Bit        Muxes := 3     
+	   2 Input    3 Bit        Muxes := 1     
+	   2 Input    2 Bit        Muxes := 3     
+	   2 Input    1 Bit        Muxes := 81    
+	   4 Input    1 Bit        Muxes := 2     
+	  15 Input    1 Bit        Muxes := 31    
+---------------------------------------------------------------------------------
+Finished RTL Component Statistics 
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Part Resource Summary
+---------------------------------------------------------------------------------
+Part Resources:
+DSPs: 220 (col length:60)
+BRAMs: 280 (col length: RAMB18 60 RAMB36 30)
+---------------------------------------------------------------------------------
+Finished Part Resource Summary
+---------------------------------------------------------------------------------
+No constraint files found.
+---------------------------------------------------------------------------------
+Start Cross Boundary and Area Optimization
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Cross Boundary and Area Optimization : Time (s): cpu = 00:00:34 ; elapsed = 00:00:54 . Memory (MB): peak = 1327.082 ; gain = 1008.422
+---------------------------------------------------------------------------------
+No constraint files found.
+---------------------------------------------------------------------------------
+Start Timing Optimization
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Timing Optimization : Time (s): cpu = 00:00:36 ; elapsed = 00:00:57 . Memory (MB): peak = 1332.445 ; gain = 1013.785
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Technology Mapping
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Technology Mapping : Time (s): cpu = 00:00:37 ; elapsed = 00:00:58 . Memory (MB): peak = 1332.637 ; gain = 1013.977
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished IO Insertion : Time (s): cpu = 00:00:42 ; elapsed = 00:01:03 . Memory (MB): peak = 1468.379 ; gain = 1149.719
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Instances
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Instances : Time (s): cpu = 00:00:42 ; elapsed = 00:01:03 . Memory (MB): peak = 1468.379 ; gain = 1149.719
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Rebuilding User Hierarchy
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Rebuilding User Hierarchy : Time (s): cpu = 00:00:42 ; elapsed = 00:01:03 . Memory (MB): peak = 1468.379 ; gain = 1149.719
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Ports
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Ports : Time (s): cpu = 00:00:42 ; elapsed = 00:01:03 . Memory (MB): peak = 1468.379 ; gain = 1149.719
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Handling Custom Attributes
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Handling Custom Attributes : Time (s): cpu = 00:00:42 ; elapsed = 00:01:03 . Memory (MB): peak = 1468.379 ; gain = 1149.719
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Nets
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Nets : Time (s): cpu = 00:00:42 ; elapsed = 00:01:03 . Memory (MB): peak = 1468.379 ; gain = 1149.719
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Writing Synthesis Report
+---------------------------------------------------------------------------------
+
+Report BlackBoxes: 
++-+--------------+----------+
+| |BlackBox name |Instances |
++-+--------------+----------+
++-+--------------+----------+
+
+Report Cell Usage: 
++------+-------+------+
+|      |Cell   |Count |
++------+-------+------+
+|1     |CARRY4 |   218|
+|2     |LUT1   |    97|
+|3     |LUT2   |   264|
+|4     |LUT3   |    94|
+|5     |LUT4   |   862|
+|6     |LUT5   |   242|
+|7     |LUT6   |   537|
+|8     |MUXF7  |    81|
+|9     |FDRE   |  1292|
+|10    |FDSE   |   157|
++------+-------+------+
+
+Report Instance Areas: 
++------+------------+---------------+------+
+|      |Instance    |Module         |Cells |
++------+------------+---------------+------+
+|1     |top         |               |  3844|
+|2     |  generator |hand_servo_pwm |  2174|
++------+------------+---------------+------+
+---------------------------------------------------------------------------------
+Finished Writing Synthesis Report : Time (s): cpu = 00:00:42 ; elapsed = 00:01:03 . Memory (MB): peak = 1468.379 ; gain = 1149.719
+---------------------------------------------------------------------------------
+Synthesis finished with 0 errors, 0 critical warnings and 9 warnings.
+Synthesis Optimization Runtime : Time (s): cpu = 00:00:42 ; elapsed = 00:01:03 . Memory (MB): peak = 1468.379 ; gain = 1149.719
+Synthesis Optimization Complete : Time (s): cpu = 00:00:42 ; elapsed = 00:01:03 . Memory (MB): peak = 1468.379 ; gain = 1149.719
+INFO: [Project 1-571] Translating synthesized netlist
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.032 . Memory (MB): peak = 1483.430 ; gain = 0.000
+INFO: [Netlist 29-17] Analyzing 299 Unisim elements for replacement
+INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
+INFO: [Project 1-570] Preparing netlist for logic optimization
+INFO: [Opt 31-138] Pushed 0 inverter(s) to 0 load pin(s).
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.001 . Memory (MB): peak = 1598.758 ; gain = 0.000
+INFO: [Project 1-111] Unisim Transformation Summary:
+No Unisim elements were transformed.
+
+Synth Design complete | Checksum: d43f34b4
+INFO: [Common 17-83] Releasing license: Synthesis
+17 Infos, 9 Warnings, 0 Critical Warnings and 0 Errors encountered.
+synth_design completed successfully
+synth_design: Time (s): cpu = 00:00:45 ; elapsed = 00:01:08 . Memory (MB): peak = 1598.758 ; gain = 1285.316
+# rename_ref -prefix_all hand_polarity_ -top hand_control_netlist
+ERROR: [Common 17-170] Unknown option '-top', please type 'rename_ref -help' for usage info.
+INFO: [Common 17-206] Exiting Vivado at Thu Oct 29 21:54:02 2026...

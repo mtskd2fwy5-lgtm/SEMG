@@ -6,9 +6,9 @@
 #define PL_LEARNING_ENABLE 1
 static uint32_t pl_learning_nmf(const uint32_t e[8],uint32_t out[8]);
 static uint32_t pl_learning_scale(const uint32_t *samples,uint32_t n,uint32_t scale[8]);
-static uint32_t pl_learning_train(const uint32_t e[8],const uint32_t scale[8],int16_t *proto,uint32_t *saturated);
+static uint32_t pl_learning_train(const uint32_t e[8],const uint32_t scale[8],int16_t *proto,uint32_t levels,uint32_t *saturated);
 static uint32_t pl_learning_predict(const uint32_t e[8],const uint32_t scale[8],const int16_t *proto,uint32_t classes,
-                                    uint32_t *best,uint32_t *margin,uint32_t *clip);
+                                    uint32_t levels,uint32_t *best,uint32_t *margin,uint32_t *clip,uint32_t *margin_bp);
 #else
 #define PL_LEARNING_ENABLE 0
 #endif

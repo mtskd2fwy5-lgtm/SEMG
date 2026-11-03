@@ -1,0 +1,122 @@
+{
+  "passed": true,
+  "skills": [
+    {
+      "name": "semg-capture-analysis",
+      "destination": "C:\\Users\\bvcm\\.codex\\skills\\semg-capture-analysis",
+      "files": [
+        {
+          "path": "agents/openai.yaml",
+          "sha256": "ff92c20fca163a623b8920d01a7d896802042fa25ae19bc5f60cf369e2c13a6b",
+          "match": true
+        },
+        {
+          "path": "references/analysis.md",
+          "sha256": "94fbd491c637c96178c0e7ca665eeba20b6d2d2c21b480d96df1e8eba0941dfd",
+          "match": true
+        },
+        {
+          "path": "references/models.md",
+          "sha256": "80bbc09585a9068528328cafa05592023ec962887e2e1c5b6f1c0af6ff3bae37",
+          "match": true
+        },
+        {
+          "path": "scripts/audit_stream.py",
+          "sha256": "2aba362784c98b2de2b2d42bc98dc9f1ccb104e1850ac81e896ed93213c87a20",
+          "match": true
+        },
+        {
+          "path": "SKILL.md",
+          "sha256": "0d6da6ad46db0236101a5bb6be436ef4b371839af7d0805ead27fdb03949f94d",
+          "match": true
+        }
+      ],
+      "validator_exit_code": 0,
+      "validator_output": "Skill is valid!\n"
+    },
+    {
+      "name": "semg-competition-report",
+      "destination": "C:\\Users\\bvcm\\.codex\\skills\\semg-competition-report",
+      "files": [
+        {
+          "path": "agents/openai.yaml",
+          "sha256": "8751e0b6c391c11af09ad54da5e713e0d6dc4d2704d579bc772271495eddd73d",
+          "match": true
+        },
+        {
+          "path": "references/report.md",
+          "sha256": "2bf364d5fc24a2c1ded7ee762f2551f05b14f5c50bdc8d4bbd1c264dff95e09e",
+          "match": true
+        },
+        {
+          "path": "SKILL.md",
+          "sha256": "786deda7a1b16ce6bc03bfd2ade5f6a777cf3ae2b0d709e8b2420e8b8ac8f09a",
+          "match": true
+        }
+      ],
+      "validator_exit_code": 0,
+      "validator_output": "Skill is valid!\n"
+    },
+    {
+      "name": "semg-lcd-hand-debug",
+      "destination": "C:\\Users\\bvcm\\.codex\\skills\\semg-lcd-hand-debug",
+      "files": [
+        {
+          "path": "agents/openai.yaml",
+          "sha256": "7b15f736c086d1654d8d2b2906c1e3424a008fb8fb5d11d1a5f3a036d84928ea",
+          "match": true
+        },
+        {
+          "path": "references/hand.md",
+          "sha256": "8614097d280b05a0abbf824199d91f25d68ebc81804e7eb1f700db484988b6dd",
+          "match": true
+        },
+        {
+          "path": "references/lcd.md",
+          "sha256": "b92de7d8075a9c6c3728b75ce53ef404631a112a187e254cbf0b1654ac4d8a7c",
+          "match": true
+        },
+        {
+          "path": "SKILL.md",
+          "sha256": "ab94598a47932dcde1efc6c4eba0b56fb1151f4a0f8e4ab4f9a23ce8ca241ef2",
+          "match": true
+        }
+      ],
+      "validator_exit_code": 0,
+      "validator_output": "Skill is valid!\n"
+    },
+    {
+      "name": "semg-release-check",
+      "destination": "C:\\Users\\bvcm\\.codex\\skills\\semg-release-check",
+      "files": [
+        {
+          "path": "agents/openai.yaml",
+          "sha256": "450ade092d2dc9ae98b0dd383d9f3148dd4f2cda52ae22ed52c62a9dfe00bce4",
+          "match": true
+        },
+        {
+          "path": "references/equivalence.md",
+          "sha256": "9eb0810b0bb85c4e42481fdad84696d481356a9c7a9c188e5b4a78d1c37243ac",
+          "match": true
+        },
+        {
+          "path": "references/workflow.md",
+          "sha256": "a6660b058594b7dc2bebebdbe57454b6eda8572ceaf2de985bfbf0dcb82a9496",
+          "match": true
+        },
+        {
+          "path": "scripts/compare_resources.py",
+          "sha256": "1d98f7241e77aed0656bd323273db1024d96fbadb2c963ad27b482884b7705df",
+          "match": true
+        },
+        {
+          "path": "SKILL.md",
+          "sha256": "7e1c5f9eed06b61e8c2063e1deb5a19c51ceec5669934605c19526ecc0ccde22",
+          "match": true
+        }
+      ],
+      "validator_exit_code": 0,
+      "validator_output": "Skill is valid!\n"
+    }
+  ]
+}

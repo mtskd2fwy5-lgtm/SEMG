@@ -1,0 +1,51 @@
+{
+  "stage": "Routed",
+  "device": "xc7z020clg400-2",
+  "tool": "Vivado 2025.2",
+  "behavior_change": "Q16 to Q32 plus exact legacy Q16 and 0.01% score gap; not an equivalent-resource optimization",
+  "baseline": {
+    "lut": 27357.0,
+    "ff": 28784.0,
+    "slice": 10779.0,
+    "bram36": 49.5,
+    "dsp": 53.0,
+    "wns_ns": 0.437,
+    "tns_ns": 0.0,
+    "failing_endpoints": 0,
+    "whs_ns": 0.034
+  },
+  "candidate": {
+    "lut": 27537.0,
+    "ff": 28793.0,
+    "slice": 10615.0,
+    "bram36": 51.5,
+    "dsp": 55.0,
+    "wns_ns": 0.004,
+    "tns_ns": 0.0,
+    "failing_endpoints": 0,
+    "whs_ns": 0.052
+  },
+  "resource_delta": {
+    "lut": 180.0,
+    "ff": 9.0,
+    "slice": -164.0,
+    "bram36": 2.0,
+    "dsp": 2.0
+  },
+  "resource_delta_percent": {
+    "lut": 0.6579668823335892,
+    "ff": 0.031267370761534186,
+    "slice": -1.5214769459133501,
+    "bram36": 4.040404040404041,
+    "dsp": 3.7735849056603774
+  },
+  "rtl_cycles_max_100mhz_variable_axi": {
+    "nmf": 3958,
+    "scale": 782,
+    "q16_train": 23863,
+    "q32_train": 23863,
+    "q16_six_class_predict": 77263,
+    "q32_six_class_predict": 77263
+  },
+  "board_performance_measured": false
+}

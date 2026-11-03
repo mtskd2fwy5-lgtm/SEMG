@@ -1,0 +1,94 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+---------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025
+| Date         : Thu Oct 29 22:21:22 2026
+| Host         : LAPTOP-VCCV41QO running 64-bit major release  (build 9200)
+| Command      : report_methodology -file D:/FPGA/sEMG-HMRS/report/hand_pwm_inverted_20261029/methodology_routed.rpt
+| Design       : design_1
+| Device       : xc7z020clg400-2
+| Speed File   : -2
+| Design State : Fully Routed
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+Report Methodology
+
+Table of Contents
+-----------------
+1. REPORT SUMMARY
+2. REPORT DETAILS
+
+1. REPORT SUMMARY
+-----------------
+            Netlist: netlist
+          Floorplan: checkpoint_design_1_routed
+      Design limits: <entire design considered>
+             Max checks: <unlimited>
+             Checks found: 10
++-----------+----------+------------------------------------------------------+--------+
+| Rule      | Severity | Description                                          | Checks |
++-----------+----------+------------------------------------------------------+--------+
+| LUTAR-1   | Warning  | LUT drives async reset alert                         | 2      |
+| PDRC-190  | Warning  | Suboptimally placed synchronized register chain      | 1      |
+| TIMING-9  | Warning  | Unknown CDC Logic                                    | 1      |
+| TIMING-28 | Warning  | Auto-derived clock referenced by a timing constraint | 4      |
+| TIMING-37 | Warning  | Bus skew constraint applied on signals with fanout   | 1      |
+| ULMTCS-1  | Warning  | Control Sets use limits recommend reduction          | 1      |
++-----------+----------+------------------------------------------------------+--------+
+
+2. REPORT DETAILS
+-----------------
+LUTAR-1#1 Warning
+LUT drives async reset alert  
+LUT cell emg_pl_export_0/inst/u_core/u_emg_data_path/pl_release[1]_i_1, with 2 or more inputs, drives asynchronous preset/clear pin(s) emg_pl_export_0/inst/u_core/u_emg_data_path/axis_release_reg[0]/CLR,
+emg_pl_export_0/inst/u_core/u_emg_data_path/axis_release_reg[1]/CLR,
+emg_pl_export_0/inst/u_core/u_emg_data_path/pl_release_reg[0]/CLR
+emg_pl_export_0/inst/u_core/u_emg_data_path/pl_release_reg[1]/CLR. The LUT may glitch and trigger an unexpected reset, even if it is a properly timed path.
+Related violations: <none>
+
+LUTAR-1#2 Warning
+LUT drives async reset alert  
+LUT cell lcd_panel_adapter_0/inst/vid_rst_sync_i_1, with 2 or more inputs, drives asynchronous preset/clear pin(s) lcd_panel_adapter_0/inst/vid_rst_meta_reg/PRE
+lcd_panel_adapter_0/inst/vid_rst_sync_reg/PRE. The LUT may glitch and trigger an unexpected reset, even if it is a properly timed path.
+Related violations: <none>
+
+PDRC-190#1 Warning
+Suboptimally placed synchronized register chain  
+The FDRE cell emg_pl_export_0/inst/ack_sync_reg in site SLICE_X49Y85 is part of a synchronized register chain that is suboptimally placed as the load FDRE cell axi_gpio_4/U0/gpio_core_1/Dual.INPUT_DOUBLE_REGS5/syncstages_ff_reg[0][15] is not placed in the same (SLICE) site.
+Related violations: <none>
+
+TIMING-9#1 Warning
+Unknown CDC Logic  
+One or more asynchronous Clock Domain Crossing has been detected between 2 clock domains through a set_false_path or a set_clock_groups or set_max_delay -datapath_only constraint but no double-registers logic synchronizer has been found on the side of the capture clock. It is recommended to run report_cdc for a complete and detailed CDC coverage. Please consider using XPM_CDC to avoid Critical severities
+Related violations: <none>
+
+TIMING-28#1 Warning
+Auto-derived clock referenced by a timing constraint  
+The auto-derived clock c31_raw is referenced by name inside timing constraint (see constraint position 48 in the Timing Constraint window in Vivado IDE). It is recommended to reference an auto-derived clock by the pin name attached to the clock: get_clocks -of_objects [get_pins lcd_panel_adapter_0/inst/u_mmcm/CLKOUT1]
+Related violations: <none>
+
+TIMING-28#2 Warning
+Auto-derived clock referenced by a timing constraint  
+The auto-derived clock c31_raw is referenced by name inside timing constraint (see constraint position 49 in the Timing Constraint window in Vivado IDE). It is recommended to reference an auto-derived clock by the pin name attached to the clock: get_clocks -of_objects [get_pins lcd_panel_adapter_0/inst/u_mmcm/CLKOUT1]
+Related violations: <none>
+
+TIMING-28#3 Warning
+Auto-derived clock referenced by a timing constraint  
+The auto-derived clock c50_raw is referenced by name inside timing constraint (see constraint position 47 in the Timing Constraint window in Vivado IDE). It is recommended to reference an auto-derived clock by the pin name attached to the clock: get_clocks -of_objects [get_pins lcd_panel_adapter_0/inst/u_mmcm/CLKOUT0]
+Related violations: <none>
+
+TIMING-28#4 Warning
+Auto-derived clock referenced by a timing constraint  
+The auto-derived clock c50_raw is referenced by name inside timing constraint (see constraint position 49 in the Timing Constraint window in Vivado IDE). It is recommended to reference an auto-derived clock by the pin name attached to the clock: get_clocks -of_objects [get_pins lcd_panel_adapter_0/inst/u_mmcm/CLKOUT0]
+Related violations: <none>
+
+TIMING-37#1 Warning
+Bus skew constraint applied on signals with fanout  
+Bus skew constraint is not recommended on signals that have a fanout (see constraint position 46 in the Timing Constraint window in Vivado IDE). First endpoint covered by the constraint: mpu_attitude_0/inst/sensor_a_reg[0]/D
+Related violations: <none>
+
+ULMTCS-1#1 Warning
+Control Sets use limits recommend reduction  
+This design uses 1135 control sets (vs. available limit of 13300, determined by 1 control set per CLB). This exceeds the control set use guideline of 7.5 percent. This is at a level where reduction is RECOMMENDED (see UG949). Use report_control_sets to get more details.
+Related violations: <none>
+
+

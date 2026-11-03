@@ -1,0 +1,74 @@
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/report/imu_pl_20261028/ooc/attitude_funcsim.v" into library work
+INFO: [VRFC 10-311] analyzing module mpu_attitude
+INFO: [VRFC 10-311] analyzing module design_1_mpu_attitude_0_0_learning_div64
+INFO: [VRFC 10-311] analyzing module design_1_mpu_attitude_0_0_mpu_attitude
+INFO: [VRFC 10-311] analyzing module design_1_mpu_attitude_0_0_mpu_attitude_core
+INFO: [VRFC 10-311] analyzing module glbl
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/VIVADO/2025.2/data/verilog/src/glbl.v" into library work
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/FPGA/sEMG-HMRS/sim/mpu_attitude_mailbox_tb.sv" into library work
+INFO: [VRFC 10-311] analyzing module mpu_attitude_mailbox_tb
+Vivado Simulator v2025.2
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+Running: D:/FPGA/VIVADO/2025.2/Vivado/bin/unwrapped/win64.o/xelab.exe mpu_attitude_mailbox_tb glbl -L unisims_ver -L unimacro_ver -s imu_netlist_mailbox -debug typical 
+Multi-threading is on. Using 30 slave threads.
+Starting static elaboration
+Pass Through NonSizing Optimizer
+Completed static elaboration
+Starting simulation data flow analysis
+Completed simulation data flow analysis
+Time Resolution for simulation is 1ps
+Compiling module unisims_ver.x_lut2_mux4
+Compiling module unisims_ver.LUT2
+Compiling module unisims_ver.x_lut3_mux8
+Compiling module unisims_ver.LUT3
+Compiling module unisims_ver.LUT4
+Compiling module unisims_ver.LUT6
+Compiling module unisims_ver.FDSE_default
+Compiling module unisims_ver.CARRY4
+Compiling module unisims_ver.LUT5
+Compiling module unisims_ver.FDRE_default
+Compiling module unisims_ver.x_lut1_mux2
+Compiling module unisims_ver.LUT1
+Compiling module work.design_1_mpu_attitude_0_0_learni...
+Compiling module unisims_ver.RB36_INTERNAL_VLOG(RDADDR_COLLIS...
+Compiling module unisims_ver.RAMB36E1(INIT_00=256'b0110000000...
+Compiling module unisims_ver.RB36_INTERNAL_VLOG(RDADDR_COLLIS...
+Compiling module unisims_ver.RAMB36E1(INIT_3A=256'b0110000000...
+Compiling module unisims_ver.RB36_INTERNAL_VLOG(RDADDR_COLLIS...
+Compiling module unisims_ver.RAMB36E1(INIT_00=256'b0100000001...
+Compiling module unisims_ver.RB36_INTERNAL_VLOG(RDADDR_COLLIS...
+Compiling module unisims_ver.RAMB36E1(INIT_00=256'b0101110100...
+Compiling module unisims_ver.DSP48E1(ALUMODEREG=0,CARRYINREG=...
+Compiling module unisims_ver.DSP48E1(ALUMODEREG=0,CARRYINREG=...
+Compiling module unisims_ver.RAM64M
+Compiling module unisims_ver.RAM32M
+Compiling module work.design_1_mpu_attitude_0_0_mpu_at...
+Compiling module unisims_ver.MUXF8
+Compiling module unisims_ver.MUXF7
+Compiling module work.design_1_mpu_attitude_0_0_mpu_at...
+Compiling module work.mpu_attitude
+Compiling module work.mpu_attitude_mailbox_tb
+Compiling module work.glbl
+Built simulation snapshot imu_netlist_mailbox
+
+****** xsim v2025.2 (64-bit)
+  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025
+  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025
+  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025
+  **** Start of session at: Sat Oct 31 19:11:49 2026
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+
+source xsim.dir/imu_netlist_mailbox/xsim_script.tcl
+# xsim {imu_netlist_mailbox} -autoloadwcfg -runall
+Time resolution is 1 ps
+run -all
+TEST_PASS arbitrary-pose recalibration: 60deg capture becomes zero, -30deg follow
+TEST_PASS synthesized PL attitude calibration, 60deg twist, atomic snapshot, zero and disconnect
+$finish called at time : 30167920 ns : File "D:/FPGA/sEMG-HMRS/sim/mpu_attitude_mailbox_tb.sv" Line 85
+run: Time (s): cpu = 00:00:01 ; elapsed = 00:13:35 . Memory (MB): peak = 232.164 ; gain = 0.000
+exit
+INFO: xsimkernel Simulation Memory Usage: 51388 KB (Peak: 51388 KB), Simulation CPU Usage: 813390 ms
+INFO: [Common 17-206] Exiting xsim at Sat Oct 31 19:25:26 2026...
+TEST_PASS IMU migration regression complete

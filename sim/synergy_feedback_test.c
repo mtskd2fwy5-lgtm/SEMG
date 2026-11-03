@@ -45,7 +45,7 @@ int main(void)
     }
     assert(!r.segment_ms && !r.attempted);
     for(;i<100u;i++) {
-        r.effort_valid=1u;r.effort_c2=20479u;
+        r.effort_valid=1u;r.effort_c2=17919u;
         rehab_observe(&r,i*25u,i*40u,2u,2u,80u,0u,1u);
     }
     assert(!r.segment_ms);
@@ -54,13 +54,13 @@ int main(void)
     }
     assert(!r.segment_ms); /* intensity cannot bypass action */
     for(;i<130u;i++) {
-        r.effort_c2=20480u;rehab_observe(&r,i*25u,i*40u,2u,2u,80u,0u,1u);
+        r.effort_c2=17920u;rehab_observe(&r,i*25u,i*40u,2u,2u,80u,0u,1u);
     }
     assert(r.segment_ms>0u);
-    r.effort_c2=30721u;rehab_observe(&r,i*25u,i*40u,2u,2u,80u,0u,1u);i++;
+    r.effort_c2=33281u;rehab_observe(&r,i*25u,i*40u,2u,2u,80u,0u,1u);i++;
     assert(!r.segment_ms && r.breaks==1u);
     for(;r.state!=RH_RECOVER && i<200u;i++) {
-        r.effort_c2=30720u;rehab_observe(&r,i*25u,i*40u,2u,2u,80u,0u,1u);
+        r.effort_c2=33280u;rehab_observe(&r,i*25u,i*40u,2u,2u,80u,0u,1u);
     }
     assert(r.successes==1u && r.effort_in_band>40u);
     rehab_start(&r,0u,1u,1u,1000u,1000u,0u);r.state=RH_CUE;r.seen=1u;r.effort_enabled=1u;

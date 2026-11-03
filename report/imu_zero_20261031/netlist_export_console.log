@@ -1,0 +1,40 @@
+
+****** Vivado v2025.2 (64-bit)
+  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025
+  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025
+  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025
+  **** Start of session at: Sat Oct 31 19:06:26 2026
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+
+INFO: [Common 17-1239] XILINX_LOCAL_USER_DATA is set to 'no'.
+source build/scripts/export_imu_netlist.tcl
+# set root [file normalize [file join [file dirname [info script]] ../..]]
+# set out [file join $root report imu_pl_20261028 ooc]
+# file mkdir $out
+# open_checkpoint [file join $root build vivado hand_motion_reconstruction.runs design_1_mpu_attitude_0_0_synth_1 design_1_mpu_attitude_0_0.dcp]
+Command: open_checkpoint D:/FPGA/sEMG-HMRS/build/vivado/hand_motion_reconstruction.runs/design_1_mpu_attitude_0_0_synth_1/design_1_mpu_attitude_0_0.dcp
+
+Starting open_checkpoint Task
+
+Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.045 . Memory (MB): peak = 318.164 ; gain = 4.191
+INFO: [Device 21-403] Loading part xc7z020clg400-2
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.027 . Memory (MB): peak = 580.973 ; gain = 0.000
+INFO: [Netlist 29-17] Analyzing 374 Unisim elements for replacement
+INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
+INFO: [Project 1-479] Netlist was created with Vivado 2025.2
+INFO: [Project 1-570] Preparing netlist for logic optimization
+Read ShapeDB Complete: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.011 . Memory (MB): peak = 686.941 ; gain = 1.602
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.002 . Memory (MB): peak = 686.941 ; gain = 0.000
+INFO: [Project 1-111] Unisim Transformation Summary:
+  A total of 90 instances were transformed.
+  RAM32M => RAM32M (RAMD32(x6), RAMS32(x2)): 2 instances
+  RAM64M => RAM64M (RAMD64E(x4)): 88 instances
+
+INFO: [Project 1-604] Checkpoint was created with Vivado v2025.2 (64-bit) build 6299465
+open_checkpoint: Time (s): cpu = 00:00:05 ; elapsed = 00:00:22 . Memory (MB): peak = 695.008 ; gain = 389.758
+# report_utilization -file [file join $out utilization_synth.rpt]
+# write_verilog -force -mode funcsim -rename_top mpu_attitude [file join $out attitude_funcsim.v]
+# puts "TEST_PASS IMU netlist exported from actual full-build OOC checkpoint"
+TEST_PASS IMU netlist exported from actual full-build OOC checkpoint
+INFO: [Common 17-206] Exiting Vivado at Sat Oct 31 19:06:58 2026...

@@ -1,7 +1,7 @@
 """Generate the dedicated Q24 attitude sequencer ROM (no CPU/firmware core).
 
-The floating-point reference is frozen in report/imu_pl_20261028/baseline.
-This program implements its quaternion fusion, zero capture and twist semantics.
+The independent float fusion originates in report/imu_pl_20261028/baseline;
+gen_imu_reference.py applies the current relative-zero coordinate contract.
 Arithmetic is serialized because the sensor supplies only 100 frames/second.
 Run this generator before simulation/build; generated ROM is tracked RTL.
 """
@@ -173,7 +173,6 @@ for i in range(3):
     skip=fresh();branch('NE',count,0,skip);put(anchor[i],filtacc[i]);label(skip)
     put(travel,travel+(filtacc[i]-anchor[i])*(filtacc[i]-anchor[i]))
 skip=fresh();branch('LE',travel,0.0004,skip);put(reason,bor(reason,16));label(skip)
-skip=fresh();branch('LE',abs_(filtacc[1]),0.9,skip);put(reason,bor(reason,32));label(skip)
 branch('EQ',reason,0,'accumulate_zero')
 skip=fresh();branch('EQ',count,0,skip);put(restarts,restarts+1);label(skip)
 put(count,0);copy(biassum,[0.0]*3);copy(accsum,[0.0]*3);jump('fuse')
@@ -251,13 +250,11 @@ norm(wa);branch('LT',wa[2],0,'lower_gravity')
 copy(q,[c(1.0)+wa[2],wa[1],-wa[0],0.0]);jump('gravity_normalize')
 label('lower_gravity');copy(q,[wa[1],c(1.0)-wa[2],0.0,wa[0]])
 label('gravity_normalize');norm(q);ret()
-label('basis');copy(up,wa);norm(up)
-put(d,-up[1]);copy(forward,[-up[0]*d,c(-1.0)-up[1]*d,-up[2]*d])
-skip=fresh();branch('GE',dot(forward,forward),0.015625,skip)
-put(d,-up[0]);copy(right,[c(-1.0)-up[0]*d,-up[1]*d,-up[2]*d]);norm(right)
-copy(forward,cross(up,right));label(skip)
-norm(forward);copy(right,cross(forward,up));norm(right)
-copy(forward,cross(up,right));norm(forward);ret()
+# The relative quaternion already removes the captured sensor attitude.
+# Use a fixed palm-up display basis; applying captured gravity here would
+# reintroduce the absolute tilt/face and prevent a true calibration zero.
+label('basis');copy(up,[0.0,0.0,-1.0]);copy(forward,[0.0,-1.0,0.0])
+copy(right,[1.0,0.0,0.0]);ret()
 
 label('sin_q12')
 # Only arguments [-90,180] are needed by the twist bisection.

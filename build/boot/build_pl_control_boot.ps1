@@ -1,5 +1,5 @@
-﻿param([string]$Tag='20261028_HAND_CONTROL_HDC_DYNAMIC_IMU_PL_V17',
-      [string]$ReportDir='report/imu_pl_20261028')
+﻿param([string]$Tag='20261102_HAND_CONTROL_HDC_DYNAMIC_CONTINUOUS_V30',
+      [string]$ReportDir='report/hdc_continuous_20261102')
 $ErrorActionPreference='Stop'
 if($Tag -notmatch '^[A-Za-z0-9_]+$'){throw 'Invalid BOOT tag'}
 $root=(Resolve-Path (Join-Path $PSScriptRoot '../..')).Path

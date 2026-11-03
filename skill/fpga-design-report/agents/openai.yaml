@@ -1,0 +1,3 @@
+interface:
+  display_name: "FPGA设计报告与证据"
+  short_description: "组织FPGA架构、软硬件职责、资源性能对比和可复现验证证据"

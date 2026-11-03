@@ -1,0 +1,15 @@
+Vivado Simulator v2025.2
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+Running: D:/FPGA/VIVADO/2025.2/Vivado/bin/unwrapped/win64.o/xelab.exe hand_pwm_polarity_tb -s pin_rtl -debug typical 
+Multi-threading is on. Using 30 slave threads.
+Starting static elaboration
+Pass Through NonSizing Optimizer
+Completed static elaboration
+Starting simulation data flow analysis
+Completed simulation data flow analysis
+Time Resolution for simulation is 1ps
+Compiling module work.hand_servo_pwm(CLOCK_HZ=1000000,...
+Compiling module work.hand_control(CLOCK_HZ=1000000,TI...
+Compiling module work.hand_pwm_polarity_tb
+Built simulation snapshot pin_rtl

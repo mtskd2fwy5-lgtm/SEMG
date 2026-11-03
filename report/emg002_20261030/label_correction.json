@@ -1,0 +1,11 @@
+{
+  "start_s": 254.27675,
+  "end_s": 278.2855,
+  "stored_code": 14,
+  "actual_order": [
+    "index_middle_ring_extend",
+    "thumb_index_middle_extend"
+  ],
+  "switch_time_s": null,
+  "policy": "No inferred relabeling; exclude whole bout from per-class metrics/accuracy and supervised training."
+}

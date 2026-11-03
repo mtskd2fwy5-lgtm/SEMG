@@ -41,8 +41,20 @@ static void rehab_service(void)
     u32 now=rehab_milliseconds();
     synergy_feedback_tick(&synergy_feedback,now);
     if((synergy_feedback.capture==1u || synergy_feedback.capture==2u) &&
-       (!lcd_rehab_view || ui_menu_open || g_mode!=MODE_MONITOR))
+       ((!lcd_rehab_view && !(lcd_hand_view && hand_view_mode==2u)) ||
+        ui_menu_open || g_mode!=MODE_MONITOR))
         synergy_feedback.capture=4u;
+    if(hand_grip_capturing && synergy_feedback.capture==3u &&
+       (!lcd_hand_view || hand_view_mode!=2u || ui_menu_open ||
+        g_mode!=MODE_MONITOR || now-synergy_feedback.last_ms>75u)) {
+        synergy_feedback.capture=4u;synergy_feedback.reference=0u;
+    }
+    if(hand_grip_capturing && synergy_feedback.capture!=1u &&
+       synergy_feedback.capture!=2u && synergy_feedback.capture!=3u)
+        hand_grip_capturing=0u;
+    if(lcd_hand_view && hand_view_mode==2u && now-rehab_refresh_ms>=100u) {
+        rehab_refresh_ms=now;lcd_pending=1u;
+    }
     if((!lcd_rehab_view || ui_menu_open) && rehab_running(&rehab))
         rehab_pause(&rehab,RH_REASON_USER,now);
     rehab_tick(&rehab,now,cal_stage==2u && g_mode==MODE_MONITOR && pl_control_ready());
@@ -105,7 +117,8 @@ static void rehab_save_report(void)
     rehab_csv_meta("support_threshold",REHAB_SUPPORT_MIN);
     rehab_csv_meta("grip_effort_enabled",rehab.effort_enabled);
     rehab_csv_meta("grip_reference_c2_q8",rehab.effort_reference);
-    rehab_csv_meta("grip_lower_percent",80u);rehab_csv_meta("grip_upper_percent",120u);
+    rehab_csv_meta("grip_lower_percent",REHAB_EFFORT_LOWER_PERCENT);
+    rehab_csv_meta("grip_upper_percent",REHAB_EFFORT_UPPER_PERCENT);
     rehab_csv_meta("grip_windows",rehab.effort_samples);
     rehab_csv_meta("grip_supported_in_band_windows",rehab.effort_in_band);
     rehab_csv_text("meta,,,,,,,,,grip_definition,relative_emg_c2_not_force\r\n");
@@ -293,7 +306,7 @@ static void lcd_rehab_render(void)
             else if(synergy_feedback.capture==4u)
                 text="参考未完成 / 请重采";
             else if(synergy_feedback.reference)
-                lcd_analysis_label(label,sizeof label,"C2参考 ",(synergy_feedback.reference+128u)>>8," / 80%-120%");
+                lcd_analysis_label(label,sizeof label,"C2参考 ",(synergy_feedback.reference+128u)>>8," / 70%-130%");
             else text="请先舒适抓握采参考";
             ui_label(LCD_X(510),LCD_Y(480),LCD_X(480),1,94,112,119,text);
         }
@@ -330,7 +343,7 @@ static void lcd_rehab_render(void)
             ui_label(LCD_X(28)+(i32)(i-1u)*LCD_X(246),LCD_Y(403),LCD_X(226),2,31,49,58,label);
         }
         ui_label(LCD_X(28),LCD_Y(456),LCD_X(968),1,94,112,119,"完成率为识别结果；响应时间含算法延迟");
-        if(rehab.effort_enabled)ui_label(LCD_X(28),LCD_Y(484),LCD_X(968),1,94,112,119,"握拳目标：舒适参考的 80%-120%");
+        if(rehab.effort_enabled)ui_label(LCD_X(28),LCD_Y(484),LCD_X(968),1,94,112,119,"握拳目标：舒适参考的 70%-130%");
         ui_button(LCD_X(28),LCD_Y(516),LCD_X(300),LCD_Y(62),"返回训练设置",0u);
         ui_button(LCD_X(356),LCD_Y(516),LCD_X(300),LCD_Y(62),rehab.save_state==2u?"结果已保存":"保存 / 重试",rehab.save_state==2u);
         if(rehab.save_state==2u)ui_label(LCD_X(690),LCD_Y(535),LCD_X(306),2,25,120,111,rehab_report_name);
@@ -352,12 +365,12 @@ static void lcd_rehab_render(void)
     if(rehab.effort_enabled && rehab.target==2u && (state==RH_CUE || state==RH_HOLD)) {
         char label[64];u32 pct=rehab.effort_reference?
             (u32)((uint64_t)rehab.effort_c2*100u/rehab.effort_reference):0u;
-        lcd_analysis_label(label,sizeof label,"相对活动 ",pct,"% / 目标 80%-120%");
+        lcd_analysis_label(label,sizeof label,"相对活动 ",pct,"% / 目标 70%-130%");
         ui_label(LCD_X(28),LCD_Y(477),LCD_X(670),1,94,112,119,label);
         ui_label(LCD_X(710),LCD_Y(477),LCD_X(286),1,25,120,111,
             !rehab.effort_valid?"等待同窗数据":
-            (uint64_t)rehab.effort_c2*100u<(uint64_t)rehab.effort_reference*80u?"活动不足":
-            (uint64_t)rehab.effort_c2*100u>(uint64_t)rehab.effort_reference*120u?"活动偏高":"目标范围内");
+            (uint64_t)rehab.effort_c2*100u<(uint64_t)rehab.effort_reference*REHAB_EFFORT_LOWER_PERCENT?"活动不足":
+            (uint64_t)rehab.effort_c2*100u>(uint64_t)rehab.effort_reference*REHAB_EFFORT_UPPER_PERCENT?"活动偏高":"目标范围内");
     }
     p_round_rect(LCD_X(28),LCD_Y(145),LCD_X(968),LCD_Y(110),LCD_S(8),239,246,245);
     ui_label(LCD_X(48),LCD_Y(158),LCD_X(910),2,25,120,111,phases[state]);

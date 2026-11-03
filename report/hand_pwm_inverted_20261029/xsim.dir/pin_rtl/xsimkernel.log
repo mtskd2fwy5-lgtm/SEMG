@@ -1,0 +1,7 @@
+Running: xsim.dir/pin_rtl/xsimk.exe -runall -simmode gui -wdb pin_rtl.wdb -simrunnum 0 -socket 58639
+Design successfully loaded
+Design Loading Memory Usage: 10232 KB (Peak: 10232 KB)
+Design Loading CPU Usage: 249 ms
+Simulation completed
+Simulation Memory Usage: 11692 KB (Peak: 11692 KB)
+Simulation CPU Usage: 827 ms
