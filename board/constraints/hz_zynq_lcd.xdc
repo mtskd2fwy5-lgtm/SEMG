@@ -84,7 +84,7 @@ set_false_path -to [get_ports {lcd_bl}]
 #   J10-38 IIC2_SCL = CT_SCL -> touch_scl    R19  (B34_IO0)
 #   J10-39 T_PEN    = CT_INT -> touch_int_io U19  (B34_L12N)
 #   J10-40 LCD_RST             (RC self-released on the carrier, not wired)
-# The IIC2 bus is shared with the on-board HDMI transmitter; the GT911
+# The IIC2 bus is shared with HDMI DDC (direct FPGA TMDS, no transmitter IC); the GT911
 # addresses (0x5D/0x14) never collide with it.  Module pull-ups exist on
 # SDA/SCL/INT (MD0700R RP8/RP9).
 set_property -dict {PACKAGE_PIN M19 IOSTANDARD LVCMOS33 DRIVE 8 SLEW SLOW} [get_ports {touch_rst}]

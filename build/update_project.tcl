@@ -70,6 +70,12 @@ set lcd_timing [get_files -quiet *hz_zynq_lcd_timing.xdc]
 set_property USED_IN_SYNTHESIS false $lcd_timing
 set_property USED_IN_IMPLEMENTATION true $lcd_timing
 set_property PROCESSING_ORDER LATE $lcd_timing
+set hdmi_timing [get_files -quiet *hz_zynq_hdmi_timing.xdc]
+if {[llength $hdmi_timing]} {
+    set_property USED_IN_SYNTHESIS false $hdmi_timing
+    set_property USED_IN_IMPLEMENTATION true $hdmi_timing
+    set_property PROCESSING_ORDER LATE $hdmi_timing
+}
 
 # Keep exactly one BD in the project: the canonical in-project copy.
 set canonical_bd [file normalize [file join $project_root build vivado \
@@ -82,7 +88,7 @@ foreach bd [get_files -quiet *.bd] {
         puts "Removing non-canonical BD reference: $bd"
         # Wrap single paths in [list]: add_files/remove_files parse their
         # argument as a Tcl file list, so a bare path containing spaces
-        # gets split at the spaces (error 12-172 'D:/FPGA/Hand').
+        # gets split at spaces (Vivado error 12-172).
         if {[catch {remove_files [list $bd]} msg]} {
             puts "  remove_files failed: $msg"
         }

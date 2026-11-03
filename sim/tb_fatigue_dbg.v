@@ -11,8 +11,8 @@
 module tb_fatigue_dbg;
 
     localparam integer NFRAMES = 2048;
-    localparam SAMPLE_FILE = "d:/FPGA/sEMG-HMRS/data/models/fatigue/tb_fatigue_samples.mem";
-    localparam DBG_DIR = "d:/FPGA/sEMG-HMRS/data/models/fatigue/";
+    localparam SAMPLE_FILE = "data/models/fatigue/tb_fatigue_samples.mem";
+    localparam DBG_DIR = "data/models/fatigue/";
 
     reg clk = 1'b0, rst_n = 1'b0;
     always #5 clk = ~clk;           // 100 MHz

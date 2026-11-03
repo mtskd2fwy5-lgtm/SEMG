@@ -8,12 +8,12 @@
     "gen_directory": "../../../../../../hand_motion_reconstruction.gen/sources_1/bd/design_1/ip/design_1_emg_learning_0_0",
     "parameters": {
       "component_parameters": {
-        "HDC_MEM": [ { "value": "d:/FPGA/sEMG-HMRS/data/models/hdc_memory.mem", "resolve_type": "user", "usage": "all" } ],
+        "HDC_MEM": [ { "value": "data/models/hdc_memory.mem", "resolve_type": "user", "usage": "all" } ],
         "WATCHDOG": [ { "value": "10000000", "resolve_type": "user", "format": "long", "usage": "all" } ],
         "Component_Name": [ { "value": "design_1_emg_learning_0_0", "resolve_type": "user", "usage": "all" } ]
       },
       "model_parameters": {
-        "HDC_MEM": [ { "value": "d:/FPGA/sEMG-HMRS/data/models/hdc_memory.mem", "resolve_type": "generated", "usage": "all" } ],
+        "HDC_MEM": [ { "value": "data/models/hdc_memory.mem", "resolve_type": "generated", "usage": "all" } ],
         "WATCHDOG": [ { "value": "10000000", "resolve_type": "generated", "format": "long", "usage": "all" } ]
       },
       "project_parameters": {

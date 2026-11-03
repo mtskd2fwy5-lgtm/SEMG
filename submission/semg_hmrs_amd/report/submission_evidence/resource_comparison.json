@@ -1,0 +1,315 @@
+﻿{
+  "v13": {
+    "lut": 36417.0,
+    "ff": 40463.0,
+    "slice": 13008.0,
+    "bram": 45.5,
+    "dsp": 111.0,
+    "wns_ns": 0.229,
+    "whs_ns": 0.036,
+    "control_sets": 1326.0
+  },
+  "v14": {
+    "lut": 25737.0,
+    "ff": 27047.0,
+    "slice": 9992.0,
+    "bram": 45.5,
+    "dsp": 55.0,
+    "wns_ns": 0.254,
+    "whs_ns": 0.036,
+    "control_sets": 1215.0
+  },
+  "v15": {
+    "lut": 23793,
+    "ff": 24622,
+    "slice": 9284,
+    "bram": 45.5,
+    "dsp": 49,
+    "wns_ns": 0.151,
+    "whs_ns": 0.028,
+    "control_sets": 1058
+  },
+  "changed_inputs": [
+    "src/rtl/emg_fatigue.v",
+    "src/rtl/emg_nn_infer.v",
+    "src/rtl/hand_servo_pwm.v"
+  ],
+  "inputs": [
+    {
+      "path": "src/rtl/ads1299_spi.v",
+      "baseline": "2e06afa3376312f0f5edee8f423eaa544628278bb2938e1efccedc1c1aa8a8ca",
+      "candidate": "2e06afa3376312f0f5edee8f423eaa544628278bb2938e1efccedc1c1aa8a8ca"
+    },
+    {
+      "path": "src/rtl/ads8698_spi.v",
+      "baseline": "02d5171872d1821f96599c949a92e8661daa263da54eac680251f0f948dc8896",
+      "candidate": "02d5171872d1821f96599c949a92e8661daa263da54eac680251f0f948dc8896"
+    },
+    {
+      "path": "src/rtl/axis_async_fifo.v",
+      "baseline": "fe24aeaf6b3fc90122f3a9dcce98a659034571b35216e17cc113d88325f36a02",
+      "candidate": "fe24aeaf6b3fc90122f3a9dcce98a659034571b35216e17cc113d88325f36a02"
+    },
+    {
+      "path": "src/rtl/axis_packet_mux.v",
+      "baseline": "e9365f1971635ce92faf8f3c838040a80ef66a190839feb05206171ccc44dd40",
+      "candidate": "e9365f1971635ce92faf8f3c838040a80ef66a190839feb05206171ccc44dd40"
+    },
+    {
+      "path": "src/rtl/emg_bandpass.v",
+      "baseline": "5783eef5f10c4d78faf2ec8782a1b357f5a484d87673b31cc06136948a241334",
+      "candidate": "5783eef5f10c4d78faf2ec8782a1b357f5a484d87673b31cc06136948a241334"
+    },
+    {
+      "path": "src/rtl/emg_comb50.v",
+      "baseline": "d2fadd0829ea93dfc06394d3a1262c5ef19bff6690f2894f16381e0266f3a348",
+      "candidate": "d2fadd0829ea93dfc06394d3a1262c5ef19bff6690f2894f16381e0266f3a348"
+    },
+    {
+      "path": "src/rtl/emg_control_constants.vh",
+      "baseline": "cf077f7e7e2a98848b1e725313e2d99ac8eaee67cc762fa4e14896faef2cded9",
+      "candidate": "cf077f7e7e2a98848b1e725313e2d99ac8eaee67cc762fa4e14896faef2cded9"
+    },
+    {
+      "path": "src/rtl/emg_control_inference.v",
+      "baseline": "f2119b7b771b6697ffd8bd2f703b23e6945a6887b3b3c4584e2d01fdac46d83b",
+      "candidate": "f2119b7b771b6697ffd8bd2f703b23e6945a6887b3b3c4584e2d01fdac46d83b"
+    },
+    {
+      "path": "src/rtl/emg_control_policy.v",
+      "baseline": "d9350f6c7929e2adc755ae9187fa8cc4e7905f74da2c37f19431c71ea84b8278",
+      "candidate": "d9350f6c7929e2adc755ae9187fa8cc4e7905f74da2c37f19431c71ea84b8278"
+    },
+    {
+      "path": "src/rtl/emg_data_path.v",
+      "baseline": "5e07cc2d9f78fc50116398af4c418f2a10cc1aaa1f4e9dcb92a5f7cf265c59b7",
+      "candidate": "5e07cc2d9f78fc50116398af4c418f2a10cc1aaa1f4e9dcb92a5f7cf265c59b7"
+    },
+    {
+      "path": "src/rtl/emg_fatigue.v",
+      "baseline": "09b3b1acf0bef50fc471d662767ebd68df7d831a1f54bd2acfc45d64e5c8e8ac",
+      "candidate": "b65de6a90d1582196051574963874a4c77458fd4a299c18e8185a9d8cb8409e2"
+    },
+    {
+      "path": "src/rtl/emg_feature_bank.v",
+      "baseline": "a32d86053b679333f8ec1ac89e4352bbc1710807b7f2f30fd028a0f33b8c9b58",
+      "candidate": "a32d86053b679333f8ec1ac89e4352bbc1710807b7f2f30fd028a0f33b8c9b58"
+    },
+    {
+      "path": "src/rtl/emg_learning_accel.v",
+      "baseline": "97a37ef69351637154d7f7790b1ccef03fdc16af7bd10fa18896821b7bd11db8",
+      "candidate": "97a37ef69351637154d7f7790b1ccef03fdc16af7bd10fa18896821b7bd11db8"
+    },
+    {
+      "path": "src/rtl/emg_line_filter.v",
+      "baseline": "4f24c4fcf0218e3331ae6661f4e6cdb1b1b86d42a547fbd6db445b52fcd1536c",
+      "candidate": "4f24c4fcf0218e3331ae6661f4e6cdb1b1b86d42a547fbd6db445b52fcd1536c"
+    },
+    {
+      "path": "src/rtl/emg_nn_infer.v",
+      "baseline": "51997f86b52913680c6312e5ae2bd60fbe348bc86d45a7da9001ce3d743f7fd2",
+      "candidate": "b14345b75e99de7b8358da998d474b1a021e48a8d814c6f4854bd6a6f73943f2"
+    },
+    {
+      "path": "src/rtl/emg_notch50.v",
+      "baseline": "32285e74b71882f1cb81a7978ace98822661ada8be12f86a68b285449a4f0bed",
+      "candidate": "32285e74b71882f1cb81a7978ace98822661ada8be12f86a68b285449a4f0bed"
+    },
+    {
+      "path": "src/rtl/emg_pl_control.v",
+      "baseline": "cf67a00daad7c55cd4124a269a6370f629a45dd2a338846c6c3d41ce37883b43",
+      "candidate": "cf67a00daad7c55cd4124a269a6370f629a45dd2a338846c6c3d41ce37883b43"
+    },
+    {
+      "path": "src/rtl/emg_pl_export.v",
+      "baseline": "92d25e10bb7d039b9047351aaf82856050abafe21c171e1cfb69b2b2fd12cc8f",
+      "candidate": "92d25e10bb7d039b9047351aaf82856050abafe21c171e1cfb69b2b2fd12cc8f"
+    },
+    {
+      "path": "src/rtl/emg_pl_export_status.v",
+      "baseline": "7c058364aa86a0335317884c218a1263594e13582c80bb7f1ba67b6202878a39",
+      "candidate": "7c058364aa86a0335317884c218a1263594e13582c80bb7f1ba67b6202878a39"
+    },
+    {
+      "path": "src/rtl/emg_preprocess.v",
+      "baseline": "09404f30e67c8475bff256f1a63781289a4d1d0797e85bebe38fc39f042f00d4",
+      "candidate": "09404f30e67c8475bff256f1a63781289a4d1d0797e85bebe38fc39f042f00d4"
+    },
+    {
+      "path": "src/rtl/emg_window_features.v",
+      "baseline": "c9e020b9ca05c3cd656bbc116e9a57b39eb0554f47bce8fde9723f292097d6d6",
+      "candidate": "c9e020b9ca05c3cd656bbc116e9a57b39eb0554f47bce8fde9723f292097d6d6"
+    },
+    {
+      "path": "src/rtl/hand_control.v",
+      "baseline": "4cf8590d3d959c70ee4b4a7f348a4ec62fe60dc60016e18e777b133c4d9dc4e7",
+      "candidate": "4cf8590d3d959c70ee4b4a7f348a4ec62fe60dc60016e18e777b133c4d9dc4e7"
+    },
+    {
+      "path": "src/rtl/hand_motion_top.v",
+      "baseline": "2126de5cf70db1feeffe14706f132ce7807083fec32298a1b7a84d21b13b9b75",
+      "candidate": "2126de5cf70db1feeffe14706f132ce7807083fec32298a1b7a84d21b13b9b75"
+    },
+    {
+      "path": "src/rtl/hand_servo_pwm.v",
+      "baseline": "6fea2331f016fbc2086b984ca0494724b706da587806a1fc3301069a56e580e6",
+      "candidate": "1d48f52df90c58ca3bb5b1ae2e74c7915774732866b468b1a9f0494f0c015678"
+    },
+    {
+      "path": "src/rtl/lcd_clk_fwd.v",
+      "baseline": "39a7aaed722bd2b9b8f870f446ebd239b17b7ee5ea241045f69768fc6142b9f5",
+      "candidate": "39a7aaed722bd2b9b8f870f446ebd239b17b7ee5ea241045f69768fc6142b9f5"
+    },
+    {
+      "path": "src/rtl/lcd_panel_adapter.v",
+      "baseline": "683f0dc1f0690142342fa06fab110a6b15dd3af80698d332ada74dc796f28391",
+      "candidate": "683f0dc1f0690142342fa06fab110a6b15dd3af80698d332ada74dc796f28391"
+    },
+    {
+      "path": "src/rtl/learning_div64.v",
+      "baseline": "42ddadc38445d0769b52f1798a8209f5900e8f92022470f57223b829af66a344",
+      "candidate": "42ddadc38445d0769b52f1798a8209f5900e8f92022470f57223b829af66a344"
+    },
+    {
+      "path": "src/rtl/mpu6050_motion.v",
+      "baseline": "62ac8cb47bc78b37e4e38cc2ad7b7e524cd40746dc347a690778d85151e3b605",
+      "candidate": "62ac8cb47bc78b37e4e38cc2ad7b7e524cd40746dc347a690778d85151e3b605"
+    },
+    {
+      "path": "src/rtl/mpu6050_tilt.v",
+      "baseline": "a5a7084c41162f24005066032409cb1ccaa3269904fb65ac64071afa95623bb0",
+      "candidate": "a5a7084c41162f24005066032409cb1ccaa3269904fb65ac64071afa95623bb0"
+    },
+    {
+      "path": "src/rtl/touch_gt911.v",
+      "baseline": "0e01ba47d4aae3411b0a8c1631561280a627c0750f197e2c562d0beafd578276",
+      "candidate": "0e01ba47d4aae3411b0a8c1631561280a627c0750f197e2c562d0beafd578276"
+    },
+    {
+      "path": "board/constraints/hz_zynq_ads1299.xdc",
+      "baseline": "62109953adf4ffde3a535f5b13491b0bbdb4226bed62c30e04c14d92ef656c71",
+      "candidate": "62109953adf4ffde3a535f5b13491b0bbdb4226bed62c30e04c14d92ef656c71"
+    },
+    {
+      "path": "board/constraints/hz_zynq_ads1299_bd.xdc",
+      "baseline": "2c3f59a2a3d727e3483992fd802771a9f679efbffa00660fc304d91001cb9527",
+      "candidate": "2c3f59a2a3d727e3483992fd802771a9f679efbffa00660fc304d91001cb9527"
+    },
+    {
+      "path": "board/constraints/hz_zynq_clock_groups.xdc",
+      "baseline": "533302753e7dbff7f6b7d78442884c323f7071266b980e9af8b60c1f21c4961a",
+      "candidate": "533302753e7dbff7f6b7d78442884c323f7071266b980e9af8b60c1f21c4961a"
+    },
+    {
+      "path": "board/constraints/hz_zynq_hand.xdc",
+      "baseline": "665d5bf0096ca656fdae4826de1e53746e9e19e527ee6fe3719a8a43fbb693e1",
+      "candidate": "665d5bf0096ca656fdae4826de1e53746e9e19e527ee6fe3719a8a43fbb693e1"
+    },
+    {
+      "path": "board/constraints/hz_zynq_lcd.xdc",
+      "baseline": "0a78bd4b0de1735e6f8a238252a676fbd10c3a86ba7f551a9bbd7e711ed1e81b",
+      "candidate": "0a78bd4b0de1735e6f8a238252a676fbd10c3a86ba7f551a9bbd7e711ed1e81b"
+    },
+    {
+      "path": "board/constraints/hz_zynq_lcd_timing.xdc",
+      "baseline": "b16419ade3e42fd0ca4ac3bff2103b5a0edd0269500238c81076d337e6a8e0bb",
+      "candidate": "b16419ade3e42fd0ca4ac3bff2103b5a0edd0269500238c81076d337e6a8e0bb"
+    },
+    {
+      "path": "data/models/nn_int8_board_multiwear/nn_int8_weights.mem",
+      "baseline": "5bb2c512365bc8af6b57835f8d678694fa78427999b085814225f968d66bbe62",
+      "candidate": "5bb2c512365bc8af6b57835f8d678694fa78427999b085814225f968d66bbe62"
+    },
+    {
+      "path": "data/models/nn_int8_board_multiwear/quant_params.json",
+      "baseline": "8ca80b14ecd48907a55c6fe983b472f0382b6beeff3b2a4f4e36e1aeea4819ef",
+      "candidate": "8ca80b14ecd48907a55c6fe983b472f0382b6beeff3b2a4f4e36e1aeea4819ef"
+    },
+    {
+      "path": "data/models/nn_int8_board_multiwear/tb_inputs.mem",
+      "baseline": "3ceff4c2902fa5b6fb5b672908194f5f6416bbadd98abe99e2a93baee6d96ac3",
+      "candidate": "3ceff4c2902fa5b6fb5b672908194f5f6416bbadd98abe99e2a93baee6d96ac3"
+    },
+    {
+      "path": "data/models/nn_int8_board_multiwear/tb_logits.mem",
+      "baseline": "e654458694aa8cc34ecb8e93075d12bba853e6e16b9a69b366e76c1ac7e8e4b5",
+      "candidate": "e654458694aa8cc34ecb8e93075d12bba853e6e16b9a69b366e76c1ac7e8e4b5"
+    }
+  ],
+  "bus_skew_min_slack_ns": 9.152,
+  "hardware_interface_inherited": [
+    "design_1.hwh",
+    "design_1_smartconnect_0_0.hwh",
+    "design_1_smartconnect_1_0.hwh",
+    "design_1_smartconnect_learning_0.hwh",
+    "ps7_init.c",
+    "ps7_init.h"
+  ],
+  "module_synthesis": {
+    "emg_nn_infer": {
+      "baseline": {
+        "lut": 1796,
+        "ff": 1335,
+        "dsp": 6
+      },
+      "candidate": {
+        "lut": 1264,
+        "ff": 423,
+        "dsp": 6
+      }
+    },
+    "hand_servo_pwm": {
+      "baseline": {
+        "lut": 867,
+        "ff": 256,
+        "dsp": 6
+      },
+      "candidate": {
+        "lut": 749,
+        "ff": 244,
+        "dsp": 0
+      }
+    },
+    "emg_fatigue": {
+      "baseline": {
+        "lut": 3815,
+        "ff": 2713,
+        "dsp": 12
+      },
+      "candidate": {
+        "lut": 2346,
+        "ff": 1214,
+        "dsp": 12
+      }
+    }
+  },
+  "performance": {
+    "sample_rate_per_channel_sps": 4000,
+    "window_samples": 400,
+    "hop_samples": 100,
+    "pwm_period_us": 20000,
+    "additional_latency_cycles": 0,
+    "learning_max_cycles_inherited": {
+      "1": 3958,
+      "2": 782,
+      "3": 23863,
+      "4": 77188
+    },
+    "scope": "RTL cycle comparison, functional netlist and routed static timing; not on-board timing or power"
+  },
+  "evidence_hashes": {
+    "equivalence.log": "eb24e59834d2b23dd1bd19ea2aed7965b96b88ff3e36d221209be134cd0e2dc4",
+    "fatigue_equivalence.log": "56edcc1474e77149c1358ea2fe896c47bd51989bfbe021ef54af2d198981e079",
+    "fatigue_regression.log": "7a0ea593205a0f1dacf1b6ec8da1a22f7cb2bf6719c35b4d335f46dc96991956",
+    "netlist_test_complete.log": "a3baab3e9510e7c07518040e0d8d734291a661ddeb9b249fc5ea8701840bb851",
+    "integrated_test.log": "311e6bbe37ab3196b9060f7cc45572a886d627e045db631f33a1b1b5b4ac38c4",
+    "control_regression.log": "b9cb336c93d7f2bd3c52493d7e1a624b27090a7575297a4f021da55b3d709179",
+    "final_gates.log": "7237c232b6b3f3c480b65ddefda74376f20484b2f1ed3a1cb385ba62331d100b"
+  },
+  "artifact_hashes": {
+    "design_1.bit": "80e76ceef16cc5aeeaca93000a06994a10537d05acb6afd0b2a510db84bc47b3",
+    "design_1.xsa": "ea83c99bdb50b82b36d0894c47ebd7bf3bdb4a9a7845c5986bea1c9ca27cb46d",
+    "design_1_routed.dcp": "895416c605b49a79509d5db3b5603400a14ebc553e18034f8aeebc1a90064aa0"
+  }
+}
+

@@ -53,6 +53,12 @@ try {
 }
 
 $VivadoBat = $cfg.VivadoBat
+if ($env:AMD_VIVADO_ROOT) {
+    $VivadoBat = Join-Path $env:AMD_VIVADO_ROOT 'Vivado\bin\vivado.bat'
+} elseif ([string]::IsNullOrWhiteSpace($VivadoBat) -or -not (Test-Path $VivadoBat)) {
+    $vivadoCommand = Get-Command vivado.bat -ErrorAction SilentlyContinue
+    if ($vivadoCommand) { $VivadoBat = $vivadoCommand.Source }
+}
 $Xpr       = Join-Path $Root $cfg.ProjectXpr
 $Bit       = Join-Path $Root $cfg.BitFile
 $BootBin   = Join-Path $Root $cfg.BootBin
@@ -114,7 +120,9 @@ if (-not (Test-Path $Xpr)) { Fail "Vivado project missing: $Xpr (run build\creat
 if ($SkipBuild) {
     if (-not (Test-Path $Bit)) { Fail "-SkipBuild but no bitstream exists: $Bit" }
 } else {
-    if (-not (Test-Path $VivadoBat)) { Fail "vivado.bat not found: $VivadoBat" }
+    if (-not $VivadoBat -or (-not (Test-Path $VivadoBat) -and -not (Get-Command $VivadoBat -ErrorAction SilentlyContinue))) {
+        Fail "vivado.bat not found. Set AMD_VIVADO_ROOT or add vivado.bat to PATH. Resolved: $VivadoBat"
+    }
 }
 
 if (-not $SkipBoot) {

@@ -9,7 +9,7 @@ import re
 from verify_boot_partition import find_partition
 
 ROOT = Path(__file__).resolve().parents[1]
-TAG = '20261102_HAND_CONTROL_HDC_DYNAMIC_CONTINUOUS_V30'
+TAG = '20261103_HAND_CONTROL_HDMI_MIRROR_V31'
 
 
 def read_log(path):
@@ -22,9 +22,10 @@ def main():
     ap.add_argument('--hardware-only',action='store_true')
     ap.add_argument('--application-only',action='store_true')
     ap.add_argument('--tag',default=TAG)
-    ap.add_argument('--report-dir',default='report/hdc_continuous_20261102')
+    ap.add_argument('--report-dir',default='report/hdmi_mirror_20261103')
     args=ap.parse_args()
     tag=args.tag
+    hdmi_v31=tag == '20261103_HAND_CONTROL_HDMI_MIRROR_V31'
     continuous_v30=tag == '20261102_HAND_CONTROL_HDC_DYNAMIC_CONTINUOUS_V30'
     resolution_v29=tag == '20261102_HAND_CONTROL_HDC_DYNAMIC_RESOLUTION_V29'
     custom_bridge_v28=tag == '20261101_HAND_CONTROL_HDC_DYNAMIC_CUSTOM_BRIDGE_V28'
@@ -43,12 +44,15 @@ def main():
     imu_v17=tag == '20261028_HAND_CONTROL_HDC_DYNAMIC_IMU_PL_V17'
     resource_v15=tag == '20261027_HAND_CONTROL_HDC_DYNAMIC_V15'
     resource_v14=resource_v15 or tag == '20261027_HAND_CONTROL_HDC_DYNAMIC_V14'
-    learning_v12=continuous_v30 or resolution_v29 or custom_bridge_v28 or custom_only_v27 or ui_title_v26 or button_v25 or button_v24 or zero_v23 or grip_v22 or ui_v21 or opto_v20 or model_v19 or quality_v18 or imu_v17 or stability_v16 or virtual_v13 or resource_v14 or tag == '20261026_HAND_CONTROL_HDC_DYNAMIC_V12'
+    learning_v12=hdmi_v31 or continuous_v30 or resolution_v29 or custom_bridge_v28 or custom_only_v27 or ui_title_v26 or button_v25 or button_v24 or zero_v23 or grip_v22 or ui_v21 or opto_v20 or model_v19 or quality_v18 or imu_v17 or stability_v16 or virtual_v13 or resource_v14 or tag == '20261026_HAND_CONTROL_HDC_DYNAMIC_V12'
     assert tag and all(c.isalnum() or c=='_' for c in tag), 'invalid build tag'
     bit_path = ROOT/'build/vivado/hand_motion_reconstruction.runs/impl_1/design_1.bit'
     elf_path = ROOT/'sw/ps_uart_print/ps_uart_print_pl_control.elf'
     boot_path = ROOT/f'build/boot/BOOT_{tag}.BIN'
     xsa_path = ROOT/'build/export/design_1.xsa'
+    if hdmi_v31:
+        from verify_hdmi_release import verify
+        verify(ROOT/args.report_dir,xsa_path)
     if continuous_v30:
         from verify_hdc_continuous_release import verify
         verify(ROOT/args.report_dir)
@@ -333,6 +337,20 @@ def main():
             fsbl_checks.append({'load_address':hex(pa),'elf_file_bytes':size,'boot_offset':hex(found),'match':True})
         assert fsbl_checks, 'no FSBL load bytes checked'
     paths=[bit_path,elf_path,boot_path,xsa_path]
+    if hdmi_v31:
+        proof=json.loads((ROOT/args.report_dir/'regression_sources.json').read_text())
+        paths += [ROOT/p for p in proof]
+        paths += [ROOT/args.report_dir/p for p in ('README.md','regression_sources.json',
+            'baseline_sources.json','hardware_console.log','timing_routed.rpt',
+            'utilization_routed.rpt','drc_routed.rpt','cdc.rpt','comparison.json',
+            'hdmi_scaler_test.log','hdmi_tmds_test.log','serializer_check.log',
+            'baseline_bd_contract.json','bd_contract_test.log','output_test.log',
+            'scaler_synthesis_console.log','scaler_netlist_test.log','pipeline_test.log',
+            'routed_audit_console.log','dma_configuration.txt','output_pins.txt',
+            'clocks.rpt','exceptions.rpt','methodology_routed.rpt','clock_interaction.rpt',
+            'platform_build.log','cdc_detailed.rpt','hardware_gates.log',
+            'lcd_test.log','model_test.log','sd_test.log','hand_test.log',
+            'uart_test.log','learning_workflow_test.log')]
     paths += [ROOT/p for p in ('board/constraints/hz_zynq_lcd.xdc',
         'board/constraints/hz_zynq_lcd_timing.xdc','build/update_project.tcl',
         'build/check_design.tcl','build/open_project.tcl')]

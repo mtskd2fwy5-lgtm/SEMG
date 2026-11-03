@@ -1,0 +1,30 @@
+﻿{
+  "scope": "Original repository provenance only. These source files are not included or required to use the independent skill package.",
+  "sha256": {
+    "build/build_all.ps1": "f3e61cbe374304ed3f95991e7ddf1c3b974db5e7d5e2e44e5efc3f023a39a55a",
+    "report/ai_collaboration_20261023/guide_review.md": "7b351b91b0578262932bfd85966fcc4efe82bfa92bfcdbf7d4c641b94ad09dd2",
+    "report/emg002_20261030/label_correction.json": "c245645f0508e8208aff5f1c57aeaef26c180ad0ada117308a2e789001218e4a",
+    "report/emg002_20261030/old_model_metrics.json": "d59b07803f9155caafc579145e7c880aea70e2f73f230b60ce0f015feacedf29",
+    "report/emg002_20261030/quality_metrics.json": "c0bc41db11edbc3d63680f354a685d1fbc7c34d443d1638bd46eff5e6d81244c",
+    "report/emg002_20261030/quality_report.md": "d5cad80803226e7f7b06f7336696ca0a85f45221d838c41e2dd83def353095d2",
+    "report/fatigue_20261025/README.md": "6580a3728e2d057e9522b7e2217717c50c17d705080505d8d80f8b83652ad9bb",
+    "report/hand_pwm_inverted_20261029/README.md": "da3dc655c13aef3f069beb2261ead923b3a7383a2806ed7d7fb27838c3ecc886",
+    "report/hand_simultaneous_home_20261025/README.md": "1a5692b166d26c5b55cd4032b2ace9ee7b64a995dd0fff3063b6ce73dbd8ab7b",
+    "report/hdc_model_sd_20261029/README.md": "ae0a49cef222c8c6f7b2fb9ee17f19df2b739fcce7c60ea86bc7c459a992d0f9",
+    "report/imu_pl_20261028/README.md": "e860697214eb254a67cd34379c704a23ad553e5eac9a2730878452a4ce0f7c26",
+    "report/imu_pl_20261028/float_comparison.json": "c3dbbcd865d23a7ba53860df3b8d43249a541adbcea2fce747716b7f756af775",
+    "report/lcd_responsiveness_20261030/README.md": "a2e98726fbec5d64eddfcf0ae3c56bf0d62a3a54524142991e9cce1b8fa06d79",
+    "report/lcd_responsiveness_20261030/cpu_test.log": "c1c55404d51ecbaab78d13578da0fe88baecb8363207f6e90fa9bea32c17daf2",
+    "report/line_filter_20261021/validation.md": "3c4d5b09ed25a7bb8bddeefc2af3fb0fb5ef4683101146e6307f32d7d9a179e7",
+    "report/resource_optimization_v15_20261027/README.md": "44351af6000c7ef4b0d6a05677fc28959beb60ca54fdb9b49ec854a4578438cb",
+    "report/resource_optimization_v15_20261027/amd_guide.txt": "26ac56caec00eebd25bddfe6eb94d0ee15da0c33a988137b17b2baf44dda9d01",
+    "report/resource_optimization_v15_20261027/comparison.json": "c232fce460dc11dc02609aa411b6be59376986b34b39d8d5eb6cdfc35e7cb160",
+    "report/resource_optimization_v15_20261027/equivalence.log": "eb24e59834d2b23dd1bd19ea2aed7965b96b88ff3e36d221209be134cd0e2dc4",
+    "report/resource_optimization_v15_20261027/integrated_test.log": "311e6bbe37ab3196b9060f7cc45572a886d627e045db631f33a1b1b5b4ac38c4",
+    "report/resource_optimization_v15_20261027/netlist_test_complete.log": "a3baab3e9510e7c07518040e0d8d734291a661ddeb9b249fc5ea8701840bb851",
+    "tools/scan_literal_b.py": "6f2cac07f6d6094081cec49cb418b45e3a488bf8190327f098ffef1e736e334b",
+    "tools/verify_boot_partition.py": "333f620b03e1ea82e070775e06da6c421bdb69c2c31e5579e106804eeda65ba9",
+    "tools/verify_coeff_regs.py": "dd7631261bcaab75385b6b433f71071c636076020af86f218f0a3dcade99711f"
+  }
+}
+

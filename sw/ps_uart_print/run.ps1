@@ -11,7 +11,8 @@
 
 $ErrorActionPreference = "Stop"
 
-$xsct = "D:\FPGA\VIVADO\2025.2\Vitis\bin\xsct.bat"
+if (-not $env:AMD_VIVADO_ROOT) { throw 'Set AMD_VIVADO_ROOT to the AMD unified software installation root.' }
+$xsct = Join-Path $env:AMD_VIVADO_ROOT 'Vitis\bin\xsct.bat'
 $root = (Resolve-Path "$PSScriptRoot\..\..").Path
 $xsa  = Join-Path $root "build\export\design_1.xsa"
 $xdir = Join-Path $root "build\export\xsa"

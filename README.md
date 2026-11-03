@@ -10,7 +10,11 @@
 
 ## 当前版本
 
-当前构建为 `20261102_HAND_CONTROL_HDC_DYNAMIC_CONTINUOUS_V30`：HDC 机械手明确启用后持续联动，过渡及未映射手势保持上次目标，确认新映射手势后切换；断流、MPU 失效和通信故障仍停机。详见 [连续联动修复](report/hdc_continuous_20261102/README.md)。继承 Q32 识别：新建 HDC 模型采用 32 级量化，保留旧 16 级模型的独立编码和加载兼容性；分数间隔精确显示至 0.01%。学习完成后的实时识别、主页与虚拟手共用稳定判决：间隔达到 1% 使用原有 3/6 窗规则，0.25%–1% 需 6/8 窗确认，完全同分拒绝输出。未通过验证、量化超范围、数据中断等原因分别显示。PL 负责量化、编码、原型学习和推理，PS 负责页面与有限时窗判决。升级后重新学习才能使用 32 级量化；加载旧模型继续按 16 级计算。详情与测试边界见 [HDC 分辨率与稳定判决](report/hdc_resolution_20261102/README.md)。
+当前构建为 `20261103_HAND_CONTROL_HDMI_MIRROR_V31`，新增 LCD 与 HDMI 双屏镜像：LCD 保留触摸，板载 HDMI 输出 720p60，同步展示同一界面。HDMI 使用独立 DDR 读者和两行 BRAM 缩放，不重复执行 ARM 绘制；双屏共同参与缓冲占用保护。接法、构建、隔离注意事项及验证边界见 [HDMI 同步展示](report/hdmi_mirror_20261103/README.md)。
+
+面向 AMD 2026 FPGA 自主选题赛道的整合包由 `tools/assemble_submission.ps1` 生成到 `submission/semg_hmrs_amd/`，按指南提供源码、仿真、构建、板级配置、skill、报告和选定验证证据。原始采集数据、临时波形、工具缓存和 BOOT 二进制不进入整合包。
+
+继续保留连续联动：HDC 机械手明确启用后持续联动，过渡及未映射手势保持上次目标，确认新映射手势后切换；断流、MPU 失效和通信故障仍停机。详见 [连续联动修复](report/hdc_continuous_20261102/README.md)。继承 Q32 识别：新建 HDC 模型采用 32 级量化，保留旧 16 级模型的独立编码和加载兼容性；分数间隔精确显示至 0.01%。学习完成后的实时识别、主页与虚拟手共用稳定判决：间隔达到 1% 使用原有 3/6 窗规则，0.25%–1% 需 6/8 窗确认，完全同分拒绝输出。未通过验证、量化超范围、数据中断等原因分别显示。PL 负责量化、编码、原型学习和推理，PS 负责页面与有限时窗判决。升级后重新学习才能使用 32 级量化；加载旧模型继续按 16 级计算。详情与测试边界见 [HDC 分辨率与稳定判决](report/hdc_resolution_20261102/README.md)。
 
 继续保留相对姿态零位：MPU 以本次静止校准的姿态作为相对基点，校准完成时虚拟手回到掌心朝上的默认姿态，掌部旋转为 0°；后续姿态变化均相对此基点计算，支持在倾斜、翻掌或竖直姿态重新校准。肌肉协同抓握训练的稳定范围为舒适参考值的 **70%–130%（±30%）**，LCD 与 SD 报告同步更新。操作与验证见 [V23 相对姿态零位](report/imu_zero_20261031/README.md)。
 
@@ -79,7 +83,7 @@ PL 的 MPU 姿态结果负责虚拟手整体方向和掌部旋转，肌电负责
 
 ## 构建与验证
 
-目标器件为 `xc7z020clg400-2`，Vivado 2025.2。常用命令：
+目标器件为 `xc7z020clg400-2`，Vivado 2025.2。构建前设置 `AMD_VIVADO_ROOT` 指向同时包含 `Vivado/` 和 `Vitis/` 的 AMD 工具目录，或将相应可执行文件加入 PATH。常用命令：
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File build/build_all.ps1 -SkipBuild -SkipBoot
@@ -87,10 +91,12 @@ cmd /c "cd sw/ps_uart_print && build.bat --pl-control"
 powershell -ExecutionPolicy Bypass -File build/boot/build_pl_control_boot.ps1
 ```
 
+从版本控制输入重新创建 Vivado 工程时使用 `vivado -mode batch -source build/recreate_project.tcl`；已有工程则使用 `build/update_project.tcl` 同步 HDL、约束和规范化 BD。提交包生成命令为 `powershell -ExecutionPolicy Bypass -File tools/assemble_submission.ps1`。
+
 当前匹配启动镜像：
 
-- 文件：`build/boot/BOOT_20261102_HAND_CONTROL_HDC_DYNAMIC_CONTINUOUS_V30.BIN`（构建产物，不随源码提交）
-- 大小与 SHA256：见 `report/hdc_continuous_20261102/artifacts.json`
+- 文件：`build/boot/BOOT_20261103_HAND_CONTROL_HDMI_MIRROR_V31.BIN`（构建产物，不随源码提交）
+- 大小与 SHA256：见 `report/hdmi_mirror_20261103/artifacts.json`
 
 V17 新增 PL 姿态模块与 `0x41270000` GPIO 邮箱，其他肌电处理、HDC 稳定判决、NMF、疲劳、LCD 导航与机械手保护继续继承。测试将定点计算与旧版浮点算法及独立物理轨迹对照，并验证 RTL、综合网表、PS 快照接收、失效保护和整机时序。BOOT 核对位流、应用和 FSBL 加载段，测试记录与限制见 `report/imu_pl_20261028/`。
 

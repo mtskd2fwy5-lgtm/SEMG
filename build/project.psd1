@@ -5,7 +5,8 @@
     # the single source of truth - so only names/patterns live here.
 
     # Toolchain
-    VivadoBat = 'D:\FPGA\VIVADO\2025.2\Vivado\bin\vivado.bat'
+    # Leave empty to resolve vivado.bat from AMD_VIVADO_ROOT or PATH.
+    VivadoBat = ''
 
     # Project layout
     ProjectXpr       = 'build\vivado\hand_motion_reconstruction.xpr'

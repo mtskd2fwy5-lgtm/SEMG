@@ -1,8 +1,12 @@
 @echo off
 rem Behavioral full-chain reference sim. Run from sim\results_gate_beh.
 setlocal
-set "ROOT=d:\FPGA\sEMG-HMRS"
-set "VIVADO_ROOT=D:\FPGA\VIVADO\2025.2\Vivado"
+set "ROOT=%~dp0.."
+if not defined AMD_VIVADO_ROOT (
+  echo Set AMD_VIVADO_ROOT to the AMD unified software installation root.
+  exit /b 2
+)
+set "VIVADO_ROOT=%AMD_VIVADO_ROOT%\Vivado"
 
 call "%VIVADO_ROOT%\bin\xvlog.bat" -work work ^
     "%ROOT%\src\rtl\emg_pl_export.v" ^

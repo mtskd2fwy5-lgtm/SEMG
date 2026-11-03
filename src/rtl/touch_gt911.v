@@ -41,7 +41,7 @@
  * the J10 renumbering:
  *   touch_rst  M19  J10-35 T_CS  = CT_RST (GT911 RST)
  *   touch_sda  P20  J10-36 IIC2_SDA (shared with HDMI DDC - GT911 addr
- *                    0x5D/0x14 never collides with the HDMI transmitter)
+ *                    0x5D/0x14 differs from the display EDID address 0x50)
  *   touch_scl  R19  J10-38 IIC2_SCL
  *   touch_int  U19  J10-39 T_PEN = CT_INT (driven low during reset only)
  *   (J10-37 T_MISO unused on the capacitive module; J10-40 LCD_RST is

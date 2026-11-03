@@ -8,6 +8,7 @@
 #include <string.h>
 #include <math.h>
 #define LCD_HOST_TEST 1
+#define HDMI_MIRROR_ENABLE 1
 #define IMU_SENSOR_MODEL_TEST 1
 #define main firmware_main
 #include "../sw/ps_uart_print/main.c"
@@ -17,6 +18,8 @@
 unsigned char __dma_buf[1048576];
 static unsigned char frames[3][1024*600*3+64];
 static volatile u32 regs[16];
+static volatile u32 hdmi_regs[32],hdmi_gpio[4];
+static u32 hdmi_reset_ack=1u;
 static u32 test_time, clean_count;
 static u32 test_clock_step=100u*333u;
 static u32 test_clean_bytes[3];
@@ -62,6 +65,13 @@ uint32_t sd_hdc_save(const char *data,uint32_t bytes,char name[13])
 
 volatile u32 *lcd_test_mmio(u32 address)
 {
+    if(address==0x43010000u && hdmi_reset_ack && (hdmi_regs[0]&4u)) {
+        hdmi_regs[0]=0;hdmi_regs[1]=1u;
+    }
+    if(address>=0x43010000u && address<0x43010080u)
+        return &hdmi_regs[(address-0x43010000u)/4u];
+    if(address>=0x41280000u && address<0x41280010u)
+        return &hdmi_gpio[(address-0x41280000u)/4u];
     switch (address) {
     case 0xe000002c: return &regs[0];
     case 0x40400034: return &regs[1];
@@ -106,6 +116,7 @@ static void guard_check(void)
 static void scanout_accept(void)
 {
     regs[2]=(regs[2]&~0x1f0000u)|((regs[2]&31u)<<16);
+    hdmi_regs[10]=(hdmi_regs[10]&~0x1f0000u)|((hdmi_regs[10]&31u)<<16);
 }
 static void drain_frame(void)
 {
@@ -113,8 +124,11 @@ static void drain_frame(void)
     for(n=0;n<20000u && (dl_busy||lcd_pending);n++) {
         u32 actual=VDMA_PARK_CURRENT(regs[2]), ref=regs[2]&31u;
         u32 ha=hash(actual), hr=hash(ref), before=lcd_present_cnt;
+        u32 hactual=VDMA_PARK_CURRENT(hdmi_regs[10]),href=hdmi_regs[10]&31u;
+        u32 hha=hash(hactual),hhr=hash(href);
         lcd_slice_tick(gt_stamp());
         assert(hash(actual)==ha && hash(ref)==hr);
+        if(hdmi_active) assert(hash(hactual)==hha && hash(href)==hhr);
         if(before != lcd_present_cnt) {
             assert(dl_clean_y==(u32)LCD_H);
             assert(test_clean_bytes[dl_back]>=FB_BYTES);
@@ -134,6 +148,50 @@ static void ppm(const char *name)
         fputc(frames[index][32+i],f);
     }
     fclose(f);
+}
+static void test_hdmi_mirror(void)
+{
+    u32 old_step=test_clock_step,before,n,old_frame,old_hash;
+    test_clock_step=1u;scanout_accept();
+    hdmi_active=1u;hdmi_stopping=hdmi_failed=0u;
+    hdmi_gpio[0]=0x48440001u; /* HPD low: pipeline must continue. */
+    hdmi_regs[10]=regs[2];hdmi_regs[1]=0;hdmi_regs[0]=1;
+    old_frame=VDMA_PARK_CURRENT(hdmi_regs[10]);old_hash=hash(old_frame);
+    before=lcd_present_cnt;lcd_pending=ui_dirty=1u;
+    for(n=0;n<1000 && lcd_present_cnt==before;n++)lcd_slice_tick(gt_stamp());
+    assert(n<1000 && lcd_present_cnt==before+1u);
+    assert((hdmi_regs[10]&31u)==lcd_front_index && (regs[2]&31u)==lcd_front_index);
+    /* LCD accepts the new frame; HDMI deliberately lags behind. */
+    regs[2]=(regs[2]&~0x1f0000u)|((regs[2]&31u)<<16);
+    lcd_pending=ui_dirty=1u;
+    for(n=0;n<20;n++)lcd_slice_tick(gt_stamp());
+    assert(dl_busy && dl_clean_y==(u32)LCD_H && lcd_present_cnt==before+1u);
+    assert(hash(old_frame)==old_hash && hdmi_owns(old_frame));
+    assert(hdmi_active && !hdmi_stopping); /* absent monitor is harmless */
+    scanout_accept();lcd_slice_tick(gt_stamp());
+    assert(lcd_present_cnt==before+2u && (hdmi_regs[10]&31u)==lcd_front_index);
+    scanout_accept();
+    /* Error isolates the second reader, but never releases a live buffer. */
+    hdmi_gpio[0]|=0x20u;hdmi_reset_ack=0u;
+    hdmi_service(gt_stamp());assert(hdmi_active && hdmi_stopping && hdmi_failed);
+    old_frame=VDMA_PARK_CURRENT(hdmi_regs[10]);
+    hdmi_service(gt_stamp());assert(hdmi_active && hdmi_owns(old_frame) && !hdmi_settled());
+    hdmi_reset_ack=1u;hdmi_service(gt_stamp());
+    assert(!hdmi_active && !hdmi_stopping && !HDMI_RUN && hdmi_settled());
+    lcd_pending=ui_dirty=1u;drain_frame();
+    /* Restart reinitializes both the stream state and all DMA geometry. */
+    hdmi_gpio[0]=0x48440001u;hdmi_init();
+    assert(hdmi_active && !hdmi_failed && HDMI_RUN && HDMI_REG(0)==1u);
+    assert(HDMI_REG(0x50)==(u32)LCD_H && HDMI_REG(0x54)==FB_BPL);
+    assert(HDMI_REG(0x64)==FB_BASE+2u*FB_BYTES && HDMI_REG(0x28)==lcd_front_index);
+    scanout_accept();
+    /* A parked reader that never accepts a request follows the same reset path. */
+    hdmi_regs[10]=(hdmi_regs[10]&~0x1f0000u)|(((lcd_front_index+1u)%3u)<<16);
+    hdmi_watch_frame=VDMA_PARK_CURRENT(hdmi_regs[10]);
+    hdmi_watch_t=gt_stamp()-251u*GT_TICKS_PER_MS;
+    hdmi_service(gt_stamp());assert(hdmi_stopping);hdmi_service(gt_stamp());assert(!hdmi_active);
+    hdmi_init();scanout_accept();test_clock_step=old_step;
+    puts("TEST_PASS HDMI firmware: dual-reader ownership, delayed scanout, atomic present, HPD-independent operation, fault/reset ACK, timeout, restart and both panel geometries");
 }
 static void press(u32 x,u32 y)
 {
@@ -1583,6 +1641,9 @@ int main(void)
         memset(frames,0xa5,sizeof frames);
         lcd_stream_started=0; lcd_state_valid=0; lcd_pending=dl_busy=0;
         lcd_front_index=0; regs[2]=0; ui_menu_open=ui_dirty=ui_generation=0;
+        memset((void *)hdmi_regs,0,sizeof hdmi_regs);hdmi_gpio[0]=0x48440001u;
+        hdmi_active=1u;hdmi_stopping=hdmi_failed=0u;hdmi_watch_frame=0u;
+        hdmi_watch_t=gt_stamp();
         ui_preview_cls=-1; lcd_clip_top=0; lcd_clip_bottom=LCD_H;
         lcd_show_state(0,80,0,0,0,0);
         lcd_stream_started=lcd_stream_on=1;
@@ -1599,6 +1660,7 @@ int main(void)
             if((i%8u)==0u) scanout_accept();
         }
         drain_frame(); expected_frame(); assert(lcd_present_cnt>5u);
+        test_hdmi_mirror();
         /* Complete a frame while scanout delays accepting the last request.
          * The next completed frame waits; neither reserved buffer changes.
          */

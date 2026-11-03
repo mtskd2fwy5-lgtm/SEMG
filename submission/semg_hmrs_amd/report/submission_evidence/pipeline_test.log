@@ -1,0 +1,22 @@
+﻿
+****** xsim v2025.2 (64-bit)
+  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025
+  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025
+  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025
+  **** Start of session at: Tue Nov  3 11:26:46 2026
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+
+source xsim.dir/video_pipeline/xsim_script.tcl
+# xsim {video_pipeline} -autoloadwcfg -runall
+Time resolution is 1 ps
+run -all
+Info: [XPM_MEMORY 20-1] MEMORY_PRIMITIVE (0) instructs Vivado Synthesis to choose the memory primitive type. Depending on their values, other XPM_MEMORY parameters may preclude the choice of certain memory primitive types. Review XPM_MEMORY documentation and parameter values to understand any limitations, or set MEMORY_PRIMITIVE to a different value. hdmi_video_pipeline_tb.video.inst.COUPLER_INST.generate_async_fifo.FIFO_INST.XPM_FIFO_ASYNC_INST.gnuram_async_fifo.xpm_fifo_base_inst.gen_sdpram.xpm_memory_base_inst.config_drc
+Time: 1 ps  Iteration: 0  Process: /hdmi_video_pipeline_tb/video/inst/COUPLER_INST/generate_async_fifo.FIFO_INST/XPM_FIFO_ASYNC_INST/gnuram_async_fifo.xpm_fifo_base_inst/gen_sdpram.xpm_memory_base_inst/Initial310_160  Scope: hdmi_video_pipeline_tb.video.inst.COUPLER_INST.generate_async_fifo.FIFO_INST.XPM_FIFO_ASYNC_INST.gnuram_async_fifo.xpm_fifo_base_inst.gen_sdpram.xpm_memory_base_inst.config_drc  File: <amd-tools>\Vivado\data/ip/xpm/xpm_memory/hdl/xpm_memory.sv Line: 522
+TEST_PASS HDMI video pipeline: actual Video Out IP, MMCM, scaler, 921600 exact RGB pixels after lock, randomized AXIS bubbles
+$finish called at time : 124162039444 ps : File "./sim/hdmi_video_pipeline_tb.sv" Line 58
+run: Time (s): cpu = 00:00:00 ; elapsed = 00:05:58 . Memory (MB): peak = 219.711 ; gain = 0.000
+exit
+INFO: xsimkernel Simulation Memory Usage: 12324 KB (Peak: 12324 KB), Simulation CPU Usage: 355093 ms
+INFO: [Common 17-206] Exiting xsim at Tue Nov  3 11:32:46 2026...
+

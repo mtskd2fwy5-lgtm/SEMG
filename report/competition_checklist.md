@@ -37,7 +37,7 @@
 | 技能包 skill/ | README + 各项含适用范围/使用方法/失效条件；评价标准=陌生队伍能否直接复用 | 仅 checklist、data_path_checklist | 重构现有 checklist 为技能包；沉淀踩坑清单（UART/MIO、断点、OOC 竞态、DNS 污染等）；**通用 PYNQ Skill 可另行加分** |
 | 设计报告 | 选题背景与创新点、原理框图、软硬件划分依据、优化过程（前后对比表）、大模型协作记录、技能包提炼过程、复现说明 | report/ 有分散素材（signal_chain_spec、pl_ps_data_path、engineering_notes 等） | 按指南结构重组为正式报告 |
 | 决赛英文海报 | 进入决赛的自主选题队伍须按 AMD 提供的 PPT 模板制作**一页英文 PPT 海报**（作品简介），决赛现场 A4 彩打，不含队伍信息 | 未开始（模板随决赛通知发布） | 列入决赛准备；README 英文标题可直接复用 |
-| 开源 | 强烈要求 GitHub/Gitee 开源 | LICENSE 已就位：CC BY-NC 4.0（允许自由分发与改编、禁止商用，匹配比赛分发要求；2026-10-10 由 Apache-2.0 改换） | 已完成 |
+| 开源 | 强烈要求 GitHub/Gitee 开源 | 原创代码采用 Apache-2.0；第三方内容保留原许可；公开仓库与整合包入口已在 README 说明 | ✓ |
 
 ## 4. 与考察侧重的对齐（初级组：逻辑设计、状态机、时序约束、接口协议）
 
@@ -54,7 +54,14 @@
 
 **决策：先核心闭环，10 月再评估。** 即——先完成 INT8 量化部署 + 性能/资源数据采集（评测 20 分主战场），10 月视进度决定是否叠加 PYNQ 演示层（Jupyter 可视化 + 通用 PYNQ Skill 单独加分项）。裸机链路作为已验证的保底路线保留。
 
-## 6. 时间线倒排（2026-09-11 起算）
+## 6. 提交包检查
+
+- `tools/assemble_submission.ps1` 生成 `submission/semg_hmrs_amd/`，目录名和文件名保持 ASCII。
+- 包内包含 `src/`、`sim/`、`build/`、`board/`、`data/`、`skill/`、`report/`，并在包 README 中给出对应关系。
+- 包内排除原始人体数据、临时波形、Vivado/Vitis 缓存、生成位流和 BOOT；硬件验证证据保留在 `report/submission_evidence/`。
+- 物理 HDMI 显示、SD 写卡和人体采集时的电气隔离仍需实物验收，不能用主机仿真替代。
+
+## 7. 时间线倒排（2026-09-11 起算）
 
 | 截止 | 事项 | 剩余 |
 |---|---|---|
@@ -63,3 +70,16 @@
 | 10 月底 | 报告初稿、技能包重构、协作记录整理 | ~7 周 |
 | **11/4 18:00** | **作品提交**（工程包 + skill/ + 报告） | 8 周 |
 | 11/20–22 | 决赛：现场基础能力考核、专家质询、实物演示 | — |
+
+## 8. 当前提交包核验（2026-11-03）
+
+本次提交以 `submission/semg_hmrs_amd/` 为唯一整合入口，由
+`tools/assemble_submission.ps1` 从版本控制输入生成。包内已按指南要求收录
+`src/`、`sim/`、`build/`、`board/`、`data/`、`skill/`、`report/` 和 `tools/`，并
+附带设计报告、协作记录索引、资源/时序/方法学报告及 HDMI 验证证据。
+
+- `python skill/validate_package.py`：通过；包含 4 个通用 FPGA skill，链接和便携性检查通过。
+- `python skill/test_portable_tools.py`：通过；覆盖序列完整性、定点边界、资源比较、阶段约束和独立目录运行。
+- 包内排除原始采集数据、波形展开文件、Vivado/Vitis 工作区、缓存、位流、BOOT、ELF 和编译缓存。
+- 构建脚本不依赖开发机绝对路径：通过 `AMD_VIVADO_ROOT` 或 PATH 定位 Vivado/Vitis/bootgen；源码模型路径以提交包根目录为基准。
+- HDMI 实际显示、人体采集隔离和 SD 卡写入仍须在目标板上按证据边界复核，包内仿真和布线结果不替代实物验收。

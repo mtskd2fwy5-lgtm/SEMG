@@ -1,5 +1,5 @@
 `timescale 1ns/1ps
-module nn_v15_case #(parameter MODEL="d:/FPGA/sEMG-HMRS/data/models/nn_int8_board_multiwear/nn_int8_weights.mem")(output reg done=0);
+module nn_v15_case #(parameter MODEL="data/models/nn_int8_board_multiwear/nn_int8_weights.mem")(output reg done=0);
  reg clk=0,rst_n=0,valid=0,ready=1;
  always #20 clk=~clk;
  reg[5:0]idx=0;reg[31:0]data=0,rng=32'h12fab986;

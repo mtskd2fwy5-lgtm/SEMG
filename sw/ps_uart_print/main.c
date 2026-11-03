@@ -69,7 +69,7 @@ typedef unsigned char u8;
 #define PL_CONTROL_ENABLE 0
 #endif
 #if PL_CONTROL_ENABLE
-#define BUILD_TAG "20261102_HAND_CONTROL_HDC_DYNAMIC_CONTINUOUS_V30"
+#define BUILD_TAG "20261103_HAND_CONTROL_HDMI_MIRROR_V31"
 #else
 #define BUILD_TAG "20261024_HDC_DISPLAY_V1"
 #endif
@@ -1708,8 +1708,11 @@ static void lcd_quad(volatile u8 *fb, const lcd_dl_t *e,
 #include "lcd_waveform.h"
 #include "lcd_settings.h"
 
+#include "hdmi_mirror.h"
+
 static void lcd_slice_tick(u32 t0)
 {
+    hdmi_service(t0);
     if (LCD_ENABLE != 1u || lcd_frozen) return;
     if(lcd_stream_started && lcd_stream_on)
         lcd_rate_tick(t0,VDMA_PARK_CURRENT(VDMA_PARKPTR));
@@ -1752,8 +1755,10 @@ static void lcd_slice_tick(u32 t0)
     if (dl_clean_y < (u32)LCD_H) return;
     if (VDMA_PARK_CURRENT(VDMA_PARKPTR) != lcd_front_index && lcd_stream_on)
         return;                    /* let the previous request enter scanout */
+    if (!hdmi_settled()) return;
     lcd_memory_barrier();
     VDMA_PARKPTR = (VDMA_PARKPTR & ~VDMA_PARK_READREF) | dl_back;
+    hdmi_present(dl_back);
     lcd_front_index = dl_back;       /* requested, actual scanout is in [20:16] */
     lcd_buffer_ui[dl_back] = dl_ui_generation;
     lcd_buffer_valid[dl_back] = 1u;
@@ -2036,7 +2041,7 @@ static void lcd_begin_pending(void)
         return;
     if (actual >= 3u) return;       /* unknown scanout ownership: do not paint */
     for (i=0; i<3u; i++)
-        if (i != actual && i != lcd_front_index) break;
+        if (i != actual && i != lcd_front_index && !hdmi_owns(i)) break;
     if (i == 3u) return;
     dl_back=i;
     full=!lcd_buffer_valid[i] || lcd_buffer_ui[i] != ui_generation;
@@ -2114,7 +2119,9 @@ static void lcd_enable(u32 on)
                                                        * channel (a bare RS write
                                                        * never restarts a halted
                                                        * channel) */
+        hdmi_init();
     } else {
+        hdmi_stop();
         VDMA_DMACR = 0u;                        /* halt MM2S, free DDR */
     }
     lcd_stream_on = on;
@@ -2185,6 +2192,7 @@ static void lcd_init(void)
                                                  * idle - white-screen root cause) */
     lcd_stream_started = 1u;
     lcd_stream_on = 1u;
+    hdmi_init();
     lcd_frozen = (LCD_ENABLE == 2u);   /* mode 2: boot frame stays, redraws out */
 
     for (spins = 0; spins < 1000u; spins++)     /* let RS propagate */

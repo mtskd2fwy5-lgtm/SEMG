@@ -7,6 +7,8 @@ build/vivado/hand_motion_reconstruction.srcs/*
 !build/vivado/hand_motion_reconstruction.srcs/sources_1
 build/vivado/hand_motion_reconstruction.srcs/sources_1/*
 !build/vivado/hand_motion_reconstruction.srcs/sources_1/bd
+!build/vivado/hand_motion_reconstruction.srcs/sources_1/bd/
+!build/vivado/hand_motion_reconstruction.srcs/sources_1/bd/**
 
 # Top-level Vivado session artifacts
 .Xil/
@@ -90,6 +92,10 @@ report/design_report_*/
 report/competition_report_template_*/
 report/poster_*/
 report/vivado_open_warnings_*/
+
+# Curated AMD FPGA submission package is intentionally versioned.
+!/submission/
+!/submission/**
 /AMD_poster_template.pptx
 /*.docx
 /hdc_report_*.csv

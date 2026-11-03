@@ -1,0 +1,211 @@
+﻿
+****** Vivado v2025.2 (64-bit)
+  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025
+  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025
+  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025
+  **** Start of session at: Tue Nov  3 11:43:26 2026
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+
+INFO: [Common 17-1239] XILINX_LOCAL_USER_DATA is set to 'no'.
+source build/scripts/audit_hdmi_routed.tcl
+# set root [file normalize [file join [file dirname [info script]] ../..]]
+# set out [file join $root report/hdmi_mirror_20261103]
+# open_project [file join $root build/vivado/hand_motion_reconstruction.xpr]
+Scanning sources...
+Finished scanning sources
+WARNING: [Project 1-5713] Board part '' set for the project  is not found. BoardPart property will be unset. Please select board from latest repo build 
+INFO: [IP_Flow 19-234] Refreshing IP repositories
+INFO: [IP_Flow 19-1704] No user IP repositories specified
+INFO: [IP_Flow 19-2313] Loaded Vivado IP repository '<amd-tools>/Vivado/data/ip'.
+open_project: Time (s): cpu = 00:00:09 ; elapsed = 00:00:20 . Memory (MB): peak = 419.059 ; gain = 112.902
+# open_bd_design ./build/vivado/hand_motion_reconstruction.srcs/sources_1/bd/design_1/design_1.bd
+Reading block design file <./build/vivado/hand_motion_reconstruction.srcs/sources_1/bd/design_1/design_1.bd>...
+Adding component instance block -- xilinx.com:ip:processing_system7:5.5 - processing_system7_0
+Adding component instance block -- xilinx.com:ip:proc_sys_reset:5.0 - proc_sys_reset_0
+Adding component instance block -- xilinx.com:ip:smartconnect:1.0 - smartconnect_0
+Adding component instance block -- xilinx.com:ip:axi_dma:7.1 - axi_dma_0
+Adding component instance block -- xilinx.com:ip:smartconnect:1.0 - smartconnect_1
+Adding component instance block -- xilinx.com:ip:proc_sys_reset:5.0 - proc_sys_reset_1
+Adding component instance block -- xilinx.com:ip:axi_vdma:6.3 - axi_vdma_0
+Adding component instance block -- xilinx.com:ip:v_axi4s_vid_out:4.0 - v_axi4s_vid_out_0
+Adding component instance block -- xilinx.com:ip:axi_gpio:2.0 - axi_gpio_0
+Adding component instance block -- xilinx.com:module_ref:lcd_clk_fwd:1.0 - lcd_clk_fwd_0
+Adding component instance block -- xilinx.com:module_ref:lcd_panel_adapter:1.0 - lcd_panel_adapter_0
+Adding component instance block -- xilinx.com:module_ref:touch_gt911:1.0 - touch_gt911_0
+Adding component instance block -- xilinx.com:ip:axi_gpio:2.0 - axi_gpio_1
+Adding component instance block -- xilinx.com:ip:axi_gpio:2.0 - axi_gpio_2
+Adding component instance block -- xilinx.com:module_ref:mpu6050_motion:1.0 - mpu6050_tilt_0
+Adding component instance block -- xilinx.com:ip:axi_gpio:2.0 - axi_gpio_3
+Adding component instance block -- xilinx.com:ip:axi_gpio:2.0 - axi_gpio_4
+Adding component instance block -- xilinx.com:module_ref:emg_pl_control:1.0 - emg_pl_export_0
+Adding component instance block -- xilinx.com:ip:axi_gpio:2.0 - axi_gpio_5
+Adding component instance block -- xilinx.com:module_ref:emg_learning_accel:1.0 - emg_learning_0
+Adding component instance block -- xilinx.com:ip:smartconnect:1.0 - smartconnect_learning
+Adding component instance block -- xilinx.com:ip:axi_gpio:2.0 - axi_gpio_6
+Adding component instance block -- xilinx.com:module_ref:mpu_attitude:1.0 - mpu_attitude_0
+Adding component instance block -- xilinx.com:ip:axi_gpio:2.0 - axi_gpio_7
+Adding component instance block -- xilinx.com:ip:axi_vdma:6.3 - axi_vdma_hdmi
+Adding component instance block -- xilinx.com:ip:v_axi4s_vid_out:4.0 - video_out_hdmi
+Adding component instance block -- xilinx.com:ip:axi_gpio:2.0 - gpio_hdmi
+Adding component instance block -- xilinx.com:module_ref:hdmi_scaler:1.0 - hdmi_scaler_0
+Adding component instance block -- xilinx.com:module_ref:hdmi_output:1.0 - hdmi_output_0
+Successfully read diagram <design_1> from block design file <./build/vivado/hand_motion_reconstruction.srcs/sources_1/bd/design_1/design_1.bd>
+open_bd_design: Time (s): cpu = 00:00:02 ; elapsed = 00:00:07 . Memory (MB): peak = 528.105 ; gain = 81.004
+# set n 0
+# set fp [open [file join $out dma_configuration.txt] w]
+# foreach p [list_property [get_bd_cells axi_vdma_0]] {
+#     if {![string match CONFIG.* $p] || $p in {CONFIG.Component_Name CONFIG.C_COMPONENT_NAME}} {continue}
+#     set a [get_property $p [get_bd_cells axi_vdma_0]]
+#     set b [get_property $p [get_bd_cells axi_vdma_hdmi]]
+#     puts $fp "$p LCD=$a HDMI=$b"
+#     if {$a ne $b} {error "HDMI DMA actual configuration mismatch: $p LCD=$a HDMI=$b"}
+#     incr n
+# }
+# close $fp
+# close_bd_design [current_bd_design]
+# open_run impl_1
+INFO: [Device 21-403] Loading part xc7z020clg400-2
+Netlist sorting complete. Time (s): cpu = 00:00:01 ; elapsed = 00:00:01 . Memory (MB): peak = 909.785 ; gain = 0.000
+INFO: [Netlist 29-17] Analyzing 4116 Unisim elements for replacement
+INFO: [Netlist 29-28] Unisim Transformation completed in 1 CPU seconds
+INFO: [Project 1-479] Netlist was created with Vivado 2025.2
+INFO: [Project 1-570] Preparing netlist for logic optimization
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[0]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[0]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[0]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[10]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[10]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[10]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[11]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[11]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[11]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[12]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[12]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[12]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[13]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[13]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[13]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[14]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[14]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[14]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[15]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[15]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[15]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[16]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[16]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[16]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[17]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[17]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[17]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[18]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[18]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[18]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[19]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[19]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[19]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[1]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[1]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[1]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[20]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[20]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[20]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[21]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[21]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[21]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[22]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[22]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[22]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[23]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[23]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[23]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[2]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[2]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[2]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[3]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[3]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[3]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[4]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[4]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[4]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[5]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[5]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[5]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[6]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[6]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[6]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[7]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[7]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[7]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[8]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[8]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[8]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'SLEW' constraint because net 'lcd_panel_adapter_0/rgb_o[9]' is not directly connected to top level port. 'SLEW' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'DRIVE' constraint because net 'lcd_panel_adapter_0/rgb_o[9]' is not directly connected to top level port. 'DRIVE' is ignored for synthesis but preserved for implementation.
+WARNING: [Constraints 18-550] Could not create 'IBUF_LOW_PWR' constraint because net 'lcd_panel_adapter_0/rgb_o[9]' is not directly connected to top level port. 'IBUF_LOW_PWR' is ignored for synthesis but preserved for implementation.
+Read ShapeDB Complete: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.147 . Memory (MB): peak = 1081.770 ; gain = 0.000
+INFO: [Timing 38-478] Restoring timing data from binary archive.
+INFO: [Timing 38-479] Binary timing data restore complete.
+INFO: [Project 1-856] Restoring constraints from binary archive.
+INFO: [Project 1-853] Binary constraint restore complete.
+INFO: [Designutils 20-5722] Start Reading Physical Databases.
+Reading placement.
+Read Netlist Cache: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.068 . Memory (MB): peak = 1800.668 ; gain = 0.000
+Reading placer database...
+Read Device Cache: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.015 . Memory (MB): peak = 1800.668 ; gain = 0.000
+Read PlaceDB: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 1800.668 ; gain = 0.000
+Read placeStorage: Time (s): cpu = 00:00:01 ; elapsed = 00:00:01 . Memory (MB): peak = 1800.668 ; gain = 0.000
+Read PulsedLatchDB: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 1800.668 ; gain = 0.000
+Reading routing.
+Read RouteStorage: Time (s): cpu = 00:00:01 ; elapsed = 00:00:00.539 . Memory (MB): peak = 1818.785 ; gain = 18.117
+Read Physdb Files: Time (s): cpu = 00:00:02 ; elapsed = 00:00:02 . Memory (MB): peak = 1818.785 ; gain = 18.117
+Restored from archive | CPU: 2.000000 secs | Memory: 0.000000 MB |
+Finished XDEF File Restore: Time (s): cpu = 00:00:02 ; elapsed = 00:00:02 . Memory (MB): peak = 1818.785 ; gain = 18.117
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.036 . Memory (MB): peak = 1876.844 ; gain = 0.000
+INFO: [Project 1-111] Unisim Transformation Summary:
+  A total of 989 instances were transformed.
+  IOBUF => IOBUF (IBUF, OBUFT): 27 instances
+  RAM16X1D => RAM32X1D (RAMD32(x2)): 2 instances
+  RAM16X1S => RAM32X1S (RAMS32): 474 instances
+  RAM32M => RAM32M (RAMD32(x6), RAMS32(x2)): 249 instances
+  RAM32X1D => RAM32X1D (RAMD32(x2)): 22 instances
+  RAM32X1S => RAM32X1S (RAMS32): 110 instances
+  RAM64M => RAM64M (RAMD64E(x4)): 103 instances
+  RAM64X1D => RAM64X1D (RAMD64E(x2)): 2 instances
+
+open_run: Time (s): cpu = 00:00:21 ; elapsed = 00:00:26 . Memory (MB): peak = 1876.844 ; gain = 1347.773
+# set os [get_cells -hier -filter {REF_NAME == OSERDESE2}]
+# if {[llength $os]!=8} {error "Expected 8 real OSERDES master/slave cells, got [llength $os]"}
+# set ram [get_cells -hier -filter {REF_NAME =~ RAMB* && NAME =~ hdmi_scaler_0/*}]
+# if {[llength $ram]!=2} {error "Actual scaler uses [llength $ram] BRAM cells, expected 2"}
+# set fp [open [file join $out output_pins.txt] w]
+# foreach {name ball} {hdmi_clk_p J18 hdmi_clk_n H18 hdmi_data_p[0] G19 hdmi_data_n[0] G20 hdmi_data_p[1] K19 hdmi_data_n[1] J19 hdmi_data_p[2] J20 hdmi_data_n[2] H20 hdmi_hpd L19} {
+#     set p [get_ports $name]
+#     set actual [get_property PACKAGE_PIN $p]
+#     puts $fp "$name $actual [get_property IOSTANDARD $p]"
+#     if {$actual ne $ball} {error "HDMI pin mismatch: $name expected $ball got $actual"}
+# }
+# close $fp
+# set px [get_clocks -of_objects [get_pins hdmi_output_0/inst/mmcm/CLKOUT0]]
+# set fast [get_clocks -of_objects [get_pins hdmi_output_0/inst/mmcm/CLKOUT1]]
+# if {[llength $px]!=1 || abs([get_property PERIOD $px]-13.468)>0.002} {error "HDMI pixel clock incorrect: $px"}
+# if {[llength $fast]!=1 || abs([get_property PERIOD $fast]-2.694)>0.002} {error "HDMI serialization clock incorrect: $fast"}
+# report_clocks -file [file join $out clocks.rpt]
+# report_exceptions -file [file join $out exceptions.rpt]
+INFO: [Timing 38-91] UpdateTimingParams: Speed grade: -2, Delay Type: min_max.
+INFO: [Timing 38-191] Multithreading enabled for timing update using a maximum of 2 CPUs
+INFO: [Timing 38-35] Done setting XDC timing constraints.
+report_exceptions: Time (s): cpu = 00:00:24 ; elapsed = 00:00:14 . Memory (MB): peak = 2037.734 ; gain = 160.184
+# report_cdc -details -file [file join $out cdc_detailed.rpt]
+INFO: [Timing 38-91] UpdateTimingParams: Speed grade: -2, Delay Type: min_max.
+INFO: [Timing 38-191] Multithreading enabled for timing update using a maximum of 2 CPUs
+INFO: [Timing 38-35] Done setting XDC timing constraints.
+INFO: [Timing 38-433] Consider using Xilinx recommended XPM_CDC modules to avoid Critical severities
+INFO: [Timing 38-314] The report_cdc command only analyzes and reports clock domain crossing paths where clocks have been defined on both source and destination sides. Ports with no input delay constraint are skipped. Please run check_timing to verify there are no missing clock definitions in your design, nor any unconstrained input port.
+report_cdc: Time (s): cpu = 00:00:18 ; elapsed = 00:00:13 . Memory (MB): peak = 2071.035 ; gain = 33.301
+# write_verilog -force -mode funcsim [file join $out full_system_netlist.v]
+# close_project
+# puts "TEST_PASS HDMI routed audit: $n exact DMA settings, 2 BRAMs, 8 OSERDES, 9 schematic pins, 74.25/371.25MHz clocks"
+TEST_PASS HDMI routed audit: 57 exact DMA settings, 2 BRAMs, 8 OSERDES, 9 schematic pins, 74.25/371.25MHz clocks
+INFO: [Common 17-206] Exiting Vivado at Tue Nov  3 11:45:00 2026...
+

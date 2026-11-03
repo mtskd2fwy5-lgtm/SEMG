@@ -1,0 +1,3 @@
+﻿uart_record_firmware_test.c
+TEST_PASS uart_record: both source markers, signed payloads, wrap, partial/mixed frames, source switch, malformed headers, raw diagnostics
+

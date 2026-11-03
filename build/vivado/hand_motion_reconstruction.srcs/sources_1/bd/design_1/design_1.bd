@@ -1,7 +1,7 @@
 {
   "design": {
     "design_info": {
-      "boundary_crc": "0x58A353C2A2F142E1",
+      "boundary_crc": "0xA28B429B010E007B",
       "device": "xc7z020clg400-2",
       "gen_directory": "../../../../hand_motion_reconstruction.gen/sources_1/bd/design_1",
       "name": "design_1",
@@ -34,7 +34,12 @@
       "smartconnect_learning": "",
       "axi_gpio_6": "",
       "mpu_attitude_0": "",
-      "axi_gpio_7": ""
+      "axi_gpio_7": "",
+      "axi_vdma_hdmi": "",
+      "video_out_hdmi": "",
+      "gpio_hdmi": "",
+      "hdmi_scaler_0": "",
+      "hdmi_output_0": ""
     },
     "interface_ports": {
       "DDR": {
@@ -343,6 +348,53 @@
         "direction": "O",
         "left": "5",
         "right": "0"
+      },
+      "hdmi_data_p": {
+        "direction": "O",
+        "left": "2",
+        "right": "0"
+      },
+      "hdmi_data_n": {
+        "direction": "O",
+        "left": "2",
+        "right": "0"
+      },
+      "hdmi_clk_p": {
+        "direction": "O",
+        "parameters": {
+          "CLK_DOMAIN": {
+            "value": "design_1_hdmi_output_0_0_hdmi_clk_p",
+            "value_src": "default_prop"
+          },
+          "FREQ_HZ": {
+            "value": "100000000",
+            "value_src": "default_prop"
+          },
+          "PHASE": {
+            "value": "0.0",
+            "value_src": "default_prop"
+          }
+        }
+      },
+      "hdmi_clk_n": {
+        "direction": "O",
+        "parameters": {
+          "CLK_DOMAIN": {
+            "value": "design_1_hdmi_output_0_0_hdmi_clk_n",
+            "value_src": "default_prop"
+          },
+          "FREQ_HZ": {
+            "value": "100000000",
+            "value_src": "default_prop"
+          },
+          "PHASE": {
+            "value": "0.0",
+            "value_src": "default_prop"
+          }
+        }
+      },
+      "hdmi_hpd": {
+        "direction": "I"
       }
     },
     "components": {
@@ -1741,7 +1793,7 @@
         "has_run_ip_tcl": "true",
         "parameters": {
           "NUM_MI": {
-            "value": "10"
+            "value": "12"
           }
         },
         "interface_ports": {
@@ -1767,11 +1819,13 @@
               "M06_AXI",
               "M07_AXI",
               "M08_AXI",
-              "M09_AXI"
+              "M09_AXI",
+              "M10_AXI",
+              "M11_AXI"
             ],
             "bd_attributes": {
               "BRIDGES": {
-                "value": "M00_AXI:M01_AXI:M02_AXI:M03_AXI:M04_AXI:M05_AXI:M06_AXI:M07_AXI:M08_AXI:M09_AXI",
+                "value": "M00_AXI:M01_AXI:M02_AXI:M03_AXI:M04_AXI:M05_AXI:M06_AXI:M07_AXI:M08_AXI:M09_AXI:M10_AXI:M11_AXI",
                 "value_src": "auto"
               },
               "TYPE": {
@@ -1794,11 +1848,13 @@
               "M06_AXI",
               "M07_AXI",
               "M08_AXI",
-              "M09_AXI"
+              "M09_AXI",
+              "M10_AXI",
+              "M11_AXI"
             ],
             "bd_attributes": {
               "BRIDGES": {
-                "value": "M00_AXI:M01_AXI:M02_AXI:M03_AXI:M04_AXI:M05_AXI:M06_AXI:M07_AXI:M08_AXI:M09_AXI",
+                "value": "M00_AXI:M01_AXI:M02_AXI:M03_AXI:M04_AXI:M05_AXI:M06_AXI:M07_AXI:M08_AXI:M09_AXI:M10_AXI:M11_AXI",
                 "value_src": "auto"
               },
               "TYPE": {
@@ -2116,6 +2172,68 @@
                 "value_src": "default"
               }
             }
+          },
+          "M10_AXI": {
+            "mode": "Master",
+            "vlnv_bus_definition": "xilinx.com:interface:aximm:1.0",
+            "vlnv": "xilinx.com:interface:aximm_rtl:1.0",
+            "parameters": {
+              "NUM_READ_OUTSTANDING": {
+                "value": "8"
+              },
+              "NUM_READ_THREADS": {
+                "value": "1"
+              },
+              "NUM_WRITE_OUTSTANDING": {
+                "value": "8"
+              },
+              "NUM_WRITE_THREADS": {
+                "value": "1"
+              },
+              "RUSER_BITS_PER_BYTE": {
+                "value": "0"
+              },
+              "WUSER_BITS_PER_BYTE": {
+                "value": "0"
+              }
+            },
+            "bd_attributes": {
+              "TYPE": {
+                "value": "interior",
+                "value_src": "default"
+              }
+            }
+          },
+          "M11_AXI": {
+            "mode": "Master",
+            "vlnv_bus_definition": "xilinx.com:interface:aximm:1.0",
+            "vlnv": "xilinx.com:interface:aximm_rtl:1.0",
+            "parameters": {
+              "NUM_READ_OUTSTANDING": {
+                "value": "8"
+              },
+              "NUM_READ_THREADS": {
+                "value": "1"
+              },
+              "NUM_WRITE_OUTSTANDING": {
+                "value": "8"
+              },
+              "NUM_WRITE_THREADS": {
+                "value": "1"
+              },
+              "RUSER_BITS_PER_BYTE": {
+                "value": "0"
+              },
+              "WUSER_BITS_PER_BYTE": {
+                "value": "0"
+              }
+            },
+            "bd_attributes": {
+              "TYPE": {
+                "value": "interior",
+                "value_src": "default"
+              }
+            }
           }
         }
       },
@@ -2177,6 +2295,11 @@
         "xci_path": "ip\\design_1_smartconnect_1_0\\design_1_smartconnect_1_0.xci",
         "inst_hier_path": "smartconnect_1",
         "has_run_ip_tcl": "true",
+        "parameters": {
+          "NUM_SI": {
+            "value": "3"
+          }
+        },
         "interface_ports": {
           "S00_AXI": {
             "mode": "Slave",
@@ -2205,6 +2328,32 @@
             }
           },
           "S01_AXI": {
+            "mode": "Slave",
+            "vlnv_bus_definition": "xilinx.com:interface:aximm:1.0",
+            "vlnv": "xilinx.com:interface:aximm_rtl:1.0",
+            "parameters": {
+              "NUM_READ_OUTSTANDING": {
+                "value": "2"
+              },
+              "NUM_WRITE_OUTSTANDING": {
+                "value": "2"
+              }
+            },
+            "bridges": [
+              "M00_AXI"
+            ],
+            "bd_attributes": {
+              "BRIDGES": {
+                "value": "M00_AXI",
+                "value_src": "auto"
+              },
+              "TYPE": {
+                "value": "interior",
+                "value_src": "default"
+              }
+            }
+          },
+          "S02_AXI": {
             "mode": "Slave",
             "vlnv_bus_definition": "xilinx.com:interface:aximm:1.0",
             "vlnv": "xilinx.com:interface:aximm_rtl:1.0",
@@ -3495,6 +3644,567 @@
             "value": "1"
           }
         }
+      },
+      "axi_vdma_hdmi": {
+        "vlnv": "xilinx.com:ip:axi_vdma:6.3",
+        "ip_revision": "24",
+        "xci_name": "design_1_axi_vdma_hdmi_0",
+        "xci_path": "ip\\design_1_axi_vdma_hdmi_0\\design_1_axi_vdma_hdmi_0.xci",
+        "inst_hier_path": "axi_vdma_hdmi",
+        "has_run_ip_tcl": "true",
+        "parameters": {
+          "C_FAMILY": {
+            "value": "zynq"
+          },
+          "C_SELECT_XPM": {
+            "value": "0"
+          },
+          "c_addr_width": {
+            "value": "32"
+          },
+          "c_dlytmr_resolution": {
+            "value": "125"
+          },
+          "c_dynamic_resolution": {
+            "value": "1"
+          },
+          "c_enable_all": {
+            "value": "0"
+          },
+          "c_enable_mm2s_buf_empty": {
+            "value": "0"
+          },
+          "c_enable_mm2s_delay_counter": {
+            "value": "1"
+          },
+          "c_enable_mm2s_frm_counter": {
+            "value": "1"
+          },
+          "c_enable_mm2s_frmstr_reg": {
+            "value": "0"
+          },
+          "c_enable_mm2s_fsync_out": {
+            "value": "0"
+          },
+          "c_enable_mm2s_param_updt": {
+            "value": "0"
+          },
+          "c_enable_mm2s_rst_out": {
+            "value": "0"
+          },
+          "c_enable_s2mm_buf_full": {
+            "value": "0"
+          },
+          "c_enable_s2mm_delay_counter": {
+            "value": "1"
+          },
+          "c_enable_s2mm_frm_counter": {
+            "value": "1"
+          },
+          "c_enable_s2mm_frmstr_reg": {
+            "value": "0"
+          },
+          "c_enable_s2mm_fsync_out": {
+            "value": "0"
+          },
+          "c_enable_s2mm_param_updt": {
+            "value": "0"
+          },
+          "c_enable_s2mm_rst_out": {
+            "value": "0"
+          },
+          "c_enable_s2mm_sts_reg": {
+            "value": "0"
+          },
+          "c_enable_tstvec": {
+            "value": "0"
+          },
+          "c_enable_vidprmtr_reads": {
+            "value": "1"
+          },
+          "c_flush_on_fsync": {
+            "value": "1"
+          },
+          "c_include_internal_genlock": {
+            "value": "1"
+          },
+          "c_include_mm2s": {
+            "value": "1"
+          },
+          "c_include_mm2s_dre": {
+            "value": "0"
+          },
+          "c_include_mm2s_sf": {
+            "value": "0"
+          },
+          "c_include_s2mm": {
+            "value": "0"
+          },
+          "c_include_s2mm_sf": {
+            "value": "1"
+          },
+          "c_include_sg": {
+            "value": "0"
+          },
+          "c_m_axi_mm2s_data_width": {
+            "value": "64"
+          },
+          "c_m_axis_mm2s_tdata_width": {
+            "value": "24"
+          },
+          "c_mm2s_genlock_mode": {
+            "value": "0"
+          },
+          "c_mm2s_genlock_repeat_en": {
+            "value": "0"
+          },
+          "c_mm2s_linebuffer_depth": {
+            "value": "2048"
+          },
+          "c_mm2s_linebuffer_thresh": {
+            "value": "4"
+          },
+          "c_mm2s_max_burst_length": {
+            "value": "64"
+          },
+          "c_mm2s_sof_enable": {
+            "value": "1"
+          },
+          "c_num_fstores": {
+            "value": "3"
+          },
+          "c_s2mm_genlock_repeat_en": {
+            "value": "1"
+          },
+          "c_s2mm_linebuffer_thresh": {
+            "value": "4"
+          },
+          "c_s2mm_sof_enable": {
+            "value": "1"
+          },
+          "c_use_fsync": {
+            "value": "1"
+          },
+          "c_use_mm2s_fsync": {
+            "value": "0"
+          }
+        },
+        "interface_ports": {
+          "M_AXI_MM2S": {
+            "bd_attributes": {
+              "TYPE": {
+                "value": "END_POINT",
+                "value_src": "auto"
+              }
+            },
+            "vlnv": "xilinx.com:interface:aximm_rtl:1.0",
+            "mode": "Master",
+            "address_space_ref": "Data_MM2S",
+            "base_address": {
+              "minimum": "0x00000000",
+              "maximum": "0xFFFFFFFF",
+              "width": "32"
+            }
+          }
+        },
+        "addressing": {
+          "address_spaces": {
+            "Data_MM2S": {
+              "range": "4G",
+              "width": "32"
+            }
+          }
+        }
+      },
+      "video_out_hdmi": {
+        "vlnv": "xilinx.com:ip:v_axi4s_vid_out:4.0",
+        "ip_revision": "20",
+        "xci_name": "design_1_video_out_hdmi_0",
+        "xci_path": "ip\\design_1_video_out_hdmi_0\\design_1_video_out_hdmi_0.xci",
+        "inst_hier_path": "video_out_hdmi",
+        "has_run_ip_tcl": "true",
+        "parameters": {
+          "C_ADDR_WIDTH": {
+            "value": "12"
+          },
+          "C_HAS_ASYNC_CLK": {
+            "value": "1"
+          },
+          "C_S_AXIS_VIDEO_FORMAT": {
+            "value": "2"
+          }
+        }
+      },
+      "gpio_hdmi": {
+        "vlnv": "xilinx.com:ip:axi_gpio:2.0",
+        "ip_revision": "37",
+        "xci_name": "design_1_gpio_hdmi_0",
+        "xci_path": "ip\\design_1_gpio_hdmi_0\\design_1_gpio_hdmi_0.xci",
+        "inst_hier_path": "gpio_hdmi",
+        "has_run_ip_tcl": "true",
+        "parameters": {
+          "C_ALL_INPUTS": {
+            "value": "1"
+          },
+          "C_ALL_OUTPUTS_2": {
+            "value": "1"
+          },
+          "C_GPIO2_WIDTH": {
+            "value": "1"
+          },
+          "C_GPIO_WIDTH": {
+            "value": "32"
+          },
+          "C_IS_DUAL": {
+            "value": "1"
+          }
+        }
+      },
+      "hdmi_scaler_0": {
+        "vlnv": "xilinx.com:module_ref:hdmi_scaler:1.0",
+        "ip_revision": "1",
+        "xci_name": "design_1_hdmi_scaler_0_0",
+        "xci_path": "ip\\design_1_hdmi_scaler_0_0\\design_1_hdmi_scaler_0_0.xci",
+        "inst_hier_path": "hdmi_scaler_0",
+        "has_run_ip_tcl": "true",
+        "reference_info": {
+          "ref_type": "hdl",
+          "ref_name": "hdmi_scaler",
+          "boundary_crc": "0x0"
+        },
+        "interface_ports": {
+          "s_axis": {
+            "mode": "Slave",
+            "vlnv_bus_definition": "xilinx.com:interface:axis:1.0",
+            "vlnv": "xilinx.com:interface:axis_rtl:1.0",
+            "parameters": {
+              "TDATA_NUM_BYTES": {
+                "value": "3",
+                "value_src": "constant"
+              },
+              "TDEST_WIDTH": {
+                "value": "0",
+                "value_src": "constant"
+              },
+              "TID_WIDTH": {
+                "value": "0",
+                "value_src": "constant"
+              },
+              "TUSER_WIDTH": {
+                "value": "1",
+                "value_src": "constant"
+              },
+              "HAS_TREADY": {
+                "value": "1",
+                "value_src": "constant"
+              },
+              "HAS_TSTRB": {
+                "value": "0",
+                "value_src": "constant"
+              },
+              "HAS_TKEEP": {
+                "value": "0",
+                "value_src": "constant"
+              },
+              "HAS_TLAST": {
+                "value": "1",
+                "value_src": "constant"
+              },
+              "CLK_DOMAIN": {
+                "value": "design_1_processing_system7_0_0_FCLK_CLK0",
+                "value_src": "default_prop"
+              }
+            },
+            "port_maps": {
+              "TDATA": {
+                "physical_name": "s_data",
+                "direction": "I",
+                "left": "23",
+                "right": "0"
+              },
+              "TLAST": {
+                "physical_name": "s_last",
+                "direction": "I"
+              },
+              "TUSER": {
+                "physical_name": "s_user",
+                "direction": "I"
+              },
+              "TVALID": {
+                "physical_name": "s_valid",
+                "direction": "I"
+              },
+              "TREADY": {
+                "physical_name": "s_ready",
+                "direction": "O"
+              }
+            }
+          },
+          "m_axis": {
+            "mode": "Master",
+            "vlnv_bus_definition": "xilinx.com:interface:axis:1.0",
+            "vlnv": "xilinx.com:interface:axis_rtl:1.0",
+            "parameters": {
+              "TDATA_NUM_BYTES": {
+                "value": "3",
+                "value_src": "constant"
+              },
+              "TDEST_WIDTH": {
+                "value": "0",
+                "value_src": "constant"
+              },
+              "TID_WIDTH": {
+                "value": "0",
+                "value_src": "constant"
+              },
+              "TUSER_WIDTH": {
+                "value": "1",
+                "value_src": "constant"
+              },
+              "HAS_TREADY": {
+                "value": "1",
+                "value_src": "constant"
+              },
+              "HAS_TSTRB": {
+                "value": "0",
+                "value_src": "constant"
+              },
+              "HAS_TKEEP": {
+                "value": "0",
+                "value_src": "constant"
+              },
+              "HAS_TLAST": {
+                "value": "1",
+                "value_src": "constant"
+              },
+              "CLK_DOMAIN": {
+                "value": "design_1_processing_system7_0_0_FCLK_CLK0",
+                "value_src": "default_prop"
+              }
+            },
+            "port_maps": {
+              "TDATA": {
+                "physical_name": "m_data",
+                "direction": "O",
+                "left": "23",
+                "right": "0"
+              },
+              "TLAST": {
+                "physical_name": "m_last",
+                "direction": "O"
+              },
+              "TUSER": {
+                "physical_name": "m_user",
+                "direction": "O"
+              },
+              "TVALID": {
+                "physical_name": "m_valid",
+                "direction": "O"
+              },
+              "TREADY": {
+                "physical_name": "m_ready",
+                "direction": "I"
+              }
+            }
+          }
+        },
+        "ports": {
+          "aclk": {
+            "type": "clk",
+            "direction": "I",
+            "parameters": {
+              "ASSOCIATED_BUSIF": {
+                "value": "s_axis:m_axis",
+                "value_src": "constant"
+              },
+              "ASSOCIATED_RESET": {
+                "value": "aresetn",
+                "value_src": "constant"
+              },
+              "FREQ_HZ": {
+                "value": "100000000",
+                "value_src": "constant"
+              },
+              "CLK_DOMAIN": {
+                "value": "design_1_processing_system7_0_0_FCLK_CLK0",
+                "value_src": "default_prop"
+              }
+            }
+          },
+          "aresetn": {
+            "type": "rst",
+            "direction": "I",
+            "parameters": {
+              "POLARITY": {
+                "value": "ACTIVE_LOW",
+                "value_src": "constant"
+              }
+            }
+          },
+          "panel_id": {
+            "direction": "I",
+            "left": "15",
+            "right": "0"
+          },
+          "run": {
+            "direction": "I"
+          },
+          "fault": {
+            "direction": "O"
+          }
+        }
+      },
+      "hdmi_output_0": {
+        "vlnv": "xilinx.com:module_ref:hdmi_output:1.0",
+        "ip_revision": "1",
+        "xci_name": "design_1_hdmi_output_0_0",
+        "xci_path": "ip\\design_1_hdmi_output_0_0\\design_1_hdmi_output_0_0.xci",
+        "inst_hier_path": "hdmi_output_0",
+        "has_run_ip_tcl": "true",
+        "reference_info": {
+          "ref_type": "hdl",
+          "ref_name": "hdmi_output",
+          "boundary_crc": "0x0"
+        },
+        "ports": {
+          "clk100": {
+            "direction": "I",
+            "parameters": {
+              "FREQ_HZ": {
+                "value": "100000000",
+                "value_src": "user_prop"
+              },
+              "PHASE": {
+                "value": "0.0",
+                "value_src": "default_prop"
+              },
+              "CLK_DOMAIN": {
+                "value": "design_1_processing_system7_0_0_FCLK_CLK0",
+                "value_src": "default_prop"
+              }
+            }
+          },
+          "rst": {
+            "type": "rst",
+            "direction": "I",
+            "parameters": {
+              "POLARITY": {
+                "value": "ACTIVE_HIGH",
+                "value_src": "const_prop"
+              }
+            }
+          },
+          "run": {
+            "direction": "I"
+          },
+          "pixel_clk": {
+            "type": "clk",
+            "direction": "O",
+            "parameters": {
+              "FREQ_HZ": {
+                "value": "74250000",
+                "value_src": "constant"
+              },
+              "ASSOCIATED_RESET": {
+                "value": "video_rst",
+                "value_src": "constant"
+              }
+            }
+          },
+          "video_rst": {
+            "type": "rst",
+            "direction": "O",
+            "parameters": {
+              "POLARITY": {
+                "value": "ACTIVE_HIGH",
+                "value_src": "constant"
+              }
+            }
+          },
+          "stream_resetn": {
+            "type": "rst",
+            "direction": "O",
+            "parameters": {
+              "POLARITY": {
+                "value": "ACTIVE_LOW",
+                "value_src": "constant"
+              }
+            }
+          },
+          "vtg_ce": {
+            "direction": "I"
+          },
+          "active_video": {
+            "direction": "O"
+          },
+          "field_id": {
+            "direction": "O"
+          },
+          "hblank": {
+            "direction": "O"
+          },
+          "hsync": {
+            "direction": "O"
+          },
+          "vblank": {
+            "direction": "O"
+          },
+          "vsync": {
+            "direction": "O"
+          },
+          "rgb": {
+            "direction": "I",
+            "left": "23",
+            "right": "0"
+          },
+          "de": {
+            "direction": "I"
+          },
+          "video_hsync": {
+            "direction": "I"
+          },
+          "video_vsync": {
+            "direction": "I"
+          },
+          "hpd": {
+            "direction": "I"
+          },
+          "video_locked": {
+            "direction": "I"
+          },
+          "underflow": {
+            "direction": "I"
+          },
+          "overflow": {
+            "direction": "I"
+          },
+          "scaler_fault": {
+            "direction": "I"
+          },
+          "status": {
+            "direction": "O",
+            "left": "31",
+            "right": "0"
+          },
+          "hdmi_data_p": {
+            "direction": "O",
+            "left": "2",
+            "right": "0"
+          },
+          "hdmi_data_n": {
+            "direction": "O",
+            "left": "2",
+            "right": "0"
+          },
+          "hdmi_clk_p": {
+            "type": "clk",
+            "direction": "O"
+          },
+          "hdmi_clk_n": {
+            "type": "clk",
+            "direction": "O"
+          }
+        }
       }
     },
     "interface_nets": {
@@ -3516,6 +4226,18 @@
           "smartconnect_1/S01_AXI"
         ]
       },
+      "axi_vdma_hdmi_M_AXIS_MM2S": {
+        "interface_ports": [
+          "axi_vdma_hdmi/M_AXIS_MM2S",
+          "hdmi_scaler_0/s_axis"
+        ]
+      },
+      "axi_vdma_hdmi_M_AXI_MM2S": {
+        "interface_ports": [
+          "axi_vdma_hdmi/M_AXI_MM2S",
+          "smartconnect_1/S02_AXI"
+        ]
+      },
       "emg_learning_0_m_axi": {
         "interface_ports": [
           "emg_learning_0/m_axi",
@@ -3526,6 +4248,12 @@
         "interface_ports": [
           "emg_pl_export_0/m_axis",
           "axi_dma_0/S_AXIS_S2MM"
+        ]
+      },
+      "hdmi_scaler_0_m_axis": {
+        "interface_ports": [
+          "hdmi_scaler_0/m_axis",
+          "video_out_hdmi/video_in"
         ]
       },
       "processing_system7_0_DDR": {
@@ -3604,6 +4332,18 @@
         "interface_ports": [
           "smartconnect_0/M09_AXI",
           "axi_gpio_7/S_AXI"
+        ]
+      },
+      "smartconnect_0_M10_AXI": {
+        "interface_ports": [
+          "smartconnect_0/M10_AXI",
+          "axi_vdma_hdmi/S_AXI_LITE"
+        ]
+      },
+      "smartconnect_0_M11_AXI": {
+        "interface_ports": [
+          "smartconnect_0/M11_AXI",
+          "gpio_hdmi/S_AXI"
         ]
       },
       "smartconnect_1_M00_AXI": {
@@ -3764,6 +4504,109 @@
           "status_led_0"
         ]
       },
+      "gpio_hdmi_gpio2_io_o": {
+        "ports": [
+          "gpio_hdmi/gpio2_io_o",
+          "hdmi_output_0/run",
+          "hdmi_scaler_0/run"
+        ]
+      },
+      "hdmi_hpd_1": {
+        "ports": [
+          "hdmi_hpd",
+          "hdmi_output_0/hpd"
+        ]
+      },
+      "hdmi_output_0_active_video": {
+        "ports": [
+          "hdmi_output_0/active_video",
+          "video_out_hdmi/vtg_active_video"
+        ]
+      },
+      "hdmi_output_0_field_id": {
+        "ports": [
+          "hdmi_output_0/field_id",
+          "video_out_hdmi/vtg_field_id"
+        ]
+      },
+      "hdmi_output_0_hblank": {
+        "ports": [
+          "hdmi_output_0/hblank",
+          "video_out_hdmi/vtg_hblank"
+        ]
+      },
+      "hdmi_output_0_hdmi_clk_n": {
+        "ports": [
+          "hdmi_output_0/hdmi_clk_n",
+          "hdmi_clk_n"
+        ]
+      },
+      "hdmi_output_0_hdmi_clk_p": {
+        "ports": [
+          "hdmi_output_0/hdmi_clk_p",
+          "hdmi_clk_p"
+        ]
+      },
+      "hdmi_output_0_hdmi_data_n": {
+        "ports": [
+          "hdmi_output_0/hdmi_data_n",
+          "hdmi_data_n"
+        ]
+      },
+      "hdmi_output_0_hdmi_data_p": {
+        "ports": [
+          "hdmi_output_0/hdmi_data_p",
+          "hdmi_data_p"
+        ]
+      },
+      "hdmi_output_0_hsync": {
+        "ports": [
+          "hdmi_output_0/hsync",
+          "video_out_hdmi/vtg_hsync"
+        ]
+      },
+      "hdmi_output_0_pixel_clk": {
+        "ports": [
+          "hdmi_output_0/pixel_clk",
+          "video_out_hdmi/vid_io_out_clk"
+        ]
+      },
+      "hdmi_output_0_status": {
+        "ports": [
+          "hdmi_output_0/status",
+          "gpio_hdmi/gpio_io_i"
+        ]
+      },
+      "hdmi_output_0_stream_resetn": {
+        "ports": [
+          "hdmi_output_0/stream_resetn",
+          "video_out_hdmi/aresetn"
+        ]
+      },
+      "hdmi_output_0_vblank": {
+        "ports": [
+          "hdmi_output_0/vblank",
+          "video_out_hdmi/vtg_vblank"
+        ]
+      },
+      "hdmi_output_0_video_rst": {
+        "ports": [
+          "hdmi_output_0/video_rst",
+          "video_out_hdmi/vid_io_out_reset"
+        ]
+      },
+      "hdmi_output_0_vsync": {
+        "ports": [
+          "hdmi_output_0/vsync",
+          "video_out_hdmi/vtg_vsync"
+        ]
+      },
+      "hdmi_scaler_0_fault": {
+        "ports": [
+          "hdmi_scaler_0/fault",
+          "hdmi_output_0/scaler_fault"
+        ]
+      },
       "lcd_clk_fwd_0_clk_out": {
         "ports": [
           "lcd_clk_fwd_0/clk_out",
@@ -3773,7 +4616,8 @@
       "lcd_panel_adapter_0_lcd_id": {
         "ports": [
           "lcd_panel_adapter_0/lcd_id",
-          "axi_gpio_0/gpio2_io_i"
+          "axi_gpio_0/gpio2_io_i",
+          "hdmi_scaler_0/panel_id"
         ]
       },
       "lcd_panel_adapter_0_lcd_pclk": {
@@ -3895,7 +4739,16 @@
           "smartconnect_learning/aresetn",
           "axi_gpio_6/s_axi_aresetn",
           "axi_gpio_7/s_axi_aresetn",
-          "mpu_attitude_0/rst_n"
+          "mpu_attitude_0/rst_n",
+          "axi_vdma_hdmi/axi_resetn",
+          "gpio_hdmi/s_axi_aresetn",
+          "hdmi_scaler_0/aresetn"
+        ]
+      },
+      "proc_sys_reset_0_peripheral_reset": {
+        "ports": [
+          "proc_sys_reset_0/peripheral_reset",
+          "hdmi_output_0/rst"
         ]
       },
       "proc_sys_reset_1_peripheral_aresetn": {
@@ -3937,7 +4790,14 @@
           "axi_gpio_6/s_axi_aclk",
           "processing_system7_0/S_AXI_HP1_ACLK",
           "axi_gpio_7/s_axi_aclk",
-          "mpu_attitude_0/clk"
+          "mpu_attitude_0/clk",
+          "axi_vdma_hdmi/s_axi_lite_aclk",
+          "axi_vdma_hdmi/m_axi_mm2s_aclk",
+          "axi_vdma_hdmi/m_axis_mm2s_aclk",
+          "gpio_hdmi/s_axi_aclk",
+          "video_out_hdmi/aclk",
+          "hdmi_output_0/clk100",
+          "hdmi_scaler_0/aclk"
         ]
       },
       "processing_system7_0_FCLK_CLK1": {
@@ -4021,6 +4881,54 @@
           "v_axi4s_vid_out_0/vtg_ce",
           "lcd_panel_adapter_0/vtg_ce"
         ]
+      },
+      "video_out_hdmi_locked": {
+        "ports": [
+          "video_out_hdmi/locked",
+          "hdmi_output_0/video_locked"
+        ]
+      },
+      "video_out_hdmi_overflow": {
+        "ports": [
+          "video_out_hdmi/overflow",
+          "hdmi_output_0/overflow"
+        ]
+      },
+      "video_out_hdmi_underflow": {
+        "ports": [
+          "video_out_hdmi/underflow",
+          "hdmi_output_0/underflow"
+        ]
+      },
+      "video_out_hdmi_vid_active_video": {
+        "ports": [
+          "video_out_hdmi/vid_active_video",
+          "hdmi_output_0/de"
+        ]
+      },
+      "video_out_hdmi_vid_data": {
+        "ports": [
+          "video_out_hdmi/vid_data",
+          "hdmi_output_0/rgb"
+        ]
+      },
+      "video_out_hdmi_vid_hsync": {
+        "ports": [
+          "video_out_hdmi/vid_hsync",
+          "hdmi_output_0/video_hsync"
+        ]
+      },
+      "video_out_hdmi_vid_vsync": {
+        "ports": [
+          "video_out_hdmi/vid_vsync",
+          "hdmi_output_0/video_vsync"
+        ]
+      },
+      "video_out_hdmi_vtg_ce": {
+        "ports": [
+          "video_out_hdmi/vtg_ce",
+          "hdmi_output_0/vtg_ce"
+        ]
       }
     },
     "addressing": {
@@ -4077,6 +4985,16 @@
                 "address_block": "/axi_vdma_0/S_AXI_LITE/Reg",
                 "offset": "0x43000000",
                 "range": "64K"
+              },
+              "SEG_axi_vdma_hdmi_Reg": {
+                "address_block": "/axi_vdma_hdmi/S_AXI_LITE/Reg",
+                "offset": "0x43010000",
+                "range": "64K"
+              },
+              "SEG_gpio_hdmi_Reg": {
+                "address_block": "/gpio_hdmi/S_AXI/Reg",
+                "offset": "0x41280000",
+                "range": "64K"
               }
             }
           }
@@ -4114,6 +5032,19 @@
             "segments": {
               "SEG_processing_system7_0_HP1_DDR_LOWOCM": {
                 "address_block": "/processing_system7_0/S_AXI_HP1/HP1_DDR_LOWOCM",
+                "offset": "0x00000000",
+                "range": "512M"
+              }
+            }
+          }
+        }
+      },
+      "/axi_vdma_hdmi": {
+        "address_spaces": {
+          "Data_MM2S": {
+            "segments": {
+              "SEG_processing_system7_0_HP0_DDR_LOWOCM": {
+                "address_block": "/processing_system7_0/S_AXI_HP0/HP0_DDR_LOWOCM",
                 "offset": "0x00000000",
                 "range": "512M"
               }

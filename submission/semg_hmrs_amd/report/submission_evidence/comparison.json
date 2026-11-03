@@ -1,0 +1,66 @@
+﻿{
+  "device": "xc7z020clg400-2",
+  "tool": "Vivado 2025.2",
+  "stage": "routed",
+  "comparison_type": "additive HDMI functionality, not equivalent resource optimization",
+  "baseline_report": "report/hdc_resolution_20261102",
+  "candidate_report": "report/hdmi_mirror_20261103",
+  "baseline": {
+    "lut": 27537.0,
+    "ff": 28793.0,
+    "bram_tiles": 51.5,
+    "dsp": 55.0,
+    "mmcm": 1.0,
+    "bufg": 6.0
+  },
+  "candidate": {
+    "lut": 30050.0,
+    "ff": 32346.0,
+    "bram_tiles": 60.5,
+    "dsp": 55.0,
+    "mmcm": 2.0,
+    "bufg": 9.0
+  },
+  "delta": {
+    "lut": 2513.0,
+    "ff": 3553.0,
+    "bram_tiles": 9.0,
+    "dsp": 0.0,
+    "mmcm": 1.0,
+    "bufg": 3.0
+  },
+  "baseline_timing": {
+    "wns_ns": 0.004,
+    "tns_ns": 0.0,
+    "setup_failing_endpoints": 0,
+    "whs_ns": 0.052,
+    "hold_failing_endpoints": 0
+  },
+  "candidate_timing": {
+    "wns_ns": 0.231,
+    "tns_ns": 0.0,
+    "setup_failing_endpoints": 0,
+    "whs_ns": 0.035,
+    "hold_failing_endpoints": 0
+  },
+  "video_contract": {
+    "resolution": [
+      1280,
+      720
+    ],
+    "scan_hz": 60,
+    "pixel_clock_mhz": 74.25,
+    "serializer_clock_mhz": 371.25,
+    "lane_mbps": 742.5,
+    "ui_fps_measured": null,
+    "additional_ddr_payload_MBps_800x480": 69.12,
+    "additional_ddr_payload_MBps_1024x600": 110.592,
+    "bandwidth_note": "Nominal HDMI read payload at 60 frames/s; excludes AXI overhead, not a board measurement."
+  },
+  "report_sha256": {
+    "report/hdc_resolution_20261102/utilization_routed.rpt": "bb18748d53ca35b32a5df0a3e4d74451143fd2143a10458f9eb7e63541b131df",
+    "report/hdc_resolution_20261102/timing_routed.rpt": "d2388147e3dee91a65cc991d53398cfb580a9a6c20910873d18df2bda4929cc5",
+    "report/hdmi_mirror_20261103/utilization_routed.rpt": "777842c338ba5192e4284a688d1980fd5bab13922168e76e881b76e7e0c35fe7",
+    "report/hdmi_mirror_20261103/timing_routed.rpt": "1354de97714b01b9e550fba27e2d4823b7e0da08bd92541a2fafa04730f6042d"
+  }
+}

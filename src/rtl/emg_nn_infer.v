@@ -28,7 +28,7 @@
 module emg_nn_infer #(
     // absolute path: the BD synthesizes this module in a Vivado run
     // directory where a relative $readmemh path would not resolve
-    parameter MEM_FILE = "d:/FPGA/sEMG-HMRS/data/models/nn_int8_board_multiwear/nn_int8_weights.mem"
+    parameter MEM_FILE = "data/models/nn_int8_board_multiwear/nn_int8_weights.mem"
 ) (
     input  wire        clk,
     input  wire        rst_n,

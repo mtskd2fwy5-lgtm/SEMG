@@ -22,10 +22,10 @@ module tb_emg_fatigue;
     localparam [3:0]  P_IDLE  = 4'd0;
 
     // absolute paths keep the TB independent of the simulator run directory
-    localparam SAMPLE_FILE  = "d:/FPGA/sEMG-HMRS/data/models/fatigue/tb_fatigue_samples.mem";
-    localparam EXPID_FILE   = "d:/FPGA/sEMG-HMRS/data/models/fatigue/tb_fatigue_exp_id.mem";
-    localparam EXPDATA_FILE = "d:/FPGA/sEMG-HMRS/data/models/fatigue/tb_fatigue_exp_data.mem";
-    localparam ACTIVITY_FILE = "d:/FPGA/sEMG-HMRS/data/models/fatigue/tb_fatigue_activity.mem";
+    localparam SAMPLE_FILE  = "data/models/fatigue/tb_fatigue_samples.mem";
+    localparam EXPID_FILE   = "data/models/fatigue/tb_fatigue_exp_id.mem";
+    localparam EXPDATA_FILE = "data/models/fatigue/tb_fatigue_exp_data.mem";
+    localparam ACTIVITY_FILE = "data/models/fatigue/tb_fatigue_activity.mem";
 
     reg clk = 1'b0, rst_n = 1'b0;
     always #5 clk = ~clk;           // 100 MHz

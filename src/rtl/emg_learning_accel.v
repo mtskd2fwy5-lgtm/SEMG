@@ -12,7 +12,7 @@
 // Prediction result3 is the score gap in 0.01 percent units; result1 keeps
 // the legacy integer-percent meaning. Both memories remain immutable.
 module emg_learning_accel #(
-    parameter HDC_MEM="d:/FPGA/sEMG-HMRS/data/models/hdc_memory.mem",
+    parameter HDC_MEM="data/models/hdc_memory.mem",
     parameter integer WATCHDOG=10000000
 )(
     (* X_INTERFACE_PARAMETER="XIL_INTERFACENAME clk, ASSOCIATED_BUSIF M_AXI, ASSOCIATED_RESET rst_n, FREQ_HZ 100000000" *)

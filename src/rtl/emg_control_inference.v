@@ -4,7 +4,7 @@
 // never waits for DMA/LCD/UART. Configuration is snapshotted per window.
 module emg_control_inference #(
     parameter integer CLOCK_HZ=25000000,
-    parameter MEM_FILE="d:/FPGA/sEMG-HMRS/data/models/nn_int8_board_multiwear/nn_int8_weights.mem"
+    parameter MEM_FILE="data/models/nn_int8_board_multiwear/nn_int8_weights.mem"
 )(
     input wire clk,rst_n,recalibrate,
     input wire [2:0] shift,

@@ -1,5 +1,5 @@
-﻿param([string]$Tag='20261102_HAND_CONTROL_HDC_DYNAMIC_CONTINUOUS_V30',
-      [string]$ReportDir='report/hdc_continuous_20261102')
+﻿param([string]$Tag='20261103_HAND_CONTROL_HDMI_MIRROR_V31',
+      [string]$ReportDir='report/hdmi_mirror_20261103')
 $ErrorActionPreference='Stop'
 if($Tag -notmatch '^[A-Za-z0-9_]+$'){throw 'Invalid BOOT tag'}
 $root=(Resolve-Path (Join-Path $PSScriptRoot '../..')).Path
@@ -69,7 +69,14 @@ try {
  finally {Pop-Location}
  & python tools/verify_control_boot.py --application-only --tag $Tag
  if($LASTEXITCODE -ne 0){throw 'Application build tag mismatch; BOOT was not written'}
- & 'D:/FPGA/VIVADO/2025.2/Vitis/bin/bootgen.bat' -arch zynq -image build/boot/boot_image_pl_control.bif -w -o i "build/boot/BOOT_$Tag.BIN"
+ $bootgen = $null
+ if ($env:AMD_VIVADO_ROOT) { $bootgen = Join-Path $env:AMD_VIVADO_ROOT 'Vitis/bin/bootgen.bat' }
+ if (-not $bootgen -or -not (Test-Path $bootgen)) {
+  $bootgenCommand = Get-Command bootgen.bat -ErrorAction SilentlyContinue
+  if ($bootgenCommand) { $bootgen = $bootgenCommand.Source }
+ }
+ if (-not $bootgen -or -not (Test-Path $bootgen)) { throw 'bootgen.bat not found; set AMD_VIVADO_ROOT or add bootgen.bat to PATH' }
+ & $bootgen -arch zynq -image build/boot/boot_image_pl_control.bif -w -o i "build/boot/BOOT_$Tag.BIN"
  if($LASTEXITCODE -ne 0){throw 'PL-control bootgen failed'}
  & python tools/verify_control_boot.py --tag $Tag --report-dir $ReportDir
  if($LASTEXITCODE -ne 0){throw 'Matched hardware/application BOOT verification failed'}

@@ -1,0 +1,1095 @@
+﻿{
+  "date": "2026-11-03",
+  "tag": "20261103_HAND_CONTROL_HDMI_MIRROR_V31",
+  "hardware_verified": false,
+  "pwm_connected": false,
+  "pl_pwm_ports_present": true,
+  "physical_wiring_verified": false,
+  "hardware_reused_from_v12": [],
+  "hardware_reused_from_v15": [],
+  "application_inherited_from_v13": [],
+  "application_inherited_from_v15": [],
+  "application_changes_from_v15": [],
+  "pl_partition": {
+    "transform": "wordrev",
+    "header": 120,
+    "offset": 134656,
+    "bytes": 4045564
+  },
+  "application_load_checks": [
+    {
+      "load_address": "0x10000000",
+      "elf_file_bytes": 202732,
+      "boot_offset": "0x3fc900",
+      "match": true
+    },
+    {
+      "load_address": "0x10034000",
+      "elf_file_bytes": 737552,
+      "boot_offset": "0x42e100",
+      "match": true
+    }
+  ],
+  "fsbl_load_checks": [
+    {
+      "load_address": "0x0",
+      "elf_file_bytes": 82648,
+      "boot_offset": "0x1700",
+      "match": true
+    },
+    {
+      "load_address": "0x18000",
+      "elf_file_bytes": 16404,
+      "boot_offset": "0x19700",
+      "match": true
+    },
+    {
+      "load_address": "0x1f614",
+      "elf_file_bytes": 224,
+      "boot_offset": "0x20d14",
+      "match": true
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "build\\vivado\\hand_motion_reconstruction.runs\\impl_1\\design_1.bit",
+      "bytes": 4045684,
+      "sha256": "75f5cf6ec7db051750ca59b082f2e129f9504ea6e190e6a23e190c5d2d959283"
+    },
+    {
+      "path": "sw\\ps_uart_print\\ps_uart_print_pl_control.elf",
+      "bytes": 982452,
+      "sha256": "bede2c8d72313aecccd94d72abbaa4065844ff7092c0d7180ee6a6430243d738"
+    },
+    {
+      "path": "build\\boot\\BOOT_20261103_HAND_CONTROL_HDMI_MIRROR_V31.BIN",
+      "bytes": 5120528,
+      "sha256": "0e2fecd19eab5792d840b1df9b35bbd69a843dab3ac9b84dcd2516a1b0bed045"
+    },
+    {
+      "path": "build\\export\\design_1.xsa",
+      "bytes": 1610229,
+      "sha256": "bd15897e0a2b7fdb94af9202a22226e1a27cf94a5ac58a0f5559644ded5710fe"
+    },
+    {
+      "path": "board\\constraints\\hz_zynq_ads1299.xdc",
+      "bytes": 3632,
+      "sha256": "62109953adf4ffde3a535f5b13491b0bbdb4226bed62c30e04c14d92ef656c71"
+    },
+    {
+      "path": "board\\constraints\\hz_zynq_ads1299_bd.xdc",
+      "bytes": 6016,
+      "sha256": "2c3f59a2a3d727e3483992fd802771a9f679efbffa00660fc304d91001cb9527"
+    },
+    {
+      "path": "board\\constraints\\hz_zynq_clock_groups.xdc",
+      "bytes": 720,
+      "sha256": "533302753e7dbff7f6b7d78442884c323f7071266b980e9af8b60c1f21c4961a"
+    },
+    {
+      "path": "board\\constraints\\hz_zynq_hand.xdc",
+      "bytes": 1237,
+      "sha256": "2aea667f1a9558b52afdbb8bf39035565f09af9f8f23592dc3a85b05c59f65ec"
+    },
+    {
+      "path": "board\\constraints\\hz_zynq_hdmi.xdc",
+      "bytes": 1157,
+      "sha256": "a93f5bb8249baa2e673ee5ecc5f84b96327f7ff700a6d8e0e009d57ff662e72e"
+    },
+    {
+      "path": "board\\constraints\\hz_zynq_hdmi_timing.xdc",
+      "bytes": 1261,
+      "sha256": "bfa206a0d56def576c12a0b8f85e6a305d49be7f887d46ae325667b9539b8269"
+    },
+    {
+      "path": "board\\constraints\\hz_zynq_imu_clock_groups.xdc",
+      "bytes": 1098,
+      "sha256": "c1f1f9720ecc303dd06800efe18bd797f6ee68e08f3b7db3bca6cc512290d290"
+    },
+    {
+      "path": "board\\constraints\\hz_zynq_lcd.xdc",
+      "bytes": 8364,
+      "sha256": "729b3cbeeac0d81a52daba796cb759fdb80b1c094321acbb76b183690f9903f9"
+    },
+    {
+      "path": "board\\constraints\\hz_zynq_lcd_timing.xdc",
+      "bytes": 1677,
+      "sha256": "b16419ade3e42fd0ca4ac3bff2103b5a0edd0269500238c81076d337e6a8e0bb"
+    },
+    {
+      "path": "build\\boot\\boot_image_pl_control.bif",
+      "bytes": 290,
+      "sha256": "987e880ad802379deef4f76efa336afb49081f92e0efda7a35d04df57f4501b6"
+    },
+    {
+      "path": "build\\boot\\build_pl_control_boot.ps1",
+      "bytes": 4572,
+      "sha256": "f49afd40fab15353e9b3f05f20ec01345218d41e0ba830733987880872154d5f"
+    },
+    {
+      "path": "build\\build_all.ps1",
+      "bytes": 15017,
+      "sha256": "f3e61cbe374304ed3f95991e7ddf1c3b974db5e7d5e2e44e5efc3f023a39a55a"
+    },
+    {
+      "path": "build\\project.psd1",
+      "bytes": 1738,
+      "sha256": "493e8ba09590f3b799e368f240ffe5e8ad1fdb2f656477cae385c2b69dcee7ce"
+    },
+    {
+      "path": "build\\scripts\\add_hdmi_mirror.tcl",
+      "bytes": 4695,
+      "sha256": "d48ac4e97f4c7057a3a857075805aaf0431be2625cc46ffef47c7984fc130dcc"
+    },
+    {
+      "path": "build\\scripts\\audit_hdmi_routed.tcl",
+      "bytes": 2348,
+      "sha256": "6acb03f23a129237449e169e085fd1d05dc74d5edcf3afe07632661af08ec6fc"
+    },
+    {
+      "path": "build\\scripts\\check_hdmi_scaler_netlist.tcl",
+      "bytes": 711,
+      "sha256": "d5bd05a0bbf5c06d59872575dc4e7078f7a29021114c2454aea60602625daf6e"
+    },
+    {
+      "path": "build\\scripts\\rebuild_hdmi_mirror.tcl",
+      "bytes": 1829,
+      "sha256": "2fe6195268e196d57385e229e4e4c562ace0795446f3097f5bd6dd4e72864ecd"
+    },
+    {
+      "path": "build\\scripts\\refresh_hdmi_mirror.tcl",
+      "bytes": 719,
+      "sha256": "d01f12de4502fbe649a646eed832f060caa02e710281c34585d8b3f3d95e16db"
+    },
+    {
+      "path": "build\\scripts\\run_hdc_model_test.ps1",
+      "bytes": 1161,
+      "sha256": "3c1eb65cfb661cb39c9919ec9259632e8030b54d1134876d97b3f7ea3f023adb"
+    },
+    {
+      "path": "build\\scripts\\run_hdmi_pipeline_test.ps1",
+      "bytes": 1291,
+      "sha256": "28b9377daf17eb13164a6674fafb019a7c83fc00d653817e5728d705895e08cd"
+    },
+    {
+      "path": "build\\scripts\\run_hdmi_test.ps1",
+      "bytes": 2913,
+      "sha256": "74591f790c55698f0961828ea88c3183deae5d32ac78d6c735c1829854670058"
+    },
+    {
+      "path": "build\\scripts\\run_lcd_firmware_test.ps1",
+      "bytes": 708,
+      "sha256": "9a97e5a25c7b346e5a50ac0c1437153c022c79e57dfe8b8312b813581810cf78"
+    },
+    {
+      "path": "build\\scripts\\update_learning_platform.py",
+      "bytes": 793,
+      "sha256": "89c6169a2484a43b8699ef8e7430932620b6753afa39098ed263da27c9ed5682"
+    },
+    {
+      "path": "build\\update_project.tcl",
+      "bytes": 5011,
+      "sha256": "cec5fe01931df0f280f205ff5e3e266d5290ddc607c5d461261bf381d4a718ae"
+    },
+    {
+      "path": "build\\vivado\\hand_motion_reconstruction.srcs\\sources_1\\bd\\design_1\\design_1.bd",
+      "bytes": 145057,
+      "sha256": "c258c0e081b6cfa0a84a2a9c9fdf099593147f771cb0c0b52ed4558ab02ba66f"
+    },
+    {
+      "path": "build\\vivado\\hand_motion_reconstruction.srcs\\sources_1\\bd\\design_1\\ip\\design_1_axi_vdma_hdmi_0\\design_1_axi_vdma_hdmi_0.xci",
+      "bytes": 122925,
+      "sha256": "b874dccc3fe07296c2617f4d29658db3c343c6ef4d92177583c471bc17582e3d"
+    },
+    {
+      "path": "build\\vivado\\hand_motion_reconstruction.srcs\\sources_1\\bd\\design_1\\ip\\design_1_gpio_hdmi_0\\design_1_gpio_hdmi_0.xci",
+      "bytes": 25876,
+      "sha256": "00a20ccc0ed8991538c666fe480bc76c06eb79c0821b5215cb92e1a6eb272b5c"
+    },
+    {
+      "path": "build\\vivado\\hand_motion_reconstruction.srcs\\sources_1\\bd\\design_1\\ip\\design_1_hdmi_output_0_0\\design_1_hdmi_output_0_0.xci",
+      "bytes": 10701,
+      "sha256": "6eda6247a09220ac5debe1a7baa947608a8c27ecd94e252cb8fecff79e42cde6"
+    },
+    {
+      "path": "build\\vivado\\hand_motion_reconstruction.srcs\\sources_1\\bd\\design_1\\ip\\design_1_hdmi_scaler_0_0\\design_1_hdmi_scaler_0_0.xci",
+      "bytes": 11662,
+      "sha256": "7f1ecefac07e21e3357b4ddec4315e3841e71ae77a77702bbed16cb7e896cecd"
+    },
+    {
+      "path": "build\\vivado\\hand_motion_reconstruction.srcs\\sources_1\\bd\\design_1\\ip\\design_1_smartconnect_0_0\\design_1_smartconnect_0_0.xci",
+      "bytes": 119152,
+      "sha256": "257d9477d8cc3a7903510b752a4ab5b849645c05d2265e16f9ce6498cdbef020"
+    },
+    {
+      "path": "build\\vivado\\hand_motion_reconstruction.srcs\\sources_1\\bd\\design_1\\ip\\design_1_smartconnect_1_0\\design_1_smartconnect_1_0.xci",
+      "bytes": 37768,
+      "sha256": "633347a11c7d850163f59d9641185c218a75c01e3d5d31d5721db5cb0482a6f9"
+    },
+    {
+      "path": "build\\vivado\\hand_motion_reconstruction.srcs\\sources_1\\bd\\design_1\\ip\\design_1_video_out_hdmi_0\\design_1_video_out_hdmi_0.xci",
+      "bytes": 17452,
+      "sha256": "084ef1a86d90bb15021b677a8f30bafe2fb3ed1f07972cbc6273896e127a885d"
+    },
+    {
+      "path": "sim\\check_hdmi_serial.py",
+      "bytes": 833,
+      "sha256": "d2227d5e1fd39bb41ea448837fa628c96882769bff6667eb7969e85e2947c71a"
+    },
+    {
+      "path": "sim\\hand_firmware_test.c",
+      "bytes": 33371,
+      "sha256": "cdb458a4a25d6d05e7f7540f7db50687b58a5c93c4e90af663ff048b0cc8a41a"
+    },
+    {
+      "path": "sim\\hdc_model_store_test.c",
+      "bytes": 4652,
+      "sha256": "09ef5bce55d78df9e3051ae93f81190bc35c98fb48f7f46d92ed6d5de744f260"
+    },
+    {
+      "path": "sim\\hdmi_output_tb.sv",
+      "bytes": 2164,
+      "sha256": "c6fb3502f0e3a6b0eeebff799eee4a59a7fb5dbf4108c882f20726ec5f4aa2ef"
+    },
+    {
+      "path": "sim\\hdmi_scaler_tb.sv",
+      "bytes": 2990,
+      "sha256": "d15cf291710523df9bd20f0ddca20e0963fc7d3f0193b2a9255551b2c7458412"
+    },
+    {
+      "path": "sim\\hdmi_serializer_tb.sv",
+      "bytes": 911,
+      "sha256": "6a3244be2936e09b97f47a2bd8230f1660587259c36e6f575c5c57127c12705c"
+    },
+    {
+      "path": "sim\\hdmi_support\\timing_serializer_stub.v",
+      "bytes": 402,
+      "sha256": "eb753e49fcd62db25883f7f3db036eaa0c9e68df7ba62c288d5eb8de946596ec"
+    },
+    {
+      "path": "sim\\hdmi_tmds_tb.sv",
+      "bytes": 1852,
+      "sha256": "cda68069c46769f6cf4c344c85ef0cdb3c9d5a58dac49f437b922044f925ce4d"
+    },
+    {
+      "path": "sim\\hdmi_video_pipeline_tb.sv",
+      "bytes": 3424,
+      "sha256": "00712b5b891b568fa7d871321e52166d06a2153250106e33813c2474ce865694"
+    },
+    {
+      "path": "sim\\lcd_firmware_test.c",
+      "bytes": 93154,
+      "sha256": "34f850f67abc50d5e76618ff38adda6c28861a2c80db4243db7f733971092c31"
+    },
+    {
+      "path": "sim\\pl_learning_workflow_test.c",
+      "bytes": 4346,
+      "sha256": "4baebb4f18862e81efd0ca95a5b4caa92741384695de3e451d529016efc35265"
+    },
+    {
+      "path": "sim\\sd_record_test.c",
+      "bytes": 10549,
+      "sha256": "d3060384b2ec653e2a1536536343fa861c1bdefe90410c66b9ce49513708e8fd"
+    },
+    {
+      "path": "sim\\uart_record_firmware_test.c",
+      "bytes": 7015,
+      "sha256": "2b30f41e025853f31250ffa9d4d7777ad8fdf4be8a7034e8b913ede1a5f4ce97"
+    },
+    {
+      "path": "src\\rtl\\ads1299_spi.v",
+      "bytes": 29135,
+      "sha256": "2e06afa3376312f0f5edee8f423eaa544628278bb2938e1efccedc1c1aa8a8ca"
+    },
+    {
+      "path": "src\\rtl\\ads8698_spi.v",
+      "bytes": 1378,
+      "sha256": "02d5171872d1821f96599c949a92e8661daa263da54eac680251f0f948dc8896"
+    },
+    {
+      "path": "src\\rtl\\axis_async_fifo.v",
+      "bytes": 3291,
+      "sha256": "fe24aeaf6b3fc90122f3a9dcce98a659034571b35216e17cc113d88325f36a02"
+    },
+    {
+      "path": "src\\rtl\\axis_packet_mux.v",
+      "bytes": 5431,
+      "sha256": "e9365f1971635ce92faf8f3c838040a80ef66a190839feb05206171ccc44dd40"
+    },
+    {
+      "path": "src\\rtl\\emg_bandpass.v",
+      "bytes": 12867,
+      "sha256": "5783eef5f10c4d78faf2ec8782a1b357f5a484d87673b31cc06136948a241334"
+    },
+    {
+      "path": "src\\rtl\\emg_comb50.v",
+      "bytes": 4437,
+      "sha256": "d2fadd0829ea93dfc06394d3a1262c5ef19bff6690f2894f16381e0266f3a348"
+    },
+    {
+      "path": "src\\rtl\\emg_control_constants.vh",
+      "bytes": 8881,
+      "sha256": "cf077f7e7e2a98848b1e725313e2d99ac8eaee67cc762fa4e14896faef2cded9"
+    },
+    {
+      "path": "src\\rtl\\emg_control_inference.v",
+      "bytes": 5412,
+      "sha256": "f2119b7b771b6697ffd8bd2f703b23e6945a6887b3b3c4584e2d01fdac46d83b"
+    },
+    {
+      "path": "src\\rtl\\emg_control_policy.v",
+      "bytes": 9845,
+      "sha256": "d9350f6c7929e2adc755ae9187fa8cc4e7905f74da2c37f19431c71ea84b8278"
+    },
+    {
+      "path": "src\\rtl\\emg_data_path.v",
+      "bytes": 7407,
+      "sha256": "5e07cc2d9f78fc50116398af4c418f2a10cc1aaa1f4e9dcb92a5f7cf265c59b7"
+    },
+    {
+      "path": "src\\rtl\\emg_fatigue.v",
+      "bytes": 31743,
+      "sha256": "b65de6a90d1582196051574963874a4c77458fd4a299c18e8185a9d8cb8409e2"
+    },
+    {
+      "path": "src\\rtl\\emg_feature_bank.v",
+      "bytes": 9572,
+      "sha256": "a32d86053b679333f8ec1ac89e4352bbc1710807b7f2f30fd028a0f33b8c9b58"
+    },
+    {
+      "path": "src\\rtl\\emg_learning_accel.v",
+      "bytes": 17341,
+      "sha256": "d71a38e2ce0665c6d66b602a4b254367e16c35b24180de1e0f5d506442e5646b"
+    },
+    {
+      "path": "src\\rtl\\emg_line_filter.v",
+      "bytes": 3116,
+      "sha256": "4f24c4fcf0218e3331ae6661f4e6cdb1b1b86d42a547fbd6db445b52fcd1536c"
+    },
+    {
+      "path": "src\\rtl\\emg_nn_infer.v",
+      "bytes": 17698,
+      "sha256": "b14345b75e99de7b8358da998d474b1a021e48a8d814c6f4854bd6a6f73943f2"
+    },
+    {
+      "path": "src\\rtl\\emg_notch50.v",
+      "bytes": 4749,
+      "sha256": "32285e74b71882f1cb81a7978ace98822661ada8be12f86a68b285449a4f0bed"
+    },
+    {
+      "path": "src\\rtl\\emg_pl_control.v",
+      "bytes": 4536,
+      "sha256": "cf67a00daad7c55cd4124a269a6370f629a45dd2a338846c6c3d41ce37883b43"
+    },
+    {
+      "path": "src\\rtl\\emg_pl_export.v",
+      "bytes": 17722,
+      "sha256": "92d25e10bb7d039b9047351aaf82856050abafe21c171e1cfb69b2b2fd12cc8f"
+    },
+    {
+      "path": "src\\rtl\\emg_pl_export_status.v",
+      "bytes": 2160,
+      "sha256": "7c058364aa86a0335317884c218a1263594e13582c80bb7f1ba67b6202878a39"
+    },
+    {
+      "path": "src\\rtl\\emg_preprocess.v",
+      "bytes": 2508,
+      "sha256": "09404f30e67c8475bff256f1a63781289a4d1d0797e85bebe38fc39f042f00d4"
+    },
+    {
+      "path": "src\\rtl\\emg_window_features.v",
+      "bytes": 22228,
+      "sha256": "c9e020b9ca05c3cd656bbc116e9a57b39eb0554f47bce8fde9723f292097d6d6"
+    },
+    {
+      "path": "src\\rtl\\hand_control.v",
+      "bytes": 13765,
+      "sha256": "e6cb1c86d2adc4362277da5337af54a531975b90483076052f8e099292fc2c45"
+    },
+    {
+      "path": "src\\rtl\\hand_motion_top.v",
+      "bytes": 1082,
+      "sha256": "2126de5cf70db1feeffe14706f132ce7807083fec32298a1b7a84d21b13b9b75"
+    },
+    {
+      "path": "src\\rtl\\hand_servo_pwm.v",
+      "bytes": 4010,
+      "sha256": "1d48f52df90c58ca3bb5b1ae2e74c7915774732866b468b1a9f0494f0c015678"
+    },
+    {
+      "path": "src\\rtl\\hdmi_output.v",
+      "bytes": 3442,
+      "sha256": "6f5a70eecbbc0f5fbb800b1f80027cb8d7c4a3037656aa9f8c561c70a8cd3038"
+    },
+    {
+      "path": "src\\rtl\\hdmi_scaler.v",
+      "bytes": 4923,
+      "sha256": "ae09d9260ed9a8aca6914c65d028f1680a6aaa27d4d05f5f69938f61610ec3fd"
+    },
+    {
+      "path": "src\\rtl\\hdmi_serializer.v",
+      "bytes": 1434,
+      "sha256": "54f76194f7e0af512ce3c77637ea587ae97a8c68d9ccd5d86f861080dfc5feb2"
+    },
+    {
+      "path": "src\\rtl\\hdmi_tmds_encoder.v",
+      "bytes": 1532,
+      "sha256": "c4d5ebb832fc30b26c424ef9e644681333f2b15265953b926c5d123465838702"
+    },
+    {
+      "path": "src\\rtl\\lcd_clk_fwd.v",
+      "bytes": 1055,
+      "sha256": "39a7aaed722bd2b9b8f870f446ebd239b17b7ee5ea241045f69768fc6142b9f5"
+    },
+    {
+      "path": "src\\rtl\\lcd_panel_adapter.v",
+      "bytes": 12378,
+      "sha256": "683f0dc1f0690142342fa06fab110a6b15dd3af80698d332ada74dc796f28391"
+    },
+    {
+      "path": "src\\rtl\\learning_div64.v",
+      "bytes": 994,
+      "sha256": "42ddadc38445d0769b52f1798a8209f5900e8f92022470f57223b829af66a344"
+    },
+    {
+      "path": "src\\rtl\\mpu6050_motion.v",
+      "bytes": 476,
+      "sha256": "62ac8cb47bc78b37e4e38cc2ad7b7e524cd40746dc347a690778d85151e3b605"
+    },
+    {
+      "path": "src\\rtl\\mpu6050_tilt.v",
+      "bytes": 27557,
+      "sha256": "a5a7084c41162f24005066032409cb1ccaa3269904fb65ac64071afa95623bb0"
+    },
+    {
+      "path": "src\\rtl\\mpu_attitude.v",
+      "bytes": 3648,
+      "sha256": "a0ff799d1063e8dbc51f86959aedd16ec384e4110efce9e2767c55a4ddc3ddf8"
+    },
+    {
+      "path": "src\\rtl\\mpu_attitude_core.v",
+      "bytes": 7977,
+      "sha256": "b9bc4a56bd2c08de0f51daf63146b25661f2acd5052f9ed34e0cc4089371b775"
+    },
+    {
+      "path": "src\\rtl\\mpu_attitude_regs.vh",
+      "bytes": 3048,
+      "sha256": "aeec6a356d7e8c6ee99d5dba54c6b270328b1202345c90ae2099e752dc60e028"
+    },
+    {
+      "path": "src\\rtl\\mpu_attitude_rom.vh",
+      "bytes": 34233,
+      "sha256": "1175727a34c9285892f3ec750ba6b153513526c1dfc863633b6ae3bf1b11c345"
+    },
+    {
+      "path": "src\\rtl\\touch_gt911.v",
+      "bytes": 20172,
+      "sha256": "8e7aa3aea1afd01b0d1dd78f3ff99a688d839985bf3241f4a0cc208ddda3846c"
+    },
+    {
+      "path": "sw\\ps_uart_print\\build.bat",
+      "bytes": 1317,
+      "sha256": "1b7f84ad51f3921e6ef6cf5be24972200e426be0e09620dae35e48185c7baa1a"
+    },
+    {
+      "path": "sw\\ps_uart_print\\capture_actions.h",
+      "bytes": 1181,
+      "sha256": "a63e1ed31ba11c01afe50593425e1731ad36019d161b5551256fbaada0473f67"
+    },
+    {
+      "path": "sw\\ps_uart_print\\channel_quality.h",
+      "bytes": 18170,
+      "sha256": "2b5ee0e06aa974b8ee74d853b9780642ebd0c7e149c2ae31a80f63e8cf9d110f"
+    },
+    {
+      "path": "sw\\ps_uart_print\\channel_quality_tables.h",
+      "bytes": 3277,
+      "sha256": "8ca33642da10228a87f0699234893200353fdd96f93fa91d435d2c89531f28dd"
+    },
+    {
+      "path": "sw\\ps_uart_print\\hand_control.h",
+      "bytes": 20140,
+      "sha256": "0e431d3d363e3979750ac65a63567cdd2fa160610c1dd05a09ffd780efadbbd8"
+    },
+    {
+      "path": "sw\\ps_uart_print\\hdc_learning.h",
+      "bytes": 13980,
+      "sha256": "2ca555cb3ab28e861dd072e755384633240485319ad2122f86e233526cc9d387"
+    },
+    {
+      "path": "sw\\ps_uart_print\\hdc_memory.h",
+      "bytes": 49972,
+      "sha256": "5eadfc592733b853e4a2f4bf310c55536cbc963f5daa64032292fe0eb3b5517b"
+    },
+    {
+      "path": "sw\\ps_uart_print\\hdc_model_store.h",
+      "bytes": 6563,
+      "sha256": "931600a699ffb191ede7fac779dcb7b1069945501007ef3e519889dc7da31265"
+    },
+    {
+      "path": "sw\\ps_uart_print\\hdmi_mirror.h",
+      "bytes": 3291,
+      "sha256": "6f22033bd5d295dcaaa1108c24b6b9d288f01cbe2f6028c3de35656a088afedb"
+    },
+    {
+      "path": "sw\\ps_uart_print\\lcd_channel_quality.h",
+      "bytes": 7915,
+      "sha256": "ed792c1937b89bdbeaf03d7dce0b36bb293a20be9205c1786e03d421a85e2292"
+    },
+    {
+      "path": "sw\\ps_uart_print\\lcd_font_zh.h",
+      "bytes": 3750391,
+      "sha256": "3ca28e450879110efb71376f3434a6266eba39fcabfdada3cb7b33c5849b5b8b"
+    },
+    {
+      "path": "sw\\ps_uart_print\\lcd_hand.h",
+      "bytes": 18472,
+      "sha256": "ea57b549959098b682b86a322f7ff60305f8ac16ea2b95efb719315235c16695"
+    },
+    {
+      "path": "sw\\ps_uart_print\\lcd_hand_3d.h",
+      "bytes": 12691,
+      "sha256": "0d2a4c28e59d7e19d10eb5e4428c174e2403e988bf823d9bcf0fe76ac2125718"
+    },
+    {
+      "path": "sw\\ps_uart_print\\lcd_hdc.h",
+      "bytes": 15159,
+      "sha256": "8e37fd7f6611189a1a51322832990367197190cb66c4de57239ca38cae1a0191"
+    },
+    {
+      "path": "sw\\ps_uart_print\\lcd_hdc_models.h",
+      "bytes": 7198,
+      "sha256": "ad7d65a87d5af87f82a6aaf4f777bf2eedafb4c2c3d1ce8d12b9653c03a49e87"
+    },
+    {
+      "path": "sw\\ps_uart_print\\lcd_home.h",
+      "bytes": 2737,
+      "sha256": "2f87efc8652c2c48ab21ddec24cfa00ae228bd8ade4bc1d8f92cbcd771df1b40"
+    },
+    {
+      "path": "sw\\ps_uart_print\\lcd_imu_3d.h",
+      "bytes": 5873,
+      "sha256": "246545c32f822435b0ab6d71ced853459191e1484c6bdfcd292ac43c9f5a5b55"
+    },
+    {
+      "path": "sw\\ps_uart_print\\lcd_rehab.h",
+      "bytes": 23567,
+      "sha256": "f5e772785820d7d2a1353503d708c89ac13a6823edb68afe6fadc3114f119937"
+    },
+    {
+      "path": "sw\\ps_uart_print\\lcd_settings.h",
+      "bytes": 4049,
+      "sha256": "edddef7613e78de3eb9580bcd2ceed3507705aef0a96e57798f3d34d2374450b"
+    },
+    {
+      "path": "sw\\ps_uart_print\\lcd_ui.h",
+      "bytes": 3076,
+      "sha256": "4c6c7bcb022a5b964c216041a73bb18b1071ff4115c28d549b4048a16f534339"
+    },
+    {
+      "path": "sw\\ps_uart_print\\lcd_virtual.h",
+      "bytes": 8637,
+      "sha256": "93dddcaf5082cc62dacdeed4c99885c5d4eeedf9cbd1cb2c8242c64a20febaa2"
+    },
+    {
+      "path": "sw\\ps_uart_print\\lcd_waveform.h",
+      "bytes": 11949,
+      "sha256": "25782e933c978369c3ddc5e6092440504413576e94e17e7c54ae749f1b309022"
+    },
+    {
+      "path": "sw\\ps_uart_print\\main.c",
+      "bytes": 161674,
+      "sha256": "abfd0b3902ea2a3bb2033bb841d247df84830112a5d553a2bd74dde735a6595e"
+    },
+    {
+      "path": "sw\\ps_uart_print\\nn_confidence.h",
+      "bytes": 2021,
+      "sha256": "47a40a1fa9422850244009e8860916731e5dffdaac9defb035da8d01a42d25ff"
+    },
+    {
+      "path": "sw\\ps_uart_print\\pl_control.h",
+      "bytes": 2476,
+      "sha256": "39e0860d2c7b2896094e76e503adad4071330a6a74d3a0b8901e372d660aaaff"
+    },
+    {
+      "path": "sw\\ps_uart_print\\pl_learning.h",
+      "bytes": 4726,
+      "sha256": "3279c2f2bae95aaca1ca777fe4550f9ddc4415e29cefabca161a12747b074149"
+    },
+    {
+      "path": "sw\\ps_uart_print\\pl_learning_api.h",
+      "bytes": 905,
+      "sha256": "a40c9e34ea3249fc654d438986c414857bd3af3a31d8fb157b05543e3141841a"
+    },
+    {
+      "path": "sw\\ps_uart_print\\pose_contract.h",
+      "bytes": 2213,
+      "sha256": "a3ef9ec8aeb682d6bd2c211ce97401b5de6e51bba2df8ea6a1e830aa33e667af"
+    },
+    {
+      "path": "sw\\ps_uart_print\\rehab_training.h",
+      "bytes": 8273,
+      "sha256": "f5c1423b900e90b72a2243268248068297964cc0f535bcae0decd825cbc5b8c1"
+    },
+    {
+      "path": "sw\\ps_uart_print\\sd_record.c",
+      "bytes": 15758,
+      "sha256": "f3e80debf6e5d200fcd069ecc09ccb6beb321ae4d8abd9205290a2196cd3fe48"
+    },
+    {
+      "path": "sw\\ps_uart_print\\sd_record.h",
+      "bytes": 1711,
+      "sha256": "34e77526d436e6229a633a93f9bbca1090ee65a90f2ee9f1630aea1b9e4c3e9d"
+    },
+    {
+      "path": "sw\\ps_uart_print\\selfcal.h",
+      "bytes": 5753,
+      "sha256": "75339ab9cdbaadd2d66192a753529966b82aeedb12103c442bc22e8e3d65d839"
+    },
+    {
+      "path": "sw\\ps_uart_print\\synergy_feedback.h",
+      "bytes": 2704,
+      "sha256": "a47794b75a8b504fa6a84e70e0a03acc18eae7c38eb7d8752fa2d20e29a0f90a"
+    },
+    {
+      "path": "sw\\ps_uart_print\\synergy_nmf.h",
+      "bytes": 3519,
+      "sha256": "dc19deb3e13a02b75028689b783eef404a5c60e5dfd90f56dcca85b0fc626167"
+    },
+    {
+      "path": "sw\\ps_uart_print\\synergy_nmf_model.h",
+      "bytes": 526,
+      "sha256": "fcc2e3e365d025ee4e73a50b8c9d78ddc5b81314f59daf2a10ab310bde3e5839"
+    },
+    {
+      "path": "tools\\check_hdmi_bd.py",
+      "bytes": 3470,
+      "sha256": "dd3d1aaecf780ade6eceb57007e2554d03b381a239f9e851968d3e5a2b0218c4"
+    },
+    {
+      "path": "tools\\verify_boot_partition.py",
+      "bytes": 3035,
+      "sha256": "333f620b03e1ea82e070775e06da6c421bdb69c2c31e5579e106804eeda65ba9"
+    },
+    {
+      "path": "tools\\verify_control_boot.py",
+      "bytes": 44909,
+      "sha256": "01c7212be859a5ba850dc94f75b5a2756d421aeae7c98863523c74bd9059c09d"
+    },
+    {
+      "path": "tools\\verify_hdmi_release.py",
+      "bytes": 4471,
+      "sha256": "3483cdf0bcf10507a6fe37cb1e0b63160e62a0ba02bae405e2d3356bfa5e3777"
+    },
+    {
+      "path": "report\\hdmi_mirror_20261103\\README.md",
+      "bytes": 5671,
+      "sha256": "0ff7fbc1ebce37bab9b0cb54dee9e720e568e9d55720e6906dae81497149c811"
+    },
+    {
+      "path": "report\\hdmi_mirror_20261103\\regression_sources.json",
+      "bytes": 13385,
+      "sha256": "6a279b43f362fdf363db9d749c609195e62a4b79d4abef8b6f8795a128071995"
+    },
+    {
+      "path": "report\\hdmi_mirror_20261103\\baseline_sources.json",
+      "bytes": 8216,
+      "sha256": "d1ea546b6fef6b4b46a06a7f7f2a324ee578cd688cb5edd3ebfaa1dbecdf6a6d"
+    },
+    {
+      "path": "report\\hdmi_mirror_20261103\\hardware_console.log",
+      "bytes": 173164,
+      "sha256": "f46759c5be6f124ba8fd0b8cbdc50b23efbd55501fa5152cb61284f6fe806cbf"
+    },
+    {
+      "path": "report\\hdmi_mirror_20261103\\timing_routed.rpt",
+      "bytes": 224356,
+      "sha256": "1354de97714b01b9e550fba27e2d4823b7e0da08bd92541a2fafa04730f6042d"
+    },
+    {
+      "path": "report\\hdmi_mirror_20261103\\utilization_routed.rpt",
+      "bytes": 13748,
+      "sha256": "777842c338ba5192e4284a688d1980fd5bab13922168e76e881b76e7e0c35fe7"
+    },
+    {
+      "path": "report\\hdmi_mirror_20261103\\drc_routed.rpt",
+      "bytes": 120563,
+      "sha256": "3b5c1e799fa6dd99688f6450bdc044ba2362993061e9390a0e8aab22ef425126"
+    },
+    {
+      "path": "report\\hdmi_mirror_20261103\\cdc.rpt",
+      "bytes": 3354,
+      "sha256": "a07e47ac9b6aa1cace4c7a01fd89f75d22d891f1fca2e9ca957db79b8ed028f6"
+    },
+    {
+      "path": "report\\hdmi_mirror_20261103\\comparison.json",
+      "bytes": 2007,
+      "sha256": "1f9ab5c8d9db544481f635fbdee7b5d04c057f35ac6c266335a9a9e44e5a3d38"
+    },
+    {
+      "path": "report\\hdmi_mirror_20261103\\hdmi_scaler_test.log",
+      "bytes": 987,
+      "sha256": "5c6e175f2c6df108476a98ee0bbc51f2b396c5c4f25931ad96959b38bdeca63d"
+    },
+    {
+      "path": "report\\hdmi_mirror_20261103\\hdmi_tmds_test.log",
+      "bytes": 793,
+      "sha256": "c56e8e0884ed8f37d68d09837281b367b1d1889893e9c62c3a76ce1c06f12fed"
+    },
+    {
+      "path": "report\\hdmi_mirror_20261103\\serializer_check.log",
+      "bytes": 95,
+      "sha256": "f13e0c2edfcbb1ca8a7240139cc226ef4f48af5a56c81c51087fed3708bed02c"
+    },
+    {
+      "path": "report\\hdmi_mirror_20261103\\baseline_bd_contract.json",
+      "bytes": 38790,
+      "sha256": "1c377ac8896e1b0b5ec23af2d9c502bbbd5ff3234814b69dddac46f62b06ae00"
+    },
+    {
+      "path": "report\\hdmi_mirror_20261103\\bd_contract_test.log",
+      "bytes": 116,
+      "sha256": "a8d5fe5b627b97681c70a2e066eead1ae637ddd78fc2eb4bb53413979b83fea9"
+    },
+    {
+      "path": "report\\hdmi_mirror_20261103\\output_test.log",
+      "bytes": 1025,
+      "sha256": "19c339a31beed15a80a65925ffdf147b350bd712f5b4581c8677189217afeedf"
+    },
+    {
+      "path": "report\\hdmi_mirror_20261103\\scaler_synthesis_console.log",
+      "bytes": 17023,
+      "sha256": "c6fd5a55aa2a84680fa89fdfd6a3b555e25a5c47e651132f0d8e8b8d8b186544"
+    },
+    {
+      "path": "report\\hdmi_mirror_20261103\\scaler_netlist_test.log",
+      "bytes": 1105,
+      "sha256": "a5212802178de445bfd0b7508bfbbd475be7e32a73481b71575b951f5c6a1c78"
+    },
+    {
+      "path": "report\\hdmi_mirror_20261103\\pipeline_test.log",
+      "bytes": 2064,
+      "sha256": "d9c79e5e086c4d8444955c6a1b3b5f08f92a99c41b1a0d418988e2c74e7b275f"
+    },
+    {
+      "path": "report\\hdmi_mirror_20261103\\routed_audit_console.log",
+      "bytes": 26664,
+      "sha256": "b57dfe823dfe4f0fd3f4714a6fd08ab7f68e36f7f22cc60945b01310169b5ae2"
+    },
+    {
+      "path": "report\\hdmi_mirror_20261103\\dma_configuration.txt",
+      "bytes": 2434,
+      "sha256": "075dcd190062ef2617548e2028b964918d1c464379190acd2c223d133588d174"
+    },
+    {
+      "path": "report\\hdmi_mirror_20261103\\output_pins.txt",
+      "bytes": 239,
+      "sha256": "ae5c8ffffefcd984e1709e545795d73847f8e2463715fa5687d7f4cc3d763285"
+    },
+    {
+      "path": "report\\hdmi_mirror_20261103\\clocks.rpt",
+      "bytes": 4561,
+      "sha256": "a7a60967d0db58cd94c860778fe932e6c0a240c25ac2a68c493c4b4aeb71a963"
+    },
+    {
+      "path": "report\\hdmi_mirror_20261103\\exceptions.rpt",
+      "bytes": 51366,
+      "sha256": "7fd1aff35af14bb567abb15f3f99c75ae81dbebc822c7fbae6d6e180c1c0413d"
+    },
+    {
+      "path": "report\\hdmi_mirror_20261103\\methodology_routed.rpt",
+      "bytes": 9323,
+      "sha256": "30c308115d6e729c4b29600eeae46b852af96795a1755c6c1d20e353196f6335"
+    },
+    {
+      "path": "report\\hdmi_mirror_20261103\\clock_interaction.rpt",
+      "bytes": 4851,
+      "sha256": "21d91599aedb6e1cdb70a4711c2c96fd406bfa9dcb4e41ae8dab022a932c70c8"
+    },
+    {
+      "path": "report\\hdmi_mirror_20261103\\platform_build.log",
+      "bytes": 33733,
+      "sha256": "ce48ac97e0ce26bf216c4392269bec58e538ecfecf34ad195df283eb281be4f2"
+    },
+    {
+      "path": "report\\hdmi_mirror_20261103\\cdc_detailed.rpt",
+      "bytes": 2158385,
+      "sha256": "dfcae387961cfb8d0d9a4b3daeaf67a7df1911ac771c9ec71a6f822a0d18eeb8"
+    },
+    {
+      "path": "report\\hdmi_mirror_20261103\\hardware_gates.log",
+      "bytes": 993,
+      "sha256": "0fa0bd79c833f2449de20e8b77cf227f3bc8dcf8e2741911b32aa401ace4289e"
+    },
+    {
+      "path": "report\\hdmi_mirror_20261103\\lcd_test.log",
+      "bytes": 6914,
+      "sha256": "352d83ea0c3565a7f373f49ba2c6750f380c80f4fde626eb66ffbdf7e4cf72dd"
+    },
+    {
+      "path": "report\\hdmi_mirror_20261103\\model_test.log",
+      "bytes": 264,
+      "sha256": "c3f02b7db705de0ef2b6eddd9b4d3c2e4ae9e1e9e74135f48be63bee16d8fe7c"
+    },
+    {
+      "path": "report\\hdmi_mirror_20261103\\sd_test.log",
+      "bytes": 520,
+      "sha256": "3cdf14bcb1b5b04661daa806a193cf2725a5d8d2dfb0cad65d355a36eb444cbb"
+    },
+    {
+      "path": "report\\hdmi_mirror_20261103\\hand_test.log",
+      "bytes": 1661,
+      "sha256": "29fc58a6e5e729cbd1dc7326e3f200bfb3be57c6ba2c9f3fd3a9479582990910"
+    },
+    {
+      "path": "report\\hdmi_mirror_20261103\\uart_test.log",
+      "bytes": 169,
+      "sha256": "ed1252e55e6b31ca235de3f07dd0b4171e3b8df1d023b379888b71fbc0f84b1e"
+    },
+    {
+      "path": "report\\hdmi_mirror_20261103\\learning_workflow_test.log",
+      "bytes": 323,
+      "sha256": "39caf6ded684a8222f540b7a24124cad90e7257ad02d6fa2e546859871f06c9d"
+    },
+    {
+      "path": "build\\check_design.tcl",
+      "bytes": 4086,
+      "sha256": "afe2a67b1921989ec141fe056d470b210985a65cdcecfd7dfc259e1828a9d7d2"
+    },
+    {
+      "path": "build\\open_project.tcl",
+      "bytes": 468,
+      "sha256": "dae1d48b6454ea5d3f778c2894de38100c9383b2283fc30582fc8eb3907f1883"
+    },
+    {
+      "path": "tools\\capture_actions.py",
+      "bytes": 3820,
+      "sha256": "3329fc0ab0b23905f9361f75978a8868a5579854f035e4ce55445ffd0ef1873d"
+    },
+    {
+      "path": "tools\\record_uart.py",
+      "bytes": 23790,
+      "sha256": "59be5821762961a890da4b80cb333d73d5b30127df74d10033a229c71391bf02"
+    },
+    {
+      "path": "tools\\train_gesture_model.py",
+      "bytes": 8594,
+      "sha256": "d6e20398e661fca57ebc542221bee8ad6a6a32207d2b8dbad4c69a5ef7247222"
+    },
+    {
+      "path": "tools\\gen_hdc_memory.py",
+      "bytes": 1708,
+      "sha256": "4ed0da6b348569af870feee88b20d2dcc9eb245a5d497a28602ea6e23574868d"
+    },
+    {
+      "path": "sim\\hdc_learning_test.c",
+      "bytes": 6574,
+      "sha256": "c1e9319cf8839490be6fefaaaa7076582b7f45e061baf4218c0d1b5c17a98606"
+    },
+    {
+      "path": "sim\\test_hdc_learning.py",
+      "bytes": 7654,
+      "sha256": "e6a48b48aabd658da9484aaaa168f76c57450430ea6c432fe1f4152b034ac9fc"
+    },
+    {
+      "path": "sim\\pl_control_firmware_test.c",
+      "bytes": 6846,
+      "sha256": "1687fde833c15cb29ff8bc02ad7f93398344d7c118f237d7e259615b8f5b01a7"
+    },
+    {
+      "path": "sim\\rehab_training_test.c",
+      "bytes": 5759,
+      "sha256": "5d7ef576bd9591eab5bbea7b1176205a8e88c2523e4c276fd54fa1689035221d"
+    },
+    {
+      "path": "sim\\channel_quality_test.c",
+      "bytes": 9318,
+      "sha256": "f82c6608cbb2448428121d8dd41f2509d35c18078bed57b0a9bbbe52aa183d5b"
+    },
+    {
+      "path": "report\\rehab_quality_20261025\\README.md",
+      "bytes": 10272,
+      "sha256": "e9228e908f55e4fa2b37be85ef85211dee257236a553a526857c7f9395c7cedd"
+    },
+    {
+      "path": "sim\\hand_control_tb.sv",
+      "bytes": 12212,
+      "sha256": "0163d7264b725dd240291ed3f0e849f2144dcf5bff8fe171700b0d2a718d8346"
+    },
+    {
+      "path": "build\\scripts\\add_hand_control.tcl",
+      "bytes": 5383,
+      "sha256": "a88bc301d15170af5705b5c580438af3847321c3d99516d39880c4d9d92903a8"
+    },
+    {
+      "path": "build\\scripts\\run_hand_control_test.ps1",
+      "bytes": 1205,
+      "sha256": "26ea94235e9a84a59432eb425c0535312c77f4b916f26d5f23afd92604a41eb7"
+    },
+    {
+      "path": "tools\\scan_literal_b.py",
+      "bytes": 5873,
+      "sha256": "6f2cac07f6d6094081cec49cb418b45e3a488bf8190327f098ffef1e736e334b"
+    },
+    {
+      "path": "sim\\test_hand_netlist_gate.py",
+      "bytes": 845,
+      "sha256": "9f39699e9cfa60e796c1109b4790da72174dcb814a0ba1b83d054f03e6ac8602"
+    },
+    {
+      "path": "data\\models\\hdc_memory.mem",
+      "bytes": 40960,
+      "sha256": "91d66b193c2a13eaa991074aa2dff1c823d3528d62b845413ddef8b3f92c53d6"
+    },
+    {
+      "path": "build\\scripts\\add_pl_learning.tcl",
+      "bytes": 3889,
+      "sha256": "05c0c339a58f7a68d6f4a89731ffaf411158716c4e0d1b8d47d41ddc26bdbe76"
+    },
+    {
+      "path": "build\\scripts\\run_learning_test.ps1",
+      "bytes": 1303,
+      "sha256": "27bb0f9754e1f86f00d9fe3d32988a9c956087c9cebfbbbd10ebb6afad0d5623"
+    },
+    {
+      "path": "build\\scripts\\run_fifo_test.ps1",
+      "bytes": 740,
+      "sha256": "addb46a0eca717ce94eb343e2a1a623b0d159ab46d1bd3ad83bb7d5159cdfd1f"
+    },
+    {
+      "path": "sim\\emg_learning_accel_tb.sv",
+      "bytes": 8419,
+      "sha256": "a7784b8be36353c06077c434fd14550e5f918eb5e9493fe9477cd830298fb8cf"
+    },
+    {
+      "path": "sim\\axis_async_fifo_tb.sv",
+      "bytes": 2587,
+      "sha256": "310ca5fabd8d4ee9db5038dd9f658f6c26490320a57fff752f667a9c412a6529"
+    },
+    {
+      "path": "tools\\gen_learning_vectors.py",
+      "bytes": 4442,
+      "sha256": "646347c4ce3d352b9be4aca6ce2056bcddeb741b494f84294d3dfcef459857fd"
+    },
+    {
+      "path": "report\\pl_learning_nmf_20261026\\README.md",
+      "bytes": 7151,
+      "sha256": "4f013b406eda34fc076a29b30c553394d498d17dd0a3f3e8adccee54dfa651ae"
+    },
+    {
+      "path": "build\\scripts\\run_learning_netlist_test.ps1",
+      "bytes": 1371,
+      "sha256": "eee747d8a4684a07b115def5f9e849cab4d2a8a6ca84d6cb4a0d6dcba2f41102"
+    },
+    {
+      "path": "build\\scripts\\export_learning_netlist.tcl",
+      "bytes": 345,
+      "sha256": "c26765c980d0fd5979c97cea2b7197f3ca31d00f3c68c3a46c8d55d498e32128"
+    },
+    {
+      "path": "report\\pl_learning_nmf_20261026\\learning_test.log",
+      "bytes": 3156,
+      "sha256": "aeb992b9cc6f29ce3a8a046acad3e8be6e7e83d892b6e712fe9036ebaa44aee4"
+    },
+    {
+      "path": "report\\pl_learning_nmf_20261026\\learning_netlist_test.log",
+      "bytes": 6915,
+      "sha256": "17fad9ea2b844321601e1ef53068f876c01f5519d5a7593ee14b2e568d4e72e3"
+    },
+    {
+      "path": "report\\pl_learning_nmf_20261026\\fifo_test.log",
+      "bytes": 1911,
+      "sha256": "e62f2d8943962f89af502a49e3b6cb5ccd1c93540e00e43d42a32e32a5b1210e"
+    },
+    {
+      "path": "report\\pl_learning_nmf_20261026\\full_build.log",
+      "bytes": 163556,
+      "sha256": "336305a7cde9383e0a338db17c8469d16c9caa1f775d7591d90d5a2b33530d16"
+    },
+    {
+      "path": "report\\pl_learning_nmf_20261026\\platform_build.log",
+      "bytes": 33809,
+      "sha256": "18b434bb9e915361957efc7f63e10ff50bb78bb3b406748ff9a2947de6c789f1"
+    },
+    {
+      "path": "report\\pl_learning_nmf_20261026\\arm_build.log",
+      "bytes": 584,
+      "sha256": "a72acf031b9fd7041c7c9d3a06e5d8761ad43234feefd837a88e8f75d47903cf"
+    },
+    {
+      "path": "report\\pl_learning_nmf_20261026\\lcd_test.log",
+      "bytes": 4800,
+      "sha256": "13e3cf16dbd096ae62f354c490fa764924e16f1e962a7ef7cf79cce35798fc2a"
+    },
+    {
+      "path": "report\\pl_learning_nmf_20261026\\control_test.log",
+      "bytes": 11332,
+      "sha256": "cbda67756a0c560f2c0018e24585e843d9dd3ac85eade74738e31bf45ea0e9f0"
+    },
+    {
+      "path": "report\\pl_learning_nmf_20261026\\hand_test.log",
+      "bytes": 3253,
+      "sha256": "e61c47df5bda8c76677c4919a6a458a5cb0ddd6cbfb141cfdd4f8bb068a139da"
+    },
+    {
+      "path": "report\\pl_learning_nmf_20261026\\sd_test.log",
+      "bytes": 374,
+      "sha256": "065778deb48ccea0a88c02a5ab09ec81858a709fbf2f51a3c2accc886d2defbe"
+    },
+    {
+      "path": "report\\pl_learning_nmf_20261026\\hdc_golden_test.log",
+      "bytes": 925,
+      "sha256": "e7b525361fd531f945b0d8ee2b86ec9c46b5e91e1f8c4c5badc3ab4f175f01ad"
+    },
+    {
+      "path": "report\\pl_learning_nmf_20261026\\verification_summary.json",
+      "bytes": 1929,
+      "sha256": "4d881ca68b7a96b7ed4aa2096c1d35fbea9543a8548d53e212b6bf0519bb1430"
+    },
+    {
+      "path": "report\\pl_learning_nmf_20261026\\ip_config.tcldict",
+      "bytes": 445,
+      "sha256": "644ae1c7df4afc09ece705702e811a026a7e14afdc41a539411d88592bb86c01"
+    },
+    {
+      "path": "report\\pl_learning_nmf_20261026\\ip_parameter_sources.json",
+      "bytes": 2183,
+      "sha256": "8e9e47ccb112c6a26b1b253438324c62670e69ad11320ed414c6caabbeb2f216"
+    },
+    {
+      "path": "report\\pl_learning_nmf_20261026\\timing_routed.rpt",
+      "bytes": 2987160,
+      "sha256": "ccd132ca9d277836a30b6caf448bd6bdf3aff1310903017fd833750935b24dfd"
+    },
+    {
+      "path": "report\\pl_learning_nmf_20261026\\utilization_placed.rpt",
+      "bytes": 13271,
+      "sha256": "f24325ed098a3fc2dbcfa6c9859edf4ebbb8487ad93cc2cb2dd5eb5375b52102"
+    },
+    {
+      "path": "report\\work_submission_text_20261026.md",
+      "bytes": 1566,
+      "sha256": "c13441772b6013ca3338ef81a5f3ec76f78297fbbc59b3aaa4e0894df4ed40b1"
+    },
+    {
+      "path": "report\\system_framework_v1_20261024.md",
+      "bytes": 22285,
+      "sha256": "07528a263627909e74fe8b436dc38511a2c9a7ce7c228fc813451445c98f88d5"
+    },
+    {
+      "path": "README.md",
+      "bytes": 14774,
+      "sha256": "8495296a112fb250672d68bb494a4bce294e7c30ef7a80c4c9cc7124625fd96e"
+    },
+    {
+      "path": "build\\vitis_ws\\platform\\export\\platform\\sw\\boot\\fsbl.elf",
+      "bytes": 589076,
+      "sha256": "2607a19e89d6310fccef7c30133a6c74da036f51051641fe9d6f517b56e259a2"
+    },
+    {
+      "path": "build\\vitis_ws\\platform\\zynq_fsbl\\ps7_init.c",
+      "bytes": 385469,
+      "sha256": "cfcf649951cad06d477c398f0d68befe8c2c393f1f0183a4641a4e65b8d1186d"
+    }
+  ]
+}

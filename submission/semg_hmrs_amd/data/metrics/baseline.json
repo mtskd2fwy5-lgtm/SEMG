@@ -1,0 +1,220 @@
+﻿{
+  "dataset": {
+    "name": "NinaPro DB5 (double Myo armband)",
+    "source": "https://zenodo.org/records/1000116",
+    "baseline_map": {
+      "rest": 0,
+      "open_hand": "E2 local 5 (global 17)",
+      "fist": "E2 local 6 (global 18)",
+      "wrist_flex": "E2 local 13 (global 25)",
+      "wrist_extend": "E2 local 14 (global 26)"
+    }
+  },
+  "config": {
+    "fs_hz": 200,
+    "decim": 1,
+    "resample": 20,
+    "effective_fs_hz": 4000,
+    "window_samples": 400,
+    "hop_samples": 100,
+    "window_ms": 100,
+    "hop_ms": 25,
+    "features": [
+      "mav_sum",
+      "wl_sum",
+      "energy_sum",
+      "zc_count",
+      "ssc_count"
+    ],
+    "zc_th": 0,
+    "ssc_th": 0,
+    "model": "StandardScaler + MLP(64,32)",
+    "balance": "rest downsampled to median class size",
+    "sessions": [
+      2
+    ],
+    "seed": 0,
+    "evaluation": "leave-one-subject-out"
+  },
+  "classes": [
+    "rest",
+    "open_hand",
+    "fist",
+    "wrist_flex",
+    "wrist_extend"
+  ],
+  "folds": {
+    "s1": {
+      "test_windows": 23868,
+      "train_windows": 7386,
+      "accuracy": 0.9259,
+      "f1_macro": 0.6302,
+      "confusion": [
+        [
+          20210,
+          95,
+          235,
+          35,
+          23
+        ],
+        [
+          44,
+          340,
+          175,
+          4,
+          267
+        ],
+        [
+          1,
+          4,
+          784,
+          0,
+          4
+        ],
+        [
+          17,
+          145,
+          290,
+          357,
+          105
+        ],
+        [
+          43,
+          73,
+          209,
+          0,
+          408
+        ]
+      ]
+    },
+    "s2": {
+      "test_windows": 30074,
+      "train_windows": 7643,
+      "accuracy": 0.9352,
+      "f1_macro": 0.6511,
+      "confusion": [
+        [
+          26287,
+          200,
+          3,
+          245,
+          247
+        ],
+        [
+          40,
+          324,
+          2,
+          118,
+          174
+        ],
+        [
+          56,
+          57,
+          609,
+          18,
+          9
+        ],
+        [
+          108,
+          118,
+          7,
+          558,
+          95
+        ],
+        [
+          73,
+          221,
+          8,
+          151,
+          346
+        ]
+      ]
+    },
+    "s3": {
+      "test_windows": 25850,
+      "train_windows": 7899,
+      "accuracy": 0.6513,
+      "f1_macro": 0.3316,
+      "confusion": [
+        [
+          15396,
+          1274,
+          922,
+          4175,
+          1220
+        ],
+        [
+          0,
+          275,
+          22,
+          397,
+          39
+        ],
+        [
+          0,
+          8,
+          421,
+          236,
+          0
+        ],
+        [
+          3,
+          79,
+          0,
+          718,
+          15
+        ],
+        [
+          4,
+          400,
+          11,
+          210,
+          25
+        ]
+      ]
+    }
+  },
+  "pooled": {
+    "accuracy": 0.8404,
+    "f1_macro": 0.5004,
+    "confusion": [
+      [
+        61893,
+        1569,
+        1160,
+        4455,
+        1490
+      ],
+      [
+        84,
+        939,
+        199,
+        519,
+        480
+      ],
+      [
+        57,
+        69,
+        1814,
+        254,
+        13
+      ],
+      [
+        128,
+        342,
+        297,
+        1633,
+        215
+      ],
+      [
+        120,
+        694,
+        228,
+        361,
+        779
+      ]
+    ]
+  },
+  "model_path": "data/models/baseline_mlp.joblib",
+  "trained_on": "3 subjects, 11439 windows"
+}

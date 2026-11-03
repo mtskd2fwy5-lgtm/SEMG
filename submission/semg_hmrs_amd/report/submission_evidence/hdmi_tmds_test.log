@@ -1,0 +1,18 @@
+﻿
+****** xsim v2025.2 (64-bit)
+  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025
+  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025
+  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025
+  **** Start of session at: Tue Nov  3 11:24:45 2026
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+
+source xsim.dir/hdmi_tmds_sim/xsim_script.tcl
+# xsim {hdmi_tmds_sim} -autoloadwcfg -runall
+Time resolution is 1 ps
+run -all
+TEST_PASS HDMI TMDS: 100000 symbols, all byte values, control periods and running disparity
+$finish called at time : 1000040 ns : File "./sim/hdmi_tmds_tb.sv" Line 40
+exit
+INFO: [Common 17-206] Exiting xsim at Tue Nov  3 11:24:47 2026...
+

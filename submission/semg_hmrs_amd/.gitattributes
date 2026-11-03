@@ -1,0 +1,121 @@
+# Preserve archived acquisition files byte for byte, including CSV newlines.
+data/rehab/**/*.BIN -text
+data/rehab/**/*.CSV -text whitespace=cr-at-eol
+
+# Preserve archived release evidence and frozen source snapshots byte for byte.
+report/imu_pl_20261028/** -text
+report/resource_optimization_20261027/** -text
+report/resource_optimization_full_20261027/** -text
+report/resource_optimization_v15_20261027/** -text
+report/hdc_stability_20261027/** -text
+
+# Reproduce the line endings used by the V17 source-hash acceptance gates.
+board/constraints/hz_zynq_ads1299.xdc text eol=crlf
+board/constraints/hz_zynq_ads1299_bd.xdc text eol=crlf
+board/constraints/hz_zynq_clock_groups.xdc text eol=crlf
+board/constraints/hz_zynq_hand.xdc text eol=lf
+board/constraints/hz_zynq_imu_clock_groups.xdc text eol=crlf
+board/constraints/hz_zynq_lcd.xdc text eol=crlf
+board/constraints/hz_zynq_lcd_timing.xdc text eol=crlf
+build/boot/build_pl_control_boot.ps1 text eol=crlf
+build/build_all.ps1 text eol=crlf
+build/check_design.tcl text eol=crlf
+build/scripts/add_pl_imu.tcl text eol=lf
+build/scripts/audit_imu_baseline.tcl text eol=lf
+build/scripts/audit_imu_routed.tcl text eol=lf
+build/scripts/check_imu_cdc.tcl text eol=lf
+build/scripts/export_imu_netlist.tcl text eol=lf
+build/scripts/finalize_imu_timing.tcl text eol=lf
+build/scripts/rebuild_imu.tcl text eol=lf
+build/scripts/run_imu_test.ps1 text eol=lf
+build/scripts/run_lcd_firmware_test.ps1 text eol=lf
+build/scripts/update_learning_platform.py text eol=lf
+sim/control_policy_reference.c text eol=crlf
+sim/hand_firmware_test.c text eol=crlf
+sim/imu_float_reference.h text eol=crlf
+sim/imu_host_model.h text eol=lf
+sim/imu_mailbox_firmware_test.c text eol=lf
+sim/imu_program.h text eol=crlf
+sim/imu_program.json text eol=crlf
+sim/imu_reference_test.c text eol=crlf
+sim/lcd_firmware_test.c text eol=crlf
+sim/mpu_attitude_mailbox_tb.sv text eol=lf
+sim/mpu_attitude_vectors_tb.sv text eol=lf
+sim/pl_learning_workflow_test.c text eol=lf
+src/rtl/ads1299_spi.v text eol=crlf
+src/rtl/ads8698_spi.v text eol=crlf
+src/rtl/axis_async_fifo.v text eol=crlf
+src/rtl/axis_packet_mux.v text eol=crlf
+src/rtl/emg_bandpass.v text eol=crlf
+src/rtl/emg_comb50.v text eol=lf
+src/rtl/emg_control_constants.vh text eol=crlf
+src/rtl/emg_control_inference.v text eol=lf
+src/rtl/emg_control_policy.v text eol=crlf
+src/rtl/emg_data_path.v text eol=crlf
+src/rtl/emg_fatigue.v text eol=crlf
+src/rtl/emg_feature_bank.v text eol=crlf
+src/rtl/emg_learning_accel.v text eol=crlf
+src/rtl/emg_line_filter.v text eol=lf
+src/rtl/emg_nn_infer.v text eol=crlf
+src/rtl/emg_notch50.v text eol=lf
+src/rtl/emg_pl_control.v text eol=lf
+src/rtl/emg_pl_export.v text eol=crlf
+src/rtl/emg_pl_export_status.v text eol=lf
+src/rtl/emg_preprocess.v text eol=crlf
+src/rtl/emg_window_features.v text eol=crlf
+src/rtl/hand_control.v text eol=lf
+src/rtl/hand_motion_top.v text eol=crlf
+src/rtl/hand_servo_pwm.v text eol=lf
+src/rtl/lcd_clk_fwd.v text eol=crlf
+src/rtl/lcd_panel_adapter.v text eol=lf
+src/rtl/learning_div64.v text eol=lf
+src/rtl/mpu6050_motion.v text eol=lf
+src/rtl/mpu6050_tilt.v text eol=lf
+src/rtl/mpu_attitude.v text eol=lf
+src/rtl/mpu_attitude_core.v text eol=lf
+src/rtl/mpu_attitude_regs.vh text eol=crlf
+src/rtl/mpu_attitude_rom.vh text eol=crlf
+src/rtl/touch_gt911.v text eol=lf
+sw/ps_uart_print/build.bat text eol=crlf
+sw/ps_uart_print/capture_actions.h text eol=crlf
+sw/ps_uart_print/channel_quality.h text eol=crlf
+sw/ps_uart_print/display_memory.S text eol=crlf
+sw/ps_uart_print/hand_control.h text eol=crlf
+sw/ps_uart_print/hdc_learning.h text eol=crlf
+sw/ps_uart_print/hdc_memory.h text eol=crlf
+sw/ps_uart_print/lcd_channel_quality.h text eol=crlf
+sw/ps_uart_print/lcd_font_zh.h text eol=crlf
+sw/ps_uart_print/lcd_hand.h text eol=crlf
+sw/ps_uart_print/lcd_hand_3d.h text eol=crlf
+sw/ps_uart_print/lcd_hdc.h text eol=crlf
+sw/ps_uart_print/lcd_home.h text eol=lf
+sw/ps_uart_print/lcd_imu_3d.h text eol=lf
+sw/ps_uart_print/lcd_rehab.h text eol=crlf
+sw/ps_uart_print/lcd_settings.h text eol=crlf
+sw/ps_uart_print/lcd_ui.h text eol=crlf
+sw/ps_uart_print/lcd_virtual.h text eol=crlf
+sw/ps_uart_print/lcd_waveform.h text eol=crlf
+sw/ps_uart_print/lscript.ld text eol=crlf
+sw/ps_uart_print/main.c text eol=crlf
+sw/ps_uart_print/nn_confidence.h text eol=crlf
+sw/ps_uart_print/pl_control.h text eol=lf
+sw/ps_uart_print/pl_learning.h text eol=lf
+sw/ps_uart_print/pl_learning_api.h text eol=lf
+sw/ps_uart_print/pose_contract.h text eol=lf
+sw/ps_uart_print/rehab_training.h text eol=lf
+sw/ps_uart_print/sd_record.c text eol=crlf
+sw/ps_uart_print/sd_record.h text eol=crlf
+sw/ps_uart_print/sd_support/bspconfig.h text eol=lf
+sw/ps_uart_print/sd_support/xparameters.h text eol=lf
+sw/ps_uart_print/selfcal.h text eol=lf
+sw/ps_uart_print/startup.S text eol=crlf
+sw/ps_uart_print/synergy_feedback.h text eol=lf
+sw/ps_uart_print/synergy_nmf.h text eol=lf
+sw/ps_uart_print/synergy_nmf_model.h text eol=crlf
+tools/compare_imu_resources.py text eol=lf
+tools/gen_imu_microcode.py text eol=lf
+tools/gen_imu_reference.py text eol=lf
+tools/imu_fixed_model.py text eol=lf
+tools/verify_control_boot.py text eol=crlf
+tools/verify_imu_release.py text eol=lf
+tools/verify_imu_vectors.py text eol=lf

@@ -19,7 +19,7 @@
 // Twiddles (Q15 cos/sin, 1024 words) load from a ROM via $readmemh; the
 // absolute default path keeps the module_ref OOC synthesis run resolvable.
 module emg_fatigue #(
-    parameter TW_FILE = "D:/FPGA/sEMG-HMRS/data/models/fatigue/twiddle2048.mem",
+    parameter TW_FILE = "data/models/fatigue/twiddle2048.mem",
     // NOTE: 17 bits — 63570 does NOT fit in signed 16 bits (16'sd63570
     // wraps to -1976 and silently turns the HP into an attenuator)
     parameter signed [16:0] HP_ALPHA_Q16 = 17'sd63570, // ~20 Hz @ 4 kSPS

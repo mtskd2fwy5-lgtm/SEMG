@@ -1,0 +1,8 @@
+﻿// Matched PL-control hardware and PS application. Not the legacy default ELF.
+the_ROM_image:
+{
+    [bootloader]build\vitis_ws\platform\export\platform\sw\boot\fsbl.elf
+    build\vivado\hand_motion_reconstruction.runs\impl_1\design_1.bit
+    sw\ps_uart_print\ps_uart_print_pl_control.elf
+}
+

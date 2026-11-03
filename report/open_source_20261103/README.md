@@ -31,7 +31,8 @@ build caches, and new boot binaries are not added.
 - High-confidence credential patterns were scanned in reachable Git history
   and the staged tree. The scan is not a general security audit.
 
-There is no new FPGA place-and-route run, physical board test, or SD-card
-write in this checkpoint. The release evidence identifies its original
-hardware build. Local tool paths must still be configured for another PC;
-this checkpoint does not certify a clean-machine end-to-end reproduction.
+The HDMI mirror release includes a new routed implementation, XSA/platform
+refresh and matched BOOT verification. Physical HDMI display, SD-card write,
+DDR contention during live acquisition and electrical isolation remain separate
+board acceptance steps. Local tool paths must still be configured for another
+PC; this checkpoint does not certify a clean-machine end-to-end reproduction.

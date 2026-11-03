@@ -1,0 +1,51 @@
+﻿{
+  "config": {
+    "sessions": [
+      2
+    ],
+    "seed": 0,
+    "hidden": [
+      64,
+      32
+    ],
+    "classes": [
+      "rest",
+      "open_hand",
+      "fist",
+      "wrist_flex",
+      "wrist_extend"
+    ]
+  },
+  "folds": {
+    "S1": {
+      "float_acc": 0.9374,
+      "int8_acc": 0.9372,
+      "float_f1": 0.6568,
+      "int8_f1": 0.6567,
+      "prediction_agreement": 0.9979,
+      "test_windows": 11837
+    },
+    "S2": {
+      "float_acc": 0.9293,
+      "int8_acc": 0.9233,
+      "float_f1": 0.6357,
+      "int8_f1": 0.6298,
+      "prediction_agreement": 0.9888,
+      "test_windows": 14941
+    },
+    "S3": {
+      "float_acc": 0.6745,
+      "int8_acc": 0.6748,
+      "float_f1": 0.3451,
+      "int8_f1": 0.346,
+      "prediction_agreement": 0.9839,
+      "test_windows": 12827
+    }
+  },
+  "final": {
+    "float_train_acc": 0.9838,
+    "int8_train_acc": 0.9803,
+    "prediction_agreement": 0.9906,
+    "note": "quantisation fidelity on training windows; generalisation is the LoSo table above"
+  }
+}

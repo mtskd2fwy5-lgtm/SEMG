@@ -1,0 +1,4 @@
+﻿hdc_model_store_test.c
+TEST_PASS HDC model Q16/Q32 contracts roundtrip without reinterpretation
+TEST_PASS HDC model codec: 8-class exact samples/prototypes/centroids, schema bounds, CRC, truncation/trailing, close rollback, frozen validation, append after load
+
