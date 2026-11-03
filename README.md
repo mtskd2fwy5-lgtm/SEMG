@@ -1,118 +1,181 @@
-﻿# 自学习肌电意图解码康复训练系统
+# 自学习肌电意图解码康复训练系统
 
-原创代码、工具、模型资产及原创文档采用 [Apache-2.0](LICENSE)，允许商业使用、修改与再分发，须保留许可证及适用声明。第三方内容不因此改变许可，思源黑体及生成字库沿用 SIL OFL 1.1；AMD 工具、IP 与运行库遵循其各自条款。详见 [第三方声明](THIRD_PARTY_NOTICES.md) 和 [NOTICE](NOTICE)。
+## 项目简介
 
-公开仓库：<https://github.com/mtskd2fwy5-lgtm/SEMG>。许可不授予第三方资料、商标或厂商 IP 的额外权利；本项目用于科研与教学验证。
+本项目面向上肢康复训练与肌电人机交互，基于 AMD Zynq-7000 XC7Z020 构建集肌电采集、意图解码、个体化学习、虚实手联动与训练反馈于一体的板端系统。通过 ADS1299 采集八通道表面肌电，由 FPGA 完成实时信号处理与边缘计算，ARM 负责触摸交互、数据管理和康复训练流程。
 
-## 作品简介
+系统支持常见动作识别和自定义手势学习，通过虚拟三维手与六轴机械手展示识别结果；利用肌肉协同反馈相对用力变化，辅助完成单动作、组合动作和抓握强度训练。触控 RGB LCD 为主要交互平台，HDMI 可将同一界面同步展示到外接屏幕。
 
-本作品面向上肢康复训练与肌电人机交互，基于 XC7Z020 SoC 构建表面肌电意图解码与康复训练平台。系统通过ADS1299采集八通道肌电，在PL端完成SPI驱动、工频及谐波抑制、数字滤波、整流、滑窗分段、时域特征、FFT频谱分析、轻量神经网络推理、超维计算个体化在线学习、NMF肌肉协同系数求解及MPU四元数姿态融合，识别常见及自定义手势，计算中值频率并评估疲劳趋势。PS端负责静息校准、佩戴适配、学习引导、模型存储及任务管理，并以触控 RGB LCD 为交互平台，显示动作置信度、波形、频谱、通道质量、肌肉协同及疲劳反馈，支持SD卡记录、动作标注和自定义手势映射。康复训练支持单动作与组合任务，设置次数、保持及休息时间，利用肌肉协同反馈相对用力变化，结合完成率、稳定性及识别响应评估训练表现。识别结果与MPU姿态驱动虚拟三维手；PS生成映射目标，PL输出六路PWM驱动五指与掌部机械手，实现抓握、掌部旋转及复位。PL承担实时处理、在线学习与机械手驱动，PS统筹交互、分析与训练管理，构建肌电采集、边缘推理、虚实运动及康复反馈闭环，体现FPGA 在低延迟生物信号处理、边缘智能和康复人机交互中的应用价值。
+## 主要功能与系统分工
 
-## 当前版本
+- **采集与分析**：八通道同步采集，工频及谐波抑制，滤波波形、频谱、中值频率、通道质量和疲劳趋势显示。
+- **识别与自学习**：MLP 识别放松、张手、握拳、屈腕和伸腕；HDC 支持板上学习、独立验证、自定义手势命名及 SD 模型保存与切换。
+- **虚实手联动**：自定义虚拟手关节映射和机械手动作映射，MPU 相对姿态控制整体方向与掌部旋转，六路 PWM 驱动五指与掌部。
+- **康复训练**：单动作与组合任务，次数、保持及休息时间设置，完成率、响应和稳定性反馈；NMF 肌肉协同参与相对用力反馈与连续抓握控制。
+- **数据记录与展示**：SD 同步记录原始和最终滤后波形、动作标注及训练结果，支持 PC 导出分析；LCD 与 HDMI 镜像展示。
 
-当前构建为 `20261103_HAND_CONTROL_HDMI_MIRROR_V31`，新增 LCD 与 HDMI 双屏镜像：LCD 保留触摸，板载 HDMI 输出 720p60，同步展示同一界面。HDMI 使用独立 DDR 读者和两行 BRAM 缩放，不重复执行 ARM 绘制；双屏共同参与缓冲占用保护。接法、构建、隔离注意事项及验证边界见 [HDMI 同步展示](report/hdmi_mirror_20261103/README.md)。
+| 部分 | 职责 |
+| --- | --- |
+| PL（FPGA） | ADS1299 SPI、工频及谐波滤波、滑窗特征、FFT 与疲劳分析、MLP 推理、HDC 编码/学习/推理、NMF 系数求解、MPU 姿态融合和六路 PWM 输出保护 |
+| PS（ARM 裸机） | 校准及佩戴适配流程、学习引导与稳定判决、模型与 SD 文件管理、LCD 触摸和虚拟手绘制、数据分析、康复任务及映射目标管理 |
+| 显示与执行 | LCD 提供触摸交互；HDMI 镜像同一帧缓冲；PS 提交机械手目标，由 PL 输出 PWM |
 
-面向 AMD 2026 FPGA 自主选题赛道的整合包由 `tools/assemble_submission.ps1` 生成到 `submission/semg_hmrs_amd/`，按指南提供源码、仿真、构建、板级配置、skill、报告和选定验证证据。原始采集数据、临时波形、工具缓存和 BOOT 二进制不进入整合包。
+HDMI 固定输出 1280×720、60 Hz，视频扫描频率与界面重绘帧率不同。肌肉协同反馈相对激活程度，不等同于机械手实际握力测量；疲劳趋势用于科研与训练反馈。
 
-继续保留连续联动：HDC 机械手明确启用后持续联动，过渡及未映射手势保持上次目标，确认新映射手势后切换；断流、MPU 失效和通信故障仍停机。详见 [连续联动修复](report/hdc_continuous_20261102/README.md)。继承 Q32 识别：新建 HDC 模型采用 32 级量化，保留旧 16 级模型的独立编码和加载兼容性；分数间隔精确显示至 0.01%。学习完成后的实时识别、主页与虚拟手共用稳定判决：间隔达到 1% 使用原有 3/6 窗规则，0.25%–1% 需 6/8 窗确认，完全同分拒绝输出。未通过验证、量化超范围、数据中断等原因分别显示。PL 负责量化、编码、原型学习和推理，PS 负责页面与有限时窗判决。升级后重新学习才能使用 32 级量化；加载旧模型继续按 16 级计算。详情与测试边界见 [HDC 分辨率与稳定判决](report/hdc_resolution_20261102/README.md)。
+## 工程目录
 
-继续保留相对姿态零位：MPU 以本次静止校准的姿态作为相对基点，校准完成时虚拟手回到掌心朝上的默认姿态，掌部旋转为 0°；后续姿态变化均相对此基点计算，支持在倾斜、翻掌或竖直姿态重新校准。肌肉协同抓握训练的稳定范围为舒适参考值的 **70%–130%（±30%）**，LCD 与 SD 报告同步更新。操作与验证见 [V23 相对姿态零位](report/imu_zero_20261031/README.md)。
+| 目录 | 主要内容 |
+| --- | --- |
+| [src/rtl/](src/rtl/) | PL 源码：采集、滤波、特征、频谱、学习推理、姿态解算、机械手 PWM 与 HDMI |
+| [sw/ps_uart_print/](sw/ps_uart_print/) | PS 裸机固件：LCD 交互、模型管理、康复任务及 SD 记录 |
+| [board/](board/README.md) | 板卡接线、引脚分配与时序约束 |
+| [build/](build/scripts/README.md) | Vivado 块设计、IP 配置、构建、验证及 BOOT 打包脚本 |
+| [sim/](sim/) | HDL 测试平台、参考模型和固件测试代码 |
+| [tools/](tools/) | 数据记录与分析、BIN 转 CSV、模型转换和发布检查工具 |
+| [data/](data/README.md) | 模型参数、初始化文件、评估指标及数据格式说明 |
+| [skill/](skill/README.md) | 通用 FPGA 开发技能、模板与踩坑清单 |
+| [report/](report/) | 设计报告、测试证据、资源性能对比与阶段记录 |
+| [submission/](submission/semg_hmrs_amd/MANIFEST.md) | 提交整合包、内容清单与发布压缩包 |
 
-保留“机械手→协同抓握”：采集本次佩戴的舒适抓握参考，以 PL NMF 协同 2 的相对激活量连续调整五指在放松与握拳映射之间的位置，掌部仍由 MPU 控制。支持实时百分比、显式启停、同窗口数据匹配和断流保护；此功能反馈相对用力，未测量机械手实际握力。操作与验证见 [V22 协同连续抓握](report/grip_control_20261031/README.md)。
+## 复现环境
 
-沿用 V21 显示调度：PS 显示优先于后台通道评分，评分按单块小步执行和实际运行时间限额；机械手心跳 ACK 不触发界面重绘。上电同步复位后保持目标，进入“机械手→动作映射→启用 PL 联动”跟随 MLP，或另行启用协同抓握；MPU 须已校准且映射有效。实现与验证见 [V21 界面响应调度](report/lcd_responsiveness_20261030/README.md)。
+| 类别 | 配置 |
+| --- | --- |
+| 主控板 | HZ-ZYNQ_MV01 底板及 HZ-ZYNQ_CV01 核心板，器件 `xc7z020clg400-2` |
+| 采集与姿态 | ADS1299 八通道采集模块、MPU6050 |
+| 交互与存储 | ATK-4384 触控 RGB LCD、FAT32 启动 SD 卡；HDMI 显示设备可选 |
+| 机械手 | 五指加掌部旋转共六轴，独立舵机电源；当前 FPGA PWM 适配后级反相光耦 |
+| 开发工具 | Windows、Vivado/Vitis 2025.2，安装 Zynq-7000 器件支持及 ARM 裸机工具链 |
+| 辅助工具 | Git、Python 3；数据分析工具按需使用 NumPy、SciPy、Matplotlib 等；固件主机测试使用 MSVC C 编译器 |
 
-V20 六路机械手 PWM 引脚统一反相，适配用户确认的后级反相光耦：FPGA 空闲/停止输出高电平，有效脉冲为低电平；经过光耦后恢复舵机所需的正脉冲。20 ms 周期、标定脉宽、同步复位、动作映射和全部 V19 功能沿用。变更与验证见 [V20 光耦 PWM 极性适配](report/hand_pwm_inverted_20261029/README.md)。
+接线及电平要求见[板卡说明](board/README.md)。人体采集须核对供电和所有外接链路的隔离条件，HDMI 也属于外接电气链路。
 
-V19 HDC 自学习新增 SD 模型库，支持将学习完成的样本、原型、量化尺度、独立验证结果及自定义虚拟手/机械手映射另存为独立文件，在 LCD 分页选择并加载切换，断电后可恢复，加载后可继续追加手势。模型切换先停止机械手并清除旧识别状态；损坏、截断、不兼容或读取失败不会替换当前模型。操作与验证见 [V19 SD 模型库](report/hdc_model_sd_20261029/README.md)。
+## 复现步骤
 
-V18 通道质量页取消静息参考采集，按统一规则自动评估最终处理波形，显示总分、A–D 等级与异常原因；选中通道可查看分布、工频、伪影和接触特征分项。工频估计使用 Hann/Welch 频谱与邻带基底，覆盖 50/100/150/200 Hz 残余干扰；分析以后台小步运行。评分属于滤后波形质量筛查，不等同于电极阻抗或原始 ADC 接触认证。实现、网站规则对照及验证见 [V18 无静息参考通道评分](report/channel_quality_20261029/README.md)。
+### 1. 获取源码并配置工具
 
-V17 将 MPU 六轴姿态融合、静止零偏校准、重力参考、三维旋转矩阵与掌部翻转角度现由 PL 计算，PS 通过带确认的原子快照接口接收结果，负责显示与标定映射。详细分工、资源和测试见 [V17 PL 姿态迁移](report/imu_pl_20261028/README.md)。
-
-V16 修复 HDC 实时判决对单个错类或低分窗口过于敏感的问题，采用短窗投票、竞争类别滞回与最长 200 ms 的有限保持；学习页完成验证后的识别与主页使用同一稳定结果。连续 3 个合格同类窗口仍可确认普通动作；持续歧义、数据断流或模型/量化异常会使结果失效。学习和独立验证评分保留原始预测。操作、测试与硬件继承记录见 [V16 HDC 稳定判决修复](report/hdc_stability_20261027/README.md)。
-
-V15 在八通道特征与带通共享运算的基础上，进一步优化 MLP 激活缓存、FFT 频带状态和 PWM 计数。相对 V13，整机 Routed LUT 从 36,417 降至 23,793，FF 从 40,463 降至 24,622，DSP 从 111 降至 49，分别降低 34.67%、39.15%、55.86%；Slice 占用从 97.80% 降至 69.80%，BRAM 保持 45.5。采样率、滤波数值、100 ms 窗口、25 ms 更新和保护行为保留，没有新增流水延迟。资源、性能及验证证据见 [V15 PL 存储与执行通路优化](report/resource_optimization_v15_20261027/README.md)。
-
-当前版本继续保留 PL NMF/HDC、疲劳分析、机械手控制、康复训练及自定义 HDC 手势虚拟手映射：
-
-- 虚拟手支持 22 个关节角度，包含手腕、拇指和四指的屈曲、侧向展开及末端关节。
-- LCD 提供预设姿态、滑块和 `±1°` 微调，保存/清除映射后立即用于虚拟手预览。
-- 实时监测页可切换 MLP 或 HDC 识别来源；HDC 使用经过验证的稳定类别，避免单窗口跳变。
-- 虚拟关节角度与机械手六路 PWM 映射独立保存。编辑虚拟姿态、切换来源或手动预览不会自动启动机械手 PWM。
-- MPU 姿态继续控制虚拟手整体方向和掌部旋转；机械手页面保留独立标定、映射、复位、停止和故障保护。
-- HDC 运行模型位于 DDR，通过“自学习 → 模型库 → 另存当前模型”保存到 SD；重新上电后可加载，并恢复自定义虚实手映射。后续学习或映射调整需再次另存，不覆盖历史文件。
-
-操作说明和验证证据见 [V13 虚拟手映射](report/virtual_mapping_20261026/README.md)。PL 在线 NMF/HDC 的接口、资源和时序见 [V12 PL 学习加速](report/pl_learning_nmf_20261026/README.md)。
-
-## 系统分工
-
-### PL（FPGA 逻辑）
-
-PL 以确定时延运行八通道采集和处理链：ADS1299 SPI、工频及谐波抑制、数字滤波、整流、滑窗特征、FFT/疲劳支路、基础动作判决、NMF 肌肉协同系数求解、HDC 编码/原型更新/相似度推理，MPU 采集、四元数姿态融合与静止零偏校准，以及六路 PWM 输出保护。
-
-NMF、HDC 和 MPU 四元数融合的数值计算均在 PL。PS 只负责逐窗调度、训练流程、模型地址和结果管理，不在生产 ARM 路径中用软件算法替代 PL 结果。运算失败、超时、数据过期或验证未通过时，结果会失效，机械手不会采用该结果。
-
-### PS（ARM 裸机）
-
-PS 负责静息校准、佩戴适配、学习引导、HDC 试次管理、DDR/SD 模型生命周期、验证评分、LCD/触摸交互、SD 记录、康复训练、通道质量和数据分析。PS 接收 PL 的最终结果，并将稳定类别分别送给虚拟手显示和已明确启用的机械手映射。
-
-### LCD、MPU 与机械手
-
-LCD 入口页面包括实时监测、波形、通道与数据、频谱、肌肉协同、SD 记录、康复训练、佩戴适配、HDC 自学习、虚拟手映射和机械手控制。页面切换由统一路由管理，离开机械手页面会停止机械手输出。
-
-PL 的 MPU 姿态结果负责虚拟手整体方向和掌部旋转，肌电负责动作/手势类别和关节姿态映射。机械手的六路 PWM 由 PL 输出，PS 只下发经过标定和保护检查的目标。
-
-## LCD 使用流程
-
-1. 上电后进入实时监测；先完成静息校准和佩戴适配。
-2. 进入 **HDC 自学习**，为每个类别完成三轮采样和两轮验证；类别验证达到现有门槛后才能用于稳定跟随。
-3. 在 **HDC 自学习 → 模型库** 可 **另存当前模型**；再次上电在列表中选择文件并 **加载所选模型**。需更新映射时，进入 **设置 → 虚拟手映射**，选择自定义类别，选择预设，再按关节滑动或微调，点击 **保存**。
-4. 返回监测页，点击 **来源 MLP / 来源 HDC**。未映射、未验证或超时的自定义类别显示等待/未映射状态，虚拟手回到放松姿态。
-5. 机械手控制单独进入 **机械手** 页面，完成六轴标定、保存和动作映射后再明确启用 HDC 联动。标定过程中会同步驱动机械手；停止、离页、通信丢失和看门狗都会关闭输出。
-6. 康复训练提供单动作和四动作组合任务，可设置次数、保持和休息时间，并记录完成率、稳定性、响应时间和肌肉协同相对用力变化。
-7. 连续抓握：在机械手页面点击 **协同抓握**，采集舒适握拳约 3.5 秒后点击 **启用协同抓握**。参考为本次佩戴临时值；在放松/握拳映射范围内按相对活动控制五指，其他动作松开，断流或离页停止 PWM。
-
-## 数据与分析
-
-- LCD 波形页显示单通道原始或最终处理后的有符号波形，支持时窗、暂停、自动/固定量程和零点设置。
-- 数据页显示八通道 MAV、门控阈值、动作、疲劳状态、缺口和配置状态。
-- 频谱页使用处理后信号的 2048 点 FFT，显示选定通道频谱、峰值、MDF 和相对功率；频谱自动归一化并保留顶部余量，避免冲顶削顶。
-- SD 记录同时保存同序号的 raw 和最终 processed 八通道数据，并保存动作标签；PC 工具可导出 CSV/JSON。
-- 肌肉协同页显示 NMF 系数、活动条和趋势；疲劳页使用 PL FFT 的 MDF/能量趋势，结果用于训练反馈，不作临床诊断。
-
-## 构建与验证
-
-目标器件为 `xc7z020clg400-2`，Vivado 2025.2。构建前设置 `AMD_VIVADO_ROOT` 指向同时包含 `Vivado/` 和 `Vitis/` 的 AMD 工具目录，或将相应可执行文件加入 PATH。常用命令：
+获取完整仓库后进入工程目录：
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File build/build_all.ps1 -SkipBuild -SkipBoot
+git clone https://github.com/mtskd2fwy5-lgtm/SEMG.git
+cd SEMG
+```
+
+将以下安装目录替换为本机实际路径。该目录应包含 `Vivado/`、`Vitis/`、`gnu/` 和 `data/`：
+
+```powershell
+$env:AMD_VIVADO_ROOT = 'C:\AMD\2025.2'
+$env:Path = "$env:AMD_VIVADO_ROOT\Vivado\bin;$env:AMD_VIVADO_ROOT\Vitis\bin;$env:Path"
+```
+
+当前生产链需要以下初始化文件，须保留原有相对路径：
+
+- `data/models/nn_int8_board_multiwear/nn_int8_weights.mem`：MLP 权重与量化参数初始化。
+- `data/models/fatigue/twiddle2048.mem`：2048 点 FFT 旋转因子。
+- `data/models/hdc_memory.mem`：学习加速器初始化内容。
+
+### 2. 创建 Vivado 工程
+
+新工作区使用保存的块设计、IP 配置和 RTL 创建完整系统工程：
+
+```powershell
+vivado -mode batch -source build/recreate_project.tcl
+```
+
+预期工程为 `build/vivado/hand_motion_reconstruction.xpr`，顶层为 `design_1`。已有工程使用下列命令同步源码和约束，不重复创建：
+
+```powershell
+vivado -mode batch -source build/update_project.tcl
+```
+
+首次创建后检查块设计连接、IP 状态与初始化文件引用；综合工作目录下也必须能解析初始化文件路径。`build/create_project.tcl` 是独立 `hand_motion_top` 测试入口，不是完整 PS/PL 系统的创建入口。
+
+### 3. 综合实现并导出硬件
+
+```powershell
+powershell -ExecutionPolicy Bypass -File build/build_all.ps1 -SkipBoot
+```
+
+此命令执行 Vivado 构建及硬件检查，暂不生成启动镜像。主要输出为：
+
+- `build/vivado/hand_motion_reconstruction.runs/impl_1/design_1.bit`：PL 位流。
+- `build/export/design_1.xsa`：包含位流的硬件平台描述。
+- 实现目录中的时序、资源及设计规则报告。
+
+检查参数绑定、网表系数和布线时序结果，确认检查通过后再继续。`-SkipBuild` 仅用于复用已有硬件产物，不用于首次构建。
+
+### 4. 建立 Vitis 平台和 FSBL
+
+在 Vitis 中将 `build/vitis_ws` 设为工作区，以 `build/export/design_1.xsa` 创建名为 `platform` 的平台组件，选择 Cortex-A9 的 `ps7_cortexa9_0` 与 `standalone` 裸机环境，生成并构建 Zynq FSBL。确认输出位置与 BOOT 配置一致：
+
+```text
+build/vitis_ws/platform/export/platform/sw/boot/fsbl.elf
+```
+
+平台已存在、仅更新 XSA 时使用：
+
+```powershell
+vitis -s build/scripts/update_learning_platform.py
+```
+
+该脚本更新已有平台，不负责从空工作区创建平台。FSBL 必须与本次 XSA 对应的 PS、DDR 及外设初始化一致。
+
+### 5. 编译固件并生成 BOOT
+
+可先单独编译生产 PS 应用：
+
+```powershell
 cmd /c "cd sw/ps_uart_print && build.bat --pl-control"
+```
+
+输出为 `sw/ps_uart_print/ps_uart_print_pl_control.elf`。按下方验证说明完成对应回归与发布证据后，再执行匹配启动镜像打包：
+
+```powershell
 powershell -ExecutionPolicy Bypass -File build/boot/build_pl_control_boot.ps1
 ```
 
-从版本控制输入重新创建 Vivado 工程时使用 `vivado -mode batch -source build/recreate_project.tcl`；已有工程则使用 `build/update_project.tcl` 同步 HDL、约束和规范化 BD。提交包生成命令为 `powershell -ExecutionPolicy Bypass -File tools/assemble_submission.ps1`。
+打包脚本会复核硬件、编译生产固件，并按 `build/boot/boot_image_pl_control.bif` 组合 **FSBL、位流和生产 ELF**；启动镜像输出到 `build/boot/BOOT_<构建标识>.BIN`。应以脚本成功输出和产物校验结果为准，不混用其他硬件构建的 FSBL 或应用。
 
-当前匹配启动镜像：
+### 6. 写卡启动与板端操作
 
-- 文件：`build/boot/BOOT_20261103_HAND_CONTROL_HDMI_MIRROR_V31.BIN`（构建产物，不随源码提交）
-- 大小与 SHA256：见 `report/hdmi_mirror_20261103/artifacts.json`
+将本次成功生成的镜像复制到 FAT32 启动卡根目录，命名为 `BOOT.BIN`。设置开发板为 SD 启动，断电插卡后上电：
 
-V17 新增 PL 姿态模块与 `0x41270000` GPIO 邮箱，其他肌电处理、HDC 稳定判决、NMF、疲劳、LCD 导航与机械手保护继续继承。测试将定点计算与旧版浮点算法及独立物理轨迹对照，并验证 RTL、综合网表、PS 快照接收、失效保护和整机时序。BOOT 核对位流、应用和 FSBL 加载段，测试记录与限制见 `report/imu_pl_20261028/`。
+1. 检查 LCD 显示、触摸、八通道数据与 MPU 状态，完成静息及姿态校准。MPU 将本次校准姿态作为相对零位。
+2. 在通道质量页检查接触和滤后信号，按需完成佩戴适配。
+3. 使用 MLP 基础识别，或进入 HDC 自学习采样并独立验证；学习后的模型可另存到 SD，后续可加载切换。
+4. 配置虚拟手映射。机械手先完成各轴标定及动作映射，再明确启用联动；标定会实时驱动实际机械手。
+5. 选择康复任务并设置次数、保持和休息时间。使用协同抓握前先记录本次佩戴的舒适抓握参考。
+6. 需要数据时在 LCD 开启 SD 录制并标注动作，结束后先停止保存，再取卡。HDMI 显示设备连接底板 J17，触摸操作仍在 LCD 上进行。
 
-构建与自动回归不代替实板验收，生成的 BOOT 不会由构建脚本自动写入 SD 卡。MPU 以本次静止校准姿态作为相对零位；校准按钮和串口 `z` 可重新触发 PL 校准。六轴 MPU 没有绝对航向参考，长时间动态偏航误差仍需实板评估。HDC 可选择加载已存档模型，或重新学习并独立验证；加载不替代当前佩戴的静息校准，也不自动启用机械手联动。
+### 7. 导出录制数据
 
-## 工程入口
+```powershell
+python tools/decode_sd_record.py path/to/EMG000.BIN --outdir output/emg000
+```
 
-- `src/rtl/`：PL 采集、滤波、疲劳、学习和机械手控制 RTL。
-- `sw/ps_uart_print/`：PS 固件、LCD 页面、HDC/NMF 调度、SD 和机械手映射。
-- `sim/`：C、SystemVerilog 和 LCD/控制回归测试。
-- `tools/`：数据记录、BIN 解码、模型训练/验证和 BOOT 校验工具。
-- `build/`：Vivado、Vitis、平台更新和 BOOT 构建脚本。
-- `report/imu_pl_20261028/`：当前 PL 姿态迁移、对照验证与镜像记录。
-- `report/hdc_stability_20261027/`：继承的 V16 判决修复与回归记录。
-- `report/resource_optimization_v15_20261027/`：继承的 V15 优化基线、性能与验证记录。
-- `report/resource_optimization_full_20261027/`：V14 共享滤波与特征优化的继承证据。
-- `report/virtual_mapping_20261026/`：继承的虚拟手映射操作和验证记录。
+导出八通道原始 CSV、对应滤后 CSV 和完整性元数据。滤后阶段以文件头为准，当前最终带通输出为 `processed`，不应与旧单陷波文件混淆。格式见[数据说明](data/README.md)。
 
-历史实验数据和阶段性报告继续保留在 `report/`，不作为当前工程入口说明。
+## 验证说明
+
+常用回归入口如下，更多前提和用途见[脚本说明](build/scripts/README.md)：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File build/scripts/run_hdmi_test.ps1
+powershell -ExecutionPolicy Bypass -File build/scripts/run_hdmi_pipeline_test.ps1
+powershell -ExecutionPolicy Bypass -File build/scripts/run_hdc_model_test.ps1
+python skill/validate_package.py
+```
+
+HDMI 集成仿真需要先生成 Video Out IP 的仿真文件；固件主机测试需将脚本中的 MSVC 初始化路径配置为本机路径。匹配 BOOT 的发布检查还依赖该构建的网表、硬件审计、回归日志和输入哈希，不能只复制历史日志来满足检查。
+
+HDMI 的验证结果与实板检查边界见[提交证据说明](submission/semg_hmrs_amd/report/submission_evidence/README.md)。历史实验和优化记录保留在 `report/`，不作为当前操作步骤。
+
+上述流程依据现有脚本和构建资料整理，本轮未执行干净环境从源码到 BOOT 的完整重建；首次移植仍需核对工具路径、初始化文件解析和平台输出。行为仿真、综合网表、布线结果与实板运行分别验收。
+
+## 资料与许可
+
+- [设计报告](report/design_report/design_report.docx)
+- [FPGA 开发技能包](skill/README.md)
+- [提交包内容清单](submission/semg_hmrs_amd/MANIFEST.md)
+
+原创代码、工具、模型资产及原创文档采用 [Apache-2.0](LICENSE)，允许使用、修改及商业再分发，并须保留适用声明。第三方字体、AMD 工具与厂商 IP 沿用各自许可，见 [NOTICE](NOTICE) 和[第三方声明](THIRD_PARTY_NOTICES.md)。

@@ -1,22 +1,49 @@
-﻿# Data Contract
+# 数据格式与模型资料
 
-Raw samples use one CSV row per sample frame:
+本目录用于管理采集数据、动作标签、特征、模型初始化文件和评估指标。提交整合包只选入部分模型与指标资料，不包含原始人体录制数据；目录内容以实际文件为准。
 
-```text
-timestamp_us,channel_0,channel_1,channel_2,channel_3,action,subject,session
+## SD 录制与 CSV 导出
+
+板端 SD 录制使用 `SEMGSD1` 格式：512 字节文件头，每帧 52 字节，保存同一序号的八通道原始值、八通道滤后值和动作标签。每个通道为有符号 24 位 ADC 码值。使用工程现有工具导出：
+
+```powershell
+python tools/decode_sd_record.py path/to/EMG000.BIN --outdir output/emg000
 ```
 
-Rules:
+命令从工程根目录执行，将生成原始 CSV、滤后 CSV、解码汇总 JSON，以及各 CSV 对应的元数据 JSON。已有文件不会被覆盖。CSV 每行对应一帧，字段为：
 
-- Keep ADC codes and converted voltage in separate files or columns.
-- Record the configured sample rate, input range and board revision in the file header or sidecar JSON.
-- Use `action=rest,open_hand,fist,wrist_flex,wrist_extend` for the first baseline.
-- Never mix training and test trials from the same continuous recording without recording the split.
+```text
+timestamp_us,channel_0,channel_1,channel_2,channel_3,channel_4,channel_5,channel_6,channel_7,action,source,sequence
+```
 
-Recommended files:
+| 字段 | 含义 |
+| --- | --- |
+| `timestamp_us` | 根据采样率与帧序号推算的相对时间，单位为微秒 |
+| `channel_0`–`channel_7` | CH1–CH8 的有符号码值，不是直接换算后的电压 |
+| `action` | 录制时手动标注的动作；具体名称由文件头中的标签协议确定 |
+| `source` | 数据处理阶段：`raw`、`notch50`、`notchcomb` 或 `processed` |
+| `sequence` | 16 位帧序号，用于检查缺帧、重复、回退和回绕 |
 
-- `raw/<subject>/<session>.csv`
-- `processed/<subject>/<session>_features.csv`
-- `labels/<subject>/<session>_labels.csv`
-- `metrics/baseline.json`
+滤后文件的名称由文件头决定：旧文件可能只有 `notch50` 单陷波或 `notchcomb` 陷波加梳状滤波，当前最终带通输出标为 `processed`。不能仅凭文件名把旧数据当成新处理链结果。滤后值保留正负波形，不是整流包络。
 
+解码汇总会记录序号异常、无效动作标签和保留字段异常；发现异常时先检查完整性，再分析或训练。重复或回退帧不能恢复真实时间，须结合 JSON 中的异常记录判断。
+
+## 目录用途
+
+| 目录 | 用途 |
+| --- | --- |
+| `raw/` | 原始录制与导出数据，按受试者及采集会话组织 |
+| `processed/` | 处理后的波形或特征 |
+| `labels/` | 动作标签及时间分段资料 |
+| `models/` | 模型参数、量化说明与存储器初始化文件 |
+| `metrics/` | 分类、姿态和模型评估指标 |
+| `rehab/` | 康复训练记录及相关数据说明 |
+
+部分目录只存在于完整研究工程，不随提交包分发。提交包的 `models/` 为选入的参数资料，不表示所有生产模型和测试依赖均已齐备；运行前应核对所选 RTL 或测试实际引用的初始化文件。
+
+## 分析与训练约定
+
+- ADC 码值与换算电压分别保存，换算时注明参考电压、增益和单位。
+- 采样率、滤波阶段、标签协议和帧完整性以文件头及解码元数据为准。
+- 基础动作包括 `rest`（放松）、`open_hand`（张手）、`fist`（握拳）、`wrist_flex`（屈腕）、`wrist_extend`（伸腕）；扩展标签按对应协议解释。
+- 训练与测试按完整录制或佩戴批次划分，避免相邻或重叠窗口同时进入两侧；记录剔除规则和划分方法。

@@ -8,7 +8,7 @@
 | 仿真与参考对比 | `sim/`、`tools/`、`report/submission_evidence/` | 已收录 RTL/主机回归、HDMI 测试、定点与资源比较工具及选定证据 |
 | 综合实现和板级证据 | `report/submission_evidence/` | 已收录布线时序、资源、DRC/CDC、方法学、平台与固件回归日志；物理 HDMI 和人体采集隔离仍按 README 标注为板级验收项 |
 | 可复现构建 | `build/recreate_project.tcl`、`build/build_all.ps1`、`build/scripts/` | 使用包根相对路径；Vivado/Vitis/bootgen 通过 `AMD_VIVADO_ROOT` 或 PATH 定位 |
-| 大模型协作记录 | `report/ai_collaboration_20261023/`、本目录 | 保留原始记录索引与整理说明；不把摘要冒充逐字交互，不包含系统指令、内部推理或凭据 |
+| 大模型协作记录 | `report/ai_collaboration_20261103/` | 保留可提交的协作记录索引与整理说明；不把摘要冒充逐字交互，不包含系统指令、内部推理或凭据 |
 | 可复用技能包 | `skill/` | 提交通用 FPGA 构建发布、流式验证、PS/PL 联调和设计报告四项技能，附模板、案例、脚本、验证和失效条件 |
 | 设计报告 | `report/design_report/design_report.docx` | 与提交包源码和证据一并收录 |
 | 开源与第三方许可 | 根目录 `LICENSE`、`NOTICE`、`THIRD_PARTY_NOTICES.md` | 原创内容采用 Apache-2.0；AMD 工具/IP、字体和其他第三方内容沿用其许可 |
